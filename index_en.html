@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title> PliegO-Maker </title>
+<link rel="icon" href="http://www.pliegos.net/wp-content/uploads/2016/08/noun_264168_cc_thumb.png" type="image/x-icon" />
+<meta http-equiv="content-language" content="en" />
+<meta http-equiv="content-type"     content="text/html;charset=ISO-8859-1" />
+<!-- editant amb vi
+     usem la notació html &#x0002B; http://dev.w3.org/html5/html-author/charref
+     o la notació js \u####
+-->
+<!-- fem que Internet Explorer usi el latest rendering engine?
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+-->
+<meta name="author"                 content="Marcantoni Malagarriga-Picas" />
+<meta name="Description"            content="Turn one simple sheet of paper into a little awesome book. Create, download & print microbooks, DIY style" />
+<meta name="keywords"               content="microbooks, print, fold, cut, read, nUps, pliego, PliegOS, Patufet, Barcelona, tipografia, typography, PostScript, PDF, Open Source, Free Software, GNU GPL, Programari Lliure, Software Libre, algorismes, algorismes, algorithms, algoritmos" />
+<meta name="robots"                 content="follow" />
+<meta name="title"                  content="PliegO-Maker" />
+<!-- Facebook Open Graph -->
+<meta property="og:type"            content="website" />
+<meta property="og:title"           content="PliegO-Maker" />
+<meta property="og:url"             content="http://www.pliegos.net/maker" />
+<meta property="og:site_name"       content="pliegos" />
+<meta property="og:description"     content="Turn one simple sheet of paper into a little awesome book. Create, download & print microbooks, DIY style" />
+<meta property="og:image"           content="http://www.pliegos.net/wp-content/uploads/2016/08/noun_264168_cc_thumb.png" />
+<meta property="og:image:type"      content="image/png" />
+<meta property="og:image:width"     content="55" />
+<meta property="og:image:height"    content="55" />
+<meta property="og:image:alt"       content="PliegO-Maker"
+<meta name="twitter:card"           content="summary_large_image" />
+<meta name="twitter:site"           content="http://twitter.com/@gopliegOS"/>
+<meta name="twitter:url"            content="http://www.pliegos.net/maker" />
+<!-- màxim 60 caràcters pel títol -->
+<meta name="twitter:title"          content="PliegO-Maker" />
+<!-- màxim 126 caràcters per la descripció -->
+<meta name="twitter:description"    content="Turn one simple sheet of paper into a little awesome book. Create, download & print microbooks, DIY style" />
+<meta name="twitter:image:src"      content="http://www.pliegos.net/maker/filicordill_651x366.png" />
+<meta name = "viewport"             content = "width = device-width, initial-scale = 1" />
+<!-- ATENCIÓ és fonamental esmentar el type i media en aqueeta crida a CSS per tal rutlli bé al Chrome i al Brave -->
+<link rel="stylesheet" href="maker.css" type="text/css" media="screen, print">
+<link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet" type='text/css' />
+<script>
+function neteja()
+{
+ document.getElementById("gomaker").reset();
+}
+</script>
+</head>
+<body onload="neteja()">
+<header>
+<article>
+<br>
+<div style="display:inline-block;vertical-align:middle;horizontal-align:middle;">
+&nbsp;&nbsp;<img src="http://www.pliegos.net/wp-content/uploads/2016/08/noun_264168_cc_thumb.png" />
+</div>
+<div style="display:inline-block;"><span style="font-family:Roboto;color:#ff7777;font-size:38px;font-weight:Regular" title="Create, download & print microbooks, DIY style">&nbsp;PliegO-Maker </span> <span style="font-family:Roboto,regular;color:gray;font-size:18px">&nbsp; (alpha)</span></div>
+<!-- <p class="note">&hellip; paràgraf explicatiu? &hellip;</p> -->
+<br>
+</article>
+</header>
+<br>
+<br>
+<br>
+<form id="gomaker" action="pliegOmaker.php" method="post">
+<section>
+ <article>
+&nbsp;&nbsp;<span style="font-size:30px;font-weight:Light;color:gray;border-bottom:3px solid;border-color:#ff7777;margin:0 0 10px;line-height:40px">Turn one simple sheet of paper into a little awesome book</span>
+<br>
+
+<br>
+<br>
+<button type="button" class="collapsible">printer paper</button>
+<div class="content" style="cursor:pointer">
+<br>
+<input type="radio" name="full" id="a4" value="4" method="POST" style="cursor:pointer" checked/> <label for="a4" style="cursor:pointer">Din A4</label>
+<br>
+<br>
+<input type="radio" name="full" id="a3" value="3" method="POST" style="cursor:pointer" /> <label for="a3" style="cursor:pointer">Din A3</label>
+<br>
+<br>
+<input type="radio" name="hv" id="fullv" value="false" method="POST" style="cursor:pointer" checked /> <label for="fullv" style="cursor:pointer;color:gray">portrait</label>
+&nbsp;&nbsp;<input type="radio" name="hv" id="fullh" value="true" method="POST" style="cursor:pointer" /> <label for="fullh" style="cursor:pointer;color:gray">landscape</label>
+<br>
+<br>
+</div>
+
+<br>
+<br>
+<button type="button" class="collapsible">nUp pliegOS</button>
+<div class="content" style="cursor:pointer">
+<br>
+<input type="radio" name="nUp" id="8nUp" value="8" method="POST" style="cursor:pointer" checked /> <label for="8nUp" style="cursor:pointer">8 nUp</label>&nbsp;&nbsp;<span style="color:gray;font-size:18px;cursor:none">[ 16 portrait pages imposed on 4+4 nUp per side (duplex) ]</span>
+<br>
+<br>
+<input type="radio" name="nUp" id="4nUp" value="4" method="POST" style="cursor:pointer" /> <label for="4nUp" style="cursor:pointer">4 nUp</label>&nbsp;&nbsp;<span style="color:gray;font-size:18px;cursor:none">[ 8 portrait/landscape pages imposed on 2+2 nUp per side (duplex) ]</span>
+<br>
+<br>
+<input type="radio" name="nUp" id="2nUp" value="2" method="POST" style="cursor:pointer" /> <label for="2nUp" style="cursor:pointer">2 nUp</label>&nbsp;&nbsp;<span style="color:gray;font-size:18px;cursor:none">[ 4 portrait/landscape pages imposed on 1+1 nUp per side (duplex) ]</span>
+<br>
+<br>
+<input type="radio" name="nUp" id="1nUp" value="1" method="POST" style="cursor:pointer" /> <label for="1nUp" style="cursor:pointer">1 nUp</label>&nbsp;&nbsp;<span style="color:gray;font-size:18px;cursor:none">[ 2 portrait/landscape pages imposed on 1 nUp per side (duplex) ]</span>
+<br>
+<br>
+<input type="radio" name="r" id="nupratio" value="false" method="POST" style="cursor:pointer" checked /> <label for="nupratio" style="cursor:pointer;color:gray">nUp ratio</label>&nbsp;&nbsp;<input type="radio" name="r" id="ppratio" value="true" method="POST" style="cursor:pointer" /> <label for="ppratio" style="cursor:pointer;color:gray">page printer ratio</label>
+<br>
+<br>
+</div>
+
+<br>
+<br>
+<button type="button" class="collapsible">lab algorisms</button>
+<div class="content" style="cursor:pointer">
+<br>
+<input type="radio" name="lab" id="7up" value="0" method="POST" style="cursor:pointer" checked /> <label for="7up" style="cursor:pointer">set up sample</label>
+<br>
+<br>
+<input type="radio" name="lab" id="lclock" value="1" method="POST" style="cursor:pointer" /> <label for="lclock" style="cursor:pointer" title="current time in catalan language, with random type and colour">literary clock sample</label>
+<br>
+<br>
+<input type="radio" name="vp" id="pglon" value="true" method="POST" style="cursor:pointer" checked /> <label for="pglon" style="cursor:pointer;color:gray">enable page limits</label>&nbsp;&nbsp;<input type="radio" name="vp" id="pgloff" value="false" method="POST" style="cursor:pointer" /> <label for="pgloff" style="cursor:pointer;color:gray">disable page limits</label>
+<br>
+<br>
+</div>
+
+</article>
+</section>
+
+<center>
+</br>
+<input type="submit" class="pitja" value="MAKER" title="Turn one simple sheet of paper into a little awesome book" />
+</center>
+</form>
+
+<!--  <article>
+   <center>
+   <img src="http://www.ub.edu/web/system/modules/edu.ub.presentation/resources/img/favicon.png">
+   <img src="http://www.ub.edu/cursusductus/nomesLogo2UB.jpg" />
+   <span title="exec">
+   </span>
+   </center>
+  </article> -->
+
+ <footer>
+  <br>
+  <br>
+  <center> 
+  <p style="font-family:Roboto,regular;color:gray;font-size:18px;">
+  <a href="http://www.pliegos.net" target="_blank" title="Create, download & print microbooks, DIY style">www.pliegos.net</a>&nbsp;&nbsp; | &nbsp;&nbsp;March 2020&nbsp;&nbsp; | &nbsp;&nbsp;<a href="">github repository</a>
+  <!--
+  <br><br>
+  <a href="mailto:oriolmoret@ub.edu" target="_blank">oriolmoret [at] ub [dot] edu</a>
+  <br><br><br><i></i>
+  -->
+  </p>
+  </center>
+<br>
+ </footer>
+<script>
+var coll = document.getElementsByClassName("collapsible");
+var i;
+
+for (i = 0; i < coll.length; i++) {
+  coll[i].addEventListener("click", function() {
+    this.classList.toggle("active");
+    var content = this.nextElementSibling;
+    if (content.style.display === "block") {
+      content.style.display = "none";
+    } else {
+      content.style.display = "block";
+    }
+  });
+}
+</script>
+</body>
+</html>
+

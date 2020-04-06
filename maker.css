@@ -1,0 +1,47 @@
+@import url(http://fonts.googleapis.com/css?family=Roboto);
+body
+{
+ font-family: 'Roboto', regular;
+ font-size: 28px;
+}
+.collapsible {
+  background-color: #777;
+  color: #ff9999;
+  cursor: pointer;
+  padding: 18px;
+  width: 100%;
+  border: none;
+  text-align: left;
+  outline: none;
+  font-size: 28px;
+}
+
+.active, .collapsible:hover {
+  background-color: #555;
+}
+
+.content {
+  padding: 0 18px;
+  display: none;
+  overflow: hidden;
+  background-color: #f1f1f1;
+}
+
+input[type=submit]
+{
+ background-color: #ff7777;
+ border: none;
+ color: white;
+ padding: 15px 32px;
+ text-align: center;
+ text-decoration: none;
+ display: inline-block;
+ font-size: 18px;
+ margin: 4px 2px;
+ cursor: pointer;
+}
+
+a
+{
+ color:#ff9999;
+}

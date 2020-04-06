@@ -1,0 +1,66 @@
+%% algorisme de reglatge de cadascuna de les pàgines del llançat (imposició) de pliegOS
+%% indiquem l'orígen de l'eix de coordenades (xamfrà ll), la dimensió de pàgina (xamfrà ur) i la seva numeració
+
+noNULL  %% pinta el contingut de pàgina?
+{  %% comportament null: el componedor ha de tenir anellat el codi que pinta contingut de pàgina
+
+ %% aquí li fem abraçar tot l'algorisme doncs no hi ha cap tipus de composició dinàmica/aleatòria
+ gsave
+
+%%+ color
+%.4 .5 .6 setrgbcolor
+% 0 0 xPagina yPagina rectfill
+
+ 0 setlinewidth
+
+%%+ color
+%gsave
+%{1 exch sub} settransfer  %% negativem el color vigent pel fons
+ /Normal .setblendmode 1 .setopacityalpha  %% contraresta la transparència Overlay activa per les vores de les pàgines
+%1 1 1 1 setcmykcolor
+%0 0 0 setrgbcolor
+ 0 setgray
+
+ %% càlcul de la diagonal de la pàgina
+ xPagina dup mul yPagina dup mul add sqrt /dgnl exch def  %( <<<<<)pstack quit
+ %% ventall d'orígen de l'eix de coordenades a ll
+ -90 1 0
+ {
+  gsave
+  rotate 0 0 moveto 0 dgnl lineto stroke
+  grestore
+ }for
+ %% quadrat amb cercle a ur per indicar la dimensió de la pàgina
+ xPagina 5 div /qdrt exch def  %% una cinquena part de l'ample
+ xPagina qdrt sub yPagina qdrt sub qdrt dup rectfill
+
+%%+ color
+ /Normal .setblendmode 1 .setopacityalpha  %% contraresta la transparència Overlay activa per les vores de les pàgines
+%0 0 0 0 setcmykcolor
+%1 1 1 setrgbcolor
+ 1 setgray
+
+ /Times-Roman yPagina 2 div selectfont  %% numeració de pàgina centrada
+ Npgn 3 string cvs dup stringwidth pop 2 div xPagina 2 div exch sub yPagina 4 div moveto show
+
+%%+ color
+%grestore
+
+ newpath  %% fora traces de posicionaments anteriors (elimina l'efecte de la ratlla final)
+ xPagina qdrt 2 div sub yPagina qdrt 2 div sub qdrt 2 div 0 360 arc stroke
+
+ M1  %% fem visible la vora de la pàgina del llançat?
+ {
+  gsave  %% provem de fer la vora de la pàgina aquí
+  newpath
+  /Normal .setblendmode 1 .setopacityalpha
+  1 setlinewidth 1 0 0 setrgbcolor
+  0 0 xPagina yPagina rectstroke
+  grestore
+ }if
+
+ grestore
+}if  %% comportament null: anellat del codi que pinta contingut de pàgina
+
+%% prohibit fer servir showpage!
+
