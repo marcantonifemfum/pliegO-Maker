@@ -1,9 +1,7 @@
 # pliegO-Maker
-[ca] Féu que una sola fulla de paper esdevingui un llibret excepcional
-[en] Turn one simple sheet of paper into a little awesome book
 
-[en]
-sow
+**[en]**
+_Turn one simple sheet of paper into a little awesome book_
 
-[ca]
-llavors
+**[ca]**
+_Féu que una sola fulla de paper esdevingui un llibret excepcional_
