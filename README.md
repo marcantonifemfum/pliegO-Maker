@@ -9,7 +9,9 @@ The liquid layout works simultaneously with the N-up workflow, not with a compos
 
 A «pliego» is a simple sheet of paper that once folded turns into a microbook (a real pocket-size one, indeed). It only needs a printer, a little do-it-yourself and an age 10 minutes for reading it.
 
-Here is our first online demo… http://pliegos.net/maker …and here the project site…  http://pliegos.net
+This PS app is able to run in command line (with no user interface) via Ghostscript, also with a simple front-end here… http://pliegos.net/maker …(several html, php, css, png in this repository are do the job), and also with an experimental Add-on for Firefox browser, downlodable here… https://addons.mozilla.org/ca/firefox/addon/pliegos/ …thanks to… https://github.com/DamyHao/PliegOS
+
+Finally, here is the main page about the initial project…  http://pliegos.net
 
 <br>
 
@@ -22,4 +24,6 @@ La diagramació *líquida* treballa en paral·lel al flux d'imposició (llançat
 
 Un «pliego» és un sol full de paper que, un cop plegat i tallat, es transforma en un llibret (inspirat en el clàssic Patufet). Només necessitem una impressora i una xic de manualitats per tenir-lo a punt de llegir en poca estona.
 
-Aquí en teniu una primera demo… http://pliegos.net/maker …i aquí el web del projecte…  http://pliegos.net
+L'aplicació pot executar-se, sense interfícies (per línia de comanda via Ghostscript), també a través d'un senzill front-end (vegeu la col·lecció d'html, php, css, png al repositori), aquí… http://pliegos.net/maker …i també amb una incipient extensió (Add-on) pel navegador Firefox, decarregable aquí… https://addons.mozilla.org/ca/firefox/addon/pliegos/ …escrita pel company… https://github.com/DamyHao/PliegOS
+
+Finalment, aquí teniu la pàgina principal del projecte incial…  http://pliegos.net
