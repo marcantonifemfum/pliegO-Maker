@@ -45,16 +45,18 @@ function neteja()
 {
  document.getElementById("gomaker").reset();
 }
+
 </script>
 </head>
 <body onload="neteja()">
 <header>
 <article>
 <br>
+<div style="display:inline-block;"><span style="font-family:Roboto;color:#ff7777;font-size:38px;font-weight:Regular" title="L'&agrave;nima digital de l'antiga literatura de canya i cordill">&nbsp;PliegO</span></div>
 <div style="display:inline-block;vertical-align:middle;horizontal-align:middle;">
-&nbsp;&nbsp;<img src="http://www.pliegos.net/maker/logoPliegOS_96x96.png" />
+<img src="http://www.pliegos.net/maker/logoPliegOS_96x96.png" />
 </div>
-<div style="display:inline-block;"><span style="font-family:Roboto;color:#ff7777;font-size:38px;font-weight:Regular" title="L'&agrave;nima digital de l'antiga literatura de canya i cordill">&nbsp;PliegO&rsquo;Maker </span> <span style="font-family:Roboto,regular;color:gray;font-size:18px">&nbsp; (alfa)</span></div>
+<div style="display:inline-block;"><span style="font-family:Roboto;color:#ff7777;font-size:38px;font-weight:Regular" title="L'&agrave;nima digital de l'antiga literatura de canya i cordill">Maker </span> <span style="font-family:Roboto,regular;color:gray;font-size:18px">&nbsp; (alfa)</span></div>
 <!-- <p class="note">&hellip; paràgraf explicatiu? &hellip;</p> -->
 <!-- https://archive.org/details/teixidorafilicordill -->
 <br>
@@ -91,16 +93,16 @@ function neteja()
 <button type="button" class="collapsible">enquadernat N-up pliegOS</button>
 <div class="content" style="cursor:pointer">
 <br>
-<input type="radio" name="nUp" id="8nUp" value="8" method="POST" style="cursor:pointer" checked /> <label for="8nUp" style="cursor:pointer">8-up</label>&nbsp;&nbsp;<span style="color:gray;font-size:18px;cursor:none">[ 16 p&agrave;gines verticals imposades a 4+4 (N-up) per cara (d&uacute;plex) ]</span>
+<input type="radio" name="nUp" id="8nUp" value="8" method="POST" style="cursor:pointer" checked /> <label for="8nUp" style="cursor:pointer">8-up</label>&nbsp;&nbsp;<span style="display:inline-block;color:gray;font-size:18px;cursor:none">16 p&agrave;gines verticals imposades a 4+4 (N-up) per cara (d&uacute;plex)</span><div style="display:inline-block;vertical-align:middle;horizontal-align:middle;"><img src="8Up_186x60.png" /></div>
 <br>
 <br>
-<input type="radio" name="nUp" id="4nUp" value="4" method="POST" style="cursor:pointer" /> <label for="4nUp" style="cursor:pointer">4-up</label>&nbsp;&nbsp;<span style="color:gray;font-size:18px;cursor:none">[ 8 p&agrave;gines verticals/horitzontals imposades a 2+2 (N-up) per cara (d&uacute;plex) ]</span>
+<input type="radio" name="nUp" id="4nUp" value="4" method="POST" style="cursor:pointer" /> <label for="4nUp" style="cursor:pointer">4-up</label>&nbsp;&nbsp;<span style="display:inline-block;color:gray;font-size:18px;cursor:none">8 p&agrave;gines verticals/horitzontals imposades a 2+2 (N-up) per cara (d&uacute;plex)</span><div style="display:inline-block;vertical-align:middle;horizontal-align:middle;"><img src="4Up_153x60.png" /></div>
 <br>
 <br>
-<input type="radio" name="nUp" id="2nUp" value="2" method="POST" style="cursor:pointer" /> <label for="2nUp" style="cursor:pointer">2-up</label>&nbsp;&nbsp;<span style="color:gray;font-size:18px;cursor:none">[ 4 p&agrave;gines verticals/horitzontals imposades a 1+1 (N-up) per cara (d&uacute;plex) ]</span>
+<input type="radio" name="nUp" id="2nUp" value="2" method="POST" style="cursor:pointer" /> <label for="2nUp" style="cursor:pointer">2-up</label>&nbsp;&nbsp;<span style="display:inline-block;color:gray;font-size:18px;cursor:none">4 p&agrave;gines verticals/horitzontals imposades a 1+1 (N-up) per cara (d&uacute;plex)</span><div style="display:inline-block;vertical-align:middle;horizontal-align:middle;"><img src="2Up_116x60.png" /></div>
 <br>
 <br>
-<input type="radio" name="nUp" id="1nUp" value="1" method="POST" style="cursor:pointer" /> <label for="1nUp" style="cursor:pointer">1-up</label>&nbsp;&nbsp;<span style="color:gray;font-size:18px;cursor:none">[ 2 p&agrave;gines verticals/horitzontals imposades a 1 (N-up) per cara (d&uacute;plex) ]</span>
+<input type="radio" name="nUp" id="1nUp" value="1" method="POST" style="cursor:pointer" /> <label for="1nUp" style="cursor:pointer">1-up</label>&nbsp;&nbsp;<span style="display:inline-block;color:gray;font-size:18px;cursor:none">2 p&agrave;gines verticals/horitzontals imposades a 1 (N-up) per cara (d&uacute;plex)</span><div style="display:inline-block;vertical-align:middle;horizontal-align:middle;"><img src="1Up_60x60.png" /></div>
 <br>
 <br>
 <input type="radio" name="r" id="nupratio" value="false" method="POST" style="cursor:pointer" checked /> <label for="nupratio" style="cursor:pointer;color:gray">r&agrave;tio del N-up</label>&nbsp;&nbsp;<input type="radio" name="r" id="ppratio" value="true" method="POST" style="cursor:pointer" /> <label for="ppratio" style="cursor:pointer;color:gray">r&agrave;tio del full d'impressi&oacute;</label>
@@ -124,12 +126,52 @@ function neteja()
 <br>
 </div>
 
+<br>
+<br>
+<button type="button" class="collapsible">compon un text</button>
+<div class="content" style="cursor:pointer">
+<br>
+<input type="radio" name="lab" id="tripa" value="2" method="POST" style="cursor:pointer" /> <label for="tripa" style="cursor:pointer">escriu un text (fins a 4000 car&agrave;cters) o tria'n un d'exemple</label>
+<br>
+<textarea id="tripa2" placeholder=" ...compon text d'una manera creativa" method="POST" name="tlab" value="2" rows="10" cols="100%" maxlength=4000>
+</textarea>
+<br>
+<input type="radio" name="triatext" id="etext" style="cursor:pointer" onclick="farceix()" /> <label for="etext" style="cursor:pointer;color:gray">Guy Debord</label>
+&nbsp;&nbsp;
+<input type="radio" name="triatext" id="etext2" style="cursor:pointer" onclick="farceix2()" /> <label for="etext2" style="cursor:pointer;color:gray">El Llibre de les B&egrave;sties</label>
+<br>
+<br>
+</div>
+
+<br>
+<br>
+<button type="button" class="collapsible">puja'ns un PDF al PliegOS (inocular PDFs)</button>
+<div class="content" style="cursor:pointer">
+<br>
+<input type="file" name="pujal" id="tibal">
+<br>
+<br>
+</div>
+
+<script>
+// per farcir una <textarea> 
+function farceix() { 
+var x = document.getElementById('tripa2'); 
+x.value = "I qui arriba a ser Senyor d'una ciutat acostumada a viure lliure i a l'instant no la destrueix, que temi ser destruit per ella, perque aquesta te sempre per refugi en les seves rebellions el nom de la llibertat i els seus vells costums, les que ni pel pas del temps ni per cap benefici s'oblidaran mai. I per mes que es faci o es proveeixi, si no s'expulsa o dispersa els seus habitants, aquests no oblidaran en cap moment aquest nom ni aquests costums...\n\nMaquiavel, El Princep.";
+} 
+function farceix2()
+{ 
+ var x = document.getElementById('tripa2'); 
+ x.value = "En una bella plana per on passava una bella aigua estaven gran res de besties selvatges qui volien elegir rei. Acord fo pres per la major part que l lleo fos rei; mes lo bou contrastava molt fortment a aquella eleccio, i digue estes paraules...\n\nRamon Llull";
+} 
+</script>
+
 </article>
 </section>
 
 <center>
 </br>
-<input type="submit" value="EMPREMT" title="F&eacute;u que un sol full de paper esdevingui un llibret excepcional" />
+<input type="submit" value="Fes PliegO" title="F&eacute;u que un sol full de paper esdevingui un llibret excepcional" />
 </center>
 </form>
 
@@ -158,6 +200,7 @@ function neteja()
 <br>
  </footer>
 <script>
+
 var coll = document.getElementsByClassName("collapsible");
 var i;
 
