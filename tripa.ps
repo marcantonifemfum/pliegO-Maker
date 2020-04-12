@@ -1,0 +1,2295 @@
+% empremt2.ps
+%% aquí és on activarem el loop maquetador/paginador
+%% s'entén que tots els recursos que intervenen estan situats en el mateix directori i és cridat per empremt.ps
+
+%#%00%
+%% aquest comptador pot no ser seqüencial de manera que podrem retenir l'índex dins el loop o fer-lo córrer endavant o enrera
+/iAvista 0 def  %% índex que ens situa al producte que componem dins l'array /aCategoriesXproducte i la pàgina
+
+/DARRERi 0 def  %% hi desem el darrer índex de producte diagramat dins la pàgina per tal d'ajudar a generar-lo
+
+/iPlanes 0 def  %% comptador de pàgines maquetades
+/NdP 1 def  %% numerador de pàgina
+/MAXproductesXpagina 3 def  %% màxim nombre de productes per pàgina en tots els casos
+
+%% generem arrays i diccionari primigenis per facilitar la creació d'índex/bookmarks de productes per categories i marques
+gatellsDgalerades /MAXiCategoria get dup /MAXiCategoria exch def  %% variable global del nombre màxim de categories
+2 add array /aBookmark exch def  %% plantilla genèrica de l'array de producte
+aBookmark dup length array copy /comparaBookmark exch def
+true setglobal  %% ho necessitem quan l'objecte a desar dins el diccionari global és un composite (array diccionari string)
+%% en aquesta array global hi desarem una array per producte amb l'escalat de categories sense repeticions
+/TOTaBookmarks 0 array def
+%% hi desarem un diccionari global, per cada marca, amb claus/valor de NomFamilia / numèric de pàgina
+gatellsDgalerades /marques 1 dict put
+false setglobal
+
+%% ara el generem a empremt.ps
+%% generem un diccionari accessible globalment (dins les estructures save/restore) per tal de fer-hi previsions a vista
+%%true setglobal
+%%/gatellsDgalerades 1 dict def
+%%false setglobal
+gatellsDgalerades /Xicona
+maxL 4 div dup /Xicona exch def  %% definim l'ample (ara x,y idèntics) d'una icona (aniran a tocar tocar)
+put  %% ho desem al diccionari global sobretot per OFFde25Aa25J2.ps
+
+%% coordenada primigenia Y d'on han d'anar posats els elements gràfics del cap del 1r producte (línia N de l'ArtBox)
+%gatellsDgalerades /araCapOFFcap
+4ArtBox 1 get 1 get pinca add
+% dup 4 1 roll put  %% l'inicialitzarem per cada pàgina
+%% valor del marge N del l'ArtBox en relació al TrimBox, o sigui el valor fix de la capçalera del producte
+yMbox pinca sub exch sub /margeNartBox exch def
+
+%% espai Y disponible, per pàgina, per diagramar-hi els productes
+%% la Y del TrimBox menys el gruix de la veta del peu de pàgina (un 3% de la Y del TrimBox) menys un corondell
+gatellsDgalerades /Ylliure yTbox dup 3 mul 100 div corondell add sub put  %% l'inicialitzarem per cada pàgina
+
+%%Test: valor provisional del posicionament de cada producte dins la pàgina
+%% gatellsDgalerades /Ylliure get 3 div /saltP exch def  %% 1/3 part de Ylliure
+%% en aquesta versió intermitja, per simular l'ocupació, pintarem un rectangle en gris que indicarà l'àrea prevista per la
+%% diagramació dels elements (foto, taula, icones i textos) de sota la capçalera de producte (NomFamilia, codiERP, logos
+%% del fabricant i veta de nivells secundaris), on el valor /XbboxProducte serà constant i el valor /YbboxProducte serà el
+%% que deduirem amb el for a /preveuQocupi
+/XbboxProducte xMbox xyTacN1 0 get sub sangs sub pinca sub corondell sub def
+
+aCategoriesXproducte length  %% ara ja coincideix amb el total de .JSONs processats per empremt.ps
+/maxLoop exch def  %% sortirem del loop paginador
+
+%#%01%
+{  %% loop 0 que maqueta i pagina tots els productes en base a uns comportaments i previsions d'espai
+ %% aquí l'eix de coordenades sempre té l'orígen al MediaBox
+ %% també generem /saltPacumulat per desar-hi els valors de posicionament real des de dalt de la pàgina
+ /saltPacumulat [ MAXproductesXpagina {0}repeat ] def
+
+%#%02%
+ {  %% loop 1 de maquetació de productes dins 1 pàgina
+  %% coordenada primigenia Y d'on han d'anar posats els elements gràfics del cap del 1r producte (línia N de l'ArtBox)
+  gatellsDgalerades /araCapOFFcap 4ArtBox 1 get 1 get pinca add put  %% l'inicialitzarem per cada pàgina
+  %gatellsDgalerades /araCapOFFcap get /araCapOFFcap exch def  %% regenerem el valor primigeni a cada pàgina
+  gatellsDgalerades /Ylliure get /Ylliure exch def  %% regenerem el valor primigeni a cada pàgina
+
+  %% eliminem la clau de control de l'inici Y d'imatges de producte
+  gatellsDgalerades /YfinalFoto undef
+
+  %% variables que al preu de NO existir és més eficient que tinguin valors extrems
+%gatellsDgalerades /Yfi1col araCapOFFcap put  %% millor que no hi sigui ara doncs desquadra fotos?
+  gatellsDgalerades /araXicona 0 put
+  gatellsDgalerades /araYicona gatellsDgalerades /araCapOFFcap get put
+
+  /productesXpagina 0 def  %% comptador de productes per pàgina
+  /soRtim false def  %% NO sortim de la maquetació de pàgina
+  %% setup d'inici de plana on definim: format de pàgina, Bbox de treball, les creus, l'espai de color i la sobreimpressió
+  P7upCap
+
+%#%03%
+  {  %% loop 2 de maquetació producte a producte
+   %% regenerem /gatellsDgalerades per cada producte per tal no es contaminin els paràmetres de composició
+   %% la qual cosa vol dir buidar-lo tot menys dels paràmetres: /Ylliure /araCapOFFcap /Xicona, etc
+   gatellsDgalerades
+   {  %% conservem les claus genèriques de pàgina o de tot el catàleg
+    1 index /Ylliure eq
+    2 index /araCapOFFcap eq
+    3 index /Xicona eq
+    4 index /YfinalFoto eq
+
+    5 index /araXicona eq
+    6 index /araYicona eq
+
+    7 index /MAXiCategoria eq
+
+    8 index /marques eq
+    % 10 index /TOTaBookmarks eq
+    % 11 index /aBookmark eq
+
+%9 index /Yfi1col eq  %% millor que no hi sigui doncs desquadra fotos
+%or
+
+    or or or or or or or
+    {
+     pop pop
+    }
+    {  %% eliminem les claus exclusives de cada producte
+     pop gatellsDgalerades exch undef
+    }ifelse
+   }forall
+
+   productesXpagina 1 add /productesXpagina exch def  %% comptador de productes per pàgina
+   aCategoriesXproducte iAvista get dup /aProducte exch def  %% array amb les dades de categoria i recursos del producte
+   length /faA exch def  %% la mida de l'array ens facilita l'extracció
+
+%#%04%
+   %% determinem els gatells /femNivell1 i /femNivells2i+ per pintar o no els tac lateral de primer nivell (un cop per pàgina)
+   %% i els secundaris (un cop per producte), en una barra de color sobre /NomFamilia, fent linia de base amb el codi ERP i
+   %% enllaçats per >, llavors establirem quin canvi de nivell justificarà un canvi de pàgina (ara ho deixarem al primer),
+   %% i més endavant haurem de tenir en compte el paginat esquerra/dreta per posicionar el tac de nivell 1, el codi ERP, el logo
+   %% del fabricant i el numerador de pàgina de forma adient per l'enquadernació de la versió offset CMYK
+   productesXpagina 1 eq
+   {  %% és el primer producte de la pàgina el posem i desem per comparar
+%(FEMel1erProducteXpagina)==
+
+    aProducte 0 faA 1 sub getinterval /nivellsDproducte exch def
+    /femNivell1 true def
+    /femNivells2i+ true def
+
+%AVISTA%
+%#%05%
+    %% bastim l'array de previsions /preveuQocupi dels 3 propers productes possibles
+    MAXproductesXpagina array /preveuQocupi exch def  %% l'array de previsions
+    0 1 MAXproductesXpagina 1 sub
+    {  %% for pels /MAXproductesXpagina vista
+     dup /a3vista exch def
+     dup iAvista add maxLoop eq  %% som al final de la feina?
+     {  %% si, som al final de l'array general de productes
+      pop exit
+     }
+     {  %% encara hi ha productes
+      preveuQocupi exch
+      [  %% array de previsió d'ocupació per cada producte
+       %% array amb les dades de categoria i recursos del producte
+       aCategoriesXproducte iAvista a3vista add get dup /aProducte exch def
+       length /faA exch def  %% la mida de l'array ens dóna aquí molta informació
+       aProducte faA 1 sub get dup /aRecursos exch def  %% i desem el paquet de recursos
+       %% executem el .json que ja hem passat a .jsonps per deixar a l'stack el seu diccionari
+       1 get (r) file cvx exec dup /jsonPSout exch def
+       /codiERP get /codiERP exch def  %% hem de capturar codiERP
+
+%#%06%
+       %% duu foto? ...caldrà establir unes mides mínimes x,y possibles
+       %% posem el detector de si el producte actual duu foto
+       PiP length dup /araVa exch def codiERP length dup /araVa2 exch def add 4 add string dup 0 PiP putinterval
+       dup araVa codiERP putinterval dup araVa araVa2 add (.jpg) putinterval dup /pathImgCodiERP exch def
+       status
+       {
+        pop pop pop pop
+        %% ens ho podem estalviar?
+        %%gatellsDgalerades
+        /noDuuFoto false def
+       }
+       {
+        %% això no podrà ser encara mai un ERROR doncs comprovem de si hi ha foto verificant l'existència del .jpg
+        codiERP == (AVÍS: ...no duu foto\n)print flush
+        %% ens ho podem estalviar?
+        %%gatellsDgalerades
+        /noDuuFoto true def
+       }ifelse
+
+       %AVISTA%
+       noDuuFoto {null}{pathImgCodiERP}ifelse  %% ara deixem un null o un path dins una string
+
+%#%07%
+       %% previsió del tipus /linOlin2 i mida de taula /FAtotYtaula
+       aRecursos 2 get (r)file cvx exec /aDAT exch def  %% el .dat del producte actual com a array de taula
+       %% per amidar-la, abans ens cal saber si la taula és lin o lin2 i si n'hi ha
+       jsonPSout
+       dup /lin known
+       {  %% lin?
+        dup /lin get null eq
+        {
+         /linOlin2 null def  %% tipus de taula nul·la
+         /codiERP get (\n\n)print flush print flush (ERROR: ...producte sense taula [1]\n\n)print flush  %% hauríem de plegar?
+        }
+        {  %% lin
+         pop /linOlin2 true def  %% tipus de files/columnes de taula lin
+         %% mida de la taula
+         aDAT 1 get length 1 sub /iYc exch def  %% índex per l'alt de casella (suposem estable per totes les files!)
+         %% sumem tots els alts de totes les fileres de la taula
+         /FAtotYtaula 0 def
+         1 1 aDAT length 2 sub  %% les fileres van de l'índex 1 a n-2
+         {
+          aDAT exch get iYc get FAtotYtaula add /FAtotYtaula exch def
+         }for
+         %% a la mida total de la taula li manca l'alçada de la capçalera
+         aDAT 0 get dup /RECtaula exch def  %% diccionari de recursos genèrics de la taula
+         /cosCapTaula get 2 mul dup /gruixCap exch def  %% sempre el doble que el cos?
+         FAtotYtaula add /FAtotYtaula exch def
+
+         %% taules llargues
+         %% fem la previsió d'ocupació de la taula, on el nombre de pàgines sortirà de posar-la a 1 columna a la
+         %% primera pàgina, i a les restants a dues columnes per pàgina, de fet això serà l'ocupació real del producte
+         FAtotYtaula gatellsDgalerades /Ylliure get margeNartBox sub dup /maxTAU exch def
+         div ceiling 2 div 1 add cvi /pXt exch def
+         pXt 1 ne  %% la taula no hi cap en una sola pàgina?
+         {  %% redefinim l'índex 2 de /FAtotYtaula com una array amb el nombre de fileres per columna de maquetació i pàgina
+          /FAtotYtaula 0 array def  %% cada array serà una pàgina i cada element una columna amb el nombre de fileres?
+          /ARAaPgn 0 array def  %% array on el nombre d'elements són les columnes i el valor en són les files de la taula
+          /FAtrosYtaula 0 def  %% mida Y actual de la columna que avaluem
+          /nFiles 0 def  %% comptador de fileres per columna
+          /laPRMR true def  %% gatell detector de la primera pàgina del producte on la taula va només a 1 columna
+          1 1 aDAT length 2 sub  %% les fileres van de l'índex 1 a n-2
+          {  %% for
+           aDAT exch get iYc get dup /araGruix exch def FAtrosYtaula add
+           dup gruixCap add  %% no podem deixar-nos el gruix de la capçalera abans d'avaluar!
+           maxTAU gt
+           {
+            pop laPRMR
+            {
+             FAtotYtaula length 1 add array dup 0 FAtotYtaula putinterval
+             dup 0 1 array dup 0 nFiles put put /FAtotYtaula exch def
+             /laPRMR false def
+            }
+            {
+             ARAaPgn length 1 eq
+             {  %% segona columna de la taula i última dins la mateixa pàgina
+              2 array dup 0 ARAaPgn putinterval dup 1 nFiles put /ARAaPgn exch def
+              FAtotYtaula dup length 1 sub ARAaPgn put  %% repiquem la darrera array
+              /ARAaPgn 0 array def  %% array on el nombre d'elements són les columnes i el valor en són les files de la taula
+             }
+             {  %% primera columna de la taula dins una nova pàgina
+              1 array dup 0 nFiles put /ARAaPgn exch def
+              %% ampliem d'una array més (una plana més) /FAtotYtaula
+              FAtotYtaula length dup /araVA exch def 1 add array dup 0 FAtotYtaula putinterval
+              dup araVA ARAaPgn put /FAtotYtaula exch def
+             }ifelse
+            }ifelse
+            %% no podem perdre la que ja hem comptabilitzat + el gruix de la capçalera x columna!
+            /FAtrosYtaula araGruix gruixCap add def
+            /nFiles 1 def
+           }
+           {
+            /FAtrosYtaula exch def
+            nFiles 1 add /nFiles exch def
+           }ifelse
+          }for
+          nFiles 1 ne
+          {  %% encara queda una columna per desar que no ha exhaurit el màxim d'espai Y
+           ARAaPgn length 0 eq
+           {  %% una plana més i hem d'afegir el nou array
+            1 array dup 0 nFiles put /ARAaPgn exch def
+            FAtotYtaula length dup /araVA exch def 1 add array dup 0 FAtotYtaula putinterval
+            dup araVA ARAaPgn put /FAtotYtaula exch def
+           }
+           {  %% ampliem l'array (una columna més) i el repiquem
+            2 array dup 0 ARAaPgn putinterval dup 1 nFiles put /ARAaPgn exch def
+            FAtotYtaula dup length 1 sub ARAaPgn put  %% repiquem la darrera array
+           }ifelse
+          }if
+%          codiERP ==
+%          (AVÍS: taula maquetable dins... )print flush FAtotYtaula length 2 string cvs print flush ( ...planes\n)print flush
+         }if
+         %% fi de taules llargues
+
+        }ifelse
+       }
+       {  %% lin2?
+        dup /lin2 known
+        {
+         dup /lin2 get null eq
+         {
+          /linOlin2 null def  %% tipus de taula nul·la
+          /codiERP get (\n\n)print flush print flush (ERROR: ...producte sense taula [2]\n\n)print flush  %% hauríem de plegar?
+         }
+         {  %% lin2
+%codiERP == (---Lin2---)==
+          pop /linOlin2 false def  %% tipus de files/columnes de taula lin2
+          /FAtotYtaula 0 def
+          %% repetim el procés de sumat per a cadascuna de les subtaules
+          aDAT
+          {  %% forall
+           /SaDAT exch def
+           %% mida de la taula
+%% això podria fer petar ara els Lin2 ???
+           SaDAT 1 get length 1 sub /iYc exch def  %% índex per l'alt de casella (suposem estable per totes les files!)
+           %% sumem tots els alts de totes les fileres de la taula
+           1 1 SaDAT length 2 sub  %% les fileres van de l'índex 1 a n-2
+           {
+            SaDAT exch get iYc get FAtotYtaula add /FAtotYtaula exch def
+           }for
+           %% a la mida total de la taula li manca l'alçada de la capçalera
+           SaDAT 0 get dup /RECtaula exch def  %% (aquí té sentit?) diccionari de recursos genèrics de la taula
+           /cosCapTaula get 2 mul  %% sempre el doble que el cos?
+           FAtotYtaula add /FAtotYtaula exch def
+          }forall
+
+          %% taules llargues
+          %% fem la previsió d'ocupació de la taula, on el nombre de pàgines sortirà de posar-la a 1 columna a la
+          %% primera pàgina, i a les restants a dues columnes per pàgina, de fet això serà l'ocupació real del producte
+          FAtotYtaula gatellsDgalerades /Ylliure get margeNartBox sub dup /maxTAU exch def
+          div ceiling 2 div 1 add cvi /pXt exch def
+          pXt 1 ne  %% la taula no hi cap en una sola pàgina?
+          {
+           codiERP ==
+           (AVÍS: taula maquetable dins... )print flush FAtotYtaula length 2 string cvs print flush( ...planes)print flush
+           (\nERROR: queden per implementar les taules llargues a Lin2 ...pleguem! <<<<\n)print flush quit
+          }if
+          %% fi de taules llargues
+
+         }ifelse
+        }
+        {  %% no duu cap tipus d'entrada de taula
+         /linOlin2 null def  %% tipus de taula nul·la
+         /codiERP get (\n\n)print flush print flush (ERROR: ...producte sense taula [3]\n\n)print flush  %% hauríem de plegar?
+        }ifelse
+       }ifelse
+
+       %AVISTA%
+       linOlin2 FAtotYtaula
+
+%%(&&&&&&)pstack quit
+%#%08%
+       %% previsió d'icones i textos de caracterísitiques
+       %% duu icones i quantes
+       /iconesCarac 0 def
+       %% duu text de característiques i quants
+       /textCarac 0 def
+       %% avaluem si fem (existeixen?) les icones i text de característiques definint els gatells /FEMdesc i /FEMicon
+       /TOTtextCarac 0 array def  %% hi desarem els parells de text amb la descripció de característiques
+       /FEMicon false def
+       %% del diccionari json del producte actual treiem...
+       /FEMdesc false def
+       jsonPSout /carac get  %% array de característiques (icones i textos)
+       dup null eq
+       {
+        pop codiERP == (AVÍS: ...no duu caracteristiques icones/text\n)print flush
+       }
+       {
+        {  %% forall per bastir l'array TOTtextCarac, si s'escau
+         dup /icon get length 0 eq
+         {  %% no duu icona, duu text
+          %% llavors, desem el text de les característiques, en parells, a l'array TOTtextCarac
+          dup /titol get exch /desc get 2 array astore TOTtextCarac length dup /araVa exch def 1 add array dup
+          TOTtextCarac 0 exch putinterval dup 3 -1 roll araVa exch put /TOTtextCarac exch def
+          /FEMdesc true def
+          textCarac 1 add /textCarac exch def
+         }
+         {  %% duu icona i la comptem
+          iconesCarac 1 add /iconesCarac exch def
+          pop
+          /FEMicon true def
+         }ifelse
+        }forall  %% per totes les característiques del producte
+       }ifelse
+       %% ens ho podem estalviar?
+       %%gatellsDgalerades /FEMicon FEMicon put
+       %%gatellsDgalerades /FEMdesc FEMdesc put
+
+       %AVISTA%
+       iconesCarac  %% duu icones i quantes
+       textCarac 0 eq  %% duu text de característiques i quants
+       {
+        textCarac null
+       }
+       {
+        textCarac TOTtextCarac  %% parells de text amb la descripció de característiques
+       }ifelse
+
+%#%09%
+       %% previsió de textos base del producte amb quatre blocs possibles
+       [  %% desem el nom i nombre de caràcters d'ocupació
+        (Descripción) dup jsonPSout exch get dup null eq{pop pop}{length}ifelse
+        (Aplicaciones) dup jsonPSout exch get dup null eq{pop pop}{length}ifelse
+        (Ventajas) dup jsonPSout exch get dup null eq{pop pop}{length}ifelse
+        (Observaciones) dup jsonPSout exch get dup null eq{pop pop}{length}ifelse
+       ] /previsio4Tpossibles exch def
+       previsio4Tpossibles length 0 eq
+       {
+        codiERP == (AVÍS: ...no duu textos /Descripcion/Aplicaciones/Ventajas/Observaciones/\n)print flush
+       }if
+
+       %AVISTA%
+       previsio4Tpossibles  %% nom i nombre de caràcters d'ocupació dels 4 textos base
+
+       %AVISTA%
+      ] put  %% desem l'array per cada producte
+     }ifelse  %% som al final de la feina?
+    }for  %% pels /MAXproductesXpagina vista x bastir l'array de previsions /preveuQocupi
+
+%(FETpreveuQocupi3propersProductes)==
+%AVISTA%
+    %% comencem la política de previsions del producte actual i com a màxim dels dos següents per poder determinar quants
+    %% productes podrem posar a la pàgina i les mides de les fotos de producte
+    %% el paquet d'arrays /preveuQocupi duu la informació necessària, a /MAXproductesXpagina vista, per deduir la previsió
+    %% d'ocupació per pàgina, de forma que hauríem de deixar-ho fixat (on? array? variable?) per tal de guiar en ferm la
+    %% maquetació final, aquesta deducció es regenera a cada inici de plana i dins el tram on es compon el primer producte,
+    %% el format de l'array /preveuQocupi és: una array per pàgina on a l'índex zero hi ha el valor de /noDuuFoto o sigui un
+    %% null si no en duu i una string amb un path si en duu, a l'índex 1 el valor de /linOlin2, a l'índex 2 el valor de
+    %% /FAtotYtaula que pot ser un numèric (si la taula cap en 1 sola pàgina) o una array (si la taula necessita 2 o +pàgines),
+    %% a l'index 3 el valor de /iconesCarac, a l'índex 4 el valor de /textCarac, a l'índex 5 el valor de /TOTtextCarac
+    %% i finalment a l'índex 6 el valor de /previsio4Tpossibles
+%#%09bis%
+    %% en aquest paquet desarem les Y d'ocupació previstes de cada producte o un null en cas que ja no hi càpiga dins la pàgina
+    /aYbboxProductes MAXproductesXpagina array def
+    %% valorant /preveuQocupi hem de fixar el valor de /YbboxProducte, sumar-lo al valor fix de /margeNartBox de la capçalera de
+    %% producte, i començar a prendre decisions quan el restem de /Ylliure,
+
+    0 1 MAXproductesXpagina 1 sub  %% ens interessa treballar amb índex per controlar les separacions entre productes
+    {  %% for que ha de servir per fer una previsió d'ocupació Y de cada producte
+     dup /iA3vista exch def preveuQocupi exch get
+     dup null eq
+     {  %% si hi ha nulls és o perquè som al final d'un nivell 1 o perquè som al final del document sencer
+      pop
+%(CANVIdeNIVELL_1r!) ==
+     }
+     {  %% analitzem l'array per valorar l'ocupació Y
+%     araMAXproductesXpagina 1 add /araMAXproductesXpagina exch def  %% valor provisional
+
+      dup 0 get  %% de si el producte duu fotografia
+      null eq
+      {
+       /duuFoto false def
+      }
+      {
+       /duuFoto true def
+      }ifelse
+      %% índex 2, aquí cal saber si és més alta la taula que les columnes
+      dup 2 get /FAtotYtaula exch def
+      %% avaluem /previsio4Tpossibles, on el càlcul total el dividirem per dos per ponderar l'ocupació de les dues columnes
+      /lletres4p 0 def  %% comptador del total de caràcters per poder fer una deducció de línies de text
+      dup 6 get dup /4p exch def length
+      dup 2 div dup dup 2 div ceiling CosEnunciat mul exch CosEnunciat mul add exch 1.5 mul add  %% l'Y dels enunciats
+      exch 1 exch 2 exch 1 sub
+      {
+       4p exch get lletres4p add /lletres4p exch def
+      }for
+      lletres4p 30 div ceiling  %% previsió del nombre de línies de text (a 30 caràcters de mitjana per línia)
+      dup 1.5 mul exch CosText4possibles mul add  %% l'Y dels textos
+      add 2 div /FAtot4T exch def  %% sumem l'Y de textos i enunciats i dividim per dos (dues columnes)
+      %% hem de saber si duu icones+text i per no allargar-nos en l'avaluació utilitzem els valors per actuar directament
+      %% index 3 el valor de /iconesCarac
+      dup 3 get 6 div ceiling  %% per aproximar quantes línies d'icones compondriem
+      Xicona mul /FAiconesCarac exch def
+      %% índex 4 el valor de /textCarac
+      dup 4 get 0 eq
+      {
+       pop /FAtextCarac 0 def
+      }
+      {
+       %% índex 5 el valor de /TOTtextCarac
+       5 get dup length 3 div ceiling  %% per aproximar quants blocs de text carac compondriem
+       exch /LxBT 0 def  %% explorem qui fa més línies per bloc de text
+       {
+        /araBT 0 def
+        {
+         length araBT add /araBT exch def
+        }forall
+        araBT 30 div ceiling  %% previsió del nombre de línies de text (a 30 caràcters de mitjana per línia)
+        dup LxBT gt
+        {
+         /LxBT exch def
+        }
+        {
+         pop
+        }ifelse
+       }forall
+       %% comptem a cos 9 +1.5 d'interliniat les línies de text de característiques
+       LxBT mul dup 1.5 mul exch 9 mul add /FAtextCarac exch def
+      }ifelse
+      %% per ponderar la previsió d'ocupació, el resultat de /FAcarac s'haurà d'afegir +2 corondells al cantó més curt
+      FAiconesCarac FAtextCarac add 2 div /FAcarac exch def
+
+      %% com que és una avaluació d'espai de conjunt, només mirem on hi ha més espai buit, si a taula o textos, per decidir
+      %% on posem la foto (si n'hi ha), i tornem a avaluar quin és més llarg per sumar-hi /FAcarac al cantó més curt
+      FAtotYtaula dup type /arraytype eq
+      {  %% si la taula ocupa més d'1 plana...
+       pop false  %% ...llavors la foto va segur a sota els textos!
+      }
+      {
+       FAtot4T lt
+      }ifelse
+      {  %% si la taula és més curta, hi posarem la foto mínima (si en duu) i valorarem on posem les Carac icones+text
+       FAtotYtaula
+       duuFoto
+       {
+        margeNartBox add corondell add
+       }if
+       FAtot4T 2 copy lt
+       {  %% la taula encara és més curta
+        exch FAcarac add 2 copy lt  %% quin dels dos cantons és finalment el més llarg?
+        {  %% és més llarga la taula
+         corondell add /YbboxProducte exch def pop
+        }
+        {  %% són més llargs els textos
+         pop corondell add /YbboxProducte exch def
+        }ifelse
+       }
+       {  %% els textos són més curts
+        FAcarac add 2 copy lt  %% quin dels dos cantons és finalment el més llarg?
+        {  %% són més llargs els textos
+         corondell add /YbboxProducte exch def pop
+        }
+        {  %% és més llarga la taula
+         pop corondell add /YbboxProducte exch def
+        }ifelse
+       }ifelse
+%%YbboxProducte(+CURTAlaTaula)pstack quit
+      }
+      {  %% si els textos són més curts, hi posarem la foto mínima (si en duu) i valorarem on posem les Carac icones+text
+       FAtot4T
+       duuFoto
+       {
+        margeNartBox add corondell add
+       }if
+       FAtotYtaula dup type /arraytype eq
+       {  %% si la taula ocupa més d'1 plana...
+        true
+       }
+       {
+        2 copy lt
+       }ifelse
+       {  %% els textos són més curts
+        FAtotYtaula type /arraytype eq
+        {  %% si la taula ocupa més d'1 plana...
+         pop pop
+         false
+        }
+        {
+         exch FAcarac add 2 copy lt  %% quin dels dos cantons és finalment el més llarg?
+        }ifelse
+        {  %% són més llargs els textos
+         corondell add /YbboxProducte exch def pop
+        }
+        {  %% és més llarga la taula
+         FAtotYtaula type /arraytype eq
+         {  %% si la taula ocupa més d'1 plana...
+          %% li donem tot el valor de la Y per tal dóni un error negatiu d'ocupació de +d'1 plana +avall
+          gatellsDgalerades /Ylliure get /YbboxProducte exch def
+         }
+         {
+          pop
+          %% la suma d'aquest corondell ens pot fer ballar el paraigües?
+          %% corondell add
+          /YbboxProducte exch def
+         }ifelse
+        }ifelse
+       }
+       {  %% la taula encara és més curta
+        FAcarac add 2 copy lt  %% quin dels dos cantons és finalment el més llarg?
+        {  %% és més llarga la taula
+         corondell add /YbboxProducte exch def pop
+        }
+        {  %% són més llargs els textos
+         pop corondell add /YbboxProducte exch def
+        }ifelse
+       }ifelse
+%%YbboxProducte(+CURTSelsTextos)pstack quit
+      }ifelse
+
+      Ylliure YbboxProducte margeNartBox add sub  %% avaluem si el producte hi cap
+      iA3vista 0 ne
+      {  %% del 1r al 2n, o d'aquest al 3r a /YbboxProducte encara li manca sumar el corondell de separació entre productes
+       corondell sub
+      }if
+
+      dup 0 le
+      {  %% aquest producte ja no hi cap
+       iA3vista 0 eq
+       {  %% si és el primer producte de la pàgina el que NO hi cap
+        pop  %%quit
+%/taulesLlargues true def
+       }
+       {  %% és el segon o el tercer el que no hi cap
+%/taulesLlargues false def
+        pop
+        exit  %% sortim del for de previsió d'ocupació Y
+       }ifelse
+      }
+      {  %% aquest producte encara hi cap
+%/taulesLlargues false def
+%(FETencaraNHIcap1+)==
+       aYbboxProductes iA3vista YbboxProducte put
+       /Ylliure exch def
+      }ifelse
+     }ifelse
+    }for  %% que ha de servir per fer una previsió d'ocupació Y de cada producte
+
+%0
+%aYbboxProductes
+%{
+% null eq
+% {
+%  (\nen aquesta plana hi caben... )print flush 2 string cvs print flush ( ...productes\n)print flush exit
+% }
+% {
+%  1 add
+% }ifelse
+%}forall
+
+    /NOcomponem false def  %% gatell per la cua del loop i saber si aquest producte NO cal compondre'l
+   }  %% és el primer producte de la pàgina el posem i desem per comparar
+   {
+    productesXpagina 2 eq
+%#%10%
+    {  %% és el segon producte de la pàgina
+     %% l'array de previsions Y ens dirà si el producte actual hi cap o no
+     aYbboxProductes productesXpagina 1 sub get
+     null eq
+     {  %% NO hi cap
+%(ARAcomencemHAnarBE)pstack quit
+%#%10bis%
+      /NOcomponem true def  %% gatell per la cua del loop i saber si aquest producte NO cal compondre'l
+%(noFEMel2nProducteXpagina)==
+     }
+     {  %% SI hi cap
+      /NOcomponem false def  %% gatell per la cua del loop i saber si aquest producte NO cal compondre'l
+%(FEMel2nProducteXpagina)==
+      aProducte 0 faA 1 sub getinterval nivellsDproducte
+      %% no podem comparar a sac dues arrays, comparem element x element (veure ComparArrays.ps)
+      /aComp exch def
+      /iDeNTiQueS true def  %% gatell x saber si son identiques
+      dup length
+      aComp length eq
+      {  %% si no tenen la mateixa quantitat d'elements segur que no son iguals ...
+       /iaComp 0 def
+       {  %% forall
+        aComp iaComp get eq
+        {
+         iaComp 1 add /iaComp exch def
+        }
+        {
+         /iDeNTiQueS false def exit
+        }ifelse
+       }forall
+      }
+      {
+       /iDeNTiQueS false def pop
+      } ifelse
+      iDeNTiQueS
+      {  %% si és el segon i és igual, no el posem i no desem re
+       /femNivell1 false def
+       /femNivells2i+ true def
+      }
+      {  %% si és el segon i no és igual el posem, tret que canviï el primer nivell (índex 0), i si no el desem per comparar
+       aProducte 0 faA 1 sub getinterval 0 get nivellsDproducte 0 get eq
+       {  %% NO canvia el primer nivell,llavors activem només la repetició dels nivells secundaris
+        aProducte 0 faA 1 sub getinterval 
+        /nivellsDproducte exch def
+        /femNivell1 false def
+        /femNivells2i+ true def
+       }
+       {  %% com que SI canvia el primer nivell, canviarem de pàgina activant el gatell /NOcomponem
+%#%10bis%
+%AVISTA%
+%(CANVIdeNIVELL_2n!)== %quit
+        /NOcomponem true def
+       }ifelse
+      }ifelse
+     }ifelse  %% el producte actual hi cap o no?
+    }
+    {  %% és el tercer producte de la pàgina
+%#%11%
+     %% l'array de previsions Y ens dirà si el producte actual hi cap o no
+     aYbboxProductes productesXpagina 1 sub get
+     null eq
+     {  %% NO hi cap
+%(ARAcomencemHAnarBE)pstack quit
+%#%11bis%
+      /NOcomponem true def  %% gatell per la cua del loop i saber si aquest producte NO cal compondre'l
+%(noFEMel3erProducteXpagina)==
+     }
+     {  %% SI hi cap
+      /NOcomponem false def  %% gatell per la cua del loop i saber si aquest producte NO cal compondre'l
+%(FEMel3erProducteXpagina)==
+      aProducte 0 faA 1 sub getinterval nivellsDproducte
+      %% no podem comparar a sac dues arrays, comparem element x element (veure ComparArrays.ps)
+      /aComp exch def
+      /iDeNTiQueS true def  %% gatell x saber si son identiques
+      dup length
+      aComp length eq
+      {  %% si no tenen la mateixa quantitat d'elements segur que no son iguals ...
+       /iaComp 0 def
+       {  %% forall
+        aComp iaComp get eq
+        {
+         iaComp 1 add /iaComp exch def
+        }
+        {
+         /iDeNTiQueS false def exit
+        }ifelse
+       }forall
+      }
+      {
+       /iDeNTiQueS false def pop
+      } ifelse
+      iDeNTiQueS
+      {  %% si és el tercer i és igual, no el posem i no desem re
+       /femNivell1 false def
+      }
+      {  %% si és el tercer i no és igual, tret que canviï el primer nivell (índex 0), el posem directament i no desem re
+       aProducte 0 faA 1 sub getinterval 0 get nivellsDproducte 0 get eq
+       {  %% NO canvia el primer nivelli, llavors activem només la repetició dels nivells secundaris
+        /femNivell1 false def
+        /femNivells2i+ true def
+       }
+       {  %% com que SI canvia el primer nivell, canviem de pàgina
+%AVISTA%
+%#%11bis%
+%(CANVIdeNIVELL_3r!)==  %quit
+        /NOcomponem true def
+       }ifelse
+      }ifelse
+     }ifelse  %% el producte actual hi cap o no?
+    }ifelse
+   }ifelse
+
+%% fixem així de forma fiable el nombre de productes que realment maquetarem a la pàgina?
+MAXproductesXpagina preveuQocupi{null eq{1 sub}if}forall /maQuetarem exch def
+
+%%TRANGS
+   %% detector fiable de taulesLlargues via índex /FAtotYtaula com a array o numèric
+   preveuQocupi productesXpagina 1 sub get 2 get type /arraytype eq
+   {  %% producte amb una taula que ocupa més d'1 pàgina
+    /taulesLlargues true def
+    %% (\n...filtrem els productes que ocupen mes d'una pagina... )print flush
+    %% aCategoriesXproducte iAvista get dup length 1 sub get dup length 1 sub get print flush
+    %% ( ...\n)print flush
+   }
+   {  %% producte que com a màxim ocuparà 1 sola pàgina
+    /taulesLlargues false def
+   }ifelse
+
+%%Aquí iniciem l'if de si componem el producte
+   %% hem detectat els valors NULL (no cabuda del producte) de l'array d'altures Y disponibles
+   %% llavors, al darrer producte de la pàgina haurem de rectificar, si cal, el valor de l'Y disponible per TOTa la llargada
+   %% possible aprofitable fins el darrer corondell del peu de pàgina (veta corporativa)
+   NOcomponem  %% NO el componem?
+   {  %% passen per aquí:
+%#%12bis0%
+    %% els segons i tercers productes que no hi caben
+    %% els productes que ocupin més d'1 pàgina! (ENCARA x EXPERIMENTAR!)
+    %% els segons i tercers productes que canviïn de nivell i hagin d'anar a la pàgina següent
+%(PASSEMxAQUI)==
+   }
+   {  %% el componem
+%%TRANGS
+    taulesLlargues
+    {  %% producte amb una taula que ocupa més d'1 pàgina
+     preveuQocupi productesXpagina 1 sub get  %% ídem si... 0 get
+     2 get dup /LesTaulesLlargues exch def  %% array de rangs de taula
+     0 exch {length add}forall  %% la suma de tots els lengths dels arrays
+     %% pop 1  %% provisional x controlar el primer rang
+     /volta'l exch def  %% voltem tantes vegades sobre el mateix producte com rangs hi hagi
+     /iRangs 0 def  %% índex pel comptador de rangs
+     /iPagTAU 0 def  %% índex de control de la pàgina/rang de taula que componem ara
+     /iColTAU 0 def  %% índex de control de la columna/rang de taula que componem ara
+     /ARAiRANGcol 0 def  %% índex de línia inicial del rang de taula que ens cal extraure
+     %% gatells d'activació d'elements del producte
+     /FEM_4textos true def
+     /FEM_de25Aa25J2 true def
+     /FEM_imatgeProducte true def
+     /FEM_peu true def
+     /FEMtaula4+enlla false def
+     /femNivells2i+ true def
+     /FEM_capNomFamiliaERP true def
+    }
+    {  %% tractament normal de les taules (caben segur dins una pàgina)
+     /volta'l 1 def  %% voltem una sola vegada sobre el mateix producte
+     %% gatells d'activació d'elements del producte
+     /FEM_4textos true def
+     /FEM_de25Aa25J2 true def
+     /FEM_imatgeProducte true def
+     /FEM_peu false def
+     /FEMtaula4+enlla false def
+     /FEM_capNomFamiliaERP true def
+    }ifelse
+
+%%TRANGS
+    volta'l  %% voltem sobre el mateix producte com rangs hi hagi
+    {  %% repeat
+%#%12bis1%
+     %% executem els gatells /femNivell1 i /femNivells2i+ ?
+     %% el tac de primer nivell només es compon 1 cop per pàgina o no es compon quan hi ha 2 rangs de taules
+%%TRANGS
+     taulesLlargues
+     {
+      LesTaulesLlargues iPagTAU get length 1 eq
+      {  %% evitem que a les taules llargues amb i amb 1 sol rang a la pàgina dsaparegui el tac de nivell 1
+       /femNivell1 true def
+      }if
+     }if
+
+%%BLINDEM PEL TRANSLATE DRETA/ESQUERRA?
+     femNivell1
+     {  %% tac de color lateral de primer nivell
+      %% hi manca el control de pàgina dreta/esquerra per quan fem el paginat per enquadernar!
+%(FEMtac1erNivell)==
+      (OFFcapNivell1.ps) (r) file cvx exec
+     }if
+
+     %% la veta de nivells secundaris es compon 1 cop per producte o no es compon quan hi ha 2 rangs de taules
+     femNivells2i+
+     {  %% ara pintem els nivells secundaris sobre el NomFamilia, en una sola línia dins una banda de color
+      4ArtBox 0 get 0 get pinca add  %% /araX
+      gatellsDgalerades /araCapOFFcap get altN1 add  %% /araY
+%(FEMvetaNivellsSecundaris)==
+      (OFFcapNivells2i+.ps) (r) file cvx exec
+     }if
+
+%#%13%
+     %% componem /NomFamilia i /codiERP, 1 cop per producte
+     %% hem d'extraure de l'array general el producte que ara toca i d'aquest les dades de categoria i recursos del producte
+%{
+%%TRANGS
+     %% evitem doblar el codi ERP i el NomFamilia dins la mateixa pàgina quan hi ha dos rangs de taules
+     FEM_capNomFamiliaERP
+     {
+      aCategoriesXproducte iAvista get
+      dup length 1 sub get dup /aRecursos exch def  %% i desem el paquet de recursos
+      %% executem el .json que ja hem passat a .jsonps per deixar a l'stack el seu diccionari
+      1 get (r) file cvx exec
+      %% hem de capturar codiERP i NomFamilia per a cada producte
+%%(1294) codiERP eq {{== ==}forall(si?)== quit}if
+      dup /codiERP get /codiERP exch def
+
+%% per poder filtrar, si cal, determinades coses doncs a cada volta de loop es neteja?
+%% gatellsDgalerades /codiERP codiERP cvi put
+
+      dup /NomFamilia get /NomFamilia exch def
+      /jsonPSout exch def  %% desem .jsonps com a diccionari
+      4ArtBox 0 get 0 get pinca add  %% /XnomFamilia
+      gatellsDgalerades /araCapOFFcap get  %% /YnomFamilia
+      pinca corondell add  %% /XcodiERP
+      gatellsDgalerades /araCapOFFcap get altN1 add  %% /YcodiERP
+%}stopped {(SI SI peta peta!)pstack quit}if
+      (OFFcapNomFamiliaERP.ps) (r) file cvx exec
+     }if
+%%(FEMNomFamiliaCodiERP)pstack quit
+%#%14%
+     %% componem el logo o el nom del fabricant, 1 cop per producte, tret que es repeteixi del producte anterior
+     %% abans que res filtrem si duu nom del fabricant, doncs si la cadena és buida n'haurem d'informar com a ERROR o AVIS
+     aRecursos 0 get dup () eq  %% avisarem d'un error, ara sense aturar-nos...
+     {  %% ...si la cadena és buida doncs l'entrada "marca" al caregorie.json hauria de dur sempre el nom del fabricant
+      /textMarcaFabricant exch def  %% malgrat sigui buit, desem el nom del fabricant
+      (\n\nERROR: el producte... )print flush codiERP 6 string cvs print flush ( ...no duu el nom del fabricant\n\n)print flush
+     }
+     {
+      /textMarcaFabricant exch def  %% desem el nom del fabricant per si no hi ha el .jpg del logo
+     }ifelse
+     %% posem un filtre de manera que només posarem un logo cada vegada si aquest es repeteix
+     productesXpagina 1 eq
+     {  %% si és el primer de la pàgina el posem i desem per comparar
+      textMarcaFabricant /mateixFabricant exch def
+      /femMarca true def
+     }
+     {
+      productesXpagina 2 eq
+      {
+       textMarcaFabricant mateixFabricant eq
+       {  %% si és el segon i és igual, no el posem i no desem re
+        /femMarca false def
+       }
+       {  %% si és el segon i no és igual el posem i desem per comparar
+        textMarcaFabricant /mateixFabricant exch def
+        /femMarca true def
+       }ifelse
+      }
+      {
+       textMarcaFabricant mateixFabricant eq
+       {  %% si és el tercer i és igual, no el posem i no desem re
+        /femMarca false def
+       }
+       {  %% si és el tercer i no és igual el posem directament i no desem re
+        /femMarca true def
+       }ifelse
+      }ifelse
+     }ifelse
+%%TRANGS
+     %% evitem doblar els logos dins la mateixa pàgina quan hi ha dos rangs de taules
+     FEM_capNomFamiliaERP not
+     {
+      /femMarca false def
+     }if
+
+     %% ara desactivem, per ordre de la Simsi, el no repetir marques idèntiques dins una mateixa pàgina
+%%     femMarca
+%%     {  %% hi manca el control de pàgina dreta/esquerra per quan fem el paginat per enquadernar!
+     pinca corondell add  %% /araX
+     gatellsDgalerades /araCapOFFcap get  %% /araY
+     (OFFcapFabricant.ps) (r) file cvx exec
+%%     }if
+
+%% per extraure les dades correctes de qualsevol de les arrays /preveuQocupi o /aYbboxProductes corresponents al producte
+%% que estem maquetant, l'índex adient és... productesXpagina 1 sub
+
+%#%15%
+     %% aquí ja posariem la taula?
+%true{  %% provisional?
+     %% de com capturar el .dat del producte actual i desar-ne l'array de dades que necessita OFFtaula4.ps
+     %% això ho podriem optimitzar doncs aquesta crida ja l'hem feta més amunt
+     aCategoriesXproducte iAvista get dup length 1 sub get 2 get (r)file cvx exec /aDAT exch def
+
+%%TRANGS
+     taulesLlargues
+     {  %% producte amb una taula que ocupa més d'1 pàgina
+      %% extraiem el rang de fileres del tram de taula que componem ara repicant adaptat un nou array del .dat
+      aDAT 0 get /RECtaula exch def  %% diccionari de recursos genèrics de la taula
+      aDAT dup length 1 sub get /RECfiles exch def  %% diccionari de recursos genèrics de les files
+      aDAT length 2 sub /Nfiles exch def  %% nombre total de files (servirà?)
+      aDAT 1 Nfiles getinterval /aTOTESlesFiles exch def  %% paquet amb els arrays de totes les files
+      %% extraiem el rang de fileres del tros de taula que componem ara segons /LesTaulesLlargues
+      aTOTESlesFiles ARAiRANGcol LesTaulesLlargues iPagTAU get iColTAU get dup /Rseguent exch def getinterval
+      dup length dup 1 add /araVA exch def 2 add array dup
+      0 RECtaula put  %% reposicionem el diccionari de recursos de taula al nou extret
+      dup araVA RECfiles put  %% reposiscionem el diccionari de recursos de files al nou extret
+      dup 1 4 -1 roll putinterval /aDAT exch def  %% redesem l'extracte
+      %% redefinim l'índex d'inici del rang següent
+      ARAiRANGcol Rseguent add /ARAiRANGcol exch def
+     }if
+
+     %gsave 1 0 0 setrgbcolor dup araCapOFFcap 100 100 rectfill grestore
+     preveuQocupi productesXpagina 1 sub get 1 get /linOlin2 exch def  %% tipus de taula del producte actual
+     %% per sota, el valor Y màxim de la taula serà un 3% de l'Y del TrimBox més la pinça més el corondell
+     %%yTbox 3 mul 100 div pinca add corondell add
+     save
+     %% situem l'orígen primigeni de la taula a la coordenada de dalt a l'esquerra
+     taulesLlargues
+     {  %% producte amb una taula que ocupa més d'1 pàgina
+      FEMtaula4+enlla
+      {  %% /XniciTaula quasi al centre del TrimBox
+       xTbox corondell 2 mul sub 2 div pinca add corondell add
+       corondell 3 div add  %% enretirem el segon rang de taula per tal hi hagi un espai en blanc
+      }
+      {
+       pinca corondell add  %% /XniciTaula normal
+      }ifelse
+     }
+     {
+      pinca corondell add  %% /XniciTaula
+     }ifelse
+
+     gatellsDgalerades /araCapOFFcap get  %% /YniciTaula
+     %%(/Users/femfum/empremt/empremt4/OFFtaula4.ps)
+     (OFFtaula4.ps) (r) file cvx exec
+     restore
+%}if  %% del true provisional?
+
+%%gsave 1 0 0 setrgbcolor pinca corondell add gatellsDgalerades /quedaTaula get 100 100 rectfill grestore
+%%quit
+
+%#%16%
+     %% aqui ja posariem els 4 blocs de text?
+     %% true
+     FEM_4textos
+     {  %% no cal l'anellat save/restore doncs ja el duu a dins
+      %% (/Users/femfum/empremt/empremt4/OFF4textos.ps)
+      (OFF4textos.ps) (r) file cvx exec
+     }if
+
+%% ON SOM ARA?
+%% som al 0,0 del Mbox
+
+%% Nou bloc OFFde25Aa25J2.ps extret d'OFFtaula2.ps
+%% pintem les imatges de les icones i/o el text de característiques 
+%% la col·locació de les icones la contemplem inicialment com una continuació del text /4possibles, sigui a continuació mateix
+%% de les dues columnes o sigui també i/o sota la taula, llavors cal tenir en compte que tots aquests amidaments són en relació
+%% al punt 0,0 del MediaBox, i la taula i els quatre textos possibles ja s'han d'haver executat (%#%15% i %#%16%)
+
+%% avaluem els espais possibles per situar icones, text i imatge de producte fent:
+%25A% dades inicials de posicionament de la doble columna de text /4possibles
+%25B% definim iCarac i /tCarac per ponderar la quantitat d'icones/text que haurem de col·locar i fer una previsió d'ocupació
+%% aquestes dues variables s'usen a %25i% i a %25J%
+%25C% som a la primera o a la segona columna? via /somAlaSegona
+%25D% quin espai en blanc tenim entre la primera columna i la segona? via /graoColumnes
+%25E% quin espai en blanc tenim entre el final de la taula i la columna més llarga? via /graoTaula
+%% que duu la diferència entre /quedaTaula i /Yfi1col o /quedaTaula i /araYicona
+%25F% comparem les dues dades anteriors, %25D% i %25E% per saber en quina hi ha més espai, via /mesEspaiAtaula
+%25G% valorem la dimensió de l'espai buit entre columnes via /iconesXgraoColumnes i aquestes i la taula via /iconesXgraoTaula
+%25H% coordenades /araXicona i /araYicona on començar a compondre les icones i l'índex de comportaments /iOnVanLesIcones
+%% atenció que aquí activem els primers translates
+%25i% segona avaluació dels índex de comportaments /iOnVanLesIcones per veure si cal fer-ne de nous o redefinir-los
+%25J% avaluem si fem (existeixen?) les icones i text de característiques definint els gatells /FEMdesc i /FEMicon
+%25J1% activem el gatell i algorismes de /FEMicon per fer les icones de característiques
+%25J2% activem el gatell i algorismes de /FEMdesc per fer els textos de característiques
+%% agrupem totes les característiques de text (string /icon buida), així com també agrupem les icones (string /icon amb el .jpg)
+%% controlem l'escriptura de dades personalitzades dins les icones via paràmetre /desc diferent de (Sí)
+%% si les icones van sota la taula, les justifiquem a la dreta
+%% sabent si duu foto o no, influeix en re? (si, si els textCarac van sota les columnes!)
+
+     %% avaluem l'espai disponible entre textos i taula, i pintem les imatges de les icones i/o el text de característiques 
+     %% true
+%{
+     FEM_de25Aa25J2
+     {
+      (OFFde25Aa25J2.ps) (r) file cvx exec
+     }if
+%}stopped
+%{
+% codiERP(ccccc!)pstack quit
+%}if
+
+     %% primer rectangle gris de simulació de la taca de maquetació
+     false
+     {
+%%PrevisioTeorica
+      (\nFEMrectangleGris... )print flush codiERP print flush
+      ( ... )print flush iAvista 4 string cvs print flush (\n)print flush
+      gsave
+%#%17%
+      %% fem el rectangle transparent
+      /Multiply .setblendmode 1 .setopacityalpha
+      .8 .8 .8 setrgbcolor
+      aYbboxProductes %iAvista
+      productesXpagina 1 sub  %% l'ordre de l'array és el del producte per pàgina actual!
+      get
+      %% pintem amb gris el bbox provisional dels continguts del producte que van sota el cap
+      dup gatellsDgalerades /araCapOFFcap get exch sub
+      %dup /ficarY exch def  %% la posició Y del bbox per si ens cal rectificar si pot expandir-se
+      pinca corondell add  %% aquí hi ha la posició X del bbox i sempre és fixa!
+      exch 3 -1 roll XbboxProducte exch  %% aquí hi ha l'alt Y del bbox i ens la que ens cal rectificar si pot expandir-se
+      rectfill 
+      grestore
+     }if
+
+%%TRANGS
+     taulesLlargues
+     {  %% producte amb una taula que ocupa més d'1 pàgina
+      yTbox 3 mul 100 div pinca add corondell add /ficarY exch def  %% la posició del peu de pàgina és sempre fixa
+     }
+     {
+      gatellsDgalerades /araCapOFFcap get
+      aYbboxProductes
+      productesXpagina 1 sub get  %%  del producte per pàgina actual!
+      sub /ficarY exch def  %% la posició Y del bbox pel test de taca gris, però també l'orígen de la imatge del producte
+     }ifelse
+
+%#%18%
+     %% detectem si és el darrer producte just abans d'un canvi de primer nivell (doncs després canviarem sempre de pàgina)
+     iAvista 1 add maxLoop eq  %% tret que estiguem al final de la feina
+     {
+      /darrerDelSeuPrimerNivell true def  %% gatell per detectar el darrer producte dins del mateix primer nivell
+     }
+     {
+      aCategoriesXproducte iAvista get 0 get
+      aCategoriesXproducte iAvista 1 add get 0 get
+      eq
+      {
+       /darrerDelSeuPrimerNivell false def
+      }
+      {
+       /darrerDelSeuPrimerNivell true def  %% gatell per detectar el darrer producte dins del mateix primer nivell
+      }ifelse
+     }ifelse
+
+%% ve de %25K0
+     FEM_imatgeProducte
+     {
+      (OFFimatgeProducte.ps) (r) file cvx exec
+     }if
+
+%#%19%
+%% actualitzem el punt inicial /araCapOFFcap d'on han d'anar posats els valors del cap de producte següent?
+
+%% traslladat a OFFimatgeProducte.ps
+%% aquest és el darrer producte maquetat a la pàgina?
+%%     /darrerProducteMaquetat true def  %% gatell per detectar el darrer producte maquetat a la pàgina
+%%TRANGS
+%%     taulesLlargues not
+%%     {
+%%      productesXpagina MAXproductesXpagina ne
+%%      {  %% marxariem d'índex!
+%%       aYbboxProductes productesXpagina get
+%%       null ne  %% només si el producte següent es compon a la pàgina, té sentit refer /araCapOFFcap
+
+darrerProducteMaquetat not
+       {  %% només si NO és el darrer producte maquetat dins la pàgina
+        %% abandonem valorar /saltP amb el valor possiblement previst tal i com pot mostrar %%PrevisioTeorica
+        %% aYbboxProductes productesXpagina 1 sub get  %% el valor del producte actual
+        %% corondell add margeNartBox add  %% sumem sintàcticament conservant l'ordre de successió de dalt a baix dins la pàgina
+%% gatell del producte que ens diu si duu foto, ídem OFFimatgeProducte.ps
+preveuQocupi productesXpagina 1 sub get 0 get
+null eq
+{
+ %%/DUUfoto
+ /duuFoto false def
+}
+{
+ %%/DUUfoto
+ /duuFoto true def
+}ifelse 
+        %% ...i anem a donar-li el valor real del producte un cop compost
+        gatellsDgalerades /darreraYtexticones known
+        {  %% si duu icones i/o text de caracterísitiques...
+         %% comparem les dues Y, la més llarga de les columnes de text, si hi són, amb la del final de text/icones...
+         gatellsDgalerades /YcuaText known
+         {  %% comparem la Y de la cua del final dels 4 textos...
+          gatellsDgalerades /YcuaText get
+          %% ...no fos que la Y final de la primera columna fos més llarga?
+          gatellsDgalerades /Yfi1col known
+          {
+           gatellsDgalerades /Yfi1col get
+           2 copy lt
+           {
+            pop
+           }
+           {
+            exch pop
+           }ifelse
+          }if
+         }
+         {
+          gatellsDgalerades /YniciTaula get
+         }ifelse
+         gatellsDgalerades /darreraYtexticones get
+         abs  %% la Y del final de text/icones
+         2 copy lt
+         {
+          pop
+         }
+         {
+          exch pop
+         }ifelse
+
+         %% ... no fos que la Y del final de taula fos més petita
+         gatellsDgalerades /quedaTaula known
+         {
+          gatellsDgalerades /quedaTaula get
+          2 copy lt
+          {
+           pop
+          }
+          {
+           exch pop
+          }ifelse
+         }if
+
+         gatellsDgalerades /YfinalFoto known
+         {  %% aquesta darrera comparació només la fem si duu foto prèviament avaluada
+          %% la Y de posicionament de la imatge del producte podria estar més baixa que cap altre dels paràmetres comparats
+          gatellsDgalerades /YfinalFoto get
+          ficarY
+          2 copy lt
+          {
+           pop
+          }
+          {
+           exch pop
+          }ifelse
+         }
+         {
+productesXpagina 1 ne
+{  %% només si no és el primer producte?
+          duuFoto
+          {  %% si duu foto, sense avaluar, li reservarem directament el valor de margeNartBox
+           %% que és el valor mínim establert ara a per una imatge de producte (una novena part de l'yTbox)
+           margeNartBox sub
+          }if
+}if
+         }ifelse
+        }
+        {  %% no duu ni icones ni text de característiques
+         gatellsDgalerades /YcuaText known
+         {  %% comparem la Y de la cua del final dels 4 textos...
+          gatellsDgalerades /YcuaText get
+          %% ...no fos que la Y final de la primera columna fos més llarga?
+          gatellsDgalerades /Yfi1col known
+          {
+           gatellsDgalerades /Yfi1col get
+           2 copy lt
+           {
+            pop
+           }
+           {
+            exch pop
+           }ifelse
+          }if
+         }
+         {
+          gatellsDgalerades /YniciTaula get
+         }ifelse
+         %% ... no fos que la Y del final de taula fos més petita
+         gatellsDgalerades /quedaTaula known
+         {
+          gatellsDgalerades /quedaTaula get
+          2 copy lt
+          {
+           pop
+          }
+          {
+           exch pop
+          }ifelse
+         }if
+
+         gatellsDgalerades /YfinalFoto known
+%{== ==}forall(////)== quit
+         {  %% aquesta darrera comparació només la fem si duu la foto prèviament avaluada
+          %% la Y de posicionament de la imatge del producte podria estar més baixa que cap altre dels paràmetres comparats
+          gatellsDgalerades /YfinalFoto get
+          2 copy lt
+          {
+           pop
+          }
+          {
+           exch pop
+          }ifelse
+         }
+         {
+productesXpagina 1 ne
+{  %% només si no és el primer producte?
+          duuFoto
+          {  %% si duu foto, sense avaluar, li reservarem directament el valor de margeNartBox
+           %% que és el valor mínim establert ara a per una imatge de producte (una novena part de l'yTbox)
+           margeNartBox sub
+          }if
+}if
+         }ifelse
+        }ifelse  %% duu icones i/o text?
+%dup ==
+        yMbox exch saltPacumulat productesXpagina 1 sub get add sub
+        %% desant el /saltP real i el seu nou valor acumulat a /saltPacumulat per poder situar possibles tercers productes
+        dup saltPacumulat dup length array copy dup 3 -1 roll productesXpagina exch put /saltPacumulat exch def
+        /saltP exch def  %% ara és el valor real!
+
+gatellsDgalerades /araCapOFFcap get
+        saltP sub %dup /araCapOFFcap exch def  %% orígen de la base de la propera capçalera del proper producte
+gatellsDgalerades exch /araCapOFFcap exch put
+
+        /darrerProducteMaquetat false def
+       }if  %% només si NO és el darrer producte maquetat dins la pàgina
+%%      }if
+%%     }if
+
+%#%20%
+     %% ampliem l'espai Y disponible al darrer producte maquetat?
+     %% (més endavant el prodiem repartir entre tots els de la pàgina?)
+     darrerProducteMaquetat  %% aquest és el darrer producte que maquetarem dins la pàgina actual?
+     darrerDelSeuPrimerNivell  %% es aquest el darrer producte dins del mateix primer nivell?
+     or
+     {
+      %% cal saber si al darrer producte de la pàgina li podem ampliar l'espai maquetable
+      ficarY yTbox 3 mul 100 div pinca add corondell add sub dup 0 gt
+      {  %% SI! pintem ara un rectangle adjunt que acaba d'aprofitar l'espai Y disponible
+       /ampliemYdimatge exch def  %% valor que afegirem a la Y disponible del valor corresponent de /aYbboxProductes 
+       false
+       {  %% segon rectangle gris (més clar) d'ampliació de la taca de maquetació
+%%PrevisioTeorica
+        gsave
+        %% fem el rectangle transparent
+        /Multiply .setblendmode 1 .setopacityalpha
+        .9 .9 .9 setrgbcolor  %% +clar que el normal
+        ampliemYdimatge
+        pinca corondell add  %% aquí hi ha la posició X del bbox i sempre és fixa!
+        exch yTbox 3 mul 100 div pinca add corondell add exch  %% Y a lloc
+        XbboxProducte exch
+        rectfill
+        grestore
+       }if
+       %% la posició Y del bbox pel test de taca gris, però també l'orígen de la imatge del producte
+       yTbox 3 mul 100 div pinca add corondell add /ficarY exch def  %% la posició del peu de pàgina és sempre fixa
+      }
+      {
+       /ampliemYdimatge 0 def  %% no afegirem re a la Y disponible
+       pop
+      }ifelse
+     }
+     {
+      /ampliemYdimatge 0 def  %% no afegirem re a la Y disponible
+     }ifelse
+
+%25K0% posem el detector de si el producte duu foto aquí per estalviar-nos l'anàlisi de 25K
+%25K% decidim si situarem la foto sota la taula o sota les columnes via /somAponent
+%% ho hem mogut x sobre de %#%19
+%     FEM_imatgeProducte
+%     {
+%      (OFFimatgeProducte.ps) (r) file cvx exec
+%     }if
+%%TRANGS
+     taulesLlargues
+     {  %% producte amb una taula que ocupa més d'1 pàgina
+      %% recàlcul del índex per al proper rang de taula
+      LesTaulesLlargues  %% de l'array de rangs de taula
+      iPagTAU get  %% n'extraiem la pàgina actual
+      length iColTAU 1 add eq
+      {  %% som al darrer dels rangs de taula d'aquesta plana
+       iPagTAU 1 add /iPagTAU exch def  %% podem fer una nova pàgina
+       /iColTAU 0 def  %% redefiim l'índex de
+       /FEMtaula4+enlla false def
+       /FEM_peu true def
+       /femNivells2i+ true def
+       /FEM_capNomFamiliaERP true def
+      }
+      {  %% encara ens manca un rang de taula en aquesta mateixa plana
+       iColTAU 0 eq
+       {  %% si encara som al primer rang
+        /FEMtaula4+enlla true def
+        iColTAU 1 add /iColTAU exch def
+        /FEM_peu false def
+        /femNivells2i+ false def
+        /FEM_capNomFamiliaERP false def
+       }if
+      }ifelse
+%%TRANGS
+      /FEM_4textos false def
+      /FEM_de25Aa25J2 false def
+      /FEM_imatgeProducte false def
+      /femNivell1 false def
+
+      iRangs 1 add dup volta'l eq
+      {  %% gatells per activar-los un cop haguem exhaurit tots els rangs de pàgina
+       pop
+       %(I0)==
+       /FEM_peu false def
+       /NOcomponem true def
+       % /taulesLlargues false def
+       % /femNivell1 true def
+       % /FEMtaula4+enlla false def
+      }
+      {
+       /iRangs exch def
+      }ifelse
+
+%%TRANGS
+      FEM_peu
+      {
+       /nUmerem true def
+       (OFFpeu.ps) (r) file cvx exec
+       %PLT1% desactivades les funcions del PageLabel doncs ara les va el 6Q al final de totes les manipulacions, el Page Label
+       %% puntual ens obligaria a etiquetar totes les pàgines, doncs del contrari la resta sortiria la casella en blanc
+       %% cal confirmar si aquesta tècnica sap mantenir les PageLabels malgrat s'alteri l'ordre de les pàgines a posteriori
+       %% [ /Label iPlanes 1 add 4 string cvs /PAGELABEL pdfmark  %% numeració in situ
+       showpage  %% i impressió de la pàgina!
+       iPlanes 1 add /iPlanes exch def  %% comptador de pàgines maquetades
+
+       %% les taules llargues són l'excepció on hem d'activar el gatell alternatiu d'enquadernació dreta/esquerra
+       paginatDretaEsquerra
+       {  %% s'activa l'enquadernat dreta/esquerra
+        /enquaDerna enquaDerna not def  %% aquest valor canvia alternativament a cada pàgina
+       }if
+
+       %% setup d'inici de plana on definim: format de pàgina, Bbox de treball, les creus, l'espai de color i la sobreimpressió
+       P7upCap
+%(I1)==
+      }if
+     }if
+    }repeat
+    %% deixem de nou els gatells clau al seu estat normal
+    taulesLlargues
+    {  %% producte amb una taula que ocupa més d'1 pàgina
+     /FEM_peu false def
+     /taulesLlargues false def
+     /femNivell1 true def
+     /FEMtaula4+enlla false def
+     codiERP ==
+     (AVÍS: taula maquetable dins... )print flush FAtotYtaula
+     %% pot detectar-se una taula com a llarga inicialment i després no ser-ho?
+     dup type /arraytype eq {length}{pop 1}ifelse  %% si és així això evita un error
+     2 string cvs print flush ( ...planes\n)print flush
+    }if
+
+%#%21%
+    %% només sumem l'índex per al producte següent si hem compost l'anterior
+    iAvista 1 add /iAvista exch def  %% índex de producte dins
+%%L'if de si componem el producte
+   }ifelse
+
+%#%22%
+   iAvista maxLoop eq  %% EP!!
+   {  %% fi de la feina
+%%(FEMpeusDpaginaFinalFeina)==
+    %% aquí posem el peu corporatiu + numeració de pàgina
+    {
+     %% hi manca el control de pàgina dreta/esquerra per quan fem el paginat per enquadernar!
+     /nUmerem true def
+     (OFFpeu.ps) (r) file cvx exec
+    }stopped
+    {
+     (\n\nERROR: ...al generar el peu de pagina OFFpeu.ps\n\n)print flush quit
+    }if
+    %PLT1% desactivades les funcions del PageLabel doncs ara les va el 6Q al final de totes les manipulacions
+    %% el Page Label puntual ens obligaria a etiquetar totes les pàgines, doncs del contrari la resta sortiria la casella en
+    %% blanc cal confirmar si aquesta tècnica sap mantenir les PageLabels malgrat s'alteri l'ordre de les pàgines a posteriori
+    %% [ /Label iPlanes 1 add 4 string cvs /PAGELABEL pdfmark  %% numeració in situ
+    showpage  %% i impressió de la pàgina!
+    /soRtim true def  %% sortim de la maquetació de pàgina
+%(I2)==
+    exit  %% sortim del loop 2
+   }if
+
+%#%23%
+   %% aquí sortirem o pel màxim de productes per pàgina, com ara
+   %% o per exhaurir l'espai vertical mínim maquetable en funció de la previsió feta via /NOcomponem
+   productesXpagina MAXproductesXpagina eq
+   NOcomponem or   
+   {  %% fi de la pàgina
+%(FEMpeusDpaginaFIdPagina)==
+    %% aquí posem el peu corporatiu + numeració de pàgina
+    {
+     %% hi manca el control de pàgina dreta/esquerra per quan fem el paginat per enquadernar!
+     /nUmerem true def
+     (OFFpeu.ps) (r) file cvx exec
+    }stopped
+    {
+     (\n\nERROR: ...al generar el peu de pagina OFFpeu.ps\n\n)print flush quit
+    }if
+    %PLT1% desactivades les funcions del PageLabel doncs ara les va el 6Q al final de totes les manipulacions
+    %% el Page Label puntual ens obligaria a etiquetar totes les pàgines, doncs del contrari la resta sortiria la casella en
+    %% blanc cal confirmar si aquesta tècnica sap mantenir les PageLabels malgrat s'alteri l'ordre de les pàgines a posteriori
+    %% [ /Label iPlanes 1 add 4 string cvs /PAGELABEL pdfmark  %% numeració in situ
+    showpage  %% i impressió de la pàgina!
+    /soRtim true def  %% sortim de la maquetació de pàgina
+%(I3)==
+    exit  %% sortim del loop 2
+   }if
+
+%#%24%
+  }loop  %% 2 de maquetació producte a producte
+
+%aYbboxProductes soRtim (j)pstack quit
+
+  soRtim{exit}if  %% sortim de la maquetació de la pàgina actual?
+
+%#%25%
+ }loop  %% 1 de maquetació de productes dins 1 pàgina
+
+ paginatDretaEsquerra
+ {  %% s'activa l'enquadernat dreta/esquerra
+  /enquaDerna enquaDerna not def  %% aquest valor canvia alternativament a cada pàgina
+ }if
+
+%#%25bis%
+ iPlanes 1 add /iPlanes exch def  %% comptador de pàgines maquetades
+ %% endrecem les dades per crear els índex per categories (array global /TOTaBookmarks) i marques (diccionari global /marques)
+ %% cal aclarir quina estructura necessitem per l'índex
+ aCategoriesXproducte DARRERi iAvista DARRERi sub getinterval  %% extrau tots els productes maquetats a la pàgina actual
+ {  %% forall per escriure les dades producte a producte a l'array global /TOTaBookmarks i /marques 
+  dup length 1 sub 1 index 1 index 0 exch getinterval
+  %% és fonamental fer una còpia blindada de les strings quan vagin dins una array que es desi com a global!
+  % true setglobal  %% ho necessitem quan l'objecte a desar dins el diccionari global és un composite (array diccionari string)
+  /xCategoritzar exch  %[ exch {dup length string copy}forall ]
+  def
+  % false setglobal
+  0 1 xCategoritzar length 1 sub
+  {  %% for per categoritzar i saber quan hi deixem null, per evitar repeticions, o desem el canvi de categoria que toqui
+   /araVa exch def
+   xCategoritzar araVa get
+   %  comparaBookmark araVa get eq
+   aBookmark araVa get eq
+   {  %% hi desem null, doncs no hem canviat de categoria
+    %true setglobal  %% ho necessitem quan l'objecte a desar dins el diccionari global és un composite (array o diccionari)
+    aBookmark araVa null put
+    %false setglobal
+   }
+   {  %% hi desem la categoria, doncs ha canviat
+    %true setglobal  %% ho necessitem quan l'objecte a desar dins el diccionari global és un composite (array diccionari string)
+    aBookmark araVa xCategoritzar araVa get put
+    %false setglobal
+   }ifelse
+  }for
+
+  0 1 MAXiCategoria xCategoritzar length sub
+  {  %% for per repicar els nulls per la cua per tal de purgar les reculades de categoria
+   /araVa exch def
+   aBookmark MAXiCategoria araVa sub null put
+  }for
+  get  %% extraiem l'array d'on sabrem la marca i el /NomFamilia
+  dup 0 get  %% extraiem la marca
+  exch 1 get (r) file cvx exec
+%%ND
+  dup /id_product get cvn /araND exch def  %% literal amb el que farem la Named Destination
+  /NomFamilia get dup  %% això
+  %% afegim el NomFamilia i el núm de pàgina a l'array de producte per l'índex
+
+  aBookmark exch MAXiCategoria exch put
+  {  %% stopped
+   aBookmark MAXiCategoria 1 add iPlanes put
+  }stopped
+  {
+   (<<<<<)pstack quit
+  }if
+
+  true setglobal  %% ho necessitem quan l'objecte a desar dins el diccionari global és un composite (array diccionari string)
+  TOTaBookmarks length dup /araVa exch def 1 add array dup 0 TOTaBookmarks putinterval
+  dup araVa aBookmark
+  [
+   exch
+   {
+    dup type /stringtype eq
+    {  %% hem de blindar l'string quan va dins d'una array global
+     dup length string copy
+    }
+%%ND
+    {  %% just el que no és string és el null o numèric de pàgina que ara fiquem dins una array amb el literal del /araND
+     dup null ne  %% tret dels nulls
+     {
+      [ exch
+       %% generem la Named Destination de manera que podem crear-la fora del context de pàgina sempre que la sabem
+       [ /Page 2 index  %% aquesta clau cal quan no la generem dins el context de plana
+        /Dest araND  %% nom únic
+        /View [/Fit]
+       /DEST pdfmark
+       araND
+      ]
+     }if
+    }ifelse
+   }forall
+  ]
+  put
+  /TOTaBookmarks exch def
+  false setglobal
+
+  %% desem el /NomFamilia i núm de pàgina dins els diccionari de la marca, si hi és, i si no el creem
+  gatellsDgalerades /marques get 2 index known
+  {  %% el desem
+   true setglobal  %% ho necessitem quan l'objecte a desar dins el diccionari global és un composite (array diccionari string)
+   gatellsDgalerades /marques get 2 index get dup 3 -1 roll
+%%ND
+   [ iPlanes araND ]
+   put
+   gatellsDgalerades /marques get 3 1 roll put
+   false setglobal
+   %(oo!oo)pstack quit
+  }
+  {  %% el creem i desem
+   true setglobal  %% ho necessitem quan l'objecte a desar dins el diccionari global és un composite (array diccionari string)
+   gatellsDgalerades /marques get dup 4 -1 roll 1 dict dup 6 -1 roll dup length string copy
+%%ND
+   [ iPlanes araND ]
+   put put
+   gatellsDgalerades exch /marques exch put
+   false setglobal
+  }ifelse
+
+  %% clonem el producte anterior per tal que la comparació de categories sigui fiable
+  xCategoritzar dup length array copy dup length dup
+  MAXiCategoria 2 add exch sub add  %% cal ajustar sempre la diferència amb la mida màxima de /aBookmark primigènia
+  array dup 3 -1 roll 0 exch putinterval /aBookmark exch def
+
+ }forall  %% per escriure les dades producte a producte a /TOTaBookmarks i /marques
+ %TOTaBookmarks dup length 1 sub get
+ %(ooJoo)pstack quit
+ %/comparaBookmark exch def
+
+ /DARRERi iAvista def
+
+%#%26%
+ iAvista maxLoop eq
+ {  %% fi de la feina
+%(FEMfiFIdFeina)==
+  %% posem el docinfo, i més endavant: metadades, claus privades i preferències d'obertura si calgués
+  [
+  /Author (POLYNORMA www.polynorma.com)
+  %%/CreationDate string
+  /Creator (EMPREMT PSApplet www.femfum.com)
+  %%/Producer string
+  /Title (Catálogo Polynorma | Julio 2013)
+  /Subject (Al servicio de los profesionales de la impresión digital, la rotulación y la serigrafía)
+  /Keywords (Polynorma, impresión digital, rotulación, serigrafia, vinilos, tintas, plotters, laminadoras)
+  %%/ModDate string
+  /DOCINFO pdfmark
+  exit  %% sortim del loop 0
+ }if  %% fi de la feina
+
+%#%27%
+}loop  %% 0 pagina tots els productes en base a uns comportaments i previsions d'espai
+
+%#%28%
+(\n\n>>> maquetats... )print flush iAvista 4 string cvs print flush ( ...productes, en... )print flush
+iPlanes 4 string cvs print flush ( ...pagines)print flush
+
+%% array de xifres romanes de l'1 al 20 en majúscules
+%%[
+%% (0)(I)(II)(III)(IV)(V)(VI)(VII)(VIII)(IX)(X)(XI)(XII)(XIII)(XIV)(XV)(XVI)(XVII)(XVIII)(XIX)(XX)
+%%] /Romanes exch def
+
+%% aquí desactivem explícitament el possible enquadernat dreta/esquerra, doncs /P7upCap n'és sensible
+/paginatDretaEsquerra false def
+
+%% fem l'índex general?
+FEMindexGeneral
+{
+ PATHindexgeneral (w) file /indexGeneral.dat exch def
+ iPlanes /iFEMindexGeneral exch def
+ %% escrivim al .dat la pàgina d'inici per poder moure després l'índex general automàticament via iText
+ indexGeneral.dat dup iPlanes 1 add 4 string cvs writestring
+ (\015\012) writestring  %% 2 retorn de carro (CR) + salt de linia (LF)
+
+ (\n\n>>> fent l'índex general... )print flush
+ %% TOTaBookmarks length ==
+ yMbox gatellsDgalerades /Ylliure get pinca add sub  %% llindar més baix possible situat a sobre la veta corporativa
+ %%4ArtBox 0 get 1 get pinca add  %% quadrat amb el sota de l'ArtBox
+ /MAXiY exch def  %% llindar més baix de la darrera línia de text per columna
+ /mnaPonent true def  %% gatell per saber si som a la columna de ponent o llevant
+ %% generem les pàgines de l'índex
+ %% setup d'inici de plana on definim: format de pàgina, Bbox de treball, les creus, l'espai de color i la sobreimpressió
+ P7upCap
+ %% ara pintem en una sola línia dins una banda de color l'enunciat de l'índex general per pàgina
+ 4ArtBox 0 get 0 get pinca add  %% /araX
+ %% coordenada primigenia Y d'on han d'anar posats els elements gràfics del cap del 1r producte (línia N de l'ArtBox)
+ gatellsDgalerades /araCapOFFcap 4ArtBox 1 get 1 get pinca add put  %% l'inicialitzarem per cada pàgina
+ gatellsDgalerades /araCapOFFcap get altN1 add  %% /araY
+ /araY exch def  %% Y
+ /araX exch def %% X
+ CosEnunciat sMo
+ %% 2 mul  %% Simsi0913
+ sub /araCos exch def
+ %% fem la veta de color per l'enunciat de l'índex
+ .1 .1 .1 .6 setcmykcolor  %% el mateix gris que el de la portada/contra?
+ araX araY araCos MyMMx100LiniaDbase mul 100 div sub ampleXartBox araCos dup MyMMx100LiniaDbase mul 100 div add rectfill
+ %% el punt 0,0 ara és al del MediaBox
+ vN2i+ 1 get  %% vector MM per a composar el text del nivell que toca
+ (  ÍNDICE GENERAL)
+ %% hi afegim (> ) al davant
+ %% dup length 3 add string dup 3 -1 roll 3 exch putinterval dup 0 ( > ) putinterval
+ araX araY moveto
+ gsave
+ 0 0 0 0 setcmykcolor
+ false setoverprint
+ %% diccionari MM de treball
+ MyMMionari
+ %% vector pes/ample generem la nova MM
+ 3 -1 roll
+ makeblendedfont  %% l'operador magic que extrau la mena de l'MM, i cal veure si amb els nous GS cal activar l'operador
+ /Camaleonica_WA exch definefont pop
+ /tipusCasella /Camaleonica_WA def
+ tipusCasella araCos selectfont
+ show
+ true setoverprint
+
+ %% componem les línies de l'índex general
+ /araC CosEnunciat sMo 5 mul sub def
+
+%%Simsi0913
+/iFxTP 0 def  %% índex pel forall per tots els productes i tenir accés a TOTaBookmarks
+
+ 4ArtBox 1 get 1 get pinca add /araY exch def  %% inicialitzem Y pel cap de columna
+ TOTaBookmarks
+ {  %% forall per tots els productes
+  dup dup length dup /FAl exch def 1 sub get dup 0 get /araPgn exch def 1 get /araNamedDest exch def
+  dup 
+  0 FAl 2 sub getinterval /elsNivellsDcategories exch def  %% els nivells de categories
+
+  %% tintem el text amb el color de la categoria ídem al tac i veta de nivell
+  xycN1 elsNivellsDcategories 0 get dup null eq
+  {
+   pop pop
+  }
+  {
+   get 1 get /araCMYK exch def
+  }ifelse
+
+  0 1 elsNivellsDcategories length 1 sub
+  {  %% for per compondre els nivells de categoria
+   %% .1 .1 .1 .6 setcmykcolor  %% ressaltem amb fluix el color de les categories
+
+%%Simsi0913
+   dup 0 eq
+   {  %% les categories de nivell zero les fem amb un cos +gran
+    tipusCasella araCos sMo add selectfont
+   }
+   {
+    tipusCasella araCos selectfont
+   }ifelse
+
+   %% tintem el text amb el color de la categoria ídem al tac i veta de nivell
+   araCMYK aload pop setcmykcolor
+
+   dup /TAB exch def
+   elsNivellsDcategories exch get null ne
+   {
+    elsNivellsDcategories TAB get /eSCRiu exch def
+    /maxXtaula ampleXartBox corondell sub 2 div def
+    araY  %% Y actual de la línia de text a compondre
+    mnaPonent
+    {
+     4ArtBox 0 get 0 get pinca add  %% X actual de la línia de text a compondre per ponent
+    }
+    {
+     4ArtBox 0 get 0 get pinca add maxXtaula add corondell add  %% X actual de la línia de text a compondre per llevant
+    }ifelse
+    dup maxXtaula add araC 4 mul sub /maxPuntets exch def
+    TAB
+    {
+     corondell add
+    }repeat  %% X escalat lateral
+    (BanderaDreta_Cshow3.ps) (r) file cvx exec
+    currentpoint exch pop  %% atenció que aquesta Y es desa més avall!
+
+    %% desactivem el puntejat per ordre de la Simsi
+    %% aquí fem el puntejat
+    %%{  %% loop de punts encara per micro ajustar!
+    %% (.)show currentpoint pop maxPuntets ge
+    %% {
+    %%  exit
+    %% }if
+    %%}loop
+
+    %% i aquí el núm de pàgina
+    araPgn 4 string cvs dup stringwidth pop maxPuntets araC 4 mul add exch sub currentpoint exch pop moveto show
+    %% aquí podria anar-hi el link de la categoria
+    [
+     /Rect
+     [
+      araX araY araC MyMMx100LiniaDbase mul 100 div sub
+      araX maxXtaula add araY araC dup MyMMx100LiniaDbase mul 100 div add add
+     ]
+     %% fem el vincle invisible
+     /Border [0 0 0]
+     /Color [1 1 1]
+     /Dest araNamedDest
+     /View [/Fit]
+     /Subtype /Link
+    /ANN pdfmark
+   araC 3 mul sub /araY exch def  %% salt de l'interliniat per nivell
+
+   %%Simsi0913 control de vídues i orfes:
+   %% interroguem si a la següent dada canviem de categoria (o sigui que ens ve una de primer nivell)
+   TOTaBookmarks dup length iFxTP 1 add le  %% evitem l'Error: /rangecheck in --get--
+   {  %% no hauríem pas de canviar de columna/pàgina
+    pop false
+   }
+   {
+    iFxTP 1 add get 0 null ne
+    {  %% si el primer element de l'array del producte següent no és null, és que hi ha un canvi de primer nivell
+     %% i si a més som a una sola línia del final de la columna (vídua?)
+     araY araCos sMo add MAXiY add lt  %% al màxim hi afegim el valor d'1 cos
+    }if
+   }ifelse
+
+   araY MAXiY lt  %% comprovem si som al final de columna
+
+   %%Simsi0913
+   or  %% amb qualsevol de les dues activem el canvi
+
+   {
+%    (FC1!) == %pstack quit
+     mnaPonent
+     {  %% si som a ponent i hem exhaurit la Y...
+      %% inicialitzem Y al llindar més alt de la primera línia de text per columna quadrat amb l'ArtBox
+      /araY 4ArtBox 1 get 1 get pinca add def
+      mnaPonent not /mnaPonent exch def  %% canvi al gatell per saber si som a la columna de ponent o llevant
+%4ArtBox 0 get 0 get pinca add  %% X actual de la línia de text a compondre per ponent
+%/araX exch def
+      4ArtBox 0 get 0 get pinca add maxXtaula add corondell add  %% refem l'X de la línia de text a compondre cap a llevant
+      /araX exch def
+     }
+     {
+%      (CAL SORTIR DE LA PÀGINA sense sortir del for!)== % quit
+      grestore  %% cal?
+      %% hi manca el control de pàgina dreta/esquerra per quan fem el paginat per enquadernar!
+      /nUmerem false def
+      (OFFpeu.ps) (r) file cvx exec
+      %PLT1% desactivades les funcions del PageLabel doncs ara les fa el 6Q al final de totes les manipulacions
+      %% el Page Label puntual ens obligaria a etiquetar totes les pàgines, doncs del contrari la resta sortiria la casella en
+      %% blanc cal confirmar si aquesta tècnica sap mantenir les PageLabels malgrat s'alteri l'ordre de les pàgines a posteriori
+      %% [
+      %%  /Label (Índice General-) dup length dup /araVa exch def Romanes iPlanes 1 add iFEMindexGeneral sub get dup length
+      %%  3 -1 roll add string dup dup 5 -1 roll 0 exch putinterval 3 -1 roll araVa exch putinterval
+      %% /PAGELABEL pdfmark  %% numeració in situ
+      showpage  %% i impressió de la pàgina!
+      iPlanes 1 add /iPlanes exch def  %% comptador de pàgines
+      P7upCap
+      %% ara pintem en una sola línia dins una banda de color l'enunciat de l'índex general per pàgina
+      4ArtBox 0 get 0 get pinca add  %% /araX
+      gatellsDgalerades /araCapOFFcap get altN1 add  %% /araY
+      /araY exch def  %% Y
+      /araX exch def %% X
+      CosEnunciat sMo
+      %% 2 mul  %% Simsi0913
+      sub /araCos exch def
+      %% fem la veta de color per l'enunciat de l'índex
+      .1 .1 .1 .6 setcmykcolor  %% el mateix gris que el de la portada/contra?
+      araX araY araCos MyMMx100LiniaDbase mul 100 div sub ampleXartBox araCos dup MyMMx100LiniaDbase mul 100 div add rectfill
+      %% el punt 0,0 ara és al del MediaBox
+      vN2i+ 1 get  %% vector MM per a composar el text del nivell que toca
+      (  ÍNDICE GENERAL)
+      %% hi afegim (> ) al davant
+      %% dup length 3 add string dup 3 -1 roll 3 exch putinterval dup 0 ( > ) putinterval
+      araX araY moveto
+      gsave
+      0 0 0 0 setcmykcolor
+      false setoverprint
+      %% diccionari MM de treball
+      MyMMionari
+      %% vector pes/ample generem la nova MM
+      3 -1 roll
+      makeblendedfont  %% l'operador magic que extrau la mena de l'MM, i cal veure si amb els nous GS cal activar l'operador
+      /Camaleonica_WA exch definefont pop
+      /tipusCasella /Camaleonica_WA def
+      tipusCasella araCos selectfont
+      show
+      true setoverprint
+      %% componem les línies de l'índex general
+      /araC CosEnunciat sMo 5 mul sub def
+      4ArtBox 1 get 1 get pinca add /araY exch def  %% inicialitzem Y pel cap de columna
+      /mnaPonent true def
+     }ifelse
+    }if  %% de si som al final de columna
+   }if  %% categoria no null
+  }for  %% per compondre els nivells de categoria
+
+  %% condicional per compondre o no els productes a l'índex general
+  FEMproductesAlindexGeneral
+  {
+   %% ara componem el producte
+   0 0 0 1 setcmykcolor
+   FAl 2 sub get /eSCRiu exch def
+   araY  %% Y actual de la línia de text a compondre
+   mnaPonent
+   {
+    4ArtBox 0 get 0 get pinca add  %% X actual de la línia de text a compondre per ponent
+    dup/araX exch def
+   }
+   {
+    4ArtBox 0 get 0 get pinca add maxXtaula add corondell add  %% X actual de la línia de text a compondre per llevant
+    dup/araX exch def
+   }ifelse
+   dup maxXtaula add araC 4 mul sub /maxPuntets exch def
+   TAB
+   {
+    corondell add
+   }repeat  %% X escalat lateral
+   (BanderaDreta_Cshow3.ps) (r) file cvx exec
+   currentpoint exch pop  %% atenció que aquesta Y es desa més avall!
+
+   %% desactivem el puntejat per ordre de la Simsi
+   %% aquí fem el puntejat
+   %%{  %% loop de punts encara per micro ajustar!
+   %% (.)show currentpoint pop maxPuntets ge
+   %% {
+   %%  exit
+   %% }if
+   %%}loop
+
+   %% i aquí el núm de pàgina
+   araPgn 4 string cvs dup stringwidth pop maxPuntets araC 4 mul add exch sub currentpoint exch pop moveto show
+   %% aquí podria anar-hi el link de producte
+   [
+    /Rect
+    [
+     araX araY araC MyMMx100LiniaDbase mul 100 div sub
+     araX maxXtaula add araY araC dup MyMMx100LiniaDbase mul 100 div add add
+    ]
+    %% vincle invisible
+    /Border [0 0 0]
+    /Color [1 1 1]
+    /Dest araNamedDest
+    /View [/Fit]
+    /Subtype /Link
+   /ANN pdfmark
+   araC 3 mul sub /araY exch def  %% salt de l'interliniat per producte
+   araY MAXiY lt  %% comprovem si som al final de columna
+   {
+%   (FC2!) ==  %pstack quit
+    mnaPonent
+    {  %% si som a ponent i hem exhaurit la Y...
+     %% inicialitzem Y al llindar més alt de la primera línia de text per columna quadrat amb l'ArtBox
+     /araY 4ArtBox 1 get 1 get pinca add def
+     mnaPonent not /mnaPonent exch def  %% canvi al gatell per saber si som a la columna de ponent o llevant
+    }
+    {
+%    (cal sortir de la pagina SENSE SORTIR DEL FORALL!)== %quit  
+     grestore  %% cal?
+     %% hi manca el control de pàgina dreta/esquerra per quan fem el paginat per enquadernar!
+     /nUmerem false def
+     (OFFpeu.ps) (r) file cvx exec
+     %PLT1% desactivades les funcions del PageLabel doncs ara les fa el 6Q al final de totes les manipulacions
+     %% el Page Label puntual ens obligaria a etiquetar totes les pàgines, doncs del contrari la resta sortiria la casella en
+     %% blanc cal confirmar si aquesta tècnica sap mantenir les PageLabels malgrat s'alteri l'ordre de les pàgines a posteriori
+     %% [
+     %%  /Label (Índice General-) dup length dup /araVa exch def Romanes iPlanes 1 add iFEMindexGeneral sub get dup length
+     %%  3 -1 roll add string dup dup 5 -1 roll 0 exch putinterval 3 -1 roll araVa exch putinterval
+     %% /PAGELABEL pdfmark  %% numeració in situ
+     showpage  %% i impressió de la pàgina!
+     iPlanes 1 add /iPlanes exch def  %% comptador de pàgines
+     P7upCap
+     %% ara pintem en una sola línia dins una banda de color l'enunciat de l'índex general per pàgina
+     4ArtBox 0 get 0 get pinca add  %% /araX
+     gatellsDgalerades /araCapOFFcap get altN1 add  %% /araY
+     /araY exch def  %% Y
+     /araX exch def %% X
+     CosEnunciat sMo
+     %% 2 mul  %% Simsi0913
+     sub /araCos exch def
+     %% fem la veta de color per l'enunciat de l'índex
+     .1 .1 .1 .6 setcmykcolor  %% el mateix gris que el de la portada/contra?
+     araX araY araCos MyMMx100LiniaDbase mul 100 div sub ampleXartBox araCos dup MyMMx100LiniaDbase mul 100 div add rectfill
+     %% el punt 0,0 ara és al del MediaBox
+     vN2i+ 1 get  %% vector MM per a composar el text del nivell que toca
+     (  ÍNDICE GENERAL)
+     %% hi afegim (> ) al davant
+     %% dup length 3 add string dup 3 -1 roll 3 exch putinterval dup 0 ( > ) putinterval
+     araX araY moveto
+     gsave
+     0 0 0 0 setcmykcolor
+     false setoverprint
+     %% diccionari MM de treball
+     MyMMionari
+     %% vector pes/ample generem la nova MM
+     3 -1 roll
+     makeblendedfont  %% l'operador magic que extrau la mena de l'MM, i cal veure si amb els nous GS cal activar l'operador
+     /Camaleonica_WA exch definefont pop
+     /tipusCasella /Camaleonica_WA def
+     tipusCasella araCos selectfont
+     show
+     true setoverprint
+     %% componem les línies de l'índex general
+     /araC CosEnunciat sMo 5 mul sub def
+     4ArtBox 1 get 1 get pinca add /araY exch def  %% inicialitzem Y pel cap de columna
+     /mnaPonent true def
+    }ifelse
+   }if  %% de si som al final de columna
+  }
+  {
+   pop
+  }ifelse  %% condicional per compondre o no els productes a l'índex general
+
+%%Simsi0913
+iFxTP 1 add /iFxTP exch def
+
+ }forall  %% per tots els productes
+ grestore
+ %% hi manca el control de pàgina dreta/esquerra per quan fem el paginat per enquadernar!
+ /nUmerem false def
+ (OFFpeu.ps) (r) file cvx exec
+ %PLT1% desactivades les funcions del PageLabel doncs ara les va el 6Q al final de totes les manipulacions
+ %% el Page Label puntual ens obligaria a etiquetar totes les pàgines, doncs del contrari la resta sortiria la casella en blanc
+ %% cal confirmar si aquesta tècnica sap mantenir les PageLabels malgrat s'alteri l'ordre de les pàgines a posteriori
+ %% [
+ %%  /Label (Índice General-) dup length dup /araVa exch def Romanes iPlanes 1 add iFEMindexGeneral sub get dup length
+ %%  3 -1 roll add string dup dup 5 -1 roll 0 exch putinterval 3 -1 roll araVa exch putinterval
+ %% /PAGELABEL pdfmark  %% numeració in situ
+ showpage  %% i impressió de la pàgina!
+
+ iPlanes 1 add /iPlanes exch def  %% comptador de pàgines
+
+ %% escrivim al .dat la pàgina final per poder moure després l'índex general automàticament via iText
+ indexGeneral.dat dup iPlanes 4 string cvs writestring closefile
+
+ %% les crides %PLT1% corresponen a una de les tècniques per generar PageLabels i la %PLT2% m'és una altra
+ %PLT2% desactivades les funcions del PageLabel doncs ara les va el 6Q al final de totes les manipulacions
+ %% manipulem el Catalog per poder configurar els Page Labels de tot el document
+ %% cal confirmar si aquesta tècnica no sap mantenir les PageLabels si alterem l'ordre de les pàgines a posteriori
+ %%false{
+ %% sense necessitat d'incidir en cada showpage via /PAGELABEL
+ %% aquesta tècnica només té una pega: si hem de moure les pàgines de lloc, iText NO ens respecta les PageLabels?
+ %%[
+ %% {Catalog}
+ %% <<
+ %%   /PageLabels
+ %%   <<
+ %%     /Nums  %% array tipus Number Tree
+ %%     [
+ %% consulteu 8.3.1 Page Labels del PDF 1.7 Reference Manual, per veure exhaustivament totes les menes d'etiquetat
+ %%      0 << /S /D >> % índex d'inici de les xifres aràbigues normals
+ %%      %%iPlanes iPlanes iFEMindexGeneral sub sub << /S /r >> % índex d'inici de les xifres romanes en minúscules
+ %%      %% text personalitzat amb subsecció numèrica
+ %%      iPlanes iPlanes iFEMindexGeneral sub sub << /S /D /P (Índice General - ) /St 1>>
+ %%      iPlanes << /S /D /St iPlanes >> % índex per continuar amb les xifres aràbigues normals començant per St
+ %%     ]
+ %%   >>
+ %% >>
+ %%/PUT pdfmark
+ %%}if
+
+ (\n... planes d'índex general... )print flush
+ iPlanes iFEMindexGeneral sub 4 string cvs print flush
+}if  %% fi de l'índex general
+
+%%iPlanes iFEMindexGeneral sub /TOTALplanesIndexGeneral exch def
+
+%% fem l'índex de fabricants i productes?
+FEMindexFabricantsProductes
+{
+ iPlanes /iFEMindexFabricantsProductes exch def
+ (\n\n>>> fent l'índex de fabricants i productes... )print flush
+ yMbox gatellsDgalerades /Ylliure get pinca add sub  %% llindar més baix possible situat a sobre la veta corporativa
+ %%4ArtBox 0 get 1 get pinca add  %% quadrat amb el sota de l'ArtBox
+ /MAXiY exch def  %% llindar més baix de la darrera línia de text per columna
+ /mnaPonent true def  %% gatell per saber si som a la columna de ponent o llevant
+ %% generem les pàgines de l'índex
+ %% setup d'inici de plana on definim: format de pàgina, Bbox de treball, les creus, l'espai de color i la sobreimpressió
+ P7upCap
+ %% ara pintem en una sola línia dins una banda de color l'enunciat de l'índex general per pàgina
+ 4ArtBox 0 get 0 get pinca add  %% /araX
+ %% coordenada primigenia Y d'on han d'anar posats els elements gràfics del cap del 1r producte (línia N de l'ArtBox)
+ gatellsDgalerades /araCapOFFcap 4ArtBox 1 get 1 get pinca add put  %% l'inicialitzarem per cada pàgina
+ gatellsDgalerades /araCapOFFcap get altN1 add  %% /araY
+ /araY exch def  %% Y
+ /araX exch def %% X
+ CosEnunciat sMo
+ %% 2 mul  %% Simsi0913
+ sub /araCos exch def
+ %% fem la veta de color per l'enunciat de l'índex
+ .1 .1 .1 .6 setcmykcolor  %% el mateix gris que el de la portada/contra?
+ araX araY araCos MyMMx100LiniaDbase mul 100 div sub ampleXartBox araCos dup MyMMx100LiniaDbase mul 100 div add rectfill
+ %% el punt 0,0 ara és al del MediaBox
+ vN2i+ 1 get  %% vector MM per a composar el text del nivell que toca
+ (  ÍNDICE DE FABRICANTES Y PRODUCTOS)
+ %% hi afegim (> ) al davant
+ %% dup length 3 add string dup 3 -1 roll 3 exch putinterval dup 0 ( > ) putinterval
+ araX araY moveto
+ gsave
+ 0 0 0 0 setcmykcolor
+ false setoverprint
+ %% diccionari MM de treball
+ MyMMionari
+ %% vector pes/ample generem la nova MM
+ 3 -1 roll
+ makeblendedfont  %% l'operador magic que extrau la mena de l'MM, i cal veure si amb els nous GS cal activar l'operador
+ /Camaleonica_WA exch definefont pop
+ /tipusCasella /Camaleonica_WA def
+ tipusCasella araCos selectfont
+ show
+ true setoverprint
+ %% componem les línies de l'índex general
+ /araC CosEnunciat sMo 5 mul sub def
+ 4ArtBox 1 get 1 get pinca add /araY exch def  %% inicialitzem Y pel cap de columna
+
+ gatellsDgalerades /marques get
+ {  %% forall per ordenar alfabèticament els productes per cada marca de fabricant
+  mark exch
+  {
+   pop 1024 string cvs
+  }forall  %% deixem només el NomFamilia forçat a string! i eliminem el núm de pàgina
+  ]
+  %% ordenem alfabèticament l'array d'strings de productes
+  (QuickSort.ps) (r) file cvx exec QSortArray
+  %% desem la marca/diccionari de productes ordenats, al diccionari userdict
+  userdict 3 1 roll put
+ }forall
+ [
+  gatellsDgalerades /marques get dup /FABprodPag exch def
+  {  %% només els fabricants a string
+   pop 1024 string cvs
+  }forall
+ ]
+ %% ordenem alfabèticament l'array d'strings de fabricants
+ (QuickSort.ps) (r) file cvx exec QSortArray
+ {  %% forall on, per fabricant, cridem l'array de productes ordenats
+  dup /elFABRICANT exch def
+%% NO CONTEMPLEM ENCARA el mal efecte d'una MARCA VÍDUA (a la darrera línia d'una columna)
+  %% .1 .1 .1 .6 setcmykcolor  %% ressaltem amb fluix el color del fabricant
+  0 1 1 0 setcmykcolor  %% ressaltem el fabricant en color vermell
+  0 /TAB exch def
+  elFABRICANT /eSCRiu exch def
+  /maxXtaula ampleXartBox corondell sub 2 div def
+  araY  %% Y actual de la línia de text a compondre
+  mnaPonent
+  {
+   4ArtBox 0 get 0 get pinca add  %% X actual de la línia de text a compondre per ponent
+  }
+  {
+   4ArtBox 0 get 0 get pinca add maxXtaula add corondell add  %% X actual de la línia de text a compondre per llevant
+  }ifelse
+  dup maxXtaula add araC 4 mul sub /maxPuntets exch def
+  TAB
+  {
+   corondell add
+  }repeat  %% X escalat lateral
+  (BanderaDreta_Cshow3.ps) (r) file cvx exec
+  currentpoint exch pop  %% atenció que aquesta Y es desa més avall!
+%  %% aquí fem el puntejat
+%  {  %% loop de punts encara per micro ajustar!
+%   (.)show currentpoint pop maxPuntets ge
+%   {
+%    exit
+%   }if
+%  }loop
+%  %% i aquí el núm de pàgina
+%  araPgn 4 string cvs dup stringwidth pop maxPuntets araC 4 mul add exch sub currentpoint exch pop moveto show
+%  %% aquí podria anar-hi el link del fabricant
+%  [
+%   /Rect
+%   [
+%    araX araY araC MyMMx100LiniaDbase mul 100 div sub
+%    araX maxXtaula add araY araC dup MyMMx100LiniaDbase mul 100 div add add
+%   ]
+%   %% fem el vincle invisible
+%   /Border [0 0 0]
+%   /Color [1 1 1]
+%   /Page araPgn
+%   /View [/Fit]
+%   /Subtype /Link
+%  /ANN pdfmark
+  araC 3 mul sub /araY exch def  %% salt de l'interliniat del fabricant
+  araY MAXiY lt  %% comprovem si som al final de columna
+  {
+%   (FFC1!) == %pstack quit
+   mnaPonent
+   {  %% si som a ponent i hem exhaurit la Y...
+    %% inicialitzem Y al llindar més alt de la primera línia de text per columna quadrat amb l'ArtBox
+    /araY 4ArtBox 1 get 1 get pinca add def
+    mnaPonent not /mnaPonent exch def  %% canvi al gatell per saber si som a la columna de ponent o llevant
+   }
+   {
+%    (CAL SORTIR DE LA PÀGINA sense sortir del for!)== % quit
+    grestore  %% cal?
+    %% hi manca el control de pàgina dreta/esquerra per quan fem el paginat per enquadernar!
+    /nUmerem false def
+    (OFFpeu.ps) (r) file cvx exec
+    %PLT1% desactivades les funcions del PageLabel doncs ara les va el 6Q al final de totes les manipulacions
+    %% el Page Label puntual ens obligaria a etiquetar totes les pàgines, doncs del contrari la resta sortiria la casella en
+    %% blanc cal confirmar si aquesta tècnica sap mantenir les PageLabels malgrat s'alteri l'ordre de les pàgines a posteriori
+    %% [
+    %%  /Label iPlanes TOTALplanesIndexGeneral sub 1 add 4 string cvs /PAGELABEL pdfmark  %% numeració in situ
+    showpage  %% i impressió de la pàgina!
+    iPlanes 1 add /iPlanes exch def  %% comptador de pàgines
+    P7upCap
+    %% ara pintem en una sola línia dins una banda de color l'enunciat de l'índex general per pàgina
+    4ArtBox 0 get 0 get pinca add  %% /araX
+    gatellsDgalerades /araCapOFFcap get altN1 add  %% /araY
+    /araY exch def  %% Y
+    /araX exch def %% X
+    CosEnunciat sMo
+    %% 2 mul  %% Simsi0913
+    sub /araCos exch def
+    %% fem la veta de color per l'enunciat de l'índex
+    .1 .1 .1 .6 setcmykcolor  %% el mateix gris que el de la portada/contra?
+    araX araY araCos MyMMx100LiniaDbase mul 100 div sub ampleXartBox araCos dup MyMMx100LiniaDbase mul 100 div add rectfill
+    %% el punt 0,0 ara és al del MediaBox
+    vN2i+ 1 get  %% vector MM per a composar el text del nivell que toca
+    (  ÍNDICE DE FABRICANTES Y PRODUCTOS)
+    %% hi afegim (> ) al davant
+    %% dup length 3 add string dup 3 -1 roll 3 exch putinterval dup 0 ( > ) putinterval
+    araX araY moveto
+    gsave
+    0 0 0 0 setcmykcolor
+    false setoverprint
+    %% diccionari MM de treball
+    MyMMionari
+    %% vector pes/ample generem la nova MM
+    3 -1 roll
+    makeblendedfont  %% l'operador magic que extrau la mena de l'MM, i cal veure si amb els nous GS cal activar l'operador
+    /Camaleonica_WA exch definefont pop
+    /tipusCasella /Camaleonica_WA def
+    tipusCasella araCos selectfont
+    show
+    true setoverprint
+    %% componem les línies de l'índex general
+    /araC CosEnunciat sMo 5 mul sub def
+    4ArtBox 1 get 1 get pinca add /araY exch def  %% inicialitzem Y pel cap de columna
+    /mnaPonent true def
+   }ifelse
+  }if  %% de si som al final de columna
+%%%%%
+
+%%Simsi0913
+%/iFxTP 0 def  %% índex pel forall dels productes x marca per saber si som al darrer abans d'un canvi de marca
+
+  userdict exch get
+  {  %% forall per producte ordenat alfabèticament anem a buscar-lo amb el núm de pàgina associat
+   dup /elPRODUCTE exch def
+   FABprodPag elFABRICANT get exch get dup 0 get /araPgn exch def 1 get /araNamedDest exch def
+%%%%%
+   %% ara componem el producte
+   0 0 0 1 setcmykcolor
+   1 /TAB exch def
+   elPRODUCTE /eSCRiu exch def
+   araY  %% Y actual de la línia de text a compondre
+   mnaPonent
+   {
+    4ArtBox 0 get 0 get pinca add  %% X actual de la línia de text a compondre per ponent
+    dup/araX exch def
+   }
+   {
+    4ArtBox 0 get 0 get pinca add maxXtaula add corondell add  %% X actual de la línia de text a compondre per llevant
+    dup/araX exch def
+   }ifelse
+   dup maxXtaula add araC 4 mul sub /maxPuntets exch def
+   TAB
+   {
+    corondell add
+   }repeat  %% X escalat lateral
+   (BanderaDreta_Cshow3.ps) (r) file cvx exec
+   currentpoint exch pop  %% atenció que aquesta Y es desa més avall!
+
+   %% desactivem el puntejat per ordre de la Simsi
+   %% aquí fem el puntejat
+   %%{  %% loop de punts encara per micro ajustar!
+   %% (.)show currentpoint pop maxPuntets ge
+   %% {
+   %%  exit
+   %% }if
+   %%}loop
+
+   %% i aquí el núm de pàgina
+   araPgn 4 string cvs dup stringwidth pop maxPuntets araC 4 mul add exch sub currentpoint exch pop moveto show
+   %% aquí podria anar-hi el link de producte
+   [
+    /Rect
+    [
+     araX araY araC MyMMx100LiniaDbase mul 100 div sub
+     araX maxXtaula add araY araC dup MyMMx100LiniaDbase mul 100 div add add
+    ]
+    %% vincle invisible
+    /Border [0 0 0]
+    /Color [1 1 1]
+    /Dest araNamedDest
+    /View [/Fit]
+    /Subtype /Link
+   /ANN pdfmark
+   araC 3 mul sub /araY exch def  %% salt de l'interliniat per producte
+
+%%   araY MAXiY lt  %% comprovem si som al final de columna
+
+%%Simsi0913 control de vídues/orfes
+   araY MAXiY araC 3 mul add lt  %% comprovem si som al final de columna
+
+   {
+%    (FFC2!) ==  %pstack quit
+    mnaPonent
+    {  %% si som a ponent i hem exhaurit la Y...
+     %% inicialitzem Y al llindar més alt de la primera línia de text per columna quadrat amb l'ArtBox
+     /araY 4ArtBox 1 get 1 get pinca add def
+     mnaPonent not /mnaPonent exch def  %% canvi al gatell per saber si som a la columna de ponent o llevant
+    }
+    {
+%     (cal sortir de la pagina SENSE SORTIR DEL FORALL!)== %quit  
+     grestore  %% cal?
+     %% hi manca el control de pàgina dreta/esquerra per quan fem el paginat per enquadernar!
+     /nUmerem false def
+     (OFFpeu.ps) (r) file cvx exec
+     %PLT1% desactivades les funcions del PageLabel doncs ara les va el 6Q al final de totes les manipulacions
+     %% el Page Label puntual ens obligaria a etiquetar totes les pàgines, doncs del contrari la resta sortiria la casella en
+     %% blanc cal confirmar si aquesta tècnica sap mantenir les PageLabels malgrat s'alteri l'ordre de les pàgines a posteriori
+     %% [ /Label iPlanes TOTALplanesIndexGeneral sub 1 add 4 string cvs /PAGELABEL pdfmark  %% numeració in situ
+     showpage  %% i impressió de la pàgina!
+     iPlanes 1 add /iPlanes exch def  %% comptador de pàgines
+     P7upCap
+     %% ara pintem en una sola línia dins una banda de color l'enunciat de l'índex general per pàgina
+     4ArtBox 0 get 0 get pinca add  %% /araX
+     gatellsDgalerades /araCapOFFcap get altN1 add  %% /araY
+     /araY exch def  %% Y
+     /araX exch def %% X
+     CosEnunciat sMo
+     %% 2 mul  %% Simsi0913
+     sub /araCos exch def
+     %% fem la veta de color per l'enunciat de l'índex
+     .1 .1 .1 .6 setcmykcolor  %% el mateix gris que el de la portada/contra?
+     araX araY araCos MyMMx100LiniaDbase mul 100 div sub ampleXartBox araCos dup MyMMx100LiniaDbase mul 100 div add rectfill
+     %% el punt 0,0 ara és al del MediaBox
+     vN2i+ 1 get  %% vector MM per a composar el text del nivell que toca
+     (  ÍNDICE DE FABRICANTES Y PRODUCTOS)
+     %% hi afegim (> ) al davant
+     %% dup length 3 add string dup 3 -1 roll 3 exch putinterval dup 0 ( > ) putinterval
+     araX araY moveto
+     gsave
+     0 0 0 0 setcmykcolor
+     false setoverprint
+     %% diccionari MM de treball
+     MyMMionari
+     %% vector pes/ample generem la nova MM
+     3 -1 roll
+     makeblendedfont  %% l'operador magic que extrau la mena de l'MM, i cal veure si amb els nous GS cal activar l'operador
+     /Camaleonica_WA exch definefont pop
+     /tipusCasella /Camaleonica_WA def
+     tipusCasella araCos selectfont
+     show
+     true setoverprint
+     %% componem les línies de l'índex general
+     /araC CosEnunciat sMo 5 mul sub def
+     4ArtBox 1 get 1 get pinca add /araY exch def  %% inicialitzem Y pel cap de columna
+     /mnaPonent true def
+    }ifelse
+   }if  %% de si som al final de columna
+%%%%%
+
+%%Simsi0913
+%iFxTP 1 add /iFxTP exch def
+
+  }forall  %% per producte ordenat alfabèticament anem a buscar-lo amb el núm de pàgina associat
+ }forall  %% on, per fabricant, cridem l'array de productes ordenats
+
+ grestore
+ %% hi manca el control de pàgina dreta/esquerra per quan fem el paginat per enquadernar!
+ /nUmerem false def
+ (OFFpeu.ps) (r) file cvx exec
+ %PLT1% desactivades les funcions del PageLabel doncs ara les va el 6Q al final de totes les manipulacions
+ %% el Page Label puntual ens obligaria a etiquetar totes les pàgines, doncs del contrari la resta sortiria la casella en blanc
+ %% cal confirmar si aquesta tècnica sap mantenir les PageLabels malgrat s'alteri l'ordre de les pàgines a posteriori
+ %% [ /Label iPlanes TOTALplanesIndexGeneral sub 1 add 4 string cvs /PAGELABEL pdfmark  %% numeració in situ
+ showpage  %% i impressió de la pàgina!
+ iPlanes 1 add /iPlanes exch def  %% comptador de pàgines
+
+ (\n... planes d'índex de fabricants i productes... )print flush
+ iPlanes iFEMindexFabricantsProductes sub 4 string cvs print flush
+}if  %% fi de l'índex de fabricants i productes
+
+(\n\n<<< feina feta!\n\n)print flush
+

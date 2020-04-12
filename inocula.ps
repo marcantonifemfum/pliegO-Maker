@@ -1,0 +1,81 @@
+%!
+%% provem d'inocular dins a cada pàgina (o a l'estructura del document)
+%% diversos objectes de codi PDF via pdfmark de GS
+
+noNULL
+{
+ %% seqüència de creació d'un stream per incloure'l dins el diccionari de la pàgina actual amb una clau privada
+ %[ /_objdef {laGrenya} /type /stream /OBJ pdfmark
+ %[ {laGrenya} (BX %% et veus? EX) /PUT pdfmark  %% malgrat sigui una string...
+ %[ {ThisPage} <</unNouTou {laGrenya} >> /PUT pdfmark  %% l'inclou en un objecte a part com un stream a part
+ %% lligat a aquesta clau privada /unNouTou del diccionari /Page
+
+ %% incula el codi al stream de /Contents de la pàgina?
+ %true setglobal
+ %matrix currentmatrix ==  %% fa res de bo?
+ %mark /QuinMalGust /MP pdfmark
+ %mark /T /AlVostreGust %/BMC pdfmark
+ %/At 1 /StBMC pdfmark
+ %(BX %% et veus? EX)
+ %mark /EMC pdfmark
+ %false setglobal
+
+
+% iSeq 1 eq  %% estructures que només s'han de crear 1 cop
+% {
+
+save
+
+%% fem noms únics
+%%Hauríem de poder saber les pàgines del document
+({fa1form) dup length dup /araVa exch def Npgn cvx exec 1 sub 4 string cvs dup length 3 -1 roll add 1 add string dup
+3 -1 roll araVa exch putinterval dup 3 -1 roll 0 exch putinterval dup dup length 1 sub (}) putinterval
+dup length string copy /llançat exch def
+%(llll)pstack quit
+
+  %% crea una X amb les dues diagonals de la pàgina del llançat com un Form
+  %[ /BBox [0 0 xPagina yPagina] /_objdef llançat cvx exec /BP pdfmark
+  %[ /BBox [0.0 0.0 612 792 ] /_objdef {fa1form} /BP pdfmark
+%%Hauríem de posar el BBox ídem al CropBox/MediaBox de cadascuna de les pàgines (CaLi2CoPi) poden ser totes diferents!
+%[ /BBox [0 0 595 842] /_objdef llançat cvx exec /BP pdfmark
+[ /BBox [ 0 0 384 527.040 ] /_objdef llançat cvx exec /BP pdfmark
+
+  %% en una Reference XObject això només serveix com a testimoni del contenidor del Proxy
+  0 setgray
+  0 0 moveto xPagina yPagina lineto stroke
+  xPagina 0 moveto 0 yPagina lineto stroke
+  [ /EP pdfmark
+
+%%EP!
+%% repiquem el Bbox perquè a la priner crida l'intèrpret de pdfmark el modifica a posteriori?
+[ llançat cvx exec << /BBox [ 0 0 384 527.040 ] >> /PUT pdfmark
+
+  %% com que podem afegir la clau/valor que volguem al diccionari del Form, un cop generat tot l'objecte
+  %% podriem construir per a cada pàgina del llançat la Reference XObject que vulguem
+  %% haurem de valorar què passa amb les escales i com capturem i reescrivim la ID perquè el localitzi
+%%Una de le claus està en controlar l'escala per la matriu
+%% abans cal saber quin és el costat més ample V/H per tal no excedim la proporció
+%% l'escala es dedueix fent treballar de divisor el costat més ample x/y del pdf que llegim, pel mateix x/y del llançat que toca
+  [ llançat cvx exec <</Matrix [ yPagina 527 div 0 0 yPagina 527 div 0 0 ]>> /PUT pdfmark
+  %%[ {fa1form} <</Ref << /ID [ (aeiou)(01234) ] /Page 0 /F (targetX5_pla.pdf) >> >> /PUT pdfmark
+  [ llançat cvx exec <</Ref << /Page Npgn cvx exec 1 sub /F (patufet_avuiFa100anys_19200410-23204.pdf) >> >> /PUT pdfmark
+
+  %% també funcionaria incrustar el valor d'una clau com a stream, seria la manera d'escriure hexa dins <> de forma inalterada
+  %% però això NO aguanta la interpretació de la ID pels Reference XObjects
+  %% [ /_objdef {mystream} /type /stream /OBJ pdfmark
+  %% [ {mystream} (<AAFF><0099>) /PUT pdfmark
+  %% [ {fa1form} <</aVeure [ {mystream} ] >> /PUT pdfmark
+  %% [ {fa1form} <</aVeure [ <AAFF><0099> ] >> /PUT pdfmark  %% l'hexa acaba passant a binari!
+  %% com que haurem de llegir igualment les IDs del PDF de captura (i més coses del format de pàgina i/o #Box)
+  %% ATENCIÓ: hem provat que igualant-les dins una string en binari, llavors s'identifiquen correctament
+  %% quan no ho fan, és quan el proxy les crida en binari i a l'original estan en hexa
+% }if
+
+ %% crida el Form a cada pàgina del llançat
+ [ llançat cvx exec /SP pdfmark
+
+restore
+
+
+}if
+
