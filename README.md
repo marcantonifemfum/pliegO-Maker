@@ -22,7 +22,7 @@ PliegO'Maker és ara mateix en una fase inicial de desenvolupament. El nucli, es
 
 La diagramació *líquida* treballa en paral·lel al flux d'imposició (llançat/nUp), i no necessàriament amb pàgines pre-maquetades. Aquest «liquid layout» es basa en el comportament dels traçats harmònics. El quadratí tipogràfic (Em module) és un cànon clàssic per compondre pàgines i que ara actualitzem a l'era digital. La pre-impressió, en PDF, ens permet treballar amb capes, continguts etiquetats, anotacions, metadades i etc.
 
-Un «pliego» és un sol full de paper que, un cop plegat i tallat, es transforma en un llibret (inspirat en el clàssic Patufet). Només necessitem una impressora i una xic de manualitats per tenir-lo a punt de llegir en poca estona.
+Un «pliego» és un sol full de paper que, un cop plegat i tallat, es transforma en un llibret (inspirat en el clàssic Patufet). Només necessitarem una impressora, un xic de manualitat i el tindrem, en poca estona, enllestit per llegir.
 
 L'aplicació pot executar-se, sense interfícies (per línia de comanda via Ghostscript), també a través d'un senzill front-end (vegeu la col·lecció d'html, php, css, png al repositori), aquí… http://pliegos.net/maker …i també amb una incipient extensió (Add-on) pel navegador Firefox, decarregable aquí… https://addons.mozilla.org/ca/firefox/addon/pliegos/ …escrita pel company… https://github.com/DamyHao/PliegOS
 
