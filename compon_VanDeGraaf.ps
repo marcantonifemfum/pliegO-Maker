@@ -8,7 +8,8 @@ noNULL  %% pinta el contingut de pàgina?
  {
   %% deduïm la taca de text, per pàgina, segons el traçat harmònic triat...
 
-  %% la Van De Graaf o 1/9 s'adiu a que la tercera part de l'altura de la taca és igual al marge inferior d'aquesta
+%%+ tria del traçat harmònic
+  %% la Van De Graaf o 1/9, s'adiu a que la tercera part de l'altura de la taca és igual al marge inferior d'aquesta
   (VanDeGraaf_tripa.ps) (r) file cvx exec
   %% 4ArtBox d'un VanDeGraaf a 8up en A4
   %% [[23.3889 66.111145] [23.3889 264.444427] [187.111099 264.444427] [187.111099 66.111145]]
@@ -38,7 +39,8 @@ noNULL  %% pinta el contingut de pàgina?
   %% aquí decidim si treballem amb el valor del /COSreal establert per menú o el deduïm nosaltres
   M7  %% booleni de la variable d'entorn, true: deduïm nosaltres el cos | false: ja ens ve donat per menú en una segona variable
   {
-   %% dividint l'àrea total pel nombre de glifs i fent-ne l'arrel quadrada, tenim el quadratí/interlínia estimada
+   %% dividint l'àrea total a compondre pel nombre de glifs del text, i fent l'arrel quadrada del resultat
+   %% tindrem una primera valoració del quadratí que mai superarà el total de l'espai disponible
    tacatotal glifsAcompondre div sqrt /Quadratí exch def
   }if
 
@@ -60,9 +62,21 @@ noNULL  %% pinta el contingut de pàgina?
    yTACA vGlifs div /vQuadratí exch def  %% aquest serà el valor exacte d'interlínia
   }if
 
+%%+ tria de la tipografia de treball
   %% tipografia de treball (contempla OTF, TTF, però haurà de gestionar VariableFonts MM i OTF)
-  (/Users/femfum/calaixDtipus/Gentium/GenBkBasR.ttf)
+  %(/Users/femfum/calaixDtipus/Gentium/GenBkBasR.ttf)
+  (/Users/femfum/calaixDtipus/Gentium/GentiumPlus-5.000-developer/sources/GentiumPlus-R-designsource.otf)  %%uni23A8 { N/S
+  dup
   findfont /dF exch def  %% diccionari de la font de treball
+
+  %% pòlissa
+  dF /FontName known
+  {
+   pop dF /FontName get /plss exch def
+  }
+  {
+   /plss exch def
+  }ifelse
 
   %% calculem el % dels descendents(x100D) ascendents(x100A) en relació al cos a través del FontBBox per situar la línia de base
   %% pel fet que ascendents+descendents difícilment seran exactament el 100% del cos, doncs poden estar per sobre o per sota
@@ -114,7 +128,7 @@ noNULL  %% pinta el contingut de pàgina?
     }ifelse 
    } 
    { 
-    12  %% cos per defecte (sortiria al placeholder del textarea?)
+    60  %% cos per defecte (sortiria al placeholder del textarea?)
     %% (\n Ghostscript no pot capturar aquesta variable d'entorn!\n\n)print flush
    }ifelse
    %% el valor del cos no variarà tret que faci que la paraula més llarga superi l'ample de la taca
@@ -134,7 +148,11 @@ noNULL  %% pinta el contingut de pàgina?
    %% vGlifs vQuadratí mul yTACA
   }ifelse
 
-%%+ aquí podria començar un loop pel cas del mot que execdeixi l'ample de taca
+%%+ cap de loop pel cas que el text excedeixi l'espai disponible
+
+%%+ cap de loop pel cas del mot que excedeixi l'ample de taca
+{  %% loop
+
 
   %% codifiquem la tipografia (ara a WinAnsi, però amb doble octet haurem de treballar amb l'AdobeGlyphList)
   dF dup length dict begin
@@ -238,20 +256,55 @@ noNULL  %% pinta el contingut de pàgina?
    }forall
   }forall
 
-  %% com el comparem amb l'ample de la taca?
-%  elMesAmple
-%  xTACA
-%% si supera xTACA comptaríem quin % suposa, llavors aquest % seria el que trauríem o de /COSreal o de /vQuadratí segons sigui M7
+  /motExcedit false def
+  %% el mot més ample el comparem amb l'ample de la taca
+  elMesAmple xTACA 2 copy gt
+  {  %% si supera xTACA comptaríem quin % suposa
+   /motExcedit true def
+   %% llavors aquest % seria el que trauríem o de /vQuadratí o de /COSreal segons sigui M7 true o false
+   exch div  %% hem de rebaixar
+
+   %% en cas de mot excedit, adaptarem via COSreal
+   COSreal mul
+   %% el valor del cos no variarà tret que faci que la paraula més llarga superi l'ample de la taca
+   %% o que el total del text excedeixi l'àrea total a compondre
+   /COSreal exch def
+   %% deduïm el valor d'interlínia
+   COSreal x100dCos mul 100 div /vQuadratí exch def
+   %% fem que quadri amb un valor discret de línies per taca
+   yTACA vQuadratí div dup truncate dup /vGlifs exch def  %% desem el nombre de línies per taca
+   sub  %% restem el valor sencer de línies per taca a l'escaig que manca per quadrar amb yTACA
+   %% n'extraiem el valor real
+   vQuadratí mul
+   %% calculem el valor /vQextra que haurem d'afegir a la interlínia /vQuadratí perquè quadri amb el nombre de línies per taca
+   vGlifs div /vQextra exch def  %% el sumarem a /vQuadratí per redefinir-lo
+   vQextra vQuadratí add /vQuadratí exch def
+   %% per comprovar-ho... nombre de línies per taca (vGlifs) x interlínia (vQuadratí) = altura de la taca (yTACA)
+   %% vGlifs vQuadratí mul yTACA
+   %% i /TvGlifs ja es calcula al cap d'aquest loop
+
+   M7 not  %% true: deduïm nosaltres el cos | false: ja ens ve donat per menú en una segona variable
+   {  %% pel fet d'haver de canviar de cos triat per menú, generaríem un missatge que podria mostrar-se en una JS alert?
+   }if
+
+  }
+  {  %% sortim del loop del mot excedit
+   pop pop exit
+  }ifelse
 
 
-%%+ aquí podria acabar el loop pel cas que el mot excedeixi l'ample de taca
+}loop
+%%+ cua de loop
+%%+ aquí acaba el loop pel cas que el mot excedeixi l'ample de taca
+%COSreal(foraDEloop)pstack quit
 
-   %% /atramLin és l'array que determina com es compondrà el text, on el seu length ens diu quantes línies té
-   %% i cadasacuna de les arrays que la formen representa una línia de text, de manera que a dins hi hauran els valors
+
+   %% /atramLin és l'array de paràgrafs que determina com es compondrà el text, on el seu length ens diu quants paràgrafs té
+   %% i a dins, cadasacuna de les arrays que la formen representa una línia de text, i els seus valors es disposen com
    %% [ 0 índex del mot que inicia el paràgraf # nombre de paraules que caben a la línia ]
-   %% [ # índex del mot que inicia la línia # nombre de paraules que caben a la línia ]
+   %% [ # índex del mot que inicia la línia següent # nombre de paraules que caben a la línia ]
    %% [ 0 0 ] línia en blanc de separació de paràgraf
-   %% valors necessaris per fer un getinterval a aNCintervals, o sigui que el primer valor és l'índex d'inici del mot
+   %% són dades necessaries per fer un getinterval a aNCintervals, o sigui que el primer valor és l'índex d'inici del mot
    %% que formarà la línia i el segon valor és el nombre de 'mots' que la componen, a cada paràgraf l'index s'inicialitza
    %% entenent per 'mot' tot allò que estigui entre dos caràcters classificats com a /trencador, per exemple:
    %% ,hola bon dia, seria un sol 'mot' si la coma , fos un /trencador
@@ -321,8 +374,10 @@ noNULL  %% pinta el contingut de pàgina?
 {
  length add
 }forall
-%(/+/+/+/)pstack quit
-TvGlifs(:::::)pstack quit
+/aeetdldtqec exch def
+
+%% límit de línies del pliegOS
+%TvGlifs  
 %% si es supera l'espai disponible comptaríem les línies que són i quin % suposa del total,
 %% llavors aquest % seria el que trauríem o de /COSreal o de /vQuadratí segons sigui M7
 
@@ -345,21 +400,76 @@ TvGlifs(:::::)pstack quit
    %% les claus de la lògica del componedor són tres arrays /NCintervals /intervals /tramLin
   }ifelse
 
+%% els raonaments per aquest segon loop serien:
+
+%% motExcedit true
+%1 si JA hem hagut de rectificar el cos per mot excedit, tant si ve de menú com si ha estat triat per l'algorisme
+%% i aquest NO excedeix el total de línies a compondre: l'haurem de deixar així
+%% però si excedeix el total de línies a compondre, voldrà dir que podrem seguir rebaixant el cos fins que quadrin al 99%
+
+%% motExcedit false
+%2 si NO hem hagut de rectificar el cos per mot excedit, tant si ve de menú com si ha estat triat per l'algorisme
+%% ?
+
+%3 fòrmules possibles per quadrar l'espai disponible amb els mínims passos
+
+%% tenim que:
+%% amb l'opció de la tria del cos per l'algorisme
+%% amb una mateixa:
+%% tipografia | traçat harmònic | N-up
+%% independentment:
+%% de la llargada de text, 
+%% tenim sempre constant:
+%% el valor de multiplicar el cos pel nombre de línies per pàgina
+%% o sigui, hi ha un cos concret per a cada nombre de línies per pàgina per tal doni sempre el mateix valor constant
+%% tres exemples (GentiumPlus-R-designsource.otf | Van De Graaf | 8-up):
+%1 multipliquem el cos pel nombre de línies per pàgina 6.02x19=114.38
+%2 multipliquem el cos pel nombre de línies per pàgina 12,71x9=114,39
+%3 multipliquem el cos pel nombre de línies per pàgina 114.41x1=114.41
+
+%% el repte està en acostar-se ràpidament al cos exacte que faci que un text es compongui amb el 99% de l'espai disponible
+%% pel cos inicial triat per l'agorisme, seguint per aquest primer càlcul, el mètode:
+  %% dividint l'àrea total a compondre pel nombre de glifs del text, i fent l'arrel quadrada del resultat
+  %% tindrem una primera valoració del quadratí que mai superarà el total de l'espai disponible
+%% per tant, al text sempre li faltaran línies per arribar a l'espai disponible, llavors [primer recàlcul sense ser exactes]
+  %% calcularem quin % de línies ens manca pel total (100-%assolit) aquest % l'aplicarem al cos, i el resultat
+  %% el sumarem altra cop al cos, però com que, provablement, altra cop ens quedarem curts
+%% (aquí si no fóssim dins l'espai de la darrera pàgina o ens excedíssim, trauríem un missatge d'error)
+%% repetirem l'operació [segon recàlcul per acostar-nos al 99% de l'espai]
+  %% ídem mètode anterior
+%% si no ens passem, anirem fent iteracions de 0.03 punts sumades al cos, quan ens passem, restarem la mateixa quantitat
+%% cal quadrar exactament el número de línies, sempre que sigui possible, però hauríem de comprovar que podem quadrar-ho
+%% anant endavant i endarrera 1 cop, i teòricament sempre serà millor quedar-se amb el màxim valor de cos dins la mateixa línia
+
+
+
 %%+ cua de loop
 
   %% ens cal valorar on i quan activem els filtres de control de vídues i orfes (de pàgina i/o paràgraf)
 
   %% valoració final
   %% podem veure com es comporta el % de relació del COSreal (cos del tipus) vs vQuadratí (inerlínia) amb diferents tipografies
-  (\n\n ::: relació final cos/interlínia :::\n) print flush
-  COSreal 32 string cvs print flush ( <<< cos\n)print flush
+  (\n\n::: dades de composició :::\n) print flush
+  plss 256 string cvs print flush ( <<< pòlissa\n)print flush
+  M7
+  {
+   COSreal 32 string cvs print flush ( <<< cos deduït per l'algorisme\n)print flush
+  }
+  {
+   COSreal 32 string cvs print flush ( <<< cos triat per menú\n)print flush
+  }ifelse
   vQuadratí 32 string cvs print flush ( <<< interlínia\n)print flush
+  vQextra 32 string cvs print flush ( <<< afegit inclòs\n)print flush
   (>>> interlínia del... )print flush
   vQuadratí 100 mul COSreal div 32 string cvs print flush
-  (% del cos\n\n)print flush
-
+  (% del cos\n)print flush
+  vGlifs cvi 32 string cvs print flush ( <<< línies per pàgina/taca\n)print flush
+  (>>> total de línies de text que es componen... )print flush
+  aeetdldtqec 32 string cvs print flush ( ...d'un límit màxim de... )print flush
+  TvGlifs cvi 32 string cvs print flush (\n\n)print flush
  }if  %% només 1 cop
 
+(:::::)pstack quit
  %% fem l'empremt component pàgina a pàgina
 
  %% posicionem la primera línia a compondre, aplicant el % sobirà al valor d'interlínia /vQuadratí

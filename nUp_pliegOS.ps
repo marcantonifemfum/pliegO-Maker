@@ -125,7 +125,7 @@
  }ifelse
 }
 {
- false  %% fem visible la vora de la pàgina del llançat? (imposició) més endavant podrem posar-ho en una capa
+ true  %% fem visible la vora de la pàgina del llançat? (imposició) més endavant podrem posar-ho en una capa
 %% (\n Ghostscript no pot capturar aquesta variable d'entorn!\n\n)print flush
 }ifelse
 
@@ -216,11 +216,30 @@
  }ifelse
 }
 {
- 0  %% 0 algorisme de reglatge
+ 7  %% 0 algorisme de reglatge
     %% 1 fus horari
     %% 2 interrogador de variables
     %% 3 algorisme buit i només pintaria els marges de pàgina?
     %% 4 nadala amigots (ha d'anar amb 8vUpH!)
+    %% 5 inocula codi pdf
+    %% 6 traçat harmònic VanDeGraaf
+    %% 7 el bo i millor per compondre text
+%% (\n Ghostscript no pot capturar aquesta variable d'entorn!\n\n)print flush
+}ifelse
+
+%%M7 comportament del cos de text
+(MRCT_cos) getenv
+{
+ dup length 0 eq
+ {  %% si la variable existeix però arriba buida...
+  pop false  %% true: deduïm nosaltres el cos | false: hi ha una segona variable que ens diu amb quin cos hem de treballar
+ }
+ {
+  cvx exec  %% és una string!
+ }ifelse
+}
+{
+ true  %% true: deduïm nosaltres el cos | false: hi ha una segona variable que ens diu amb quin cos hem de treballar
 %% (\n Ghostscript no pot capturar aquesta variable d'entorn!\n\n)print flush
 }ifelse
 
@@ -228,6 +247,7 @@
 
 %% fi de MENÚ de capçalera
 
+/M7 exch def  %% comportament del cos de text
 /M6 exch def  %% índex a l'algorisme de composició independent del nUp triat
 /M5 exch def  %% en cas que el plec no sigui proporcional (ràtio full/pàgina diferent)i, forcem mantenir la ràtio?
 /M4 exch def  %% format estàndard de full (d'impressora)
@@ -243,6 +263,9 @@
  (interroguem.ps)  %% 2 interrogador de variables de l'algorisme nUp_pliegOs.ps
  (buit.ps)  %% 3 només pintaria els marges de pàgina?
  (nadala2017.ps)  %% 4 nadala amigots / %%M2 ha de ser 8 / %%M4 ha de ser 4 / %%M5 ha de ser false
+ (inocula.ps)  %% 5 inocula codi pdf
+ (VanDeGraaf3.ps)  %% 6 traçat harmònic VanDeGraaf
+ (compon_VanDeGraaf.ps)  %% 7 el bo i millor per compondre text
 ] def
 
 /pliegOS_nUpS

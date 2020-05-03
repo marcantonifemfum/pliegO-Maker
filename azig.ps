@@ -1,0 +1,169 @@
+%%+ donat el valor Y d'una taca de text, l'algorisme agafa una paraula i l'escriu en reng tantes vegades com lletres té
+%%+ de forma que en calcula el cos màxim i l'interliniat mínim perquè els glifs no es trepitgin, de manera que
+%%+ l'ascendent màxim de la primera línia i el descendent màxim de la darrera facin exactament l'altura Y de la taca
+%%+ ascendent màxim i descendent màxim no significa que siguin representats exactament pels glifs escollit de la paraula
+
+%% el primer que farem és definir el valor de Y (qualsevol)
+300 /yTACA exch def
+
+%% el segon que fem és escriure una paraula que ens demostri, de la millor manera, que el càlcul ha estat correcte
+%% per això anirà bé que tingui una lletra en caixa alta, amb diacrític, que s'acosti al màxim ascencent
+%% i una altra, potser en caixa baixa, que s'acosti al màxim descendent
+(Àzig)
+%(Ótorrinolaringòleg)
+/unaSotaLaltra exch def
+
+%% la Minion experimental d'AdobeSystems amb correcció òptica...
+%(/Users/femfum/MultipleMaster/AdobePostScriptSDK_Fonts/FONTS/GENERAL/FONTS/WIN/276MINMM/ZGRG____.PFB)
+%% el tercer que fem és triar la tipografia de treball
+%(/Applications/Adobe\ Reader.app/Contents/Resources/Resource/Font/ZX______.PFB)  %% AdobeSansMM al path d'Acrobat/Reader
+%(/Users/femfum/CEM/CEM75a/18\ no\ complet/75GLLS/DOSSIER/2019/fa131agulles/xapes/Bulo.otf)
+%(/Users/femfum/calaixDtipus/JordiEmbodas/compraTipografies_JordiEmbodas/Order-0000000226/Bulo-Bold.otf)
+%(/Users/femfum/calaixDtipus/RogerExcoffon/51.\ Antique\ Olive\ \ \ \ \ \[1962\ -\ Roger\ Excoffon\]/AntiqueOliveStd-Nord.otf)
+
+%% les OTF de Gentium tampoc no treballem a escala 1/1000 igual que les TTF
+%(/Users/femfum/calaixDtipus/Gentium/GentiumPlus-5.000-developer/sources/GentiumPlus-I-designsource.otf)
+%(/Users/femfum/calaixDtipus/Gentium/GentiumPlus-5.000-developer/sources/GentiumPlus-R-designsource.otf)
+%(/Users/femfum/calaixDtipus/Gentium/GenBkBasB.ttf)
+%(/Users/femfum/calaixDtipus/Gentium/GenBasR.ttf)
+(/Users/femfum/calaixDtipus/Gentium/GenBkBasR.ttf)
+
+%% https://github.com/Omnibus-Type/
+%(/Users/femfum/calaixDtipus/IvanCastro/Truculenta/otf/Truculenta-Regular.otf)
+%(/Users/femfum/calaixDtipus/Gatti/SairaUltraCondensed-Bold.otf)
+%(/Users/femfum/calaixDtipus/Gatti/SairaUltraCondensed-Thin.otf)
+
+findfont /dF exch def  %% diccionari de la font de treball
+
+%%+ el quart, és fonamental
+%% calculem el % del descendent/ascendent del FontBBox en relació al cos
+%% pel fet que els ascendents+descendents difícilment coincidiran amb el 100% del cos, doncs poden estar per sobre o per sota
+%% l'objectiu és situar bé la línia de base, en relació al cos, per compondre correctament dins la taca de text
+
+%% el primer que hem de fer és assegurar els valors del FontBBox en funció de FontMatrix per poder treballar amb el cos primigeni
+%% codi readaptat de furafont_formats.ps
+%% molts cops 1000 és el cos primigeni (eVa) i coherent amb el valors del FontBBox i Metrics, character space (graella eVa x eVa)
+
+%% és un factor crític d'escala, doncs tot va en funció del cos deduït
+%% ens dóna l'escala de treball del FontBBox
+dF /FontMatrix get dup /oFontMatrix exch def
+
+%% això vol dir que posant el cos a eVa, els valors resultants de l'anàlisi coincidiran amb /FontBBox i /Metrics
+%% fer avaluacions a cos eVa és útil per a tot tipus de control mil·limètric, veure flttnpthVSpthbbx.ps/EspaisInterns3.ps
+dup  0 get 1 exch div round /eVa exch def
+
+0 get eVa mul /escalaBbox exch def
+
+%% valors del bounding box de la font sencera
+dF /FontBBox get dup length array copy dup /oFontBBox exch def  %% per profilaxi
+%% l'escala de treball pot condiconar el FontBBox per tal que els valors a cos 1000 (eVa) siguin coherents
+{
+ escalaBbox mul
+}forall
+4 array astore /FeVaBBox exch def
+
+%% comparant /oFontBBox amb /FeVaBBox podriem veure si el condiciona, o sigui quan /escalaBbox és diferent de 1
+%escalaBbox 1 ne
+%{  %% cal ajustar una solució perquè llavors no podem treballar amb el valor de eVa a 1000!
+% FeVaBBox oFontBBox oFontMatrix
+% oFontMatrix 0 get 1 exch div round ==
+% (...ho veieu?) pstack quit
+%}if
+
+%% aïllem els dos valors originals dels ascendents i descendents
+oFontBBox aload pop /oA exch def  %% valor original de l'ascendent
+pop /oD exch def  %% valor original del descendent
+pop
+%% la suma absoluta dels dos valors originals dóna la mesura Y real de la supercaixa i ens diu si supera el valor de eVa
+oA abs oD abs add /sCaixa exch def
+%% tot seguit deduïm els % corresponents a:
+%% % de desviació del cos (quin % augmenta o disminueix del valor del cos en relació a la supercaixa)
+sCaixa 100 mul eVa div /x100dCos exch def
+%% % de correcció del cos perquè quadri amb eVa (% que hem d'aplicar al cos per tal quadri amb la supercaixa)
+eVa 100 mul sCaixa div /x100cCos exch def
+%% % del descendent
+oD abs 100 mul sCaixa div /x100D exch def
+%% % de l'ascendent (sumat al % del descendent ha de donar el 100%)
+oA abs 100 mul sCaixa div /x100A exch def
+%x100A x100D add
+
+%% el cinquè, codifiquem la tipografia
+dF dup length dict begin
+{
+ 1 index /FID ne
+ {def}{pop pop}ifelse
+}forall
+%% xifrat WinAnsi
+%% atenció que aquesta crida només és vàlida a Ghostscript!
+/Encoding systemdict /EncodingDirectory get /WinAnsiEncoding get def
+currentdict end 
+/Camaleonica_WA exch definefont pop
+%/CamaleonicaWA_1200_wt_600_wd exch definefont pop
+
+
+%% el sisè, comptem el nombre de lletres i deduïm un primer cos, que quadrarà Y si equival a l'interliniat
+yTACA unaSotaLaltra length div  %% glifs verticals: és la interlínia amb la que treballarem
+dup /COSdiv exch def  %% equival a l'interliniat
+x100cCos 100 div mul /COSreal exch def  %% és el cos que té la justa reducció/ampliació per tal quadri i amb el que treballarem
+
+%COSreal x100dCos 100 div mul  %% comprovem que és igual a COSdiv
+%COSdiv  %% sí senyor!
+
+true
+{
+ /Camaleonica_WA COSreal selectfont
+}
+{
+%%MÈTODE2 per generar una instància MM via dades escrites en el seu literal via el findfont especialitzat que tenen les MM
+%% Scott Byer i Michael Wang ho apunten
+%% en aquest literal l'important són 4 dades, el primer tram del nom (el /FontName), l'ordre dels numèrics (fixat per
+%% /BlendAxisTypes), els seus valors possibles (fixats per /BlendDesignMap) i els separadors _ mínims obligatoris
+%% els noms: wt, wd i op, són fruit d'una convenció no obligatòria de la TN #5088 Font Naming Issues d'AdobeSystems
+/CamaleonicaWA_1200_wt_600_wd
+%% passant de les convencions podriem anomenar-la també com /MinionMM_400_600_72_
+%% per tal que aquest mètode funcioni cal assegurar-se que el diccionari de la font s'hagi carregat prèviament en memòria
+dup findfont pop
+%% llavors n'hi ha prou en cridar la font i el cos amb findfont per què hi actui la variant especialitzada d'aquest operador
+%% que sap llegir i destriar les dades del literal i generar-ne la instància MM
+findfont COSreal scalefont setfont
+}ifelse
+
+%% vuitè, la fòrmula de cos=interliniat (cosT sobre cosT) ha de ser la Y exacte
+%COSdiv x100A mul 100 div  %% 1a lletra ascendent
+%COSdiv  %% 2a lletra inerliniat
+%COSdiv  %% 3a lletra inerliniat
+%COSdiv  %% 4a lletra inerliniat
+%COSdiv x100D mul 100 div  %% descendent
+%add add add add  %% tants adds com lletres
+yTACA  %% la suma és igual a Ytaca?
+%% si senyor!
+%(.........)pstack quit
+
+%% novè, pintem un rectangle, d'ample irrellevant, en vermell, on han de caixar les lletres a l'esquerra i exactes de dalt a baix
+gsave
+1 0 0 setrgbcolor
+0 setlinewidth
+100 /margeX exch def
+400 /capY exch def
+margeX capY
+3 -1 roll neg capY exch rectstroke
+grestore
+
+%% desè, componedor en vertical segons la lògica del punt vuitè
+margeX capY COSdiv x100A mul 100 div sub moveto  %% posicionem la 1a lletra restant l'ascendent 
+unaSotaLaltra
+{
+ pop unaSotaLaltra show  %% componem la paraula /unaSotaLaltra cada vegada
+ currentpoint COSdiv sub exch pop margeX exch moveto  %% restem l'interliniat a Y que ara equival a cosT
+}forall
+
+%% podem veure com es comporta el % de relació del COSreal (cos del tipus) vs COSdiv (inerlínia) amb diferents tipografies
+(\n\n ::: relació cos/interlínia :::\n\n) print flush
+COSreal 32 string cvs print flush ( <<< cos\n\n)print flush
+COSdiv 32 string cvs print flush ( <<< interlínia\n\n)print flush
+(>>> interlínia del... )print flush
+COSdiv 100 mul COSreal div 32 string cvs print flush
+(% del cos\n\n)print flush
+
+showpage
+

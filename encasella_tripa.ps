@@ -1,0 +1,789 @@
+%%Aprofitem l'algorisme del projecte EMPREMT (encasella_#.ps)
+
+%%+ aquesta podria ser la suma totals de taques x/y de n-up o només 1?
+%% array de l'ample i alt de pàgina?
+/xyTacN1 [100 842] def
+
+%%+ sobrer?
+%% sangs, però hauríen de ser els marges de pàgina?
+/sangs 0 def
+
+%%+ sobrer?
+%% altura d'on deduïm el cos mínim i màxim de treball?
+/altN1 xyTacN1 0 get 2 div def
+
+%%+ sobrer?
+%% gestió dels marges per l'enquadernat?
+/paginatDretaEsquerra false def
+
+%%+ sobrer?
+%% una mena de marges extra?
+/N2i+gruixos [0 0] def
+
+%%+ cal saber quina és la necesitat real de tenir carregat prèviament aquest algorisme en memòria?
+%2%
+%% el mètode de configuració de les MM d'aquí, necessita vincular-se makeblendedfont.ps, hi hauríem de canviar-ho
+(/Users/femfum/empremt/empremt7/makeblendedfont.ps) (r) file cvx exec
+
+%%(Cyan,Magenta,Amarillo,Negro,Cyan claro,Magenta claro,Castaño oscuro)  %*% /TexT text a escriure
+%% (s'enderroca, l'hipnotisme de la, glòria)
+%% (pués animus mundi, Herri Askatasuna Aliaga)
+%%(Films decorativos, para pizarras y de retroproyección)  %% Poly
+
+%%+ ja ens ve del menú
+%*% /TexT text a escriure
+(Féu___que\fun\fsol___________full_de_paperesdevingui_un_llibret_excepcional_encara_que_no__ho_sembli__gaire____________)
+
+%%+
+true  %*% /capOtext componem caselles pel cap de taula (true) o pel text dels continguts (false)?
+
+%%+
+true  %*% /componOample desem les dades per compondre (true) o desem els amples (false)
+
+%%+
+false  %*% /1oMes forçant, si pot ser, una sola línia (true) o amb el cos +gran i amb totes les línies que facin falta (false)
+
+%%+ és important que es pugui triar el glif que actúa com a trencador, però: què passa si n'hi han 2 o+ de seguits?
+%%+ hauríem de poder esquilar espais en blanc si n'hi a 2 o + de seguits
+%%+ si coincideixen amb un canvi de línia o són a la cua ja s'esquilen
+(_)  %*% /trencador caràcter per fer el canvi de línia
+
+%%+
+%%160  %*% /minXcasella ample de la casella, ara mesurat a mà, hauria de ser el valor 0 de l'array xyTacN1 menys el valor de sangs
+xyTacN1 0 get sangs sub %%N2i+gruixos 1 get sub
+
+%%+
+%%16.5  %*% /maxCosCasella hauria de ser ídem que el dels caps de columna (enunciats)
+altN1 1  div
+
+%%+
+%%16.5  %*% /minCosCasella hauria de ser el de la mínima llegibilitat
+altN1 8 div
+
+%%+
+%*% /vectorPesAmple vectors inicials pes/ample per al text
+%% [0 0 1 0]
+%%[0.713539 0.0635195 0.101471 0.12147 add add 0 exch 0 ]
+%% vectors inicials pes/ample per als caps
+%% [0 0 0 1]
+[0.03 0.17 0.5 0.3]  %% MyriadMM +negreta
+%[0.17477 0.07521 0.5244 0.22562]  %% x defecte de la MyriadMM
+
+%%+
+%% dades de moment fora del flux d'entaulemnos4.ps però que podríem llegir d'un fitxer de configuració
+%% si ja ens ve definit per entaulemnos4.ps hi aniria el nom de la variable /MM
+(/Applications/Adobe\ Reader.app/Contents/Resources/Resource/Font/ZX______.PFB)  %% AdobeSansMM al path d'Acrobat/Reader
+%(/Users/femfum/MultipleMaster/Myriad2/_MRG____.PFB)
+/MM exch def  %% font MultipleMaster de treball
+
+%% cal?
+%% MMionari /MMionari exch def
+%% EP hauria d'estar carregada a la RAM per tal rutllés
+%%/MyriadMM findfont dup /MMionari exch def
+%/MyriadMM findfont /MyMMionari exch def
+
+%%+
+%% calculem el % del descendent del FontBBox per tal de centrar bé la línia de base en relació al cos
+MM findfont /FontBBox get dup 1 get abs dup 3 -1 roll 3 get add exch 100 mul exch div /MyMMx100LiniaDbase exch def
+
+%%+ no hauria d'actuar i al seu lloc hi hauria d'haver un salt d'ample per eixamplar o estrènyer el quadratí
+/saltCosCasella 1.5 def  %A% salt modular del cos amunt o avall (submúltiple de 3 i 12 com més petit és més alenteix l'execució)
+
+%% rang de valors aconsellables mínim: 5 màxim: 20
+/saltV 20 def  %A%NOmic salts del vector d'amples, quants més n'hi han, el comportament és més acurat (però alenteix el procés)
+/sOl true def  %% true: s'executa encasella4.ps sol (x test), false: és cridat per entaulemnos4.ps
+
+%%+
+%% lògica de l'algorisme:
+%% l'objectiu principal és descriure cada casella amb un sistema de dades que permeti recompondre-la a posteriori (OFFtaula),
+%% amb la tipografia adaptada de cos i ample més adient, de manera que hi intervindran les dades/variables clau següents:
+
+%% /TexT és una string amb el text a compondre a la casella xifrat en WinAnsi i/o octal
+
+%% /trencador és una string amb el caràcter que farem servir pel canvi de línia
+
+%% /NCintervals és una array on hi han la quantitat de caràcters de cada paraula que formen tot el text de la casella
+%% és genera al principi de tot i només actua quan l'algorisme OFFtaula ha de compondre el text
+
+%% /intervals és una array que duu l'ample real (width) de cada mot, tret del caràcter separador /trencador que aquí
+%% fa d'índex, entenent per 'mot' tot allò que estigui entre dos caràcters classificats com a /trencador, ens ajudarà
+%% per generar /tramLin i compondre les línies amb OFFtaula juntament amb /NCintervals
+
+%% /tramLin és l'array que determina com es compondrà la casella, on el seu length ens diu quantes línies té la casella
+%% (per tant en podem deduir el seu Y), i cadasacuna de les arrays que la formen representa una línia de text, de manera que a
+%% dins hi hauran els valors necessaris per fer un getinterval a l'array NCintervals, o sigui que el primer valor és l'índex
+%% d'inici del mot que formarà la línia i el segon valor és el nombre de 'mots' que la componen, entenent per 'mot' tot allò
+%% que estigui entre dos caràcters classificats com a /trencador, per exemple: ,hola bon dia, seria un sol 'mot' si la coma ,
+%% fos un /trencador. La variable /tramLin es regenera cada cop que haguem modificat, o el cos, o el vector d'amples de la MM
+
+%% inicialment, abans d'engegar cap de les estratègies de composició /1oMes, caldrà comprovar primer si cap mot no és més gran
+%% que /minXcasella, si això passa caldrà que toquem l'ample (primer) i el cos (després) si amb l'ample no n'hi ha prou, doncs
+%% d'aquesta manera establirem els valors de sortida vàlids de /maxCosCasella i /vectorPesAmple pel càlcul final de /tramLin
+%% si es dóna el cas de hi hagi un mot on ni amb el valor zero de vFinaEstreta o vNegretaEstreta i /minCosCasella és més gran
+%% que /minXcasella, donaríem un avís o un error per un tema de llegibilitat?
+%% un cop fet això, hi haurà dues estratègies de composició regulades per la variable /1oMes de manera que, si val true:
+%% de /maxCosCasella a /minCosCasella saltant en valors de /saltCosCasella i cadascun d'ells apretant-lo per l'acordió d'amples
+%% determinat pel vector de la MM /vectorPesAmple (en 10 valors de /salT) intentarem escriure el text de cada casella en una
+%% 1 sola línia sense excedir /minXcasella, si no pot ser, serà el darrer cos /minCosCasella qui forçarà compondre amb totes
+%% les línies que facin falta, en canvi si la variable /1oMes val false:
+%% amb el valor del cos /maxCosCasella, i sense més opcions, compondrem la casella amb totes les línies que facin falta
+
+
+/vectorPesAmple exch def  %% vector inicial pes/ample del /WeightVector?
+/minCosCasella exch def  %% límit del cos per salt modular i un tema de llegibilitat
+/maxCosCasella exch def  %% hauria de ser ídem que el dels caps de columna (enunciats)
+/minXcasella exch def  %% hauria de ser ídem a l'ample mínim del cap de columna compost
+/trencador exch def  %% caràcter per fer el canvi de línia
+/1oMes exch def  %% true=1 false=2
+/componOample exch def  %% desem les dades per compondre (true) o desem els amples (false)
+/capOtext exch def  %% componem caselles pel cap de taula (true) o pel text dels continguts (false)?
+/TexT exch def  %% text a escriure
+
+%% Ha d'encasellar un text en 1 o + línies en funció d'un llindar min/max jugant amb el cos/ample de lletra
+%% on el que busquem és compondre amb el cos més gran possible i amb les mínimes línies possibles en base a dues preferències:
+%% 1 %% true
+%% De gran a petit per tot el rang de cossos, donem preferència a escriure el text en 1 sola línia, si no pot ser, serà
+%% el darrer cos (minCosCasella) qui forçarà compondre amb totes les línies que facin falta
+%% 2 %% false
+%% Amb el cos més gran (maxCosCasella) forçarà compondre amb totes les línies que facin falta
+%*%/1oMes true def  %% true=1 false=2
+
+%%+ filtrem si /trencador es repeteix dins /TexT 2 o+ vegades seguides
+%% el fitxer d'escriptura mai superarà la mida de la cadena
+TexT length string dup /noTexTredundant exch def /NullEncode filter /fTexT exch def
+trencador 0 get /Otrencador exch def  %% octet del caràcter trencador
+/rdndnt false def  %% es repeteix?
+/imn 0 def  %% comptador de mots nets
+TexT
+{
+ dup Otrencador eq
+ {
+  rdndnt
+  {  %% a l'octet anterior ja hem ensopegat amb el mot /trencador
+   pop
+  }
+  {  %% és el primer cop que ensopeguem amb el mot /trencador
+   fTexT exch write
+   imn 1 add /imn exch def
+  }ifelse
+  /rdndnt true def  %% es repeteix?
+ }
+ {  %% no és el mot /trencador
+  fTexT exch write
+  /rdndnt false def  %% es repeteix?
+  imn 1 add /imn exch def
+ }ifelse
+}forall
+fTexT closefile
+noTexTredundant 0 imn getinterval
+%% el darrer octet és /trencador?
+dup imn 1 sub get Otrencador eq
+{
+ 0 imn 1 sub getinterval
+}if
+/TexT exch def  %% els text a compondre sense redundàncies
+
+%% gs -q -dNOSAFER -o encasella_tripa.pdf -sDEVICE=pdfwrite -c .setpdfwrite -f encasella_tripa.ps
+
+/maxXcasella minXcasella def  %% hauria de ser inicialment ídem a minXcasella però el deduirem de la comparativa entre elles
+
+vectorPesAmple dup length array copy /INIvectorPesAmple exch def  %% profilaxi per inicialitzar el tipus quan canviem de font
+
+%% l'array NCintervals, duu el nombre de caràcters de cada mot, tret de la separació /trencador que fa d'índex
+/NCintervals 0 array def
+TexT
+{  %% loop
+ trencador search
+ {
+  %% aquí en comptes d'emmagatzemar-hi el width real hi posem directament el nombre de caràcters
+  length
+%%+ actua com a filtre per eliminar 2 o+ espais en blanc seguits (o un altre /trencador) doncs retorna una string buida que val 0
+  %%stringwidth pop
+  NCintervals length dup/araVa exch def 1 add array dup 0 NCintervals putinterval dup araVa 4 -1 roll put/NCintervals exch def
+  pop
+ }
+ {
+  %% aquí en comptes d'emmagatzemar-hi el width real hi posem directament el nombre de caràcters
+  length
+  %%stringwidth pop
+  NCintervals length dup/araVa exch def 1 add array dup 0 NCintervals putinterval dup araVa 4 -1 roll put/NCintervals exch def
+  exit
+ }ifelse
+}loop
+
+%%+ filtre per eliminar 2 o+ espais en blanc seguits (o un altre /trencador)
+%%+ eliminem els valors zero
+%[
+% NCintervals
+% {
+%  dup 0 eq
+%  {
+%   pop
+%  }if
+% }forall
+%]
+
+%% inicialment, abans d'engegar cap de les estratègies de composició /1oMes, caldrà comprovar primer si cap mot no és més gran
+%% que /minXcasella, si això passa caldrà que toquem l'ample (primer) i el cos (després) si amb l'ample no n'hi ha prou, doncs
+%% d'aquesta manera establirem els valors de sortida vàlids de /maxCosCasella i /vectorPesAmple pel càlcul final de /tramLin
+%% si es dóna el cas de hi hagi un mot on ni amb el valor zero de vFinaEstreta o vNegretaEstreta i /minCosCasella és més gran
+%% que /minXcasella, donaríem un avís o un error per un tema de llegibilitat?
+%/NCintervals exch def
+%(+.+.+.+)pstack quit
+
+
+/llesT false def  %% per sortir del for i del loop
+
+{  %% loop general de treball del primer anàlisi
+ maxCosCasella /araCos exch def
+ vectorPesAmple  %*% vector inicial pes/ample
+
+ capOtext  %% aquest gatell fa treballar el vector de pes/ample segons sigui una negreta (cap) o una fina (text)
+ {
+  %% vàlid pels caps de taula
+  %% per estrényer la lletra, tot el valor de l'índex 3 (negreta ample) passa progressivament cap a l'índex 1 (negreta estreta)
+  dup 3 get /vNegretaAmple exch def 1 get /vNegretaEstreta exch def  %% valors que condicionen l'ample dins les negretes
+  vNegretaAmple saltV div /salT exch def  %A% amb més saltV l'ample és més acurat (però alenteix el procés) 
+  0 salT vNegretaAmple  %% dades del for
+ }
+ {  %% vàlid pel text del contingut de la taula
+  %% per anar estrenyent la lletra, tot el valor de l'índex 2 (fina ample) passa progressivament cap a l'índex 0 (fina estreta)
+  dup 2 get /vFinaAmple exch def 0 get /vFinaEstreta exch def  %% els dos valors condicionen l'ample dins el pes de les fines
+  vFinaAmple saltV div /salT exch def  %A% amb més saltV l'ample és més acurat (però alenteix el procés)
+  0 salT vFinaAmple  %% dades del for
+ }ifelse
+
+%3 copy == == ==
+
+ { %% for que viatja pels amples de vectorPesAmple
+  /ARAsalT exch def  %% salt actual de l'ample MM
+  vectorPesAmple
+  capOtext  %% aquest gatell fa treballar el vector de pes/ample segons sigui una negreta (cap) o una fina (text)
+  {  %% vàlid pels caps de taula
+   %% per anar estrenyent la lletra, tot el valor de l'índex 3 hauria de passar progressivament cap a l'índex 1
+   %% ARAsalT sumat vNegretaEstreta a serà el nou valor de l'índex 1 de les negretes estretes
+   %% i es restarà del valor de vNegretaAmple per l'índex 3
+   dup 1 ARAsalT vNegretaEstreta add put dup 3 vNegretaAmple ARAsalT sub put
+  }
+  {  %% vàlid pel text del contingut de la taula
+   %% per anar estrenyent la lletra, tot el valor de l'índex 2 passa progressivament cap a l'índex 0
+   %% ARAsalT sumat a vFinaEstreta serà el nou valor de l'índex 0 de les fines estretes
+   %% i es restarà del valor inicial de vFinaAmple per l'índex 2
+   dup 0 ARAsalT vFinaEstreta add put dup 2 vFinaAmple ARAsalT sub put
+  }ifelse
+  /vectorPesAmple exch def
+  gsave
+  %% MultipleMaster
+
+%0%
+MM findfont  %% MM de treball AdobeSansMM del sistema Acrobat/Reader
+%% MyMMionari
+
+  %% recontruït el nou vector pes/ample generem la nova MM
+  vectorPesAmple
+  makeblendedfont  %% l'operador magic que extrau la mena de l'MM, i cal veure si amb els nous GS cal activar l'operador
+  dup length dict begin
+  {
+   1 index /FID ne
+   {def}{pop pop}ifelse
+  }forall
+  %% xifrat WinAnsi
+  %% atenció que aquesta crida només és vàlida a Ghostscript!
+  /Encoding systemdict /EncodingDirectory get /WinAnsiEncoding get def
+  currentdict end 
+/Camaleonica_WA exch definefont pop
+  /tipusCasella /Camaleonica_WA def
+  tipusCasella araCos selectfont
+  %% ample de /trencador
+  trencador stringwidth pop 2 mul /Mtrencador exch def  %% el trencador es tornarà a dividir x2 per ajustar l'orígen X
+
+  %% l'array intervals, duu el width de cada mot, tret de la separació /trencador que fa d'índex
+  %% i s'haurà de regenerar cada vegada quan haguem de compondre diverses línies dins una mateixa casella
+  /intervals 0 array def
+  TexT
+  {  %% loop
+   trencador search
+   {
+    %% aquí hi posem directament el width real
+    stringwidth pop
+    intervals length dup/araVa exch def 1 add array dup 0 intervals putinterval dup araVa 4 -1 roll put/intervals exch def
+    pop
+   }
+   {
+    %% aquí hi posem directament el width real
+    stringwidth pop
+    intervals length dup/araVa exch def 1 add array dup 0 intervals putinterval dup araVa 4 -1 roll put/intervals exch def
+    exit
+   }ifelse
+  }loop
+  grestore
+
+%%+ filtre per eliminar 2 o+ espais en blanc seguits (o un altre /trencador)
+%%+ eliminem els valors zero
+%[
+% intervals
+% {
+%  dup 0 eq
+%  {
+%   pop
+%  }if
+% }forall
+%]
+%/intervals exch def
+% (||||||)pstack quit
+
+  /elMesAmple 0 def
+  intervals
+  {  %% extraiem el valor més ample
+   dup elMesAmple gt
+   {/elMesAmple exch def}{pop}ifelse
+  }forall
+  %% comparem amb l'ample de la casella
+  elMesAmple Mtrencador add minXcasella lt
+  {  %% per saber que hem trobat els valors de cos i vector on cap mot és més gran que l'ample de la casella
+   %% vectorPesAmple araCos (+.+)pstack quit
+   /llesT true def  %% ens diu que ens cal sortir del loop
+   exit
+  }if
+ }for  %% que viatja pels amples de vectorPesAmple
+
+ llesT
+ {
+  exit
+ }
+ {
+  maxCosCasella saltCosCasella sub /maxCosCasella exch def  %A% abaixem el cos
+  maxCosCasella minCosCasella lt{exit}if  %% pleguem si ja hem fet el cos mínim
+  INIvectorPesAmple dup length array copy /vectorPesAmple exch def  %% còpia profilàctica del vector d'amples inicial
+ }ifelse
+}loop  %% general de treball del primer anàlisi
+
+%intervals (||||||)pstack quit
+%%+ aquest és el total de mots que es componen
+%intervals length ==
+%NCintervals length ==
+%(!)pstack quit
+
+/iLLegible false def
+llesT not
+{  %% si encara hi ha un mot que amb tots els valors mínims de cos i vector és encara més gran que /minXcasella
+ elMesAmple Mtrencador add minXcasella gt
+ {  %% donem un error de configuració per aturar el procés
+%% ARA FEM SILENCI!
+%%  (\n\nencasella4.ps:) print flush  %% assenyalem d'on ve
+%%  (\n...la casella... ) print flush TexT print flush ( ...duu un mot encara massa gran!) print flush
+%%  (\n...i s'han excedit els valors de llegibilitat, cos i vector, per compondre la taula... \n) print flush
+  %% maxCosCasella == vectorPesAmple == (...Pleguem!\n\n) print flush quit
+
+  /iLLegible true def  %% activarà l'avís de l'stopped a entaulemnos4.ps
+  (\n...seguim, però posem en perill la llegibilitat!\n\n) print flush
+  stop  %% stop ens permet sortir de l'execució derivada d'entaulemnos4.ps sense atura el procés però activant el seu stopped
+ }if
+}if
+
+%% un cop fet això, hi haurà dues estratègies de composició regulades per la variable /1oMes de manera que, si val true:
+%% de /maxCosCasella a /minCosCasella saltant en valors de /saltCosCasella i cadascun d'ells apretant-lo per l'acordió d'amples
+%% determinat pel vector de la MM /vectorPesAmple (en valors de /salT) intentarem escriure el text de cada casella en una
+%% 1 sola línia sense excedir /minXcasella, si no pot ser, serà el darrer cos /minCosCasella qui forçarà compondre amb totes
+%% les línies que facin falta, en canvi si la variable /1oMes val false:
+%% amb el valor del cos /maxCosCasella, i sense més opcions, compondrem la casella amb totes les línies que facin falta
+
+1oMes  %% estratègia per compondre el text
+{ %% de /maxCosCasella a /minCosCasella saltant en valors de /saltCosCasella
+ %% i cadascun d'ells apretant-lo per l'acordió d'amples determinat pel /vectorPesAmple intentarem escriure el text de cada
+ %% casella en una 1 sola línia sense excedir /minXcasella, si no pot ser, serà el darrer cos /minCosCasella qui forçarà
+ %% compondre amb totes les línies que facin falta
+ /pleguem false def  %% gatell pels 2 for?
+ /noHiQueb true def  %% gatell per detectar si ens hi queb en una sola línia
+ %% muntem el tramLin per a una sola línia
+ [
+  [0 intervals length ]
+ ]
+ /tramLin exch def
+ %% còpia blindada del vector deduït al loop general de treball del primer anàlisi
+ vectorPesAmple dup length array copy /INIvectorPesAmple exch def
+
+ maxCosCasella saltCosCasella neg minCosCasella  %A%
+ {   %% for pels cossos a 1 sola línia
+  /araCos exch def
+
+  INIvectorPesAmple  %% iniciem sempre un nou cos amb el vector deduït al loop general de treball del primer anàlisi
+  capOtext  %% aquest gatell fa treballar el vector de pes/ample segons sigui una negreta (cap) o una fina (text)
+  {
+   %% vàlid pels caps de taula
+   %% per estrényer la lletra, tot el valor de l'índex 3 (negreta ample) passa progressivament cap a l'índex 1 (negreta estreta)
+   dup 3 get /vNegretaAmple exch def 1 get /vNegretaEstreta exch def  %% valors que condicionen l'ample dins les negretes
+   vNegretaAmple saltV div /salT exch def  %A% amb més saltV l'ample és més acurat (però alenteix el procés)
+   0 salT vNegretaAmple  %% dades del for
+  }
+  {  %% vàlid pel text del contingut de la taula
+   %% per anar estrenyent la lletra, tot el valor de l'índex 2 (fina ample) passa progressivament cap a l'índex 0 (fina estreta)
+   dup 2 get /vFinaAmple exch def 0 get /vFinaEstreta exch def  %% els dos valors condicionen l'ample dins el pes de les fines
+   vFinaAmple saltV div /salT exch def  %A% amb més saltV l'ample és més acurat (però alenteix el procés)
+   0 salT vFinaAmple  %% dades del for
+  }ifelse
+
+  {  %% for pels amples a 1 sola línia
+   /ARAsalT exch def  %% salt actual de l'ample MM
+   vectorPesAmple
+   capOtext  %% aquest gatell fa treballar el vector de pes/ample segons sigui una negreta (cap) o una fina (text)
+   {  %% vàlid pels caps de taula
+    %% per anar estrenyent la lletra, tot el valor de l'índex 3 hauria de passar progressivament cap a l'índex 1
+    %% ARAsalT sumat vNegretaEstreta a serà el nou valor de l'índex 1 de les negretes estretes
+    %% i es restarà del valor de vNegretaAmple per l'índex 3
+    dup 1 ARAsalT vNegretaEstreta add put dup 3 vNegretaAmple ARAsalT sub put
+   }
+   {  %% vàlid pel text del contingut de la taula
+    %% per anar estrenyent la lletra, tot el valor de l'índex 2 passa progressivament cap a l'índex 0
+    %% ARAsalT sumat a vFinaEstreta serà el nou valor de l'índex 0 de les fines estretes
+    %% i es restarà del valor inicial de vFinaAmple per l'índex 2
+    dup 0 ARAsalT vFinaEstreta add put dup 2 vFinaAmple ARAsalT sub put
+   }ifelse
+%dup ==
+   /vectorPesAmple exch def
+
+   gsave
+   %% MultipleMaster
+
+%0%
+MM findfont  %% MM de treball AdobeSansMM del sistema Acrobat/Reader
+%% MyMMionari
+
+   %% recontruït el nou vector pes/ample generem la nova MM
+   vectorPesAmple
+   makeblendedfont  %% l'operador magic que extrau la mena de l'MM, i cal veure si amb els nous GS cal activar l'operador
+%%   dup length dict begin
+%%   {
+%%    1 index /FID ne
+%%    {def}{pop pop}ifelse
+%%   }forall
+   %% xifrat WinAnsi
+   %% atenció que aquesta crida només és vàlida a Ghostscript!
+%%   /Encoding systemdict /EncodingDirectory get /WinAnsiEncoding get def
+%%   currentdict end 
+/Camaleonica_WA exch definefont pop
+   /tipusCasella /Camaleonica_WA def
+   tipusCasella araCos selectfont
+   TexT stringwidth pop minXcasella lt
+   {  %% només si la línia és més petita sortirem dels 2 for i fixarem el paràmetre de /maxCosCasella
+    araCos /maxCosCasella exch def
+    /pleguem true def
+    exit
+   }if
+   grestore
+  }for  %% pels amples a 1 sola línia
+
+  pleguem
+  {
+   /noHiQueb false def  %% confirmem que SI que hi queb en 1 línia
+   exit
+  }if
+ }for  %% pels cossos a 1 sola línia
+
+ noHiQueb
+ {  %% if de si no hem pogut compondre'l en una sola línia, ho fem amb les que siguin amb el cos més petit /minCosCasella
+  %%(NO ENCARA)pstack quit
+  gsave
+  %% MultipleMaster
+
+%0%
+MM findfont  %% MM de treball AdobeSansMM del sistema Acrobat/Reader
+% MyMMionari
+
+  INIvectorPesAmple  %% iniciem sempre un nou cos amb el vector deduït al loop general de treball del primer anàlisi
+  dup /vectorPesAmple exch def
+  makeblendedfont  %% l'operador magic que extrau la mena de l'MM, i cal veure si amb els nous GS cal activar l'operador
+%%  dup length dict begin
+%%  {
+%%   1 index /FID ne
+%%   {def}{pop pop}ifelse
+%%  }forall
+  %% xifrat WinAnsi
+  %% atenció que aquesta crida només és vàlida a Ghostscript!
+%%  /Encoding systemdict /EncodingDirectory get /WinAnsiEncoding get def
+%%  currentdict end 
+/Camaleonica_WA exch definefont pop
+  /tipusCasella /Camaleonica_WA def
+  tipusCasella minCosCasella dup /araCos exch def selectfont  %% amb el cos més petit
+  %% ample de /trencador
+  trencador stringwidth pop 2 mul /Mtrencador exch def  %% el trencador es tornarà a dividir x2 per ajustar l'orígen X
+
+  %% l'array intervals, duu el width de cada mot, tret de la separació /trencador que fa d'índex
+  %% i s'haurà de regenerar cada vegada quan haguem de compondre diverses línies dins una mateixa casella
+  /intervals 0 array def
+  TexT
+  {  %% loop
+   trencador search
+   {
+    %% aquí hi posem directament el width real
+    stringwidth pop
+    intervals length dup/araVa exch def 1 add array dup 0 intervals putinterval dup araVa 4 -1 roll put/intervals exch def
+    pop
+   }
+   {
+    %% aquí hi posem directament el width real
+    stringwidth pop
+    intervals length dup/araVa exch def 1 add array dup 0 intervals putinterval dup araVa 4 -1 roll put/intervals exch def
+    exit
+   }ifelse
+  }loop
+
+  /iVa 0 def  %% índex inicials dels trams de línies a extraure
+  /faLinia 0 def  %% com creix la línia 
+
+  %% col·lecció de rangs d'índex a extraure dins el text (via getinterval)
+  %% per compondre totes les línies dins la casella un cop fora de l'algorisme
+  /tramLin 0 array def
+  /hiCaben 0 def  %% comptador de mots que caben en una línia
+
+  intervals
+  {  %% forall per muntar tramLin
+   Mtrencador add dup /1mot exch def  %% ample d'un sol mot per si no hi queb
+   faLinia add dup /faLinia exch def  %% valor actual de l'ample de línia, sempre amb l'afegit del trencador!
+   minXcasella le 
+   {  %% hi queb... encara NO muntem tramLin però
+    hiCaben 1 add /hiCaben exch def
+   }
+   {  %% ara NO hi queb... muntem tramLin
+    %% fixem el rang d'index(iVa)/llargada(hiCaben) pel getinterval a extraure quan compondrem cada línia
+    [iVa hiCaben]
+    tramLin length dup/araVa exch def 1 add array dup 0 tramLin putinterval dup araVa 4 -1 roll put/tramLin exch def
+
+    iVa hiCaben add /iVa exch def  %% actualitzem iVa
+    /hiCaben 1 def  %% comptador de mots que cabran a la línia següent
+    /faLinia 1mot def  %% la línia ara té el valor del mot que no hi ha capigut
+   }ifelse
+  }forall  %% per muntar tramLin
+  %% fixem el rang d'index(iVa)/llargada(hiCaben) pel getinterval a extraure quan compondrem cada línia
+  [iVa hiCaben]
+  tramLin length dup/araVa exch def 1 add array dup 0 tramLin putinterval dup araVa 4 -1 roll put/tramLin exch def
+  grestore
+ }if  %% de si no hem pogut compondre'l en una sola línia, ho fem amb les que siguin amb el cos més petit /minCosCasella
+}
+{  %% amb el valor del cos /maxCosCasella i amples /vectorPesAmple, componem la casella amb totes les línies que facin falta
+ %% intervals length 1 sub /darrerMot exch def  %% índex del darrer mot a compondre dins la casella
+ gsave
+ %% MultipleMaster
+
+%0%
+MM findfont  %% MM de treball AdobeSansMM del sistema Acrobat/Reader
+% MyMMionari
+
+ %% recontruït el nou vector pes/ample generem la nova MM
+ vectorPesAmple
+ makeblendedfont  %% l'operador magic que extrau la mena de l'MM, i cal veure si amb els nous GS cal activar l'operador
+
+ dup length dict begin
+ {
+  1 index /FID ne
+  {def}{pop pop}ifelse
+ }forall
+%% xifrat WinAnsi
+%% atenció que aquesta crida només és vàlida a Ghostscript!
+ /Encoding systemdict /EncodingDirectory get /WinAnsiEncoding get def
+ currentdict end 
+
+/Camaleonica_WA exch definefont pop
+ /tipusCasella /Camaleonica_WA def
+ tipusCasella maxCosCasella dup /araCos exch def selectfont
+ %% ample de /trencador
+ trencador stringwidth pop 2 mul /Mtrencador exch def  %% el trencador es tornarà a dividir x2 per ajustar l'orígen X
+
+ /iVa 0 def  %% índex inicials dels trams de línies a extraure
+ /faLinia 0 def  %% com creix la línia 
+ %% col·lecció de rangs d'índex a extraure dins el text (via getinterval)
+ %% per compondre totes les línies dins la casella un cop fora de l'algorisme
+ /tramLin 0 array def
+ /hiCaben 0 def  %% comptador de mots que caben en una línia
+
+ intervals
+ {  %% forall per muntar tramLin
+
+%dup 0 eq
+%{
+% /nosobrer false def
+% pop faLinia
+%}
+%{
+% /nosobrer true def
+  Mtrencador add dup /1mot exch def  %% ample d'un sol mot per si no hi queb
+  faLinia add dup /faLinia exch def  %% valor actual de l'ample de línia, sempre amb l'afegit del trencador!
+%}ifelse
+
+  minXcasella le 
+  {  %% hi queb... encara NO muntem tramLin però
+%nosobrer
+%{
+   hiCaben 1 add /hiCaben exch def
+%}if
+  }
+  {  %% ara NO hi queb... muntem tramLin
+   %% fixem el rang d'index(iVa)/llargada(hiCaben) pel getinterval a extraure quan compondrem cada línia
+   [iVa hiCaben]
+   tramLin length dup/araVa exch def 1 add array dup 0 tramLin putinterval dup araVa 4 -1 roll put/tramLin exch def
+
+   iVa hiCaben add /iVa exch def  %% actualitzem iVa
+   /hiCaben 1 def  %% comptador de mots que cabran a la línia següent
+   /faLinia 1mot def  %% la línia ara té el valor del mot que no hi ha capigut
+  }ifelse
+ }forall  %% per muntar tramLin
+ %% fixem el rang d'index(iVa)/llargada(hiCaben) pel getinterval a extraure quan compondrem cada línia
+ [iVa hiCaben]
+ tramLin length dup/araVa exch def 1 add array dup 0 tramLin putinterval dup araVa 4 -1 roll put/tramLin exch def
+ grestore
+
+%%+ aquest és el total de línies de text que es componen
+%tramLin %length
+%(/+/+/+/)pstack quit
+
+}ifelse
+
+%%TexT ==
+%(**********) pstack quit
+componOample
+{
+ sOl  %% s'executa encasella4.ps sol, o és cridat per entaulemnos4.ps?
+ {  %% s'executa sol
+  %% les dades obtingudes ens permeten compondre la casella fora de l'algorisme (veure OFFtaula.ps)
+
+%(VVV)pstack quit
+  <<
+    /PageSize
+    [
+%     maxXcasella  %% l'X
+%     tramLin length 1 add  %% l'Y de la casella sempre serà 1 cos més del total de línies
+%     araCos mul
+
+595 842
+
+%%     66  %% N1 alçada ideal per les 1eres categories de Poly
+%%     88  %% N2 alçada ideal per les 1eres categories de Poly
+   ]
+  >>setpagedevice
+  /iLin 0 def
+
+  %% colors dels tacs de fons o línia lateral discontínua que venen de tacsPrimerSegonNivell.ps
+gsave
+
+%% desactivem ara el pintat del fons de la casella!
+%%  cN1 iN1 get aload pop setcmykcolor  %% N1
+%%  cN1 iN1 1 sub get aload pop setcmykcolor  %% N2
+%%  0 0 maxXcasella 66 rectfill  %% N1 pintem el tac de fons
+%% N2 només pintem el costat dret vertical en línia discontinua
+%%12 setlinewidth [4] 0 setdash maxXcasella 0 moveto maxXcasella 88 lineto stroke
+
+%3%
+%% sembla que pinta el text amb color blanc?
+gsave .8 .8 .8 setrgbcolor 0 0 xyTacN1 aload pop rectfill grestore
+
+grestore
+
+false setoverprint  %% imprescindible per que no desaparegui el blanc!
+  0 0 0 0 setcmykcolor  %%NOmic N1 lletra blanca
+%%bistre aload pop setcmykcolor  %% N2
+
+  tipusCasella araCos selectfont
+
+araCos MyMMx100LiniaDbase mul 100 div araCos 2 div add
+%% comptant que componem per dalt, li sumem el resultat de restar 2 cossos a l'alçada de la casella
+tramLin length 1 add araCos mul araCos 2 mul sub add
+
+paginatDretaEsquerra
+{  %% s'activa l'enquadernat dreta/esquerra
+ enquaDerna not
+ {  %% enquadernat a l'esquerra
+  pinca add  %% enretirem el text vertical l'espai de pinça cap a la dreta
+ }if
+}if
+
+pop 800
+%(oncomença?)pstack quit
+
+ /araY exch def  %% ajustem la línia de base Y al centre de la casella
+
+%%  Mtrencador 2 div
+N2i+gruixos 1 get /araX exch def
+
+%%+ aquí és on hauríem d'anar pautant la mida de la taca Y VanDeGraaf reiniciant-la per a cada execució de pàgina
+  tramLin
+  {  %% componem les línies tal i com han estat analitzades per NCintervals
+   NCintervals
+%(<<<<)pstack quit
+   exch aload pop getinterval
+   dup length
+   exch {add}forall dup 1 sub
+   araX araY moveto
+   TexT exch iLin exch getinterval
+
+   show
+
+   iLin add /iLin exch def
+   araY araCos sub /araY exch def 
+  }forall
+%%  showpage
+true setoverprint  %% imprescindible per que no desaparegui el blanc!
+
+  %% test valors clau per la MM
+  %%araCos ==  vectorPesAmple ==
+ }
+ {  %% és cridat per entaulemnos4.ps
+  %% caldrà comprovar que el valor clau de la MM vectorPesAmple és cridat correctament per entaulemnos4
+%%vectorPesAmple dup length array copy ==
+%%tramLin length araCos dup == mul ==  %% per test, llistem cos i alt de casella
+
+%%false{  %0% SI ACTIVEM L'IF EL VALOR maxYcasellaXfila QUEDA A ZERO DINS EL .DAT!
+
+  /iLin 0 def
+  tipusCasella araCos
+  selectfont
+
+%%  tramLin length 1 add  %% l'Y de la casella sempre serà 1 cos més del total de línies
+%%  araCos mul araCos sub
+
+araCos MyMMx100LiniaDbase mul 100 div araCos 2 div add
+%% comptant que componem per dalt, li sumem el resultat de restar 2 cossos a l'alçada de la casella
+tramLin length 1 add araCos mul
+dup maxYcasellaXfila gt
+{  %% desem el valor Y d'alçada de casella més alt detectat
+ dup /maxYcasellaXfila exch def
+}if
+araCos 2 mul sub add /araY exch def  %% ajustem la línia de base Y al centre de la casella
+
+%%  Mtrencador 2 div
+N2i+gruixos 1 get /araX exch def  %% ajustem l'orígen X
+
+  tramLin
+  {  %% componem les línies tal i com han estat analitzades per NCintervals
+   NCintervals exch aload pop getinterval
+   dup length
+   exch {add}forall dup 1 sub
+
+pop %0%
+%0%   araX araY moveto
+%0%   TexT exch iLin exch getinterval show
+
+   iLin add /iLin exch def
+   araY araCos sub /araY exch def 
+  }forall
+
+%%}if  %0% SI ACTIVEM L'IF EL VALOR maxYcasellaXfila QUEDA A ZERO DINS EL .DAT!
+
+  %% pel que fa a treballar amb entaulemnos4.ps passem els valors de tramLin Mtrencador NCintervals araCos
+  %% i l'array profilàctica /VEvectorPesAmple, paràmetres de la MM preparats per compondre el cap de taula
+  vectorPesAmple dup length array copy /VEvectorPesAmple exch def  %% descontaminem per traspassar-lo a entaulemnos4.ps
+ }ifelse
+}
+{
+ %% maxXcasella ==
+ %% araCos ==
+ %% minXcasella ==
+ %% vectorPesAmple ==
+
+ %% pel que fa a treballar amb entaulemnos4.ps aquesta opció de componOample ara només serveix per passar els valors
+ %% del cos araCos i l'array profilàctica /VEvectorPesAmple, paràmetres de la MM preparats per compondre el cap de taula
+ vectorPesAmple dup length array copy /VEvectorPesAmple exch def  %% descontaminem per traspassar-lo a entaulemnos4.ps
+}ifelse
+
+%%Tripa cal?
+showpage
+

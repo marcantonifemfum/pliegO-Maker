@@ -1,0 +1,122 @@
+%%Aprofitem l'algorisme del projecte EMPREMT (BanderaDreta_Cshow3_#.ps)
+%% modificat pel projecte de Polynorma
+%# Estudi del comportament de l'operador cshow com una componedora senzilla
+
+<</PageSize[595 842]>>setpagedevice
+/Times-Roman 11 selectfont
+
+%% aquest operador podria servir per composar la l·l i les lligadures o l'escriptura contextual de les OT
+%% però aquí el fem servir per a un primer algorisme de justificar text a l'esquerra (bandera dreta)
+
+%% coses a resoldre...
+%% 1. si no troba el mot que es fa servir per tallar, peta, degut a que excedim el màxim de la cadena buffer
+%% 2. el signe que es fa servir per tallar també compta a l'hora de saber si excedim la línia
+%% potser podríem treballar amb un factor de tolerància per minimitzar inestabilitats?
+
+%% el tipus de lletra i aquestes variables, ja han de venir definides
+23.3889 /mX exch def  %# posició X d'inici de línia
+264.444427 /mY exch def  %# posició inicial Y de la primera línia
+12 /iL exch def  %# interliniat
+164 /maxL exch def  %# ample de línia/columna
+
+mX mY moveto  %% posició inicial de la primera línia
+
+256 string /mot exch def  %% mai hi haurà un mot tant llarg
+
+mot /NullEncode filter /fotli exch def  %% cadena+fitxer d'escriptura d'un mot
+
+0 /faLinia exch def  %% ample actual de la línia
+
+0 /nmot exch def  %% nombre de caràcters que té cada mot que componem
+
+0 /aElDarrerMot exch def  %% ample del darrer mot
+
+
+{  %% procediment de l'operador cshow
+
+ pop
+ dup faLinia add
+ dup maxL gt
+
+%%dup 4 index 32 eq   % si superem l'ample de línia amb el mot de tall llavors fem com si no
+%%and {false pop true/iGnorem exch def}{false/iGnorem exch def}ifelse
+
+ {  %% hem esgotat l'ample de línia
+  pop pop
+  aElDarrerMot /faLinia exch def  %% el valor de l'ample de la nova línia
+  fotli exch write
+  currentpoint iL sub mX exch dup /YdarrerPgraf exch def moveto pop
+
+%%+ marxem?
+YdarrerPgraf 66.11 le { aElDarrerMot == stop}if
+
+  nmot 1 add /nmot exch def
+ }
+ {
+  /faLinia exch def
+  exch dup
+
+  %# codi del caràcter detector per trencar la línia
+  32  %% espai en blanc
+  %%95  %% guió baix
+
+  eq
+
+%%dup
+%%iGnorem and dup {false/iGnorem exch def}if
+%%{pop exch sub/faLinia exch def nmot 1 add /nmot exch def}{
+
+  {  %% ja hem compost un mot
+   fotli exch write
+   pop  %% faLinia exch sub aElDarrerMot sub
+   0/aElDarrerMot exch def  %% això és l'ample del darrer mot compost
+   fotli closefile 
+   mot 0 nmot 1 add getinterval currentpoint dup /YdarrerPgraf exch def moveto show
+   0/nmot exch def
+   256 string /mot exch def  %% mai hi haurà un mot tant llarg
+   mot /NullEncode filter /fotli exch def
+  }
+  {  %% estem component un mot
+   fotli exch write
+   aElDarrerMot add /aElDarrerMot exch def  %% calculem l'ample del mot compost
+   nmot 1 add /nmot exch def
+  }ifelse
+
+%%}ifelse
+
+ }ifelse
+}
+
+%# text a compondre
+%%Tripa
+(Feu que\fun\fsol full de paper esdevingui un llibret excepcional, eu que un sol full de paper esdevingui un llibret excepcional, eu que un sol full de paper esdevingui un llibret excepcional, eu que un sol full de paper esdevingui un llibret excepcional, eu que un sol full de paper esdevingui un llibret excepcional, Feu que un sol full de paper esdevingui un llibret excepcional, eu que un sol full de paper esdevingui un llibret excepcional, eu que un sol full de paper esdevingui un llibret excepcional, eu que un sol full de paper esdevingui un llibret excepcional, eu que un sol full de paper esdevingui un llibret excepcional)
+%%(Esdevinguerem_miops_d'una_vella_causa_perduda,_pero_malgrat_tot_encara_ben_present_i_amb_grans_possibilitats_d'esdevenir)
+%%(l'escrius?)
+
+%eSCRiu
+
+cshow
+
+%% el darrer mot...
+fotli closefile
+%fotli flushfile
+
+mot 0 nmot 1 add getinterval currentpoint dup /YdarrerPgraf exch def moveto show
+
+YdarrerPgraf ==
+66.11 ==
+
+%mot 0 nmot 1 add getinterval dup 0 get 0 eq
+%{
+% pop currentpoint moveto
+%}
+%{
+% currentpoint moveto show
+%}ifelse
+
+%% marquem els marges d'ample de la columna...
+%1 0 0 setrgbcolor mX 0 moveto mX 400 lineto stroke
+%mX maxL add 0 moveto mX maxL add 400 lineto stroke
+
+%%Tripa
+showpage
