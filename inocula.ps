@@ -1,6 +1,14 @@
 %!
-%% provem d'inocular dins a cada pàgina (o a l'estructura del document)
-%% diversos objectes de codi PDF via pdfmark de GS
+%% activem la potent funció dels Reference XObjects (pdf 1.4) documentats al PDF Ref 1.7 4.9.3 pàgina 361 i ben avalat per
+%% la ISO 15930-8:2008 (PDF/X-5) https://www.iso.org/standard/42877.html però ara només implementat a l'AdobeReader/Acrobat
+%% «specifies the use of the portable document format (PDF) version 1.6 for the dissemination of digital data intended for print»
+%% inoculant dins a cada pàgina i a l'estructura del document diversos objectes de codi PDF via pdfmark de GS
+%% aquest algorisme encara necessita d'intervenció manual en el seu codi fins que no ho capturem via CaLi2CoPi (switch 18)
+%% o les noves funcions de PDFscripting que té GS a partir de la v9.55
+%% el MediaBox/CropBox de cada pàgina, per saber-ne el nombre i decidir el BBox de cadascuna
+
+%% exemples interessants per inocular:
+%% https://bacnyc.org/do-not-enter-or-modify-or-erase/images/uploads/performance/20_spring/PlayBAC2/BAC_CatalanPoetry_Program.pdf
 
 noNULL
 {
@@ -24,31 +32,35 @@ noNULL
 % iSeq 1 eq  %% estructures que només s'han de crear 1 cop
 % {
 
-save
+gsave
 
 %% fem noms únics
 %%Hauríem de poder saber les pàgines del document
 ({fa1form) dup length dup /araVa exch def Npgn cvx exec 1 sub 4 string cvs dup length 3 -1 roll add 1 add string dup
 3 -1 roll araVa exch putinterval dup 3 -1 roll 0 exch putinterval dup dup length 1 sub (}) putinterval
 dup length string copy /llançat exch def
-%(llll)pstack quit
+%%llançat(llll)pstack quit
 
-  %% crea una X amb les dues diagonals de la pàgina del llançat com un Form
-  %[ /BBox [0 0 xPagina yPagina] /_objdef llançat cvx exec /BP pdfmark
+[ /BBox [0 0 xPagina yPagina] /_objdef llançat cvx exec /BP pdfmark
   %[ /BBox [0.0 0.0 612 792 ] /_objdef {fa1form} /BP pdfmark
 %%Hauríem de posar el BBox ídem al CropBox/MediaBox de cadascuna de les pàgines (CaLi2CoPi) poden ser totes diferents!
 %[ /BBox [0 0 595 842] /_objdef llançat cvx exec /BP pdfmark
-[ /BBox [ 0 0 384 527.040 ] /_objdef llançat cvx exec /BP pdfmark
+%%[ /BBox [ 0 0 384 527.040 ] /_objdef llançat cvx exec /BP pdfmark
 
-  %% en una Reference XObject això només serveix com a testimoni del contenidor del Proxy
-  0 setgray
-  0 0 moveto xPagina yPagina lineto stroke
-  xPagina 0 moveto 0 yPagina lineto stroke
+  %% crea una X vermella amb les dues diagonals de la pàgina del llançat (serà l'únic contingut gràfic del Form)
+  %% en una Reference XObject això només serveix com a testimoni de que contenidor del Proxy no ha pogut cridar la pàgina
+%  1 0 0 setrgbcolor 0 setlinewidth
+%  0 0 moveto 384 527.040 lineto stroke
+%  384 0 moveto 0 527.040 lineto stroke
+
+(/Users/femfum/PliegOS/codi_pliegOS/reglatge.ps) (r) file cvx exec
+
   [ /EP pdfmark
 
+
 %%EP!
-%% repiquem el Bbox perquè a la priner crida l'intèrpret de pdfmark el modifica a posteriori?
-[ llançat cvx exec << /BBox [ 0 0 384 527.040 ] >> /PUT pdfmark
+%% repiquem el Bbox perquè a la primera crida l'intèrpret de pdfmark el modifica a posteriori?
+[ llançat cvx exec << /BBox [ 0 0 595 842 ] >> /PUT pdfmark
 
   %% com que podem afegir la clau/valor que volguem al diccionari del Form, un cop generat tot l'objecte
   %% podriem construir per a cada pàgina del llançat la Reference XObject que vulguem
@@ -56,9 +68,9 @@ dup length string copy /llançat exch def
 %%Una de le claus està en controlar l'escala per la matriu
 %% abans cal saber quin és el costat més ample V/H per tal no excedim la proporció
 %% l'escala es dedueix fent treballar de divisor el costat més ample x/y del pdf que llegim, pel mateix x/y del llançat que toca
-  [ llançat cvx exec <</Matrix [ yPagina 527 div 0 0 yPagina 527 div 0 0 ]>> /PUT pdfmark
+  [ llançat cvx exec <</Matrix [ yPagina 842 div 0 0 yPagina 842 div 0 0 ]>> /PUT pdfmark
   %%[ {fa1form} <</Ref << /ID [ (aeiou)(01234) ] /Page 0 /F (targetX5_pla.pdf) >> >> /PUT pdfmark
-  [ llançat cvx exec <</Ref << /Page Npgn cvx exec 1 sub /F (patufet_avuiFa100anys_19200410-23204.pdf) >> >> /PUT pdfmark
+  [ llançat cvx exec <</Ref << /Page Npgn cvx exec 1 sub /F (ElBorinot_any1_n1_19231129.pdf) >> >> /PUT pdfmark
 
   %% també funcionaria incrustar el valor d'una clau com a stream, seria la manera d'escriure hexa dins <> de forma inalterada
   %% però això NO aguanta la interpretació de la ID pels Reference XObjects
@@ -74,7 +86,7 @@ dup length string copy /llançat exch def
  %% crida el Form a cada pàgina del llançat
  [ llançat cvx exec /SP pdfmark
 
-restore
+grestore
 
 
 }if

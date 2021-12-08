@@ -16,7 +16,10 @@ noNULL  %% pinta el contingut de pàgina?
 %%+ color
 %gsave
 %{1 exch sub} settransfer  %% negativem el color vigent pel fons
- /Normal .setblendmode 1 .setopacityalpha  %% contraresta la transparència Overlay activa per les vores de les pàgines
+
+%%NOUgs9.55
+% /Normal .setblendmode 1 .setopacityalpha  %% contraresta la transparència Overlay activa per les vores de les pàgines
+
 %1 1 1 1 setcmykcolor
 %0 0 0 setrgbcolor
  0 setgray
@@ -35,7 +38,10 @@ noNULL  %% pinta el contingut de pàgina?
  xPagina qdrt sub yPagina qdrt sub qdrt dup rectfill
 
 %%+ color
- /Normal .setblendmode 1 .setopacityalpha  %% contraresta la transparència Overlay activa per les vores de les pàgines
+
+%%NOUgs9.55
+% /Normal .setblendmode 1 .setopacityalpha  %% contraresta la transparència Overlay activa per les vores de les pàgines
+
 %0 0 0 0 setcmykcolor
 %1 1 1 setrgbcolor
  1 setgray
@@ -53,7 +59,10 @@ noNULL  %% pinta el contingut de pàgina?
  {
   gsave  %% provem de fer la vora de la pàgina aquí
   newpath
-  /Normal .setblendmode 1 .setopacityalpha
+
+%%NOUgs9.55
+%  /Normal .setblendmode 1 .setopacityalpha
+
   1 setlinewidth 1 0 0 setrgbcolor
   0 0 xPagina yPagina rectstroke
   grestore

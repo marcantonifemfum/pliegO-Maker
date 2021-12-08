@@ -6,7 +6,7 @@
 %%  Per a intèrprets `GNU GPL Ghostscript´ però també, amb ben pocs retocs, pot córrer
 %%  amb l'Adobe Acrobat Distiller o amb el PSNormalizer Framework/Apple pstopdf a MacOSX.
 %%
-%%  `Copyleft 2017-2020 :: l'Ametlla de Merola :: Marcantoni Malagarriga-Picas´
+%%  `Copyleft 2017-2021 :: l'Ametlla de Merola :: Marcantoni Malagarriga-Picas´
 %%  `<http://www.femfum.com> | <marcantoni@femfum.com>´
 %%  `https://github.com/marcantonifemfum/pliegO-Maker´
 %%  `http://pliegos.net/maker´
@@ -32,7 +32,7 @@
 %%
 %%  All the comments inside the code are in catalan [ca], we hope to add english annotations in future versions
 %%  
-%%  `Copyleft 2017-2020 :: l'Ametlla de Merola :: Marcantoni Malagarriga-Picas´
+%%  `Copyleft 2017-2021 :: l'Ametlla de Merola :: Marcantoni Malagarriga-Picas´
 %%  `<http://www.femfum.com> | <marcantoni@femfum.com>´
 %%  `https://github.com/marcantonifemfum/pliegO-Maker´
 %%  `http://pliegos.net/maker´
@@ -62,21 +62,33 @@
 %% Valid values are: 0 (portrait), 3 (landscape), 2 (upside down), and 1 (seascape). The orientation can be set from the command
 %% line as -c "<</Orientation 3>> setpagedevice" using Ghostscript directly but cannot be set in ps2pdf. See Limitations below.
 %% gs -q -dNOSAFER -o resultat.pdf -sDEVICE=pdfwrite -dAutoRotatePages=/None -c .setpdfwrite -f nUp_pliegOS.ps
+%% des de la versió 9.52 del GS han desactivat .setpdfwrite (hemde documentar bé què suposa això ara)
+%% la crida alternativa informen que és...
+%% gs -q -dNOSAFER -o resultat.pdf -sDEVICE=pdfwrite -dAutoRotatePages=/None -c 3000000 setvmthreshold -f nUp_pliegOS.ps
+%%NOVA crida pel GS v9.55
+%% gs -q -dNOSAFER -o plegaVeu.pdf -sDEVICE=pdfwrite -dAutoRotatePages=/None -f nUp_pliegOS.ps
+%%Error: /undefined in /--.beginpage-- provocat per l'operador de transparència .setopacityalpha
+%%   **** WARNING: .setopacityalpha is deprecated (as of 9.53.0) and will be removed in a future release
+%%   **** See .setfillconstantalpha/.setalphaisshape for the improved solution
+%%Canviarem tots els .setopacityalpha per .setalphaisshape
+%%NOUgs9.55 marca el que hem desactivat temporalment en relació a la transparència
+%% com que és un canvi progressiu des de la 9.53 permeten mantenir els operadors eliminats afegint -dALLOWPSTRANSPARENCY
 
-%% conceptes
-%% full: peça de paper (MediaBox), en algun dels formats estàndards, que s'imprimeix (ISO, JIS, ARCH, Ansi, etc)
-%% plana: anvers o revers (cares) del full de paper
-%% pàgina: cadascuna de les àrees incloses en una plana, al límit del plec o del tall (TrimBox), on es compon el document
+%% glosari:
+%% full: peça de paper que s'imprimeix (MediaBox), en algun dels formats estàndards o no (ISO, JIS, ARCH, Ansi, etc)
+%% plana: anvers o revers, cadascuna de les 2 cares del full de paper
+%% pàgina: les del pliegO acabat, i dins la plana són cadascuna les àrees on es compon el document, limitades pel plec i tall
 %% vertical: l'ample és més estret que l'alt
 %% horitzontal: l'alt és més estret que l'ample
-%% llançat: disposició de les pàgines dins la plana
+%% llançat: imposició, o sigui la disposició de les pàgines dins la plana
+%% tripa: conjunt de pàgines un cop enquadernat el llibret
 %%Fem la descripció de la imposició amb les mateixes directrius que es descriu la imatge: columnes x files
 %%Llavors 1hvUpHV = 1x1 + 1x1  2vUpHV = 2x1 + 2x1  4vUpHV = 2x2 + 2x2
 
 %% PliegO > és el producte, el llibret, és un "plec", un "pliego". Per què la "O" està en caixa alta?
 %% perquè així fa referència al següent...
 %% PliegOS > és un joc de paraules entre "plec/pliego" i "OS" (operating system)
-%% PliegOS és el sistema operatiu (social, d'autoria, editorial, tecnològic) entorn a la creació de PliegOs
+%% PliegOS és el sistema operatiu (social, d'autoria, editorial, tecnològic) d'entorn en la creació de PliegOs
 %% PliegOS.net > és la web del projecte
 %% PliegOs o PliegO's (amb la "s" en minúscula o amb apòstrof + minúscula) és el plural del primer
 %% són uns quants PliegO, uns quants llibrets.
@@ -86,7 +98,7 @@
 %% l'opció més senzilla potser és PliegO'Maker on no cal entendre què fa la "o" separada. 
 
 %% qüestions
-%% 0 :: s'hauria d'incorporar l'argot d'ofici
+%% 0 :: farem servir, sempre que es pugui, l'argot d'ofici de la indústria gràfica i el llibre
 %% 1 :: les pàgines resultants tenen la mateixa ràtio que el full(MediaBox)?
 %% per exemple: un full A4 vertical té una ràtio ample/alt (595/842) de 0.706650831353919
 %% amb una combinatòria 4+4 les pàgines fan 210.5 297.5 les pàgines tenen una ràtio idèntica fins el 2n decimal 0,707563025210084
@@ -97,8 +109,8 @@
 %% l'nUp triat primer comprova si la ratio del full (MediaBox) es manté a les pàgines que conté (TrimBox/ArtBox)
 %% si no manté la ràtio, triem entre forçar-la o adaptar-nos 100% al full amb una de nova
 %% seguidament hi deduïm el factor d'escala i fem la combinatòria de translates + rotates
-%% a BeginPage és on s'escala i es fa el translate + rotate, pàgina a pàgina, dins la imposició de la plana
-%& a EndPage és on es decideix si hem acabat amb la imposició, generant la plana
+%% a BeginPage és on s'escala i es fa el translate + rotate, pàgina a pàgina, dins la imposició (llançat) de la plana
+%& a EndPage és on es decideix si hem acabat amb el llançat (imposició), generant la plana
 %% al loop componedor treballem sense escales/translacions/rotacions i el format serà el del full (MediaBox) si la ratio és ídem
 %% si la ràtio no és ídem i no la forcem, treballarem amb el nou format adaptat
 %% l'algorisme componedor s'executarà dues vegades (una per plana) per tal sigui possible treballar amb l'aleatori
@@ -147,7 +159,7 @@
  }ifelse
 }
 {
- 8
+ 4
 %% (\n Ghostscript no pot capturar aquesta variable d'entorn!\n\n)print flush
 }ifelse
 
@@ -216,12 +228,12 @@
  }ifelse
 }
 {
- 7  %% 0 algorisme de reglatge
+ 3  %% 0 algorisme de reglatge
     %% 1 fus horari
     %% 2 interrogador de variables
     %% 3 algorisme buit i només pintaria els marges de pàgina?
     %% 4 nadala amigots (ha d'anar amb 8vUpH!)
-    %% 5 inocula codi pdf
+    %% 5 inocula codi pdf per farcir Reference XObjectes
     %% 6 traçat harmònic VanDeGraaf
     %% 7 el bo i millor per compondre text
 %% (\n Ghostscript no pot capturar aquesta variable d'entorn!\n\n)print flush
@@ -239,7 +251,7 @@
  }ifelse
 }
 {
- true  %% true: deduïm nosaltres el cos | false: hi ha una segona variable que ens diu amb quin cos hem de treballar
+ false  %% true: deduïm nosaltres el cos | false: hi ha una segona variable que ens diu amb quin cos hem de treballar
 %% (\n Ghostscript no pot capturar aquesta variable d'entorn!\n\n)print flush
 }ifelse
 
@@ -263,8 +275,9 @@
  (interroguem.ps)  %% 2 interrogador de variables de l'algorisme nUp_pliegOs.ps
  (buit.ps)  %% 3 només pintaria els marges de pàgina?
  (nadala2017.ps)  %% 4 nadala amigots / %%M2 ha de ser 8 / %%M4 ha de ser 4 / %%M5 ha de ser false
- (inocula.ps)  %% 5 inocula codi pdf
- (VanDeGraaf3.ps)  %% 6 traçat harmònic VanDeGraaf
+ (/Users/femfum/PliegOS/codi_pliegOS/inocula.ps)  %% 5 inocula codi pdf per farcir Reference XObjects
+% (VanDeGraaf3.ps)  %% 6 traçat harmònic VanDeGraaf
+ (VanDeGraaf4.ps)  %% 6 traçat harmònic VanDeGraaf / glif per pàgina pliegOSchapbooks ATypI2020AllOver
  (compon_VanDeGraaf.ps)  %% 7 el bo i millor per compondre text
 ] def
 
@@ -333,7 +346,11 @@
     [0 0 xPagina yPagina] dup
     rectclip  %% retallem la vora de la pàgina (equivalent a TrimBox)
     %% transparència que trepitja encara que estigui a sota de tot
-    /Overlay .setblendmode 1 .setopacityalpha
+    %/Overlay
+
+%%NOUgs9.55
+%/Normal .setblendmode 1 .setalphaisshape  %% .setopacityalpha eliminat al GS 9.53
+
     1 1 1 setrgbcolor  %% vermell? blanc? negre?
     1 setlinewidth  %% gruix per tal vessi mig punt als marges del full
     rectstroke  %% pintem la vora de la pàgina (equivalent a TrimBox)
@@ -486,7 +503,11 @@
     [0 0 xPagina yPagina] dup
     rectclip  %% retallem la vora de la pàgina (equivalent a TrimBox)
     %% transparència que trepitja encara que estigui a sota de tot
-    /Overlay .setblendmode 1 .setopacityalpha
+    %/Overlay
+
+%%NOUgs9.55
+%/Normal .setblendmode 1 .setalphaisshape  %% .setopacityalpha eliminat al GS 9.53
+
     1 1 1 setrgbcolor  %% vermell? blanc? negre?
     1 setlinewidth  %% gruix per tal vessi mig punt als marges del full
     rectstroke  %% pintem la vora de la pàgina (equivalent a TrimBox)
@@ -710,8 +731,12 @@
     [0 0 xPagina yPagina] dup
     rectclip  %% retallem la vora de la pàgina (equivalent a TrimBox)
     %% transparència que trepitja encara que estigui a sota de tot
-    /Overlay .setblendmode 1 .setopacityalpha
-    1 1 1 setrgbcolor  %% vermell? blanc? negre?
+    %/Overlay
+
+%%NOUgs9.55
+%/Normal .setblendmode 1 .setalphaisshape  %% .setopacityalpha eliminat al GS 9.53
+
+    1 0 0 setrgbcolor  %% vermell? blanc? negre?
     1 setlinewidth  %% gruix per tal vessi mig punt als marges del full
     rectstroke  %% pintem la vora de la pàgina (equivalent a TrimBox)
    }
@@ -1040,8 +1065,12 @@
     [0 0 xPagina yPagina] dup
     rectclip  %% retallem la vora de la pàgina (equivalent a TrimBox)
     %% transparència que trepitja encara que estigui a sota de tot
-    /Overlay .setblendmode 1 .setopacityalpha
-    1 1 1 setrgbcolor  %% vermell? blanc? negre?
+    %/Overlay
+
+%%NOUgs9.55
+%/Normal .setblendmode 1 .setalphaisshape  %% .setopacityalpha eliminat al GS 9.53
+
+    1 0 0 setrgbcolor  %% vermell? blanc? negre?
     1 setlinewidth  %% gruix per tal vessi mig punt als marges del full
     rectstroke  %% pintem la vora de la pàgina (equivalent a TrimBox)
    }
@@ -1417,15 +1446,23 @@ _anversrevers
 mark
 %% incrusta al Catalog el layout de com es veurà el document a l'obrir
 /PageLayout /TwoPageLeft  %% la pàgina 1 (senar) a l'esquerra, emparellada amb la següent
-/ViewerPreferences <</Duplex /DuplexFlipShortEdge>>  %% activem les opcions del dúplex d'impressió?
+/ViewerPreferences
+<<  %% aquests paràmetres es detecten automàticament però no queden reflectits al manejador de la HP Color LaserJet M553
+  %% cal comprovar si amb el gestor d'impressió del direct PDF (?) també es comporta de la mateixa manera
+
+   %% a la impressora HP Color LaserJet M553 el dúplex 8upH i 4upV quadra bé pel cantó més ample
+  /Duplex /DuplexFlipLongEdge  %% posem el què posem al driver d'impressió Reader/MacOSX aquest paràmetre mana!
+
+%  /Duplex /DuplexFlipShortEdge  %% el necessita el 4upH horitzontal
+>>  %% activem les opcions del dúplex d'impressió?
 /DOCVIEW pdfmark
 
 mark
 %% camps públics del Docinfo
 /Subject (Turn one simple sheet of paper into a little awesome book)
 /Title NpliegOS
-/Author (copyleft 2017-2020: Marcantoni Malagarriga-Picas <marcantoni@femfum.com>)
-/Keywords (microbooks, print, fold, cut, read, nUps, pliego, PliegOS, Patufet, Barcelona)
+/Author (copyleft 2017-2021: Marcantoni Malagarriga-Picas <marcantoni@femfum.com>)
+/Keywords (microbooks, print, fold, cut, read, nUps, pliego, PliegOS, en Patufet, Barcelona)
 /Creator (PliegO'Maker {FemFum PostScript Applet} | http://pliegos.net/maker)
 /DOCINFO pdfmark
 

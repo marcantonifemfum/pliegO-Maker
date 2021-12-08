@@ -357,7 +357,7 @@ noNULL  %% pinta el contingut de pàgina?
   ]
 
   [  %% 6 mesos
-   (dos mil vint)
+   (dos mil vint-i-un)
    (gener)
    (febrer)
    (març)
@@ -991,7 +991,7 @@ false setglobal
   /coS yTripa def
   /laLlatina findfont coS scalefont setfont
 
-  /eG false def  %% treballem en escala de gris?
+  /eG false def  %% treballem en escala de gris? (variable a 2 llocs!)
 
   %coS 5 div /marGe exch def
   0 0 moveto
@@ -1048,12 +1048,14 @@ false setglobal
 
   %% l'AdobeSansMM d'AdobeSystems...
   %% path de la font ha de ser absolut
-  %% aquest és el del localhost del MacBook Air
-  (/Applications/Adobe\ Reader.app/Contents/Resources/Resource/Font/ZX______.PFB)
-  %% el del servidor www.pliegos.bet...
+  %% adreces locals al MacBook Air
+  %% (/Applications/Adobe Acrobat Reader DC.app/Contents/Resources/Resource/Font/ZX______.PFB)
+  %% (/Users/femfum/empremt/empremt1/ZX______.PFB)
+  %% (/Users/femfum/MultipleMaster/AdobeSans_AdobeSerif/ZX______.PFB)  %% AdobeSansMM
+   (/Users/femfum/MultipleMaster/AdobeSans_AdobeSerif/ZY______.PFB)  %% AdobeSerifMM
+  %% del servidor www.pliegos.net...
   %% (/home/marcantoni/pliegos.net/maker/ZX______.PFB)
 
-  %% (/Users/femfum/MultipleMaster/AdobeSans_AdobeSerif/ZY______.PFB)  %% AdobeSerifMM
 
   findfont
 
@@ -1068,7 +1070,7 @@ false setglobal
    quit
   }ifelse
 
-  /eG false def  %% treballem en escala de gris?
+  /eG false def  %% treballem en escala de gris? (variable a 2 llocs!)
 
 %%MÈTODE0 d'anàlisi dels eixos mestres d'una MM
   %% extraiem els valors mínims, intermitjos (si n'hi han) i màxims, de cadascun dels eixos dinàmics de la MM
