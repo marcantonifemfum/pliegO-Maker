@@ -1,0 +1,290 @@
+%!
+%% mesurador acurat dels marges de seguretat i el registre del dúplex d'una impressora
+
+%%Format de pàgina
+/ample 595 def
+/alt 842 def
+
+ample alt gt
+{  %% h
+ /xoy false def
+ ample /elmesgran exch def
+ alt /elmespetit exch def
+}
+{  %% v
+ /xoy true def
+ alt /elmesgran exch def
+ ample /elmespetit exch def 
+}ifelse
+
+<</PageSize[ample alt]>>setpagedevice
+
+%%AJUSTAMENTS
+/i 0 def
+/salt 2 def
+/4margeS 13 def  %% valor (ara fix) pels 4 marges de seguretat de la impressora
+
+%%Valors d'ajustat del dúplex
+/tX 0 def  %% traslació cap a l'esquerra/dreta
+/tY 0 def  %% traslació cap amunt/avall
+
+/ar 0 def  %% angle de rotació
+/rX 0 def  %% x del centre de l'angle de rotació
+/rY 0 def  %% y del centre de l'angle de rotació
+
+tX tY translate
+rX rY translate
+ar rotate
+
+%%MARGES
+%% sanefa de control dels 4 marges de seguretat de la impressora
+%% un filet doble, segmentat de forma discontínua amb setdash, de manera que faci uns escacs (damasquinat)
+%% el podem fer treballar de manera que ompli de forma concèntrica un rectangle
+
+%% origen del rectangle amb sanefa damasquinada (pel centre del gruixD del primer filet)
+/0X 0 def
+/0Y 0 def
+
+/nFilets 8 def  %% nombre de filets damasquinats del rectangle
+2 /gruixD exch def  %% el gruix del filet damasquinat per mesurar els marges
+/AR 0 def  %% índex per l'anvers i revers
+
+%% gruix d'escacs imparells (almenys 1 costat) d'enfora a endins
+% alt gruixD mod 0 eq ample gruixD mod 0 eq and not
+% {
+%  (\n\n ...el perfil en doble escac no quadrarà!\n\n)print flush
+% }if
+
+% ample gruixD idiv 1 add 2 mod 0 eq alt gruixD idiv 1 add 2 mod 0 eq and
+% {
+%  (\n ...el rectangle pot omplir-se com un tauler\n\n)print flush
+% }
+% {
+%  (\n ...el rectangle NO pot omplir-se com un tauler!\n\n)print flush
+% }ifelse
+
+(\n\n ...el damasquinat farà )print flush
+alt gruixD add 6 string cvs ample gruixD add 6 string cvs ( x ) exch print flush print flush print flush ( punts\n\n)print flush
+
+2  %% dúplex
+{
+ gsave
+ gruixD setlinewidth
+ 0 setlinecap  %% s'aplica a cadascun dels segments!
+
+ [gruixD dup] gruixD 2 div setdash  %% segmentat
+ /ARAgruix 0 def
+ /i 0 def
+
+ nFilets  %% nombre de filets segmentats d'enfora cap endins
+ {
+  [
+   {1 0 0 0 setcmykcolor}  %% 0 C
+   null
+   null
+   null
+   {0 1 0 0 setcmykcolor}  %% 4 M
+   null
+   null
+   null
+   {0 0 1 0 setcmykcolor}  %% 8 Y
+   null
+   null
+   null
+   {0 0 0 1 setcmykcolor}  %% 12 K
+   null
+   null
+  ] i get cvx exec
+  0X ARAgruix add 0Y ARAgruix add ample gruixD i mul sub alt gruixD i mul sub rectstroke
+  ARAgruix gruixD add /ARAgruix exch def
+  i 2 add /i exch def
+ }repeat
+
+ %% senyal d'origen 0,0 (pot pintar el darrer quadrat per omplir)
+ false
+ {
+  [] 0 setdash  %% sencer
+  0 1 1 0 setcmykcolor
+  0X gruixD nFilets mul gruixD 2 div sub add 0Y gruixD nFilets mul gruixD 2 div sub add
+  gruixD dup rectfill
+ }if
+
+ %% ventall d'origen 0,0
+ gsave
+ 0X gruixD nFilets mul gruixD 2 div sub add 0Y gruixD nFilets mul gruixD 2 div sub add
+ 2 copy /0ARy exch def /0ARx exch def translate
+ 0 2 90  %% salts de 2 graus
+ {  %% for
+  gsave
+  [] 0 setdash 0 setlinewidth 0 1 1 0 setcmykcolor
+  rotate 0 0 moveto elmespetit 10 div 0 lineto stroke  %% el ventall farà una desena part del costat més petit
+  grestore
+ }for
+ grestore
+ gsave
+ %% la inicial A(nvers) R(evers) farà una desena part del costat més petit menys 5 punts
+ %% https://dlc.iec.cat/Results?IdE=0044335&DecEntradaText=anvers
+ %% Anvers: en un llibre, full que és a la dreta del lector i que porta la numeració senar
+ /Courier  elmespetit 10 div 5 sub selectfont
+ 0 0 0 0 setcmykcolor
+ [
+  {0ARx 0ARy moveto (A) show}
+  {0ARx 0ARy moveto (R) show}
+ ] AR get cvx exec  %% anvers | revers
+ grestore
+
+ %% damasquinat central
+
+ %% creus de registre pel desplaçament i torsió
+ /segmen+ elmespetit 6 div def  %% una sisena part del costat més petit del format de pàgina
+ [
+  {  %% creus anvers
+   %% dalt
+   gsave  %% escaire
+   [] 0 setdash .5 .5 .5 1 setcmykcolor .5 setlinewidth
+   segmen+ alt segmen+ 2 mul sub translate
+   segmen+ 2 div 0 moveto segmen+ 2 div segmen+ lineto stroke
+   0 segmen+ 2 div moveto segmen+ dup 2 div lineto stroke
+   grestore
+   gsave  %% 1 graus cap a la dreta
+   [] 0 setdash .5 .5 .5 1 setcmykcolor .5 setlinewidth
+   segmen+ 2.5 mul alt segmen+ 1.5 mul sub translate -1 rotate
+   0 segmen+ 2 div neg moveto 0 segmen+ 2 div lineto stroke
+   segmen+ 2 div neg 0 moveto segmen+ 2 div 0 lineto stroke
+   grestore
+   gsave  %% 2 graus cap a la dreta
+   [] 0 setdash .5 .5 .5 1 setcmykcolor .5 setlinewidth
+   segmen+ 3.5 mul alt segmen+ 1.5 mul sub translate -2 rotate
+   0 segmen+ 2 div neg moveto 0 segmen+ 2 div lineto stroke
+   segmen+ 2 div neg 0 moveto segmen+ 2 div 0 lineto stroke
+   grestore
+   gsave  %% 3 graus cap a la dreta
+   [] 0 setdash .5 .5 .5 1 setcmykcolor .5 setlinewidth
+   segmen+ 4.5 mul alt segmen+ 1.5 mul sub translate -3 rotate
+   0 segmen+ 2 div neg moveto 0 segmen+ 2 div lineto stroke
+   segmen+ 2 div neg 0 moveto segmen+ 2 div 0 lineto stroke
+   grestore
+
+   %% baix
+   gsave  %% escaire
+   [] 0 setdash .5 .5 .5 1 setcmykcolor .5 setlinewidth
+   ample segmen+ sub segmen+ translate
+   segmen+ 2 div neg 0 moveto segmen+ 2 div neg segmen+ lineto stroke
+   0 segmen+ 2 div moveto segmen+ neg segmen+ 2 div lineto stroke
+   grestore
+   gsave  %% 1 graus cap a l'esquerra
+   [] 0 setdash .5 .5 .5 1 setcmykcolor .5 setlinewidth
+   ample segmen+ 2.5 mul sub segmen+ 1.5 mul translate 1 rotate
+   0 segmen+ 2 div neg moveto 0 segmen+ 2 div lineto stroke
+   segmen+ 2 div neg 0 moveto segmen+ 2 div 0 lineto stroke
+   grestore
+   gsave  %% 2 graus cap a l'esquerra
+   [] 0 setdash .5 .5 .5 1 setcmykcolor .5 setlinewidth
+   ample segmen+ 3.5 mul sub segmen+ 1.5 mul translate 2 rotate
+   0 segmen+ 2 div neg moveto 0 segmen+ 2 div lineto stroke
+   segmen+ 2 div neg 0 moveto segmen+ 2 div 0 lineto stroke
+   grestore
+   gsave  %% 3 graus cap a l'esquerra
+   [] 0 setdash .5 .5 .5 1 setcmykcolor .5 setlinewidth
+   ample segmen+ 4.5 mul sub segmen+ 1.5 mul translate 3 rotate
+   0 segmen+ 2 div neg moveto 0 segmen+ 2 div lineto stroke
+   segmen+ 2 div neg 0 moveto segmen+ 2 div 0 lineto stroke
+   grestore
+  }
+  {  %% creus revers (sense torsió)
+   %% alt
+   gsave  %% escaire
+   [] 0 setdash .5 .5 .5 1 setcmykcolor .5 setlinewidth
+   ample segmen+ sub alt segmen+ 2 mul sub translate
+   segmen+ 2 div neg 0 moveto segmen+ 2 div neg segmen+ lineto stroke
+   0 segmen+ 2 div moveto segmen+ neg segmen+ 2 div lineto stroke
+   grestore
+   gsave
+   [] 0 setdash .5 .5 .5 1 setcmykcolor .5 setlinewidth
+   ample segmen+ 2.5 mul sub alt segmen+ 1.5 mul sub translate
+   0 segmen+ 2 div neg moveto 0 segmen+ 2 div lineto stroke
+   segmen+ 2 div neg 0 moveto segmen+ 2 div 0 lineto stroke
+   grestore
+   gsave
+   [] 0 setdash .5 .5 .5 1 setcmykcolor .5 setlinewidth
+   ample segmen+ 3.5 mul sub alt segmen+ 1.5 mul sub translate
+   0 segmen+ 2 div neg moveto 0 segmen+ 2 div lineto stroke
+   segmen+ 2 div neg 0 moveto segmen+ 2 div 0 lineto stroke
+   grestore
+   gsave
+   [] 0 setdash .5 .5 .5 1 setcmykcolor .5 setlinewidth
+   ample segmen+ 4.5 mul sub alt segmen+ 1.5 mul sub translate
+   0 segmen+ 2 div neg moveto 0 segmen+ 2 div lineto stroke
+   segmen+ 2 div neg 0 moveto segmen+ 2 div 0 lineto stroke
+   grestore
+
+   %% baix
+   gsave  %% escaire
+   [] 0 setdash .5 .5 .5 1 setcmykcolor .5 setlinewidth
+   segmen+ dup translate
+   segmen+ 2 div 0 moveto segmen+ 2 div segmen+ lineto stroke
+   0 segmen+ 2 div moveto segmen+ dup 2 div lineto stroke
+   grestore
+   gsave
+   [] 0 setdash .5 .5 .5 1 setcmykcolor .5 setlinewidth
+   segmen+ 2.5 mul segmen+ 1.5 mul translate
+   0 segmen+ 2 div neg moveto 0 segmen+ 2 div lineto stroke
+   segmen+ 2 div neg 0 moveto segmen+ 2 div 0 lineto stroke
+   grestore
+   gsave
+   [] 0 setdash .5 .5 .5 1 setcmykcolor .5 setlinewidth
+   segmen+ 3.5 mul segmen+ 1.5 mul translate
+   0 segmen+ 2 div neg moveto 0 segmen+ 2 div lineto stroke
+   segmen+ 2 div neg 0 moveto segmen+ 2 div 0 lineto stroke
+   grestore
+   gsave
+   [] 0 setdash .5 .5 .5 1 setcmykcolor .5 setlinewidth
+   segmen+ 4.5 mul segmen+ 1.5 mul translate
+   0 segmen+ 2 div neg moveto 0 segmen+ 2 div lineto stroke
+   segmen+ 2 div neg 0 moveto segmen+ 2 div 0 lineto stroke
+   grestore
+  }
+ ]
+ AR get cvx exec
+
+ grestore
+ AR 1 add /AR exch def
+
+ showpage
+
+ %% cal desactivar això quan fem el primer càlcul de desviació
+ %% ajustat del dúplex al revers, per a una impressora HP Color Laser Jet Manager M553m
+% 3 dup /tX exch def  %% ATENCIÓ: el desplaçament horitzontal s'inverteix al dúplex!
+% 2 dup /tY exch def  %% cap amunt
+% translate
+
+}repeat
+
+%% pdfmark
+mark
+%% incrusta al Catalog el layout de com es veurà el document a l'obrir, invocant el dúplex
+/PageLayout /TwoPageLeft  %% la pàgina 1 (senar) a l'esquerra, emparellada amb la següent
+/ViewerPreferences
+<<
+  %% cal avaular si és v/h pel short/long edge
+  ample alt gt
+  {  %% horitzontal
+   /Duplex /DuplexFlipShortEdge
+  }
+  {  %% vertical
+   /Duplex /DuplexFlipLongEdge
+  }ifelse
+>>  %% activem les opcions del dúplex d'impressió
+/DOCVIEW pdfmark
+
+mark
+%% camps públics del Docinfo
+/Subject (Turn one simple sheet of paper into a little awesome book)
+/Title (Mesurador acurat dels marges i el dúplex d'una impressora)
+/Author (copyleft 2017-2021: Marcantoni Malagarriga-Picas <marcantoni@femfum.com>)
+/Keywords (microbooks, print, fold, cut, read, nUps, pliego, PliegOS, en Patufet, Barcelona)
+/Creator (PliegO'Maker {FemFum PostScript Applet} | http://pliegos.net/maker)
+/DOCINFO pdfmark
+
+(- - - - - - brossa?)pstack
+

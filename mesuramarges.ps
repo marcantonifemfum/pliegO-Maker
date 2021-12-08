@@ -1,0 +1,116 @@
+%!
+%% mesurador acurat dels marges de seguretat, no imprimibles, d'una impressora
+
+%% format de pàgina
+/ample 595 def
+/alt 842 def
+
+<</PageSize[ample alt]>>setpagedevice
+
+%% regla de 20 x 60 punts per mesurar els marges d'una impressora
+%% hi haurà una línia cada 2 punts (centre) d'un gruix d' 1.67 (.835 x 2)
+%% de manera que entre 2 marges de línia hi haurà 1 mm de distància
+/rgl
+{
+ /gruix .835 2 mul def  %% ample perquè entre dos marges blancs de línies continues faci 1 mm?
+ /Courier 2.5 selectfont
+ %%
+ 0 0 20 60 rectfill
+
+ gruix setlinewidth 0 0 0 0 setcmykcolor
+ 0 2 60  %% salt de 2 punts
+ {
+  dup 0 exch moveto 20 exch lineto stroke
+ }for
+
+ 0 setlinewidth .5 .5 .5 1 setcmykcolor
+ 0 2 60  %% salt de 2 punts
+ {
+  dup dup 0 exch moveto 40 exch lineto currentpoint stroke
+  moveto 2 string cvs show
+ }for
+}bind def
+
+/i 0 def
+
+2  %% dúplex
+{
+ %% ventall d'origen 0,0
+ 0 2 90
+ {
+  gsave
+  0 setlinewidth 0 1 1 0 setcmykcolor
+  rotate 0 0 moveto 50 0 lineto stroke
+  grestore
+ }for
+
+ %% traslladem i rotem tenint en compte que anem arran de format i amb una mesura per cada marge (ll, ul, ur, lr)
+ %% ll
+ gsave
+ 100 0 translate 0 rotate
+ rgl 0 10 rmoveto (LL)show
+ grestore
+
+ %% ul
+ gsave
+ 0 alt 100 sub translate -90 rotate
+ rgl 0 10 rmoveto (UL)show
+ grestore
+
+ %% ur
+ gsave
+ ample 100 sub alt translate -180 rotate
+ rgl 0 10 rmoveto (UR)show
+ grestore
+
+ %% lr
+ gsave
+ ample 100 translate 90 rotate
+ rgl 0 10 rmoveto (LR)show
+ grestore
+
+ gsave
+ /Courier 45 selectfont
+ 8 8 moveto 0 0 0 0 setcmykcolor
+ [(A)(R)] i get show  %% anvers | revers
+ i 1 add /i exch def
+ grestore
+
+ gsave
+ /Courier 12 selectfont
+ alt 32 string cvs dup stringwidth pop
+ ( x ) dup stringwidth pop
+ ample 32 string cvs dup stringwidth pop
+ 5  -1 roll 4 -1 roll
+ add add ample exch sub 2 div alt 2 div moveto show show show
+ grestore
+
+ showpage
+}repeat
+
+%% pdfmark
+mark
+%% incrusta al Catalog el layout de com es veurà el document a l'obrir
+/PageLayout /TwoPageLeft  %% la pàgina 1 (senar) a l'esquerra, emparellada amb la següent
+/ViewerPreferences
+<<
+  %% cal avaular si és v/h pel short/long edge
+  ample alt gt
+  {  %% horitzontal
+   /Duplex /DuplexFlipShortEdge
+  }
+  {  %% vertical
+   /Duplex /DuplexFlipLongEdge
+  }ifelse
+>>  %% activem les opcions del dúplex d'impressió
+/DOCVIEW pdfmark
+
+mark
+%% camps públics del Docinfo
+/Subject (Turn one simple sheet of paper into a little awesome book)
+/Title (Mesurador acurat dels marges de seguretat, no imprimibles, d'una impressora)
+/Author (copyleft 2017-2021: Marcantoni Malagarriga-Picas <marcantoni@femfum.com>)
+/Keywords (microbooks, print, fold, cut, read, nUps, pliego, PliegOS, en Patufet, Barcelona)
+/Creator (PliegO'Maker {FemFum PostScript Applet} | http://pliegos.net/maker)
+/DOCINFO pdfmark
+

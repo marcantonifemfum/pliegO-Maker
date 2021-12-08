@@ -1,0 +1,266 @@
+%!
+%% mesurador acurat del dúplex d'una impressora
+
+%% format de pàgina
+/ample 595 def
+/alt 842 def
+ample alt gt
+{  %% h
+ /xoy false def
+ ample /elmesgran exch def
+ alt /elmespetit exch def
+}
+{  %% v
+ /xoy true def
+ alt /elmesgran exch def
+ ample /elmespetit exch def 
+}ifelse
+
+<</PageSize[ample alt]>>setpagedevice
+
+/i 0 def
+/salt 2 def
+/4margeS 13 def  %% valor (ara fix) pels 4 marges de seguretat de la impressora
+%% valors inicials d'ajustat del dúplex
+/tX 0 def  %% cap a l'esquerra?
+/tY 0 def  %% cap amunt?
+
+2  %% dúplex
+{
+ %% dial més gran
+ /idial .9 def
+ 0 1 9
+ {  %% for
+  dup 2 mul /arestar exch def
+  dup idial setlinewidth
+  xoy
+  {
+   elmespetit
+  }
+  {
+   elmesgran
+  }ifelse
+  2 div exch salt mul
+  i 1 eq  %% al revers girem
+  {
+   add
+  }
+  {
+   sub
+  }ifelse
+  xoy
+  {
+   elmesgran
+  }
+  {
+   elmespetit
+  }ifelse
+  3 div arestar add moveto
+  xoy
+  {
+   elmespetit
+  }
+  {
+   elmesgran
+  }ifelse
+  2 div exch salt mul
+  i 1 eq  %% al revers girem
+  {
+   add
+  }
+  {
+   sub
+  }ifelse
+  xoy
+  {
+   elmesgran
+  }
+  {
+   elmespetit
+  }ifelse
+  3 div 2 mul arestar sub
+  lineto stroke
+  idial .1 sub /idial exch def
+ }for
+
+ %% dial més petit
+ /idial .9 def
+ 0 1 9
+ {  %% for
+  dup dup 2 mul /arestar exch def
+  idial setlinewidth
+  xoy
+  {
+   elmespetit
+  }
+  {
+   elmesgran
+  }ifelse
+  dup 4 div exch 2 div
+  i 0 eq
+  {
+   arestar sub
+  }
+  {  %% al revers girem
+   arestar add
+  }ifelse
+  xoy
+  {
+   elmesgran
+  }
+  {
+   elmespetit
+  }ifelse
+  2 div
+  4 -1 roll salt mul add
+  moveto
+  xoy
+  {
+   elmespetit
+  }
+  {
+   elmesgran
+  }ifelse
+  i 1 eq  %% al revers girem el segment horitsontal
+  {
+   pop arestar add
+  }
+  {
+   2 div add arestar sub
+  }ifelse
+  xoy
+  {
+   elmesgran
+  }
+  {
+   elmespetit
+  }ifelse
+  2 div
+  3 -1 roll salt mul add
+  lineto stroke
+  idial .1 sub /idial exch def
+ }for
+
+ %% ventall d'origen 0,0
+ 0 2 90
+ {
+  gsave
+  4margeS dup translate
+  0 setlinewidth 0 1 1 0 setcmykcolor
+  rotate 0 0 moveto 50 0 lineto stroke
+  grestore
+ }for
+
+ %% cubs i creus, negatius/positius
+ gsave
+ i 0 eq
+ {
+  ample 200 sub 100 100 100 rectfill  %% sota
+  gsave
+  2 setlinewidth 0 0 0 0 setcmykcolor  %% x
+  ample 200 sub 100 moveto ample 100 sub 200 lineto stroke
+  ample 200 sub 200 moveto ample 100 sub 100 lineto stroke
+  grestore
+  gsave
+  1 setlinewidth
+  ample 200 sub alt 100 sub moveto ample 100 sub alt 200 sub lineto stroke  %% x
+  ample 200 sub alt 200 sub moveto ample 100 sub alt 100 sub lineto stroke
+  grestore
+  100 alt 200 sub 100 100 rectfill  %% sobre
+  gsave
+  2 setlinewidth 0 0 0 0 setcmykcolor  %% +
+  150  alt 100 sub moveto 150 alt 200 sub lineto stroke
+  100 alt 150 sub moveto 200 alt 150 sub lineto stroke
+  grestore
+  gsave
+  1 setlinewidth
+  150 100 moveto 150 200 lineto stroke  %% +
+  100 150 moveto 200 150 lineto stroke
+  grestore
+ }
+ {  %% al revers girem
+  100 100 100 100 rectfill  %% sota
+  gsave
+  2 setlinewidth 0 0 0 0 setcmykcolor  %% x
+  100 100 moveto 200 200 lineto stroke
+  100 200 moveto 200 100 lineto stroke
+  grestore
+  gsave
+  1 setlinewidth
+  100 alt 100 sub moveto 200 alt 200 sub lineto stroke  %% x
+  100 alt 200 sub moveto 200 alt 100 sub lineto stroke
+  grestore
+  ample 200 sub alt 200 sub 100 100 rectfill  %% sobre
+  gsave
+  2 setlinewidth 0 0 0 0 setcmykcolor  %% +
+  ample 150 sub  alt 100 sub moveto ample 150 sub alt 200 sub lineto stroke
+  ample 200 sub alt 150 sub moveto ample 100 sub alt 150 sub lineto stroke
+  grestore
+  gsave
+  1 setlinewidth
+  ample 150 sub 100 moveto ample 150 sub 200 lineto stroke  %% +
+  ample 200 sub 150 moveto ample 100 sub 150 lineto stroke
+  grestore
+ }ifelse
+ grestore
+
+ gsave
+ /Courier 45 selectfont
+ 4margeS dup moveto 0 0 0 0 setcmykcolor
+ [
+  {4margeS dup moveto 0 0 0 0 setcmykcolor (A) show}
+  {4margeS tX sub 4margeS tY sub moveto 0 0 0 0 setcmykcolor (R) show}
+ ] i get cvx exec  %% anvers | revers
+ i 1 add /i exch def
+ grestore
+
+ gsave
+ /Courier 12 selectfont
+ alt 32 string cvs dup stringwidth pop
+ ( x ) dup stringwidth pop
+ ample 32 string cvs dup stringwidth pop
+ 5  -1 roll 4 -1 roll
+ add add ample exch sub 2 div 33 moveto show show show
+ /Courier 8 selectfont
+ (dials de 10 gruixos: 0.9 a 0 punts | filets postius 1 punt | filets negatius 2 punts)
+ dup stringwidth pop ample exch sub 2 div 4margeS moveto show
+ /Courier 12 selectfont
+ grestore
+
+ showpage
+
+ %% cal desactivar això quan fem el primer càlcul de desviació
+ %% ajustat del dúplex al revers, per a una impressora HP Color Laser Jet Manager M553m
+ 3 dup /tX exch def  %% ATENCIÓ: el desplaçament horitzontal s'inverteix al dúplex!
+ 2 dup /tY exch def  %% cap amunt
+ translate
+}repeat
+
+%% pdfmark
+mark
+%% incrusta al Catalog el layout de com es veurà el document a l'obrir, invocant el dúplex
+/PageLayout /TwoPageLeft  %% la pàgina 1 (senar) a l'esquerra, emparellada amb la següent
+/ViewerPreferences
+<<
+  %% cal avaular si és v/h pel short/long edge
+  ample alt gt
+  {  %% horitzontal
+   /Duplex /DuplexFlipShortEdge
+  }
+  {  %% vertical
+   /Duplex /DuplexFlipLongEdge
+  }ifelse
+>>  %% activem les opcions del dúplex d'impressió
+/DOCVIEW pdfmark
+
+mark
+%% camps públics del Docinfo
+/Subject (Turn one simple sheet of paper into a little awesome book)
+/Title (Mesurador acurat del dúplex d'una impressora)
+/Author (copyleft 2017-2021: Marcantoni Malagarriga-Picas <marcantoni@femfum.com>)
+/Keywords (microbooks, print, fold, cut, read, nUps, pliego, PliegOS, en Patufet, Barcelona)
+/Creator (PliegO'Maker {FemFum PostScript Applet} | http://pliegos.net/maker)
+/DOCINFO pdfmark
+
+(- - - - - - brossa?)pstack
+

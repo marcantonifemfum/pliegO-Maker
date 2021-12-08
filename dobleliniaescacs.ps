@@ -1,0 +1,123 @@
+%% fem un filet doble, segmentat de forma discontínua, de manera que faci uns escacs
+%% el podem fer treballar de manera que ompli de forma concèntrica un rectangle
+
+%% origen del rectangle
+%% xamfrà inferior esquerra si autoFilets és false i el centre dels escacs si és true (sempre des del centre del gruiX del filet)
+/0X 100 def
+/0Y 100 def
+
+/ample 200 def  %% si autoFilets és false i %%EP! és a true, aquest valor no mana
+/alt 200 def  %% si autoFilets és false i %%EP! és a true, aquest valor no mana
+
+/nFilets 2 def  %% només vàlid si autoFilets i %%EP! és a false: nombre de fileres d'escacs, ample i alt, del rectangle
+
+/autoFilets false def  %% posa el nombre de filets necessari per omplir el tauler
+
+autoFilets
+{
+ ample nFilets 2 mul idiv  %% activant-lo fem el damansquinat relatiu a ample+nFilets i omplim el tauler fins deixar 1 sol forat
+}
+{  %% fixem nosaltres el gruix de la mostra damasquinada
+ 10
+}ifelse
+/gruiX exch def  %% el gruix dividit per ample i alt ha de donar un enter parell!
+
+%% activant-lo omplim el tauler (només quedarà 1 forat al mig que podem omplir amb el senyal d'origen)
+autoFilets
+{
+ /alt ample gruiX add def
+}if
+
+gruiX setlinewidth
+0 setlinecap  %% s'aplica a cadascun dels segments!
+
+%%EP!
+false
+{  %% en funció de /gruiX fa uns escacs sempre parells d'endins a enfora i sempre quadrat
+ /i 0 def
+
+ true
+ {
+  0 1 4  %% el nombre de caselles total és aquest darrer valor +1 i x2 
+  {
+   /araSalt exch def
+   gsave
+   [gruiX dup] gruiX 2 div setdash  %% segmentat
+   0X gruiX araSalt mul sub 0Y gruiX araSalt mul sub gruiX i mul gruiX add gruiX i mul gruiX add rectstroke
+   grestore
+   i 2 add /i exch def
+  }for 
+  (\n\n ...el tauler farà )print flush
+  araSalt 1 add gruiX mul 2 mul 6 string cvs dup ( x ) exch print flush print flush print flush ( punts\n\n)print flush
+ }
+ {  %% fa un tauler d'escacs 8x8 a mida gruiX x 8
+  %% rectangle de dins mínim
+  gsave
+  [gruiX dup] gruiX 2 div setdash  %% segmentat
+  0X 0Y gruiX gruiX rectstroke
+  grestore
+  %% rectangle de fora
+  gsave
+  [gruiX dup] gruiX 2 div setdash  %% segmentat
+  0X gruiX sub 0Y gruiX sub gruiX 2 mul gruiX add gruiX 2 mul gruiX add rectstroke
+  grestore
+  %% rectangle +de fora
+  gsave
+  [gruiX dup] gruiX 2 div setdash  %% segmentat
+  0X gruiX 2 mul sub 0Y gruiX 2 mul sub gruiX 4 mul gruiX add gruiX 4 mul gruiX add rectstroke
+  grestore
+  %% rectangle ++de fora
+  gsave
+  [gruiX dup] gruiX 2 div setdash  %% segmentat
+  0X gruiX 3 mul sub 0Y gruiX 3 mul sub gruiX 6 mul gruiX add gruiX 6 mul gruiX add rectstroke
+  grestore
+ }ifelse
+}
+{  %% gruix d'escacs imparells (almenys 1 costat) d'enfora a endins
+ alt gruiX mod 0 eq ample gruiX mod 0 eq and not
+ {
+  (\n\n ...el perfil en doble escac no quadrarà!\n\n)print flush
+ }if
+
+% ample gruiX idiv 1 add 2 mod 0 eq alt gruiX idiv 1 add 2 mod 0 eq and
+% {
+%  (\n ...el rectangle pot omplir-se com un tauler\n\n)print flush
+% }
+% {
+%  (\n ...el rectangle NO pot omplir-se com un tauler!\n\n)print flush
+% }ifelse
+
+ (\n\n ...el tauler farà )print flush
+ alt gruiX add 6 string cvs ample gruiX add 6 string cvs ( x ) exch print flush print flush print flush ( punts\n\n)print flush
+
+ [gruiX dup] gruiX 2 div setdash  %% segmentat
+ /ARAgruix 0 def
+ /i 0 def
+ nFilets  %% nombre de filets segmentats d'enfora cap endins
+ {
+  gsave
+  0X ARAgruix add 0Y ARAgruix add ample gruiX i mul sub alt gruiX i mul sub rectstroke
+  grestore
+  ARAgruix gruiX add /ARAgruix exch def
+  i 2 add /i exch def
+ }repeat
+
+ %% senyal d'origen 0,0 (en cas de quadrats, pot pintar el darrer quadrat per omplir)
+ true
+ {
+  [] 0 setdash  %% sencer
+  0 1 1 0 setcmykcolor
+  0X gruiX nFilets mul gruiX 2 div sub add 0Y gruiX nFilets mul gruiX 2 div sub add gruiX dup rectfill
+ }if
+
+ ample alt eq
+ {
+  gruiX nFilets mul 2 mul gruiX sub ample eq
+  {
+   (\n ...i ja tenim el tauler d'escacs!\n\n)print flush
+  }if
+ }if
+}ifelse
+
+showpage
+
