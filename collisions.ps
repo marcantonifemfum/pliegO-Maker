@@ -1,0 +1,238 @@
+%% generem col·lisons de segments i les detectem via operadors d'insideness amb userpaths
+
+false{
+%% una recta
+0 0 moveto 200 200 lineto
+false upath  %% el procediment upath que descriu el planxat dins una proc, o sigui un userpath
+
+newpath  %% fem net!
+
+%% una altra recta que creua
+200 0 moveto 0 200 lineto
+false upath  %% el procediment upath que descriu el planxat dins una proc, o sigui un userpath
+
+2 copy
+
+inustroke  %% col·lisonen?
+
+{  %% si col·lisionen es pinten de vermell
+ 1 0 0 setrgbcolor
+ ustroke ustroke
+}
+{
+ 0 0 0 setrgbcolor
+ ustroke ustroke
+}ifelse
+
+newpath
+
+
+%% una recta
+250 0 moveto 250 50 lineto
+false upath  %% el procediment upath que descriu el planxat dins una proc, o sigui un userpath
+
+newpath  %% fem net!
+
+%% una altra recta que NO creua
+300 0 moveto 300 50 lineto
+false upath  %% el procediment upath que descriu el planxat dins una proc, o sigui un userpath
+
+2 copy
+
+inustroke  %% col·lisonen?
+
+{  %% si col·lisionen es pinten de vermell
+ 1 0 0 setrgbcolor
+ ustroke ustroke
+}
+{
+ 0 0 0 setrgbcolor
+ ustroke ustroke
+}ifelse
+
+
+%% aquí hauríem de se capaços de generar un garigot i assenyalar en quins punts col·lisiona amb si mateix
+newpath
+
+}if
+
+
+%% anàlisi de col·lisions fent un garigot a l'atzar, dinàmicament, entre un path actiu i un upath
+%save
+%250 250 translate
+%% format en funció dels paràmetres ample i alt (sempre enters!) q condicionaran el marc gràfic de l'aleatori de Beziers
+300 /amplE exch def
+300 /alT exch def
+<<
+  /PageSize[amplE alT]
+%  /HWResolution [4000 4000]  %% la precisió juga per aquí i pel flatness
+>>setpagedevice
+
+
+/rc
+{
+ rand amplE mod
+ rand alT mod
+} bind def  %% punt aleatori
+/mb { rc rc rc curveto } bind def  %%  corba Bezier atzarosa
+/bezes
+{
+ realtime srand  %% es clau plantar la llavor cada cop que cridem rrand
+ rrand
+% newpath
+ rc 2 copy moveto
+ rand
+ 6 mod  %% com més gran és el valor, m´3s gran és la complexitat del garigot
+ {mb} repeat 
+ rc rc 6 -2 roll curveto
+ closepath cleartomark
+} bind def
+/B
+{
+ mark bezes
+ % stroke
+} bind def
+/iRGB 0 def
+/repeatB
+{
+ 1
+ {
+%  gsave
+  % és curiós que malgrat aïllem l'estat gràfic, si activem les transparències
+  % deixa de funcionar l'efecte de tac sòlid de l'overprint... i no sé q passaria imprimint...
+  %[ /ca .5 /CA .5 /BM /Normal /SetTransparency pdfmark
+%  [
+%   (1 0 0 setcolor)
+   %(1 0 1 setcolor)
+   %(0 0 1 setcolor)
+   %(0 0 0 setcolor)
+%  ]
+%  iRGB get cvx exec
+%  iRGB 0 eq {/iRGB 0 def}{iRGB 1 add /iRGB exch def}ifelse
+  B  % la corba aleatòria
+%  grestore
+ }repeat
+} def
+repeatB
+
+%restore
+%stroke
+%false upath  %% el procediment upath que descriu el planxat dins una proc, o sigui un userpath
+
+%dup
+%dup 1 setlinewidth 1 0 0 setrgbcolor cvx exec stroke
+
+flattenpath  %% planxem
+false upath  %% deixa l'upath a l'stack
+
+  newpath
+%dup 0 11 getinterval exch
+%0 setlinewidth 0 0 0 setrgbcolor cvx exec stroke
+
+%inustroke ==  %% col·lisonen?
+
+%dup ustroke  %% pintem en negre el garigot planxat
+
+dup length 4 sub /Ngarigot exch def  %% nombre d'elements del garigot, menys 4 perquè eliminem closepath i el darrer x y lineto
+
+cvlit
+%dup length array copy
+/Ugarigot exch def  %% necessitem convertir a literal l'upath del garigot per poder-lo desar
+
+Ugarigot 0 5 getinterval /capUpath exch def  %% cap de l'upath que desarem a la capçalera de cada fragment
+/iu 17 def  %% índex inicial per eliminar els elements de 3 en 3 de l'userpath (2 coordenades i 1 operador per lineto)
+/iT 8 def  %% índex incial del tram de planxat a extraure per avaluar si col·lisiona
+
+{  %% loop per avaluar cada fragment del tram de planxat (path actiu), si col·lisiona amb la resta del garigot (upath)
+ 0 setlinewidth 0 setlinecap  %% en assegurem que els vectorials treballin a la màxima precisió
+ gsave
+ newpath
+ Ugarigot
+dup length array copy
+ iT 6 getinterval
+ dup 2 {moveto} putinterval  %% xafem el lineto amb moveto
+ dup
+%dup length array copy
+ /clls exch def  %% desem el segment per si cal pintar-lo
+
+% cvx exec  %% ara el tram de planxat treballa com un path actiu
+ dup length 5 add array dup 3 -1 roll 5 exch putinterval
+ dup 0 capUpath putinterval  %% hi afegim el setbbox perquè treballi com un upath
+
+ iT 3 add /iT exch def  %% actualitxem l'índex per llegir el següent tram planxat
+ %% tenim el tram planxat per avaluar a l'stack
+ Ugarigot 
+dup length array copy
+ iu  %% començant just pel tram següent +1 per no autoxafar-nos
+ Ngarigot iu sub getinterval  %% fem l'extracció de l'userpath del garigot
+%dup length array copy
+ dup 2 {moveto} putinterval  %% xafem el lineto amb moveto
+ dup length 5 add array dup 3 -1 roll 5 exch putinterval
+ dup 0 capUpath putinterval  %% hi afegim el setbbox
+ iu 3 add /iu exch def  %% actualitxem l'índex per anar restar trams a l'upath del garigot
+ cvx  %% tenim l'upath actiu a l'stack
+
+%% col·lisonen?
+% instroke  %% path actiu vs upath (funciona de manera que quan detecta l'encreuament no es desactiva el true fins el proper)
+ inustroke  %% upath vs upath (funciona correctament activant només el tram que col·lisiona)
+
+ {
+  (- - X - -)==
+  gsave
+  1 0 0 setrgbcolor 1 setlinewidth 0 setlinecap
+  clls cvx exec stroke
+  grestore
+  newpath
+ }
+ {
+%% desactiveu si voleu veure com corre el tram pel path (pàgina a pàgina)
+%  gsave
+%  0 0 0 setrgbcolor 1 setlinewidth 0 setlinecap
+%  clls cvx exec stroke
+%  grestore
+  newpath
+ }ifelse
+
+%% desactiveu si voleu veure com corre el tram pel path (pàgina a pàgina)
+% gsave
+% 0 setlinewidth 0 0 0 setrgbcolor 0 setlinecap
+% Ugarigot cvx exec stroke
+% grestore
+% showpage
+ grestore
+
+ iu Ngarigot ge
+ {
+  exit
+ }if
+}loop
+
+%% pinta el garigot aleatori només 1 cop
+ gsave
+ 0 setlinewidth 0 0 0 setrgbcolor 0 setlinecap
+ Ugarigot cvx exec stroke
+ grestore
+ showpage
+
+
+%% exemple de col·lisió estàtica entre un path actiu i un upath
+false{
+%% per començar a avaluar els paths actius els hem d'extraure a partir del 2n segment individual
+
+%% path actiu
+%% exemple de path actiu que col·lisiona amb un upath
+76.0804672 177.180466 moveto 77.3894501 176.735931 lineto
+%1 0 0 setrgbcolor stroke  %% si el volem veure
+
+%% upath
+%% hem de començar a netejar per traçar a partir de 4art segment individual
+%% i a la cua, a banda del closepath, traiem també el darrer lineto que tanca!
+%0 0 0 setrgbcolor 0 setlinewidth  %% si el volem veure
+
+
+
+{12.0 18.0 286.699219 199.387115 setbbox 78.7285156 176.244141 moveto 80.0980453 175.706635 lineto 81.5 175.125 lineto 82.9343719 174.5 lineto 84.4031219 173.833588 lineto 85.9066391 173.126556 lineto 87.4464874 172.380463 lineto 89.0238266 171.596878 lineto 90.639061 170.776566 lineto 92.2937469 169.921478 lineto 93.9886703 169.032425 lineto 95.725 168.11055 lineto 97.5039063 167.157806 lineto 99.3261719 166.175385 lineto 101.193359 165.164459 lineto 103.105858 164.126175 lineto 105.065628 163.061722 lineto 107.072655 161.973053 lineto 109.128906 160.861328 lineto 111.234764 159.727341 lineto 113.391403 158.572662 lineto 115.600388 157.398834 lineto 117.862503 156.207031 lineto 120.178513 154.998825 lineto 122.55 153.775 lineto 124.977341 152.537109 lineto 127.462112 151.286713 lineto 130.005463 150.025 lineto 132.6082 148.752731 lineto 135.271088 147.47226 lineto 137.995697 146.184372 lineto 140.783203 144.890228 lineto 143.633987 143.591019 lineto 146.549606 142.288666 lineto 149.53125 140.984375 lineto 152.5793 139.678909 lineto 155.695313 138.373825 lineto 158.880463 137.070709 lineto 162.135544 135.771088 lineto 165.461716 134.475388 lineto 168.860153 133.185944 lineto 172.331635 131.903122 lineto 175.87735 130.628906 lineto 179.498444 129.364456 lineto 183.195709 128.110931 lineto 186.970306 126.869919 lineto 190.823822 125.642578 lineto 194.756638 124.430077 lineto 198.769928 123.233986 lineto 202.864838 122.055862 lineto 207.042969 120.896484 lineto 211.304291 119.757034 lineto 215.650787 118.63945 lineto 220.082809 117.544922 lineto 224.602341 116.474609 lineto 229.209381 115.429688 lineto 233.905472 114.41172 lineto 238.692184 113.421875 lineto 243.569534 112.461327 lineto 248.539459 111.532028 lineto 253.602737 110.634766 lineto 258.760162 109.770706 lineto 264.012878 108.941795 lineto 269.362122 108.148827 lineto 274.809387 107.393356 lineto 280.354675 106.676559 lineto 284.587891 106.162498 lineto 286.0 106.0 lineto 286.108582 105.802345 lineto 286.419525 105.20195 lineto 286.651184 104.676559 lineto 286.699219 104.413284 lineto 286.569153 104.401566 lineto 286.266022 104.631638 lineto 285.794525 105.092972 lineto 285.15976 105.775 lineto 284.367188 106.667969 lineto 283.421082 107.760941 lineto 282.327332 109.043747 lineto 281.090637 110.506638 lineto 279.715637 112.139061 lineto 278.207825 113.930466 lineto 276.572266 115.870316 lineto 274.81366 117.949219 lineto 272.9375 120.15625 lineto 270.948059 122.480858 lineto 268.851166 124.913284 lineto 266.65155 127.44297 lineto 264.354309 130.059769 lineto 261.964447 132.75351 lineto 259.486725 135.513275 lineto 256.926575 138.3293 lineto 254.289063 141.191406 lineto 251.578522 144.088669 lineto 248.800781 147.011322 lineto 245.960938 149.948822 lineto 243.063278 152.891022 lineto 240.113281 155.827347 lineto 237.116013 158.748047 lineto 234.076569 161.642181 lineto 231.0 164.5 lineto 227.890625 167.310547 lineto 224.754684 170.064056 lineto 221.5961 172.750397 lineto 218.4207 175.358597 lineto 215.2332 177.878906 lineto 212.038666 180.300781 lineto 208.841797 182.614059 lineto 205.648438 184.808594 lineto 202.462494 186.873444 lineto 199.290237 188.798828 lineto 196.135941 190.574219 lineto 193.004684 192.18985 lineto 189.901566 193.634766 lineto 186.832031 194.898834 lineto 183.800385 195.971878 lineto 180.8125 196.84375 lineto 177.87265 197.50351 lineto 174.985931 197.941803 lineto 172.157806 198.147263 lineto 169.393356 198.11055 lineto 166.697266 197.821091 lineto 164.074615 197.268356 lineto 161.530472 196.441803 lineto 159.070313 195.332031 lineto 156.698441 193.927734 lineto 154.419922 192.219147 lineto 152.240631 190.196091 lineto 150.164841 187.848053 lineto 148.197662 185.164459 lineto 146.344528 182.135544 lineto 144.610153 178.750778 lineto 143.37265 175.949219 lineto 143.0 175.0 lineto 142.399216 176.008591 lineto 140.501175 178.977737 lineto 137.975784 182.572662 lineto 135.426178 185.794144 lineto 132.854691 188.650391 lineto 130.264069 191.15 lineto 127.657028 193.301559 lineto 125.035156 195.114059 lineto 122.402344 196.595703 lineto 119.759766 197.755081 lineto 117.110939 198.601166 lineto 114.457809 199.142181 lineto 111.803123 199.387115 lineto 109.149216 199.344528 lineto 106.498825 199.023041 lineto 103.854294 198.431244 lineto 101.21875 197.578125 lineto 98.59375 196.471481 lineto 95.9820328 195.120316 lineto 93.3867188 193.5336 lineto 90.8097687 191.719925 lineto 88.2539063 189.6875 lineto 85.7218781 187.444916 lineto 83.2156219 185.001175 lineto 80.7382813 182.365234 lineto 78.2917938 179.544922 lineto 75.8789063 176.549225 lineto 73.5023422 173.386719 lineto 71.1644516 170.06601 lineto 68.8675766 166.595703 lineto 66.6144562 162.984772 lineto 64.407814 159.241791 lineto 62.25 155.375 lineto 60.1429672 151.392975 lineto 58.0902328 147.304688 lineto 56.0933609 143.118744 lineto 54.155468 138.84375 lineto 52.2789078 134.488281 lineto 50.4664078 130.060944 lineto 48.720314 125.570313 lineto 47.0429688 121.025391 lineto 45.436718 116.433983 lineto 43.904686 111.805466 lineto 42.4492188 107.148438 lineto 41.0726547 102.471092 lineto 39.7773438 97.7824249 lineto 38.5664063 93.0910187 lineto 37.4417953 88.4054718 lineto 36.40625 83.734375 lineto 35.4621086 79.0859375 lineto 34.6121101 74.4695282 lineto 33.858593 69.8933563 lineto 33.2042961 65.3664093 lineto 32.6515617 60.8964844 lineto 32.203125 56.4933586 lineto 31.8613281 52.1648445 lineto 31.6289063 47.9199219 lineto 31.5078125 43.7667961 lineto 31.500782 39.7144547 lineto 31.6109371 35.7718735 lineto 31.8402348 31.9468746 lineto 32.1910172 28.2484379 lineto 32.6664047 24.6855469 lineto 33.2683601 21.266407 lineto 33.796875 18.8113289 lineto 34.0 18.0 lineto 35.2375 19.4863281 lineto 38.951561 23.9453125 lineto 43.7761726 29.7367191 lineto 48.475 35.3753891 lineto 53.0488281 40.8625 lineto 57.4988289 46.2 lineto 61.8261719 51.389843 lineto 66.0320282 56.4328117 lineto 70.1175766 61.3312492 lineto 74.0835953 66.0859375 lineto 77.9312515 70.6996078 lineto 81.6621094 75.1726532 lineto 85.2769547 79.5074234 lineto 88.7765656 83.7054672 lineto 92.1625 87.7679672 lineto 95.435936 91.6972656 lineto 98.5976563 95.4941406 lineto 101.648438 99.1601563 lineto 104.590233 102.697655 lineto 107.423828 106.107811 lineto 110.15 109.392189 lineto 112.770309 112.552345 lineto 115.285156 115.590233 lineto 117.696487 118.507034 lineto 120.005081 121.304298 lineto 122.212112 123.983986 lineto 124.318359 126.547264 lineto 126.325 128.996094 lineto 128.233597 131.332031 lineto 130.044922 133.556641 lineto 131.759766 135.671478 lineto 133.380081 137.678131 lineto 134.90625 139.578125 lineto 136.339447 141.373047 lineto 137.680862 143.064453 lineto 138.931641 144.6539 lineto 140.092972 146.143356 lineto 141.166016 147.534378 lineto 142.151566 148.828125 lineto 143.051178 150.026566 lineto 143.865631 151.130859 lineto 144.595703 152.142975 lineto 145.243362 153.06485 lineto 145.80899 153.897263 lineto 146.293747 154.642181 lineto 146.699219 155.301178 lineto 147.026169 155.876175 lineto 147.275787 156.367966 lineto 147.449219 156.779297 lineto 147.547272 157.11055 lineto 147.571091 157.364059 lineto 147.522263 157.541412 lineto 147.401566 157.643753 lineto 147.210159 157.67305 lineto 146.948822 157.631256 lineto 146.619141 157.518753 lineto 146.221878 157.338287 lineto 145.758591 157.091019 lineto 145.229691 156.7789 lineto 144.637115 156.40274 lineto 143.981247 155.964844 lineto 143.263275 155.4664 lineto 142.484772 154.908981 lineto 141.646484 154.294922 lineto 140.75 153.625 lineto 139.795319 152.900787 lineto 138.78476 152.124222 lineto 137.71875 151.297272 lineto 136.598434 150.4207 lineto 135.425385 149.49649 lineto 134.2 148.526169 lineto 132.923828 147.511719 lineto 131.598053 146.4543 lineto 130.223434 145.355469 lineto 128.801178 144.216797 lineto 127.332809 143.040237 lineto 125.818748 141.827347 lineto 124.260544 140.579681 lineto 122.659378 139.298431 lineto 121.016014 137.98555 lineto 119.332031 136.642578 lineto 117.607811 135.270706 lineto 115.844925 133.872269 lineto 114.044533 132.448441 lineto 112.207809 131.001175 lineto 110.335159 129.53125 lineto 108.428513 128.041016 lineto 106.48867 126.532028 lineto 104.5168 125.00547 lineto 102.514061 123.46328 lineto 100.481247 121.906639 lineto 98.4195328 120.337502 lineto 96.3304672 118.757423 lineto 94.2144547 117.167969 lineto 92.0730438 115.570702 lineto 89.9074249 113.967186 lineto 87.71875 112.359375 lineto 85.5074234 110.748047 lineto 83.2753906 109.135544 lineto 81.0230484 107.523048 lineto 78.7523422 105.912498 lineto 76.4636688 104.305466 lineto 74.1582 102.703125 lineto 71.8375 101.107033 lineto 69.5023422 99.5195313 lineto 67.1535187 97.9417953 lineto 64.7929688 96.375 lineto 62.421093 94.8214874 lineto 60.0390625 93.2824249 lineto 57.6480484 91.7593765 lineto 55.2496109 90.2539063 lineto 52.8441391 88.7675781 lineto 50.4335938 87.3027344 lineto 48.0179672 85.8597641 lineto 45.5992203 84.4410172 lineto 43.1781235 83.0480499 lineto 40.7558594 81.6824188 lineto 38.3335953 80.3457 lineto 35.9125 79.0390625 lineto 33.4933586 77.7648468 lineto 31.077343 76.5238266 lineto 28.6660156 75.3183594 lineto 26.2597656 74.1496124 lineto 23.860157 73.0195313 lineto 21.468359 71.9289093 lineto 19.0855465 70.8804703 lineto 16.7121086 69.875 lineto 14.35 68.9140625 lineto }
+%cvx exec stroke
+
+instroke ==  %% col·lisiona?
+}if
