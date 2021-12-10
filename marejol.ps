@@ -1,0 +1,64 @@
+%% genera un segment, completament horitzontal, amb sinuositats idèntiques
+
+%% inici del marejol
+/segment 450 def  %% llargada del segment
+
+/Nsegment 1  %% trams dels segment? si /factorFase val 0 tenim una recta
+ def
+
+%% punt d'inici (el punt final el marca /segment i és horitzontal)
+/nodeX 100 def
+/nodeY 100 def
+
+/fase segment Nsegment div def  %% hauria de ser n vegades l'ample del segment
+
+/factorFase
+ fase Nsegment
+
+ Nsegment
+%4 mul  %% si aquest divisor és a partir del doble que /Nsegment ens fa el farbalà ússar
+        %% (per escriure en aquesta línia de base hauria d'actuar collisions.ps)
+       %% si aquest divisor és idèntic que /Nsegment ens fa l'arc visigòtic
+%2 div  %% si aquest divisor és la meitat que /Nsegment ens fa l'ona d'oscil·loscòpic
+ 4 div  %% si aquest divisor és una quarta part d'/Nsegment, fa l'onada tipus teulada
+%6 div  %% a partir de la sisena part les corbes fan un gromull que cal analitzar
+
+ div div  %% si el valor de les dues divisions val zero, tenim una recta
+
+%% forcem a zero?
+pop 0
+
+ def  %% controla la cresta de l'onada
+
+/logicNances false def
+
+/nances
+{
+ logicNances
+ {
+  nodeX factorFase add nodeY factorFase add
+  nodeX fase add factorFase sub nodeY factorFase add
+ }
+ {
+  nodeX factorFase add nodeY factorFase neg add
+  nodeX fase add factorFase sub nodeY factorFase neg add
+ }ifelse
+} bind def
+
+/faMarejol
+{
+ nodeX nodeY moveto
+ Nsegment  %% hauria de ser les n vegades en que s'ha dividit el segment
+ {
+%  nodeX nodeY
+  nances
+  nodeX fase add dup /nodeX exch def
+  nodeY curveto
+  logicNances not /logicNances exch def
+ }repeat
+}bind def
+
+faMarejol  %stroke
+
+%showpage
+
