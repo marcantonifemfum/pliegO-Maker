@@ -24,12 +24,12 @@
 %(m'escalfo els peus encara amb la manteta i la tebior dels dits de la Fina)
 
 %%MarcelDuchamp
-(/Library/WebServer/Documents/www.pliegos.net/maker/txt/theCreativeAct_MarcelDuchamp.txt)
-(r) file 65535 string readstring pop
+%(/Library/WebServer/Documents/www.pliegos.net/maker/txt/theCreativeAct_MarcelDuchamp.txt)
+%(r) file 65535 string readstring pop
 
 %%J.J.Tharrats
-%(/Library/WebServer/Documents/www.pliegos.net/maker/txt/lArtComAnecessitatConstant_JJTharrats.txt)
-%(r) file 65535 string readstring pop
+(/Library/WebServer/Documents/www.pliegos.net/maker/txt/lArtComAnecessitatConstant_JJTharrats.txt)
+(r) file 65535 string readstring pop
 
 %%Julio Cortázar
 %(/Library/WebServer/Documents/www.pliegos.net/maker/txt/instruccionesParaSubirUnaEscalera_JulioCortazar.txt)
@@ -236,13 +236,13 @@ false{  %% amb 4 línies per pàgina i 6 pàgines d'un pliegOS 4+4:
 
 %%Aquestes són les dues variables amb les que treballa l'algorisme per endreçar paraules, fer línies i omplir pàgines
 
-16 /NlinPLANA exch def  %% nombre de línies per plana (sempre es compleix, menys la darrera o quan no s'arriba al màxim)
+22 /NlinPLANA exch def  %% nombre de línies per plana (sempre es compleix, menys la darrera o quan no s'arriba al màxim)
 
-6 /NpagPliegO exch def  %% nombre de pàgines componibles al pliegO excollit (8+8up=14/7 | 4+4up=6/3)
+14 /NpagPliegO exch def  %% nombre de pàgines componibles al pliegO excollit (8+8up=14/7 | 4+4up=6/3)
 
 
 /UNAlinia () def  %% construirem una línia cada vegada
-/MAXsuaraX 23 def  %% variable derivada d'enflataGlifs_ però que ens diu quants caràcters màxims ha de contenir una línia
+/MAXsuaraX 25 def  %% variable derivada d'enflataGlifs_ però que ens diu quants caràcters màxims ha de contenir una línia
 %% comencem amb 1 sol caràcter per tal vagi augmentant i deduint a partir de quan li quadra la previsió
 %% com que ara inicialment no trencarem síl·labes, el mot més llarg hauria de servir com a inici /MAXsuaraX per guanyar temps
 %% però al compondre de debò serà la posició màxima X de final de línia permesa qui ens mani
@@ -515,11 +515,13 @@ UNpliegO UNAplana UNAlinia MAXsuaraX
 }if
 
 %% quan fem paràgrafs, un loop intermig podria filtrar les vídues i les orfes movent strings de lloc
-UNpliegO dup dup dup length dup ==  %% nombre de pàgines finals
-1 sub get length ==  %% nombre de línies de la darrera pàgina
-0 get length ==  %% nombre de línies de la primera pàgina
+UNpliegO dup dup dup length dup 3 string cvs print flush ( ...nombre de pàgines finals sobre... ) print flush
+NpagPliegO 3 string cvs print flush ( ...possibles\n)print flush
+1 sub get length 3 string cvs print flush ( ...nombre de línies de la darrera pàgina\n)print flush
+0 get length 3 string cvs print flush ( ...nombre de línies de la primera pàgina\n)print flush
 %UNAplana UNAlinia
-MAXsuaraX ==
+MAXsuaraX 3 string cvs print flush ( ...nombre màxim de caràcters per línia\n)print flush
+(\n...estructura:\n\n)print flush
 ==  %% estructura a compondre
 
 %% el loop final agafaria totes les variables definides de composició:
