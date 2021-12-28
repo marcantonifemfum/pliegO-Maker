@@ -17,25 +17,33 @@
 
 %% cal veure si forçarem d'alguna manera el fer paràgrafs (doncs el RAP, d'entrada, ni puntua ni fa paràgrafs)
 
-%% aqust algorisme ha de ser cridat per nUp_pliegOS.ps
+%% aquest algorisme ha de ser cridat per nUp_pliegOS.ps
 
 %% cridarem llegeixJson i filtrarem l'estructura del text
 %% de moment no forcem paràgrafs? eliminem espais en blanc sobrers d'entremig i a la cua?
 %(m'escalfo els peus encara amb la manteta i la tebior dels dits de la Fina)
 
 %%MarcelDuchamp
+%%Aquesta cadena de text té tots els canvis de línia convertits a \n?
+%%No té cap més tractament que el fet de ser ISO-8859-1
 %(/Library/WebServer/Documents/www.pliegos.net/maker/txt/theCreativeAct_MarcelDuchamp.txt)
 %(r) file 65535 string readstring pop
 
 %%J.J.Tharrats
-(/Library/WebServer/Documents/www.pliegos.net/maker/txt/lArtComAnecessitatConstant_JJTharrats.txt)
-(r) file 65535 string readstring pop
+%%Aquesta cadena de text té tots els canvis de línia convertits a \n?
+%%No té cap més tractament que el fet de ser ISO-8859-1
+%(/Library/WebServer/Documents/www.pliegos.net/maker/txt/lArtComAnecessitatConstant_JJTharrats.txt)
+%(r) file 65535 string readstring pop
 
 %%Julio Cortázar
+%%Aquesta cadena de text té tots els canvis de línia convertits a \n?
+%%No té cap més tractament que el fet de ser ISO-8859-1
 %(/Library/WebServer/Documents/www.pliegos.net/maker/txt/instruccionesParaSubirUnaEscalera_JulioCortazar.txt)
 %(r) file 65535 string readstring pop
 
 %%John Cheever
+%%Aquesta cadena de text té tots els canvis de línia convertits a \n?
+%%No té cap més tractament que el fet de ser ISO-8859-1
 %(/Library/WebServer/Documents/www.pliegos.net/maker/txt/elNedador_JohnCheever.txt)
 %(r) file 65535 string readstring pop
 
@@ -44,37 +52,252 @@
 %% el tractament del retorn de carro s'hauria de fer un cop hi hagi l'string muntada de la filera, analitzant-la, quan trobéssim
 %% un \n (10 decimal) trencaríem el text encetant una nova línia amb el text sobrant i valorant si omple o no la pàgina,
 %% si en trobéssim dos de seguits \n\n (dos 10 decimal), n'encetaríem dues: una nova línia buida i una més amb la resta de text
-%(Si vinguessis per tardor\nespolsaríem l'estiu\namb llengots i mitja rialla,\ncom mestresses al badiu.\n\nSi ens veiéssim en un any\ncabdellaríem mesades,\ntotes al seu calaixer,\nmentre el temps passa debades.\n\nSi triguéssis sols un segles,\ncomptats només amb la mà,\ndeixondint els dits tot d'una\ndins el Van Diemens llunyà.\n\nSi del cert la vida fuig,\nbé prou que ambdós ho sabem,\nque foragitant l'embolcall\nfaríem un tast a l'etern.\n\nAra però, ignorem al capdavall\nsi el temps és l'ala incerta\nd'un borinot que, cap a mi furiós,\nenvà el seu fibló no encerta.)
-%% versió espai i doble espai
-%(Si vinguessis per tardor espolsaríem l'estiu amb llengots i mitja rialla, com mestresses al badiu. Si ens veiéssim en un any cabdellaríem mesades, totes al seu calaixer, mentre el temps passa debades. Si triguéssis sols un segles, comptats només amb la mà, deixondint els dits tot d'una dins el Van Diemens llunyà. Si del cert la vida fuig, bé prou que ambdós ho sabem, que foragitant l'embolcall faríem un tast a l'etern. Ara però, ignorem al capdavall si el temps és l'ala incerta d'un borinot que, cap a mi furiós, envà el seu fibló no encerta.)
 
+%%Aquesta cadena de text té tots els canvis de línia convertits a \n i no té cap més tractament que el fet de ser ISO-8859-1
+%(Si vinguessis per tardor\nespolsaríem l'estiu\namb llengots i mitja rialla,\ncom mestresses al badiu.\n\nSi ens veiéssim en un any\ncabdellaríem mesades,\ntotes al seu calaixer,\nmentre el temps passa debades.\n\nSi triguessis sols un segles,\ncomptats només amb la mà,\ndeixondint els dits tot d'una\ndins el Van Diemens llunyà.\n\nSi del cert la vida fuig,\nbé prou que ambdós ho sabem,\nbo i foragitant l'embolcall\nfaríem un tast a l'etern.\n\nAra però, ignorem al capdavall\nsi el temps és l'ala incerta\nd'un borinot que, cap a mi furiós,\nenvà el seu fibló no encerta.)
+
+%% versió amb només espais
+%(Si vinguessis per tardor espolsaríem l'estiu amb llengots i mitja rialla, com mestresses al badiu. Si ens veiéssim en un any cabdellaríem mesades, totes al seu calaixer, mentre el temps passa debades. Si triguessis sols un segles, comptats només amb la mà, deixondint els dits tot d'una dins el Van Diemens llunyà. Si del cert la vida fuig, bé prou que ambdós ho sabem, bo i foragitant l'embolcall faríem un tast a l'etern. Ara però, ignorem al capdavall si el temps és l'ala incerta d'un borinot que, cap a mi furiós, envà el seu fibló no encerta.)
+
+%%Antonina Canyelles
+%%Aquesta cadena de text té tots els canvis de línia convertits a \n i no té cap més tractament que el fet de ser ISO-8859-1
+%(Peixos dins el rostoll\nàligues dins el foc\nla mar dins els ulls\nels peus plens de cans\nel vent és pudent\ntots els déus van gats\n\nOh serra mamerra\nens roben la terra\ni ens fonen l'aram.)
+ 
 %%Embarbussament dalinià original https://ca.wikipedia.org/wiki/Embarbussament
+%%Aquesta cadena de text té tots els canvis de línia convertits a \n i no té cap més tractament que el fet de ser ISO-8859-1
 %(Una polla xica, pica, pellarica, camatorta i becarica va tenir sis polls xics, pics, pellarics, camacurts i becarics. Si la polla no hagués sigut xica, pica, pellarica, camatorta i becarica, els sis polls no haguessin sigut xics, pics, pellarics, camacurts i becarics.)
 
-%% anàlisi:
-false{
+%%La rondalla del bou (de Marià Manent)
+(El bou pesant, veient la gent que tantes coses oferia, diu que volia fer un present al dolç Infant de l'Establia. I quan minvà una mica el fred i l'Infantó ja no plorava, sortí amb pas lent, dins l'aire net, sota la nit florida i blava. Va caminar per fondes valls i resseguia la carena. Sent el clarí de tots els galls, però ja du la rica ofrena. Saltant de goig i bruelant, el bou baixà de la muntanya, i s'oferia al dolç Infant amb una estrella a cada banya.)
+
+%%Juguem amb paràgrafs i línies en blanc
+%% la interfície haurà d'escriure la sintaxi dels retorns de carro cap al .ps com:
+%% forçar un canvi de línia... ( \n) ...32+10 ...però al cap de l'string s'haurà de buscar només un 10
+%% forçar un canvi de línia amb espai en blanc... ( \n\n) ...32+10+10 ...però al cap de l'string s'haurà de buscar només dos 10
+%(Aquesta línia)
+%( \nforcem que es trenqui)  %%...cercarem espai + \n, sempre a la capçalera de l'string
+%( \n\ni ara que hi hagi entremig una línia en blanc.)  %%...un cop trobem espai + \n seguirem buscant més \n
+%( \n\n\ni ara que n'hi hagi dues de línies en blanc.)  %%...cadascun dels \n extres trobats seguits seria una línia en blanc
+%( ) search pstack quit
+%% una altra opció seria haver filtrat a +Neteja els retorns de carro seguits (combinacions de \n\r) sempre com a ( \n)
+%%Estratègia a seguir:
+%% quan trobem ( \n) el primer que farem serà mirar en quin estat tenim /UNAplana, doncs:
+%1 en funció de /MAXlinPLANA /NlinPLANA decidirem si completem la que tenim i n'encetem o no una de nova
+%2 un o diversos retorns de carro, seguits, coincidents (o a 1 línia de distància) en un canvi de plana, són inútils
+%% doncs el componedor haurà de passar directament a la línia de text següent a compondre en una nova pàgina
+%3 un cop feta la neteja i substitució de caràcters per la sintaxi que necessitem, s'hauran de saber el nombre de \n
+%% que tingui el text (sobretot pensant en poemes) doncs +1 no podrà igualar o superar el nombre de línies total establert
+%% en la configuració de /NlinPLANA multiplicat per /NpagPliegO, doncs llavors haurem d'ampliar /NlinPLANA
+%4 i encara més: si el valor total de \n fa que /NlinPLANA x /NpagPliegO suposi deixar una o més pàgines en blanc,
+%% haurem de reduir el valor de /NlinPLANA per tal que el pliegO s'ompli fins la darrera plana
+%% un exemple basat en la poesia de la Dikinson: té 23 \n (19 de senzills i 4 dobles) --o sigui 20 línies--
+%% si haguéssim triat 5 línies per pàgina i 3 pàgines pel pliegO, no hi cabria el poema i llavors hauríem d'augmentar
+%% /NlinPLANA a un mínim de 7 (3x7=21), si afinem més, haurem de comptar els dobles \n, o sigui les línies en blanc
+%5 els canvis de línia obligats (mot\nmot) s'han de transformar en (mot \nmot) i si hi ha 1 línia en blanc entremig (mot \n \nmot)
+%%ORDRE
+%%+ 0
+%% tots els retorns de carro de l'input de text s'hauran d'haver convertit a ( \n) 32+10 decimal (a banda d'altres correccions)
+%%+ 1
+%% comptar el nombre de ( \n) totals que tingui el text
+%%+ 2
+%% aquest total condicionarà la quantitat mínima de línies /NlinPLANA (MAXlinPLANA) que ha de tenir /NpagPliegO (MAXpagPliegO)
+%%+ 3
+%% caldrà ponderar quina és la llargada màxima de caràcters fins a trobar un ( \n) i comparar-ho amb /MAXsuaraX
+%% de fet, si volem ser fidels a la composició de determinats poemes, /MAXsuaraX hauria de valdre aquest valor de llargada
+
+
+%%+Neteja:
+true{
+%% treiem espais en blanc a l'inici i al final de l'string sencera
+%(   \t   \n  al davant i han molts espais en blanc i altres  i al darrera tres  \f )
+%% neteja 32 i altres caràcters de control que estiguin per sota, del davant
+/ARAi 0 def
+{  %% loop
+ dup length /faS exch def
+ dup ARAi get 32 le
+ {
+  ARAi 1 add dup /fiNS- exch def
+  faS fiNS- sub getinterval
+ }
+ {
+  exit
+ }ifelse
+}loop
+%% neteja 32 i altres caràcters de control que estiguin per sota, del darrera
+{  %% loop
+ dup length 1 sub /faS exch def
+ dup faS get 32 le
+ {
+  0 faS getinterval
+ }
+ {
+  exit
+ }ifelse
+}loop
+
+%% cal treure 2 o més espais en blanc seguits
+%% cal veure si el \n que trobem duen l'espai en blanc abans
+%% caldrà elminar ara 2 o més línies en blanc ( \n\n\n) seguides o les respectem?
+%% cal eliminar/substituir les marques de Markdown: * \t
+%% cal substituir caràcters (a d'altres d'equivalents) fora de l'encoding que treballem
+%% mirem quin algorisme va millor: treuposa.ps | salvaparent.ps | salvaparent2.ps o el similar de CaLi2CoPi
+
+}if
+
+
+%%Aquí activem l'anàlisi sofisticat de signes a substituir via ~/enfony/TOTcodiPostScript/salvaparent2.ps
+
+%% si al final d'aquest anàlisi continua buida, és que no hi ha \n i els canvis de línia de la tripa també seran zero
+/strctrIdeal [] def
+/tripaCdL 0 def
+
+%% històric:
+%% de com reescriure una string x solucionar el problema de no deixar-nos
+%% el backslash \ i els parentesi () sense el \ que els marca com a caràcters
+%% adaptat de l'algorisme NRMLTZDR2.ps del cercador de pal·líndroms TURURUT2
+
+[  %% paquet de caràcters a cercar
+ (\015)  %% \r carriage return (CR)
+ (\011)  %% \t horizontal tab
+ (\010)  %% \b backspace
+ %% no hi pot haver un null  %% cal? (\134)	%%0 \
+ %% no hi pot haver un null  %% cal? (\050)	%%1 (
+ %% no hi pot haver un null  %% cal? (\051)	%%2 )
+ (\n)  %%3 line feed (LF) necessitem comptar els retorns de carro!, índex 3!
+ (  )  %%4 doble espai en blanc
+
+ (\014)  %% \f form feed (FF)
+
+] /fora exch def
+
+[  %% paquet de caràcters a substituir
+ (\n)  %% carriage return (CR)
+ ( )  %% horizontal tab
+ ( )  %% backspace
+ %% null  %% cal? (\\)  %%0
+ %% null  %% cal? (\()  %%1
+ %% null  %% cal? (\))  %%2
+ ( \n)   %%3
+ ( )     %%4 tot i així encara poden quedar dos o més espais seguits! (aquesta anàlisi hauria de ser específica per netejar bé)
+
+ ( )  %% form feed (FF)
+] /foraX exch def
+
+fora length foraX length ne
+{
+ ( <<<< el nombre d'elements a trobar i substituir fora/foraX difereixen ...pleguem!)== quit
+}if
+
+/FAfora fora length def  %% el nombre d'elements de /fora i /foraX que han de coincidir (pestell de sortida del loop)
+/ifora 0 def  %% index de /fora
+
+%% aquí una cadena per fer proves per veure si es reescriuen correctament certs cràcters
+%pop %(el primer \\\)el segon\\\( el tercer \)\(el quart i el cinque\(\))
+%pop ( \n)
+
+mark exch
+{  %% loop
+ {  %% loop de cerca/subs de caràcters
+  fora ifora get search
+  {
+   exch pop
+   dup length dup 2 add string dup 3 -1 roll foraX ifora get putinterval
+   dup 3 -1 roll 0 exch putinterval
+  }
+  {
+   exit
+  }ifelse
+  exch
+ }loop
+
+ %% mentre n'hi hagi mes d'un
+ counttomark 1 gt
+ {
+  %% array l'endreçat ideal del text: una sola pàgina i tantes línies com retorns de carro
+  ifora 3 eq  %% índex de (\n) per convertir-se en ( \n)
+  {
+   counttomark dup /tripaCdL exch def
+   copy tripaCdL array astore /strctrIdeal exch def
+  }if
+
+  counttomark /atura't exch def
+  /ici 2 def
+  {  %% loop que capgira tots els elements trobats a l'stack fins a mark
+   ici -1 roll ici 1 add /ici exch def ici atura't gt
+   {
+    exit
+   }if
+  }loop
+
+  {  %% loop empalmador de les cadenes trobades en 1 sola
+   dup length dup 3 index length add string dup 4 -1 roll
+   0 exch putinterval dup 3 -1 roll 4 -1 roll putinterval
+   counttomark 1 eq
+   {
+    exit
+   }if
+  }loop
+ }if
+
+ ifora 1 add /ifora exch def
+ FAfora ifora eq
+ {
+  exit
+ }if
+}loop
+exch pop  %% ens carreguem mark
+
+%%+Anàlisi:
+true{
+%% aquesta part de l'anàlisi la fem un cop haguem filtrat tota mens de canvis i els (\n) siguin ( \n)
 %% quants caràcters té el text?
-dup length ==
+dup length /tripaDmots exch def
+
 %% quants caràcters té el mot més llarg?
 /motMesLlarg 0 def
 dup
-{
+{  %% loop
  ( ) search
  {
-  length dup motMesLlarg gt
+  dup length dup motMesLlarg gt
   {
-   /motMesLlarg exch def
+   %% aquí hi hauria d'haver un segon anàlisi per evitar comptar \n enganxats
+   exch 0 get 10 eq
+   {
+    dup 1 sub motMesLlarg gt
+    {
+     /motMesLlarg exch def
+    }
+    {
+     pop
+    }ifelse
+   }
+   {
+    /motMesLlarg exch def
+   }ifelse
    pop
   }
   {
-   pop pop
+   pop pop pop
   }ifelse
  }
- {
-  length dup motMesLlarg gt
+ {  %% som al final de la tripa de mots
+  dup length dup motMesLlarg gt
   {
-   /motMesLlarg exch def
-   pop
+   %% aquí hi hauria d'haver un segon anàlisi per evitar comptar \n enganxats
+   exch 0 get 10 eq
+   {
+    dup 1 sub motMesLlarg gt
+    {
+     /motMesLlarg exch def
+    }
+    {
+     pop
+    }ifelse
+   }
+   {
+    /motMesLlarg exch def
+   }ifelse
   }
   {
    pop pop
@@ -83,8 +306,63 @@ dup
   exit
  }ifelse
 }loop
-motMesLlarg (::::)pstack quit
 }if
+%motMesLlarg
+%strctrIdeal (::::)pstack quit
+
+%%Desactivem ara per fer anar nUp!
+true{
+
+%strctrIdeal length tripaCdL
+tripaCdL 0 ne
+{  %% si duu algun canvi de línia
+ /liniaMesLlargaFa 0 def
+ strctrIdeal
+ {  %% forall
+  dup length dup liniaMesLlargaFa gt
+  {
+   /liniaMesLlargaFa exch def
+   /aquestaEsLaLiniaMesLlarga exch def
+  }
+  {
+   pop pop
+  }ifelse 
+ }forall
+
+
+%%Linia més llarga
+(<<< linia mes llarga fa)==
+ liniaMesLlargaFa ==
+(<<< aquesta es la linia mes llarga)==
+ aquestaEsLaLiniaMesLlarga ==
+}
+{  %% 1 sola línia
+%%Linia més llarga
+(<<< linia mes llarga fa)==
+ tripaDmots ==  %% la línia més llarga seria /tae però la definim més avall i ara ja la tenim a l'stack
+(<<< aquesta es la linia mes llarga)==
+dup ==
+}ifelse
+
+(<<< nombre de paragrafs)==
+/iPrgrfs 0 def
+strctrIdeal {( \n) eq {iPrgrfs 1 add /iPrgrfs exch def}if}forall
+iPrgrfs ==
+
+(<<< nombre de linies de text = nombre de canvis de linia del text - paragrafs)==
+tripaCdL iPrgrfs sub dup ==  /nDldT exch def
+
+(<<< nombre de canvis de linia del text = linies de text + paragrafs)==
+tripaCdL ==
+
+(<<< nombre de caracters totals del text)==
+tripaDmots ==
+
+%(!!!)== quit
+}if
+%%Desactivem ara per per anar nUp!
+%%CAL canviar-ho per poder empalmar amb plegaVeu_mestre.ps
+%(quehitenimalstackquan va)pstack quit
 
 %% amb la darrera paraula menys: Error: /stackunderflow in --pop--  HICAP2 d tancament final
 %(Una polla xica, pica, pellarica, camatorta i becarica va tenir sis polls xics, pics, pellarics, camacurts i becarics. Si la polla no hagués sigut xica, pica, pellarica, camatorta i becarica, els sis polls no haguessin sigut xics, pics, pellarics, camacurts i)
@@ -236,13 +514,13 @@ false{  %% amb 4 línies per pàgina i 6 pàgines d'un pliegOS 4+4:
 
 %%Aquestes són les dues variables amb les que treballa l'algorisme per endreçar paraules, fer línies i omplir pàgines
 
-22 /NlinPLANA exch def  %% nombre de línies per plana (sempre es compleix, menys la darrera o quan no s'arriba al màxim)
+2 /NlinPLANA exch def  %% nombre de línies per plana (sempre es compleix, menys la darrera o quan no s'arriba al màxim)
 
-14 /NpagPliegO exch def  %% nombre de pàgines componibles al pliegO excollit (8+8up=14/7 | 4+4up=6/3)
+6 /NpagPliegO exch def  %% nombre de pàgines componibles al pliegO excollit (8+8up=14/7/1 | 4+4up=6/3/1)
 
 
 /UNAlinia () def  %% construirem una línia cada vegada
-/MAXsuaraX 25 def  %% variable derivada d'enflataGlifs_ però que ens diu quants caràcters màxims ha de contenir una línia
+/MAXsuaraX 1 def  %% variable derivada d'enflataGlifs_ però que ens diu quants caràcters màxims ha de contenir una línia
 %% comencem amb 1 sol caràcter per tal vagi augmentant i deduint a partir de quan li quadra la previsió
 %% com que ara inicialment no trencarem síl·labes, el mot més llarg hauria de servir com a inici /MAXsuaraX per guanyar temps
 %% però al compondre de debò serà la posició màxima X de final de línia permesa qui ens mani
@@ -311,6 +589,10 @@ false{  %% amb 4 línies per pàgina i 6 pàgines d'un pliegOS 4+4:
     UNAplana length 1 add MAXlinPLANA eq  %% és la darrera línia admesa a la plana?
     {  %% ho és i la desem a /UNAplana
 (es la darrera linia admesa a la plana)=
+
+%UNAplana UNAlinia
+(--aqui afegim 1--)== %pstack quit
+
      UNAplana length dup /ARAva exch def 1 add array dup 0 UNAplana putinterval
      dup ARAva UNAlinia put /UNAplana exch def  %% la desem
      %% si és la darrera línia admesa, la plana també s'haurà de desar a /UNpliegO
@@ -345,6 +627,10 @@ false{  %% amb 4 línies per pàgina i 6 pàgines d'un pliegOS 4+4:
      }ifelse
     }
     {  %% desem la línia anterior a /UNAplana
+
+%UNAplana UNAlinia
+(--aqui afegim 0--)== %pstack quit
+
      UNAplana length dup /ARAva exch def 1 add array dup 0 UNAplana putinterval
      dup ARAva UNAlinia put /UNAplana exch def  %% la desem
 (...desem l'anterior...)=  %pstack quit
@@ -398,6 +684,10 @@ false{  %% amb 4 línies per pàgina i 6 pàgines d'un pliegOS 4+4:
     UNAplana length 1 add MAXlinPLANA eq  %% és la darrera línia admesa a la plana?
     {  %% ho és i la desem a /UNAplana
 (es la darrera linia admesa a la plana)=
+
+%UNAplana UNAlinia
+(--aqui afegim 2--)== %pstack quit
+
      UNAplana length dup /ARAva exch def 1 add array dup 0 UNAplana putinterval
      dup ARAva UNAlinia put /UNAplana exch def  %% la desem
      %% si és la darrera línia admesa, la plana també s'haurà de desar a /UNpliegO
@@ -450,6 +740,10 @@ exit
      }ifelse
     }
     {  %% desem la línia anterior a /UNAplana
+
+%UNAplana UNAlinia
+(--aqui afegim 3--)== %pstack quit
+
      UNAplana length dup /ARAva exch def 1 add array dup 0 UNAplana putinterval
      dup ARAva UNAlinia put /UNAplana exch def  %% la desem
 (...desem l'anterior...)=  %pstack quit
@@ -460,6 +754,10 @@ exit
 %UNpliegO UNAplana UNAlinia MAXsuaraX
 %% no hi ha res a l'stack: ficar UNAlinia a la cua d' UNAplana, i aquesta a la cua d' UNpliegO i sortir
 %% /UNAlinia a /UNAplana
+
+%UNAplana UNAlinia
+(--aqui afegim 4--)== %pstack quit
+
   UNAplana length dup /ARAva exch def 1 add array dup 0 UNAplana putinterval
   dup ARAva UNAlinia put
 %% i aquesta plana a /UNpliegO
@@ -507,6 +805,10 @@ UNpliegO UNAplana UNAlinia MAXsuaraX
  %% tant HICAP0 com HICAP2, peten sense res a l'stack, solució quick&dirty capturant l'error amb l'stopped:
  %% ficar /UNAlinia a la cua d' /UNAplana, i aquesta a la cua d' /UNpliegO i sortir
  %% /UNAlinia a /UNAplana
+
+%UNAplana UNAlinia
+(--aqui afegim 5--)== %pstack quit
+
  UNAplana length dup /ARAva exch def 1 add array dup 0 UNAplana putinterval
  dup ARAva UNAlinia put
  %% i aquesta plana a /UNpliegO
@@ -522,7 +824,9 @@ NpagPliegO 3 string cvs print flush ( ...possibles\n)print flush
 %UNAplana UNAlinia
 MAXsuaraX 3 string cvs print flush ( ...nombre màxim de caràcters per línia\n)print flush
 (\n...estructura:\n\n)print flush
-==  %% estructura a compondre
+
+dup == /strctr exch def  %% estructura a compondre cap a plegaVeu_mestre.ps 
 
 %% el loop final agafaria totes les variables definides de composició:
-(--loop--)pstack
+%(--loop--)pstack
+

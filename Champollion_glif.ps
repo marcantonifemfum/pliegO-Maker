@@ -1,68 +1,85 @@
+%% TEST de llargària de glfs a compondre
 %% llegim el fitxer amb el text a compondre
-(/Library/WebServer/Documents/www.pliegos.net/maker/txt/moltcurt.txt)
+%(/Library/WebServer/Documents/www.pliegos.net/maker/txt/moltcurt.txt)
 %(/Library/WebServer/Documents/www.pliegos.net/maker/txt/theCreativeAct_MarcelDuchamp.txt)
-%(/Library/WebServer/Documents/www.pliegos.net/maker/txt/lArtComAnecessitatConstant.txt)
-(r) file /fAllegir exch def
+%(/Library/WebServer/Documents/www.pliegos.net/maker/txt/lArtComAnecessitatConstant_JJTharrats.txt)
+%(/Library/WebServer/Documents/www.pliegos.net/maker/txt/instruccionesParaSubirUnaEscalera_JulioCortazar.txt)
+%(r) file /fAllegir exch def
 
 %% en deduïm primer el nombre d'octets
-fAllegir bytesavailable
+%fAllegir bytesavailable
 
 %% seguidament cal saber quina correspondència en glifs tenen (doble byte UTF8?) per dexifrar-los
 %% haurem de treballar amb l'AdobeGlyphList
-/glifsAcompondre exch def
+%/glifsAcompondre exch def
 
 %% cal valorar com i on ens convé analitzar la codificació del text: aquí? i dins a stream o dins a cadena? o millor a compon_#?
 %% per aquesta feina farem servir ~/Downloads/faTotElMapaDagulles/repicaHTMLentities.ps
 
 %% un cop fet el decodificat (com esciurem els glifs definitius? nom? octal?)
 %% ara posem la totalitat del texit sense filtrar dins una cadena
-fAllegir glifsAcompondre 1 add  %% n'hi sumem un per forçar el false de final de fitxer?
-string readstring
-{
- (------ no hem arribat al final del fitxer?)pstack quit
-}
+%fAllegir glifsAcompondre 1 add  %% n'hi sumem un per forçar el false de final de fitxer?
+%string readstring
+%{
+% (------ no hem arribat al final del fitxer?)pstack quit
+%}
+%{
+
+/Champollion_glif
 {
  /TexT exch def  %% el text a compondre amb possibles redundàncies
  %% possibles redundàncies:
  /trencador ( ) def  %% establim caràcter trencador per compondre el text (filtrarem que no n'hi hagi més d'1 de seguit)
- /cldr (\n) def  %% calderó, o sigui, marca de paràgraf (filtrarem que no n'hi hagi més d'1 de seguida)
+%% /cldr (\n) def  %% calderó, o sigui, marca de paràgraf (filtrarem que no n'hi hagi més d'1 de seguida)
 
  %%(\n ...passem a filtrar redundàncies\n\n)print flush
 
  %% filtrem si /trencador es repeteix dins /TexT 2 o+ vegades seguides
  %% el fitxer d'escriptura mai superarà la mida de la cadena
- TexT length string dup /noTexTredundant exch def /NullEncode filter /fTexT exch def
- trencador 0 get /Otrencador exch def  %% octet del caràcter trencador
- /rdndnt false def  %% es repeteix?
- /imn 0 def  %% comptador de mots nets
- TexT
+ TexT length dup 0 eq
+ {  %% salpassem les llinies en blanc/paràgrafs
+  pop ()
+ }
  {
-  dup Otrencador eq
+  string dup /noTexTredundant exch def /NullEncode filter /fTexT exch def
+  trencador 0 get /Otrencador exch def  %% octet del caràcter trencador
+  /rdndnt false def  %% es repeteix?
+  /imn 0 def  %% comptador de mots nets
+  TexT
   {
-   rdndnt
-   {  %% a l'octet anterior ja hem ensopegat amb /trencador
-    pop
+   dup Otrencador eq
+   {
+    rdndnt
+    {  %% a l'octet anterior ja hem ensopegat amb /trencador
+     pop
+    }
+    {  %% és el primer cop que ensopeguem amb /trencador
+     fTexT exch write
+     imn 1 add /imn exch def
+    }ifelse
+    /rdndnt true def  %% es repeteix?
    }
-   {  %% és el primer cop que ensopeguem amb /trencador
+   {  %% no és /trencador
     fTexT exch write
+    /rdndnt false def  %% es repeteix?
     imn 1 add /imn exch def
    }ifelse
-   /rdndnt true def  %% es repeteix?
-  }
-  {  %% no és /trencador
-   fTexT exch write
-   /rdndnt false def  %% es repeteix?
-   imn 1 add /imn exch def
-  }ifelse
- }forall
- fTexT closefile
- noTexTredundant 0 imn getinterval
- %% el darrer octet és /trencador?
- dup imn 1 sub get Otrencador eq
- {
-  0 imn 1 sub getinterval
- }if
- /TexT exch def  %% el text a compondre sense redundàncies de /trencador
+  }forall
+  fTexT closefile
+  noTexTredundant 0 imn getinterval
+  %% el darrer octet és /trencador?
+  dup imn 1 sub get Otrencador eq
+  {
+   0 imn 1 sub getinterval
+  }if
+
+ }ifelse
+
+  %% deixem el resultat a l'stack perquè quedi dins l'array
+  %% /TexT exch def  %% el text a compondre sense redundàncies de /trencador
+}bind def
+
+false{  %% ho desactivem
 
  %% filtrem si /cldr es repeteix dins /TexT 2 o+ vegades seguides
  %% el fitxer d'escriptura mai superarà la mida de la cadena
@@ -99,4 +116,7 @@ string readstring
  }if
  /TexT exch def  %% text definitiu a compondre sense redundàncies de /cldr
 
-}ifelse
+}if
+
+%}ifelse
+

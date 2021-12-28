@@ -1,0 +1,18 @@
+%!
+%% escriu a disc un fitxer per poder fer copy/paste a la <textarea> de la interfície del plegaVeu i detectar el comportament
+%% dels octals amb que es converteixen els glifs en funció del tram Unicode on es trobem (vessem l'stack al prompt de la www)
+
+%% fitxer a escriure
+(miraOctals.txt)
+(w) file /escriu exch def
+
+%% de decimal a decimal separats per ( | )
+127 1 255
+
+{  %% for
+ escriu exch write
+ escriu ( | ) writestring
+}for
+
+escriu closefile
+

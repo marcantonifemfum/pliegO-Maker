@@ -137,7 +137,7 @@
  }ifelse
 }
 {
- true  %% fem visible la vora de la pàgina del llançat? (imposició) més endavant podrem posar-ho en una capa
+ false  %% fem visible la vora de la pàgina del llançat? (imposició) més endavant podrem posar-ho en una capa
 %% (\n Ghostscript no pot capturar aquesta variable d'entorn!\n\n)print flush
 }ifelse
 
@@ -152,7 +152,7 @@
 {
  dup length 0 eq
  {  %% si la variable existeix però arriba buida...
-  pop 8
+  pop 4
  }
  {
   cvx exec  %% és una string!
@@ -177,7 +177,7 @@
  }ifelse
 }
 {
- false
+ false  %% pel plegaVeu 19.12.21 forcem el 4+4 sempre en vertical (el 8+8 ja ho fa per defecte)
 %% (\n Ghostscript no pot capturar aquesta variable d'entorn!\n\n)print flush
 }ifelse
 
@@ -221,39 +221,58 @@
 {
  dup length 0 eq
  {  %% si la variable existeix però arriba buida...
-  pop 0
+  pop 1
  }
  {
   cvx exec  %% és una string!
  }ifelse
 }
 {
- 3  %% 0 algorisme de reglatge
+ 7  %% 0 algorisme de reglatge
     %% 1 fus horari
     %% 2 interrogador de variables
     %% 3 algorisme buit i només pintaria els marges de pàgina?
     %% 4 nadala amigots (ha d'anar amb 8vUpH!)
     %% 5 inocula codi pdf per farcir Reference XObjectes
     %% 6 traçat harmònic VanDeGraaf
-    %% 7 el bo i millor per compondre text
+
+    %% 7 plegaVeu mestre buit (amb el text de capçalera de la La polla xica, pica...)
+
 %% (\n Ghostscript no pot capturar aquesta variable d'entorn!\n\n)print flush
 }ifelse
 
-%%M7 comportament del cos de text
-(MRCT_cos) getenv
-{
+%%M7 text a compondre
+(MRCT_tlab) getenv
+{  %% la variable d'entorn existeix perquè ve de la <textarea> via interfície
  dup length 0 eq
  {  %% si la variable existeix però arriba buida...
-  pop false  %% true: deduïm nosaltres el cos | false: hi ha una segona variable que ens diu amb quin cos hem de treballar
+  pop (aquesta pàgina és buida per manca de dades)  %% text de farcit que ens indica que la variable ha arribat buida
+  %% després de l'string hi hauria d'haver un dígit per redefinir el valor de la variable d'entorn MRCT_lab?
+(/////)pstack exit
  }
- {
-  cvx exec  %% és una string!
+ {  %% aquesta és 
+(!!!!)pstack exit
+  %% és una string a polir i decodificar via plegaVeu_mestre_ple.ps 
+  %% després de l'string hi hauria d'haver un dígit per redefinir el valor de la variable d'entorn MRCT_lab?
  }ifelse
 }
-{
- false  %% true: deduïm nosaltres el cos | false: hi ha una segona variable que ens diu amb quin cos hem de treballar
+{   %% la variable d'entorn NO existeix perquè executem l'applet en local pel Terminal via línia de comanda
+%%RELLEVANT: si volem reflectir un error PS al prompt de la interfície necessitem sortir amb exit
+%% llavors surt del GS, doncs sinó sempre fa un pdf buit
+%(nnnn)pstack exit  
+%(text a compondre)  %% text en manual que posem nosaltres
+
+(Una polla xica, pica, pellarica, camatorta i becarica va tenir sis polls xics, pics, pellarics, camacurts i becarics. Si la polla no hagués sigut xica, pica, pellarica, camatorta i becarica, els sis polls no haguessin sigut xics, pics, pellarics, camacurts i becarics.)
+
+%(Peixos dins el rostoll\nàligues dins el foc\nla mar dins els ulls\nels peus plens de cans\nel vent és pudent\ntots els déus van gats\n\nOh serra mamerra\nens roben la terra\ni ens fonen l'aram.)
+
+%(Si vinguessis per tardor\nespolsaríem l'estiu\namb llengots i mitja rialla,\ncom mestresses al badiu.\n\nSi ens veiéssim en un any\ncabdellaríem mesades,\ntotes al seu calaixer,\nmentre el temps passa debades.\n\nSi triguessis sols un segles,\ncomptats només amb la mà,\ndeixondint els dits tot d'una\ndins el Van Diemens llunyà.\n\nSi del cert la vida fuig,\nbé prou que ambdós ho sabem,\nbo i foragitant l'embolcall\nfaríem un tast a l'etern.\n\nAra però, ignorem al capdavall\nsi el temps és l'ala incerta\nd'un borinot que, cap a mi furiós,\nenvà el seu fibló no encerta.)
+
+%(El bou pesant, veient la gent\nque tantes coses oferia,\ndiu que volia fer un present\nal dolç Infant de l'Establia.\n\nI quan minvà una mica el fred\ni l'Infantó ja no plorava,\nsortí amb pas lent, dins l'aire net,\nsota la nit florida i blava.\n\nVa caminar per fondes valls\ni resseguia la carena.\nSent el clarí de tots els galls,\nperò ja du la rica ofrena.\n\nSaltant de goig i bruelant,\nel bou baixà de la muntanya,\ni s'oferia al dolç Infant\namb una estrella a cada banya.)
+
+  %% després de l'string hi hauria d'haver un dígit per redefinir el valor de la variable d'entorn MRCT_lab?
 %% (\n Ghostscript no pot capturar aquesta variable d'entorn!\n\n)print flush
-}ifelse
+}ifelse 
 
 %% (a veure?)pstack quit
 
@@ -276,9 +295,13 @@
  (buit.ps)  %% 3 només pintaria els marges de pàgina?
  (nadala2017.ps)  %% 4 nadala amigots / %%M2 ha de ser 8 / %%M4 ha de ser 4 / %%M5 ha de ser false
  (/Users/femfum/PliegOS/codi_pliegOS/inocula.ps)  %% 5 inocula codi pdf per farcir Reference XObjects
-% (VanDeGraaf3.ps)  %% 6 traçat harmònic VanDeGraaf
- (VanDeGraaf4.ps)  %% 6 traçat harmònic VanDeGraaf / glif per pàgina pliegOSchapbooks ATypI2020AllOver
- (compon_VanDeGraaf.ps)  %% 7 el bo i millor per compondre text
+ (VanDeGraaf3.ps)  %% 6 traçat harmònic VanDeGraaf
+% (VanDeGraaf4.ps)  %% 6 traçat harmònic VanDeGraaf / glif per pàgina pliegOSchapbooks ATypI2020AllOver
+
+% (compon_VanDeGraaf.ps)  %% 7 el bo i millor per compondre text
+% (plegaVeu_mestre_buit.ps)  %% 7 plegaVeu mestre
+% (plegaVeu_mestre_ple.ps)  %% 7 veste'n Anton que el que es queda ja es compon!
+ (plegaVeu_mestre_ple_StEsteve.ps)  %% 7 dinar familiar de Sant Esteve 2021 
 ] def
 
 /pliegOS_nUpS
@@ -1459,13 +1482,14 @@ mark
 
 mark
 %% camps públics del Docinfo
-/Subject (Turn one simple sheet of paper into a little awesome book)
+/Subject %(Turn one simple sheet of paper into a little awesome book)
+(Féu que un sol full de paper esdevingui un llibret excepcional)
 /Title NpliegOS
 /Author (copyleft 2017-2021: Marcantoni Malagarriga-Picas <marcantoni@femfum.com>)
 /Keywords (microbooks, print, fold, cut, read, nUps, pliego, PliegOS, en Patufet, Barcelona)
 /Creator (PliegO'Maker {FemFum PostScript Applet} | http://pliegos.net/maker)
 /DOCINFO pdfmark
 
-(////*fi*////)pstack  %% brossa a l'stack?
+%(////*fi*////)pstack  %% brossa a l'stack?
 %% mentre gs no deixa brossa a l'stack, pstopdf deixa dos índex a l'stack (per què?)
 

@@ -53,7 +53,10 @@ noNULL  %% pinta el contingut de pàgina?
 %grestore
 
  newpath  %% fora traces de posicionaments anteriors (elimina l'efecte de la ratlla final)
+ gsave
+ 0.3 setlinewidth  %% en negatiu la línia més prima sempre es tapa i cal que tingui un gruix mínim
  xPagina qdrt 2 div sub yPagina qdrt 2 div sub qdrt 2 div 0 360 arc stroke
+ grestore
 
  M1  %% fem visible la vora de la pàgina del llançat?
  {

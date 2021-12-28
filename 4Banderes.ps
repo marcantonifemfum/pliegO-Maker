@@ -1,0 +1,557 @@
+%% pel projecte de JBC
+%% algorisme bàsic de composició amb els 3 justificats, que pot evolucionar molt cap a subtils composicions
+
+%% gs -q -dNOSAFER -o re.pdf -sDEVICE=pdfwrite -c .setpdfwrite -f 4Banderes.ps
+
+%<</PageSize[400 400]>>setpagedevice
+
+%# tipografia de treball
+%(/Users/femfum/CEM/CEM75a/18\ no\ complet/75GLLS/DOSSIER/2019/fa131agulles/xapes/Bulo-Bold.otf)
+
+%(/Users/femfum/calaixDtipus/Balius/TR00032-2020/Patufet/otf/Patufet-Mono-Mig.otf)
+%% rexifrat (encoding) llatí per caràcters fora de l'ascii
+%findfont
+%dup length dict begin
+%{1 index /FID ne {def}{pop pop}ifelse}forall
+%/Encoding ISOLatin1Encoding def
+%currentdict end
+%/laLlatina exch definefont pop
+
+%%Dada 1 a pliegOS
+%/COs exch def
+
+%%Dada 2 a pliegOS
+%/laLlatina COs selectfont  %# cos de treball
+
+%% captura de dades
+1 /3J exch def  %% índex de l'algorisme de composició 0=E 1=C 2=D + centrat vertical 3=EV 4=CV 5=DV
+
+/esS false def  %% subratllat?
+
+%%Dada 3 a pliegOS
+/mX exch def  %# offset posició X d'inici de línia
+%200
+
+%%QUINA lògica tenia això?
+% H add M sub  %% aquí no ens cal corregir la línia de base al % del descendent
+
+ /mY exch def  %# posició inicial Y de la primera línia
+0 /faLinia exch def  %% ample actual de la línia
+
+%%Dada 4 a pliegOS
+%200
+/maxL exch def  %# ample de línia pel centrat
+
+%%Dada 5 a pliegOS
+%200
+/maxStrngWidth exch def  %% màxim reng de composició
+/maxRengsXcella 10 def
+COs 1.4 mul /iL exch def  %# interliniat estàndard (120% del cos) dins el mateix bloc de composició
+
+%# text a compondre
+%%(Esdevinguerem_miops_d'una_vella_causa_perduda,_pero_malgrat_tot_encara_ben_present_i_amb_grans_possibilitats_d'esdevenir)
+%%(l'escrius?)
+%(l'Ovidi alimentarà molles, ja no vol el pa sencer, les molles volen al vent!)
+%(D'una bellesa torbadora se m'acostà per darrera i em tapà els ulls, vaig obrir la boca i m'hi posà els seus dits humits de sexe. Un alè càlid al meu clatell em dictava un bleix pausat, potser un preludi de plaers foscos, vaig dir-me. Els seus malucs es vinclaren endins i, frec a frec, amb un mecanisme obscè feia pujar el to suau de la seva carícia més enllà del melic. Volia mirar-li les ninetes \(les tindria dilatades?\), volia veure-li aquell glauc, però ca! era molt fosc, només els caires...)
+%(vinclarien l'escorça endins encara que fossin captius a les naus fosques)
+
+%%(130è President de la Generalitat)
+%dup 0 get
+
+%%Dada 6 a pliegOS
+%(Recuperem la literatura de canya i cordill que va popularitzar la lectura en els segles posteriors a la invenció de la impremta, la passem pel sedàs de les tecnologies digitals i d'Internet i la retornem al paper imprès. Aquest PliegO utilitza obres literàries que estan al domini públic. Sou lliures de reproduir-lo o crear-ne obres derivades mencionant-ne l'autoria.)
+
+/elTEXT exch def
+
+elTEXT dup length string copy /QUEDAxCOMPONDRE exch def  %% ens anirem menjant progressivament el text de la composició
+
+1024 /buff exch def  %% capacitat màxima de caràcters d'una línia
+/aMPLES buff array def  %% array amb el amples de cadascún dels caràcters
+/FINSreng 0 def  %% nombre de caràcters totals llegits
+buff string /reng exch def  %% mai una línia tindrà tants caràcters
+reng /NullEncode filter /fotli exch def  %% escriurem els mots d'1 línia dins la cadena reng
+/rqtp 1 string def  %% baula que treballa com a fitxer d'escriptura per capturar cadascun dels caràcters
+/cSEP 32 def  %% codi del caràcter separador de mots
+/aCOMPON 0 array def  %% array total de composició línia a línia
+
+{  %% loop
+ QUEDAxCOMPONDRE
+ {  %% forall
+  rqtp exch 0 exch put  %% facim amb el caràcter
+  rqtp 1 string copy /rqtp exch def  %% descontaminem
+  rqtp stringwidth pop dup faLinia add dup maxL gt
+  {  %% hem superat l'ample de línia
+   /sobRErs 0 def  %% caràcters sobrers que cal passar a la línia següent
+   pop pop faLinia /faLinia exch def  %% què fa la línia just abans que superem l'ample permés
+   fotli flushfile  %% que no s'encanti res
+   %% extirpem els arrays nets de caràcters i amples
+   reng 0 FINSreng getinterval /cNET exch def
+   aMPLES 0 FINSreng getinterval /aNET exch def
+   /NOpodemTRENCAR true def  %% detectem possibles línies d'1 sol mot que no podem trecar via /cSEP i ens caldria guionar-les
+
+   FINSreng 1 sub -1 0  %% tirem enrera fins que trobem el caràcter separador
+   {  %% for que treballem directament amb la cadena de text sencera
+    cNET exch get cSEP eq  %% és un caràcter separador?
+    {
+     sobRErs 1 add /sobRErs exch def
+     /NOpodemTRENCAR false def
+     exit
+    }
+    {
+     sobRErs 1 add /sobRErs exch def
+    }ifelse
+   }for
+
+   NOpodemTRENCAR  %% no hem trobat el caràcter separador?
+   {  %% si un mot execedeix l'ample de columna, ara li posem sencer senser trencar sil·làbicament
+    (\n\n >>> línia d'1 sol mot que NO podem trencar: )print flush
+    QUEDAxCOMPONDRE print flush
+    ( ...malgrat tot li posem sencer!\n)print flush
+    /AViS true def  %% gatell per saber si a totB# haurem d'escriure 1 per fer notar que hi ha avisos 
+    QUEDAxCOMPONDRE 1 string dup 0 cSEP put search
+    {
+     exch pop dup stringwidth pop 2 array astore
+    }
+    {  %% en condicions normals ha de ser la darrera línia del text
+     dup stringwidth pop 2 array astore () exch
+    }ifelse
+    aCOMPON length dup /araVa exch def 1 add array dup 0 aCOMPON putinterval dup 3 -1 roll araVa exch put /aCOMPON exch def
+
+    dup length 0 eq
+    {  %% a null per saber que som en una línia cega fruit del final d'un text on el darrer mot no cap dins l'espai establert
+     pop null /QUEDAxCOMPONDRE exch def  %% evitem que es compongui una línia en blanc a sota
+    }
+    {
+     /QUEDAxCOMPONDRE exch def  %% la nova string que queda per compondre
+    }ifelse
+   }
+   {
+    %% muntem les dades a l'array total de composició línia
+    cNET 0 FINSreng sobRErs sub getinterval  %% cadena a compondre
+    0 aNET 0 FINSreng sobRErs sub getinterval {add}forall  %% ample total de la línia
+%dup length string copy  %% cadena de caràcters a compondre
+    2 array astore  %% array de composició de la línia amb la cadena a compondre i l'stringwidth
+    %% faLinia  %% no caldrà jugar-hi més?
+    aCOMPON length dup /araVa exch def 1 add array dup 0 aCOMPON putinterval dup 3 -1 roll araVa exch put /aCOMPON exch def
+
+    %% inicialitzem variables
+    /DEreng FINSreng sobRErs sub def  %% índex temporal per extirpar des l'inici del caràcter de la línia següent
+    QUEDAxCOMPONDRE dup length DEreng sub DEreng exch getinterval  %% ens anirem menjant progressivament el text a compondre
+    dup 0 get cSEP eq  %% contemplem l'excepció que ens quedi el caràcter separador al principi de cadena
+    {
+     dup length 1 sub 1 exch getinterval
+    }if
+%dup length string copy
+    /QUEDAxCOMPONDRE exch def  %% la nova string que queda per compondre
+   }ifelse
+   /FINSreng 0 def  %% nombre de caràcters que componem a la línia actual
+   /aMPLES buff array def  %% array amb el amples de cadascún dels caràcters
+   /faLinia 0 def  %% ample de la línia actual
+   buff string /reng exch def  %% mai una línia tindrà tants caràcters
+   reng /NullEncode filter /fotli exch def  %% escriurem els mots d'1 línia dins la cadena reng
+   exit  %% sortim del forall
+  }
+  {  %% encara componem
+   /faLinia exch def
+   aMPLES exch FINSreng exch put  %% farcim l'array amb l'ample
+   fotli rqtp writestring
+   FINSreng 1 add /FINSreng exch def
+  }ifelse
+ }forall
+
+ QUEDAxCOMPONDRE null eq  %% evitem que es compongui una línia en blanc a sota
+ {
+  exit
+ }
+ {
+  QUEDAxCOMPONDRE stringwidth pop dup maxL le  %% el que queda per compondrei hi cap en 1 línia?
+  {
+   %% muntem a l'array total les dades de la darrera línia
+   QUEDAxCOMPONDRE exch
+%dup length string copy  %% cadena de caràcters a compondre
+   2 array astore  %% array de composició de la línia amb l'stringwidth i la cadena a compondre
+   %% faLinia  %% no caldrà jugar-hi més?
+   aCOMPON length dup /araVa exch def 1 add array dup 0 aCOMPON putinterval dup 3 -1 roll araVa exch put /aCOMPON exch def
+   exit
+  }
+  {
+   pop
+  }ifelse
+ }ifelse
+
+}loop
+
+[
+%%COMPON PEL MARGE INFERIOR D'H
+ {  %% índex 0 /E bandera dreta (caixa esquerra) compost per sota
+  pop mX mY
+  %% ara no ens convé
+  %% JBCparams /_Fdscndnt get F get 100 mul mY div add  %% corregim la línia de base al % del descendent
+
+%  moveto
+%% activem el subratllat multilínia
+       2 copy moveto
+       esS
+       {  %% va subratllat?
+        gsave
+        JBCparams /_Fu get F get dup
+        1 get dup null eq  %% avaluem el gruix del subratllat
+        {  %% fix al 5% del cos
+         pop M 5 mul 100 div setlinewidth
+        }
+        {  %% ens ve donat per la font
+         M mul 100 div setlinewidth
+        }ifelse
+        0 get dup null eq  %% avaluem la posició del subratllat sota la linia de base
+        {  %% fix al 10% del cos
+         pop M 10 mul 100 div add
+        }
+        {  %% ens ve donat per la font
+         M mul 100 div add
+        }ifelse
+        2 copy moveto exch
+        %% W add
+        2 index stringwidth pop add  %% subratllem només l'ample del text
+        exch lineto stroke
+        grestore
+       }
+       {
+        pop pop
+       }ifelse
+%%%%%%
+
+%% ara sempre mirem l'ample
+%%  esBrgb
+%%  {  %% si hi ha /B calculem l'ample del text més llarg per fer-ne el fons de color exacte
+   dup stringwidth pop dup maxStrngWidth gt
+   {
+    /maxStrngWidth exch def
+   }
+   {
+    pop
+   }ifelse
+%%  }if
+  show
+ }  %% bandera dreta (caixa esquerra)
+ {  %% índex 1 /C dues banderes (centrat) compost per sota
+  maxL exch sub 2 div mX add mY
+  %% ara no ens convé
+  %% JBCparams /_Fdscndnt get F get 100 mul mY div add  %% corregim la línia de base al % del descendent
+
+%  moveto
+%% activem el subratllat multilínia
+       2 copy moveto
+       esS
+       {  %% va subratllat?
+        gsave
+        JBCparams /_Fu get F get dup
+        1 get dup null eq  %% avaluem el gruix del subratllat
+        {  %% fix al 5% del cos
+         pop M 5 mul 100 div setlinewidth
+        }
+        {  %% ens ve donat per la font
+         M mul 100 div setlinewidth
+        }ifelse
+        0 get dup null eq  %% avaluem la posició del subratllat sota la linia de base
+        {  %% fix al 10% del cos
+         pop M 10 mul 100 div add
+        }
+        {  %% ens ve donat per la font
+         M mul 100 div add
+        }ifelse
+        2 copy moveto exch
+        %% W add
+        2 index stringwidth pop add  %% subratllem només l'ample del text
+        exch lineto stroke
+        grestore
+       }
+       {
+        pop pop
+       }ifelse
+%%%%%%
+
+%% ara sempre mirem l'ample
+%%  esBrgb
+%%  {  %% si hi ha /B calculem l'ample del text més llarg per fer-ne el fons de color exacte
+   dup stringwidth pop dup maxStrngWidth gt
+   {
+    /maxStrngWidth exch def
+   }
+   {
+    pop
+   }ifelse
+%%  }if
+  show
+ }  %% dues banderes (centrat)
+ {  %% índex 2 /D bandera esquerra (caixa dreta) compost per sota
+  maxL exch sub mX add mY
+  %% ara no ens convé
+  %% JBCparams /_Fdscndnt get F get 100 mul mY div add  %% corregim la línia de base al % del descendent
+
+%  moveto
+%% activem el subratllat multilínia
+       2 copy moveto
+       esS
+       {  %% va subratllat?
+        gsave
+        JBCparams /_Fu get F get dup
+        1 get dup null eq  %% avaluem el gruix del subratllat
+        {  %% fix al 5% del cos
+         pop M 5 mul 100 div setlinewidth
+        }
+        {  %% ens ve donat per la font
+         M mul 100 div setlinewidth
+        }ifelse
+        0 get dup null eq  %% avaluem la posició del subratllat sota la linia de base
+        {  %% fix al 10% del cos
+         pop M 10 mul 100 div add
+        }
+        {  %% ens ve donat per la font
+         M mul 100 div add
+        }ifelse
+        2 copy moveto exch
+        %% W add
+        2 index stringwidth pop add  %% subratllem només l'ample del text
+        exch lineto stroke
+        grestore
+       }
+       {
+        pop pop
+       }ifelse
+%%%%%%
+
+%% ara sempre mirem l'ample
+%%  esBrgb
+%%  {  %% si hi ha /B calculem l'ample del text més llarg per fer-ne el fons de color exacte
+   dup stringwidth pop dup maxStrngWidth gt
+   {
+    /maxStrngWidth exch def
+   }
+   {
+    pop
+   }ifelse
+%%  }if
+  show
+ }  %% bandera esquerra (caixa dreta)
+
+%%COMPON AMB ENTRAT VERTICAL D'H
+ {  %% índex 3 /EV bandera dreta (caixa esquerra) centrat vertical
+  pop mX mY
+
+%%AIXÒ centra pel cos/caixa de la lletra (i no per la línia de base) en vertical en relació a l'altura H activa
+%%Hi ha un microafinat de la línia de base que s'hauria d'acabar d'ajustar (el valor del cos NO quadra amb l'altura de caixa?)
+H iL araRengs 1 sub mul iL add sub 2 div H exch sub iL sub add
+%JBCparams /_Fdscndnt get F get M mul 100 div 2 div add  %% corregim la Y per la línia de base sumant via % del descendent
+
+%  moveto
+%% activem el subratllat multilínia
+       2 copy moveto
+       esS
+       {  %% va subratllat?
+        gsave
+        JBCparams /_Fu get F get dup
+        1 get dup null eq  %% avaluem el gruix del subratllat
+        {  %% fix al 5% del cos
+         pop M 5 mul 100 div setlinewidth
+        }
+        {  %% ens ve donat per la font
+         M mul 100 div setlinewidth
+        }ifelse
+        0 get dup null eq  %% avaluem la posició del subratllat sota la linia de base
+        {  %% fix al 10% del cos
+         pop M 10 mul 100 div add
+        }
+        {  %% ens ve donat per la font
+         M mul 100 div add
+        }ifelse
+        2 copy moveto exch
+        %% W add
+        2 index stringwidth pop add  %% subratllem només l'ample del text
+        exch lineto stroke
+        grestore
+       }
+       {
+        pop pop
+       }ifelse
+%%%%%%
+
+%% ara sempre mirem l'ample
+%%  esBrgb
+%%  {  %% si hi ha /B calculem l'ample del text més llarg per fer-ne el fons de color exacte
+   dup stringwidth pop dup maxStrngWidth gt
+   {
+    /maxStrngWidth exch def
+   }
+   {
+    pop
+   }ifelse
+%%  }if
+  show
+ }  %% índex 3 /EV bandera dreta (caixa esquerra) centrat vertical
+ {  %% índex 4 /CV dues banderes (centrat) centrat vertical
+  maxL exch sub 2 div mX add mY
+
+%%AIXÒ centra pel cos/caixa de la lletra (i no per la línia de base) en vertical en relació a l'altura H activa
+%%Hi ha un microafinat de la línia de base que s'hauria d'acabar d'ajustar (el valor del cos NO quadra amb l'altura de caixa?)
+H iL araRengs 1 sub mul iL add sub 2 div H exch sub iL sub add
+%JBCparams /_Fdscndnt get F get M mul 100 div 2 div add  %% corregim la Y per la línia de base sumant via % del descendent
+
+%  moveto
+%% activem el subratllat multilínia
+       2 copy moveto
+       esS
+       {  %% va subratllat?
+        gsave
+        JBCparams /_Fu get F get dup
+        1 get dup null eq  %% avaluem el gruix del subratllat
+        {  %% fix al 5% del cos
+         pop M 5 mul 100 div setlinewidth
+        }
+        {  %% ens ve donat per la font
+         M mul 100 div setlinewidth
+        }ifelse
+        0 get dup null eq  %% avaluem la posició del subratllat sota la linia de base
+        {  %% fix al 10% del cos
+         pop M 10 mul 100 div add
+        }
+        {  %% ens ve donat per la font
+         M mul 100 div add
+        }ifelse
+        2 copy moveto exch
+        %% W add
+        2 index stringwidth pop add  %% subratllem només l'ample del text
+        exch lineto stroke
+        grestore
+       }
+       {
+        pop pop
+       }ifelse
+%%%%%%
+
+%% ara sempre mirem l'ample
+%%  esBrgb
+%%  {  %% si hi ha /B calculem l'ample del text més llarg per fer-ne el fons de color exacte
+   dup stringwidth pop dup maxStrngWidth gt
+   {
+    /maxStrngWidth exch def
+   }
+   {
+    pop
+   }ifelse
+%%  }if
+  show
+ }  %% índex 4 /CV dues banderes (centrat) centrat vertical
+ {  %% índex 5 /DV bandera esquerra (caixa dreta) centrat vertical
+  maxL exch sub mX add mY
+
+%%AIXÒ centra pel cos/caixa de la lletra (i no per la línia de base) en vertical en relació a l'altura H activa
+%%Hi ha un microafinat de la línia de base que s'hauria d'acabar d'ajustar (el valor del cos NO quadra amb l'altura de caixa?)
+H iL araRengs 1 sub mul iL add sub 2 div H exch sub iL sub add
+%JBCparams /_Fdscndnt get F get M mul 100 div 2 div add  %% corregim la Y per la línia de base sumant via % del descendent
+
+%  moveto
+%% activem el subratllat multilínia
+       2 copy moveto
+       esS
+       {  %% va subratllat?
+        gsave
+        JBCparams /_Fu get F get dup
+        1 get dup null eq  %% avaluem el gruix del subratllat
+        {  %% fix al 5% del cos
+         pop M 5 mul 100 div setlinewidth
+        }
+        {  %% ens ve donat per la font
+         M mul 100 div setlinewidth
+        }ifelse
+        0 get dup null eq  %% avaluem la posició del subratllat sota la linia de base
+        {  %% fix al 10% del cos
+         pop M 10 mul 100 div add
+        }
+        {  %% ens ve donat per la font
+         M mul 100 div add
+        }ifelse
+        2 copy moveto exch
+        %% W add
+        2 index stringwidth pop add  %% subratllem només l'ample del text
+        exch lineto stroke
+        grestore
+       }
+       {
+        pop pop
+       }ifelse
+%%%%%%
+
+%% ara sempre mirem l'ample
+%%  esBrgb
+%%  {  %% si hi ha /B calculem l'ample del text més llarg per fer-ne el fons de color exacte
+   dup stringwidth pop dup maxStrngWidth gt
+   {
+    /maxStrngWidth exch def
+   }
+   {
+    pop
+   }ifelse
+%%  }if
+  show
+ }  %% índex 5 /DV bandera esquerra (caixa dreta) centrat vertical
+
+]
+3J get /araB exch bind def  %% bandera triada
+
+%% marquem els marges del rectangle de la columna...
+%gsave
+%0 setlinewidth
+%0 1 0 setrgbcolor mX 10 maxL mY COs add rectstroke
+%grestore
+
+%% componem l'array de línies en funció de la bandera triada
+aCOMPON
+
+%esLDCAP  %% només actua si estem fent una LD o un CAP dins una taula
+false
+
+3J 3 ge {true}{false}ifelse or
+
+{
+ dup length dup maxRengsXcella gt
+ {  %% valor per rectificar la posició final d'/araY
+  dup /araRengs exch def  %% nombre de rengs de composició de text x controlar el cas de /B
+  /maxRengsXcella exch def
+ }
+ {
+  /araRengs exch def  %% nombre de rengs de composició de text x controlar el cas de /B
+ }ifelse
+}if
+
+%%FILTREM QUAN EL JUSTIFICAT NO VERTICAL ES CRIDA DES D'UN TXT O FLD (MAI DINS UN LD o sigui /esT1 a false) DONCS LLAVORS
+%%EN COMPTES DE FER CRÉIXER EL COMPOSAT CAP AVALL (COSA QUE ENS INTERESSA DINS UN LD QUAN LA CEL·LA SEMPRE S'AMPLIA CAP ENSOTA)
+%%FEM QUE SEMPRE LA DARRERA LÍNIA COMPOSTA QUEDI A LA PART INFERIOR DE L'ÀREA ESTABLERTA PEL TEXT, LA QUAL COSA FARÀ QUE LES
+%%LÍNIES SEMPRE ES COMPONGUIN CAP AMUNT (MALGRAT ES TRAVESSI EL LÍMIT SUPERIOR DE L'ÀREA ESTABLERTA PEL TEXT)
+
+%%AQUÍ TENIM LA CLAU DEL CREIXEMENT DE TRENCAT DE LÍNIES: CAP AVALL SI SOM DINS UNA T1 O CAP A MUNT SI SOM FORA
+%%I SEMPRE QUE NO HAGUEM CRIDAT UN DELS JUSTIFICATS VERTICALS (un índex +petit que 3 a 3J)
+3J 3 lt
+{  %% no fem cap justificat vertical
+
+ %esT1
+ false
+
+ not  %% som fora d'una taula?
+
+ %SOMAlinies
+ false not or  %% NO som dins una LD? (cas de TXT o FLD dins de taules)
+ {  %% o som fora d'una taula o no som dins una LD
+  dup length 1 sub iL mul mY add /mY exch def  %% componem per sota cap amunt
+ }if
+}if
+
+{  %% forall
+ aload pop araB
+ mY iL sub /mY exch def
+}forall
+
+%1 0 0 setrgbcolor mX 0 moveto mX 400 lineto stroke
+%mX maxL add 0 moveto mX maxL add 400 lineto stroke
+
+%showpage
+

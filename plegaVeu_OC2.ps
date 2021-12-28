@@ -1,0 +1,367 @@
+%!
+%% deriva de plegaVeu_OC.ps
+%% treballa amb [(...)] resultant que ens dóna xifratPlegaVeu.ps de manera que ens cal veure quins valors i quines variables
+%% haurem de modificar dels seus valors teòrics inicials... /UNAlinia /MAXsuaraX /UNAplana /UNpliegO ...en base a les dues
+%% variables clau, a definir... /NlinPLANA /NpagPliegO ...necessàries per tal que l'algorisme generi l'estructura final /strctr
+%% a compondre cap a plegaVeu_mestre_ple.ps i ja sigui vàlida, inicialment, per a una tipografia d'espaiat fix
+
+%%Aquestes són les dues variables amb les que treballa l'algorisme per endreçar paraules, fer línies i omplir pàgines
+
+%%Tmestre seria /iLin?
+4 /NlinPLANA exch def  %% nombre de línies per plana (sempre es compleix, menys la darrera o quan no s'arriba al màxim)
+
+%%Tmestre fix a 6
+6 /NpagPliegO exch def  %% nombre de pàgines componibles al pliegO excollit (8+8up=14/7/1 | 4+4up=6/3/1)
+
+
+/UNAlinia () def  %% construirem una línia cada vegada
+
+%%Tmestre seria /liniaMesLlargaFa
+/MAXsuaraX 11 def  %% variable derivada d'enflataGlifs_ però que ens diu quants caràcters màxims ha de contenir una línia
+
+%% comencem amb 1 sol caràcter per tal vagi augmentant i deduint a partir de quan li quadra la previsió
+%% com que ara inicialment no trencarem síl·labes, el mot més llarg hauria de servir com a inici /MAXsuaraX per guanyar temps
+%% però al compondre de debò serà la posició màxima X de final de línia permesa qui ens mani
+%% (compararà amb /suaraX d'enflataGlifs) i serà qui ens forci d'abaixar el cos fins que quadri (posarem un límit de cos mínim)
+
+/UNAplana [] def  %% les línies d'1 plana
+%%Tmestre seria /strctrIdeal
+%/UNAplana
+%[(Si vinguessis per tardor) (espolsar\355em l'estiu) (amb llengots i mitja rialla,) (com mestresses al badiu.) () (Si ens vei\351ssim en un any) (cabdellar\355em mesades,) (totes al seu calaixer,) (mentre el temps passa debades.) () (Si triguessis sols un segles,) (comptats nom\351s amb la m\340,) (deixondint els dits tot d'una) (dins el Van Diemens lluny\340.) () (Si del cert la vida fuig,) (b\351 prou que ambd\363s ho sabem,) (bo i foragitant l'embolcall) (far\355em un tast a l'etern.) () (Ara per\362, ignorem al capdavall) (si el temps \351s l'ala incerta) (d'un borinot que, cap a mi furi\363s,) (env\340 el seu fibl\363 no encerta.)] def
+
+%% versió eliminant tots els \n per un espai en blanc (i sense paràgrafs/línies en blanc) 
+%(Si vinguessis per tardor espolsar\355em l'estiu amb llengots i mitja rialla, com mestresses al badiu. Si ens vei\351ssim en un any cabdellar\355em mesades, totes al seu calaixer, mentre el temps passa debades. Si triguessis sols un segles, comptats nom\351s amb la m\340, deixondint els dits tot d'una dins el Van Diemens lluny\340. Si del cert la vida fuig, b\351 prou que ambd\363s ho sabem, bo i foragitant l'embolcall far\355em un tast a l'etern. Ara per\362, ignorem al capdavall si el temps \351s l'ala incerta d'un borinot que, cap a mi furi\363s, env\340 el seu fibl\363 no encerta.)  %% les línies d'1 plana
+
+/UNpliegO [] def  %% planes d'1 pliegO
+/MAXlinPLANA NlinPLANA def  %% nombre de línies per plana (sempre es compleix, menys la darrera)
+/MAXpagPliegO NpagPliegO def  %% nombre de pàgines componibles al pliegO excollit (8+8up=14/7 | 4+4up=6/3)
+
+%% aquest loop donarà voltes fins que hi càpiga tot el text acostant-se al màxim a la previsió feta 
+
+%%Tmestre amb /UNAplana plena amb totes les línies a la plana
+%% si no hi posem res, peta i executa l'algorisme de la cua de l'stopped
+%% si hi posem una string buida dóna el mateix resultat
+
+%()
+%(QUEHITENIM?)pstack quit
+
+%%Tmestre
+%[(Si vinguessis per tardor) (espolsar\355em l'estiu) (amb llengots i mitja rialla,) (com mestresses al badiu.) () (Si ens vei\351ssim en un any) (cabdellar\355em mesades,) (totes al seu calaixer,) (mentre el temps passa debades.) () (Si triguessis sols un segles,) (comptats nom\351s amb la m\340,) (deixondint els dits tot d'una) (dins el Van Diemens lluny\340.) () (Si del cert la vida fuig,) (b\351 prou que ambd\363s ho sabem,) (bo i foragitant l'embolcall) (far\355em un tast a l'etern.) () (Ara per\362, ignorem al capdavall) (si el temps \351s l'ala incerta) (d'un borinot que, cap a mi furi\363s,) (env\340 el seu fibl\363 no encerta.)]
+%{  %% forall
+
+(El bou pesant, veient la gent que tantes coses oferia, diu que volia fer un present al dolç Infant de l'Establia. I quan minvà una mica el fred i l'Infantó ja no plorava, sortí amb pas lent, dins l'aire net, sota la nit florida i blava. Va caminar per fondes valls i resseguia la carena. Sent el clarí de tots els galls, però ja du la rica ofrena. Saltant de goig i bruelant, el bou baixà de la muntanya, i s'oferia al dolç Infant amb una estrella a cada banya.)
+
+
+{  %% stopped
+
+{  %% loop que ens endreça línies de text a /UNAplana i aquestes dins /UNpliegO per a ser composades pel loop següent
+ ( ) search
+ {  %% troba espais en blanc
+
+  %% en comptes del comptador de glifs hi hauria d'anar l'execució d' enflataGlifs2_plegaVeu_metrica.ps
+  dup length
+  %% avalua si hi cap dins la línia o no
+  MAXsuaraX gt
+  {  %% no hi cap dins la línia
+%% però si és per un sol mot (/UNAlinia hauria d'estar buida), voldrà dir que /MAXsuaraX ha de redefinir-se
+%% (ara, en caràcters augmentar, però al compondre de debò abaixarem el cos)
+
+%   UNAlinia length 0 eq
+%   {  %% hem de redefinir, ara, en caràcters augmentar, però al compondre de debò abaixarem el cos
+
+   %% per tant hem d'inicialitzar les variables i HAUREM DE REINICIAR EL LOOP
+   /UNAlinia () def  %% hi haurà una línia cada vegada
+   MAXsuaraX 1 add /MAXsuaraX exch def  %% ara són caràcters, però serà la posició màxima X de final de línia permesa
+   %% (compararà amb /suaraX i al compondre de debò ens obligarà a abaixar el cos --quants punts?)
+   /UNAplana [] def  %% les línies d'1 plana
+   /UNpliegO [] def  %% planes d'1 pliegO
+   /MAXlinPLANA NlinPLANA def  %% nombre de línies per plana
+   pop pop pop tae  %% tornem a posar la cadena de text inicial a l'stack del loop
+
+(el mot NOHICAP a la linia i cal REINICIAR EL LOOP)=  %pstack quit
+
+%   }
+%   {
+%(NOHICAP perojanhiha1omes)pstack quit
+
+%   }ifelse
+
+  }
+  {  %% hi cap dins la línia
+   %% aquí muntem, en teoria, un nou mot a /UNAlinia
+   %%!! primer cal sumarla a la que hi ha per saber si supera el màxim, i decidir si afegim o hem de fer una línia nova
+   dup length UNAlinia length add
+   1 add  %% l'ESPAI en blanc l'afegirem a l'inici d'un nou mot només si la línia ja existeix i ja el comptem aquí
+   MAXsuaraX gt dup
+   {
+    %% l'afegim a una línia nova, tret que la que ja tenim estigui buida i això vol dir que és degut a l'espai en blanc
+    UNAlinia length 0 eq
+    {  %% llavors, l'afegim a l'existent
+     pop false
+    }
+    {
+     pop true
+    }ifelse
+   }if
+
+   {  %% l'afegim a una línia nova
+    %% cal abans desar l'anterior a /UNAplana i saber si és la darrera admesa o no
+    UNAplana length 1 add MAXlinPLANA eq  %% és la darrera línia admesa a la plana?
+    {  %% ho és i la desem a /UNAplana
+(es la darrera linia admesa a la plana)=
+
+%UNAplana UNAlinia
+(--aqui afegim 1--)== %pstack quit
+
+     UNAplana length dup /ARAva exch def 1 add array dup 0 UNAplana putinterval
+     dup ARAva UNAlinia put /UNAplana exch def  %% la desem
+     %% si és la darrera línia admesa, la plana també s'haurà de desar a /UNpliegO
+     %% i aquí també caldrà saber si és la darrera plana admesa o no segons MAXpagPliegO
+     UNpliegO length 1 add MAXpagPliegO eq  %% és la darrera plana admesa al pliegO?
+     {  %% si és la darrera plana admesa al pliegO i encara manca text per omplir, HAUREM DE REINICIAR EL LOOP
+        %% redefinint /MAXsuaraX augmentant caràcters i hem d'inicialitzar les variables
+        %%(al de debò aquest paràmetre quedarà igual i el que tocarem serà el cos del text abaixant-lo n punts)
+
+        %% no cal que ens assegurem que encara manca text per omplir
+        %% encara que sempre hi podria haver un final perfectament sincrònic, si som aquí és perquè encara en manca
+
+      %% per tant hem d'inicialitzar les variables i HAUREM DE REINICIAR EL LOOP
+      MAXsuaraX 1 add /MAXsuaraX exch def  %% ara són caràcters, però serà la posició màxima X de final de línia permesa
+      %% (compararà amb /suaraX i al compondre de debò ens obligarà a abaixar el cos --quants punts?)
+      /UNAplana [] def  %% les línies d'1 plana
+      /UNpliegO [] def  %% planes d'1 pliegO
+      /MAXlinPLANA NlinPLANA def  %% nombre de línies per plana
+      pop pop pop tae  %% tornem a posar la cadena de text inicial a l'stack del loop
+
+      () dup  %% a %!% inicialitza /UNAlinia i fa treballar pop
+      (la plana NOHICAP al pliegOS i cal REINICIAR EL LOOP)=  %pstack quit
+     }
+     {  %% la desem a /UNpliegO, però encara hi caben planes al pliegO
+      UNpliegO length dup /ARAva exch def 1 add array dup 0 UNpliegO putinterval
+      dup ARAva UNAplana put /UNpliegO exch def  %% la desem
+
+      %% i definim una nova plana buida i la nova línia que ja tenim a l'stack
+      /UNAplana [] def
+      %% definir la nova lína i eliminar l'ESPAI en blanc ja es fa sortint d'aquest ifelse
+(DESEM una PLANA i el pliegOS continua)= %pstack quit
+     }ifelse
+    }
+    {  %% desem la línia anterior a /UNAplana
+
+%UNAplana UNAlinia
+(--aqui afegim 0--)== %pstack quit
+
+     UNAplana length dup /ARAva exch def 1 add array dup 0 UNAplana putinterval
+     dup ARAva UNAlinia put /UNAplana exch def  %% la desem
+(...desem l'anterior...)=  %pstack quit
+    }ifelse
+    %!%
+    /UNAlinia exch def  %% la desem i òbviament aquí NO hi afegim l'ESPAI en blanc al davant
+    pop  %% eliminem l'ESPAI en blanc per seguir amb el loop
+(<<< HICAP2 solucionada! --pero la darrera sumada a la que hi ha supera el maxim)=  %pstack quit
+%% sense res a l'stack, solució quick&dirty capturant l'error amb l'stopped:
+%% ficar UNAlinia a la cua d' UNAplana, i aquesta a la cua d' UNpliegO i sortir
+   }
+   {  %% la línia ja existeix i l'afegim a la línia que ja tenim
+    UNAlinia length 0 ne  %% ens CAL afegir l'ESPAI en blanc al davant perquè la que ja tenim NO és buida?
+    {
+     UNAlinia length dup /ARAva exch def 1 add string dup 0 UNAlinia putinterval
+     dup ARAva ( ) putinterval /UNAlinia exch def  %% la desem
+%(EP!)pstack quit
+    }if
+
+    dup length UNAlinia length dup /ARAva exch def add string dup 0 UNAlinia putinterval
+    dup 3 -1 roll ARAva exch putinterval /UNAlinia exch def  %% la desem
+    pop  %% eliminem l'ESPAI en blanc per seguir amb el loop
+(<<< HICAP0 solucionada! --i l'afegim a la linia que ja tenim)=  %pstack quit
+
+   }ifelse
+
+  }ifelse
+ }
+ {  %% ja no troba espais en blanc, per tant se'ns acaba l'string de text
+  %% aquí muntem, en teoria, el darrer mot a /UNAlinia
+  %% doncs ens cal fer una comprovació similar a %%!!
+
+  %% aquí muntem, en teoria, un nou mot a /UNAlinia
+  %%!! primer cal sumarla a la que hi ha per saber si supera el màxim, i decidir si afegim o hem de fer una línia nova
+  dup length UNAlinia length add
+  1 add  %% l'ESPAI en blanc l'afegirem a l'inici d'un nou mot només si la línia ja existeix i ja el comptem aquí
+  MAXsuaraX gt dup
+  {
+   %% l'afegim a una línia nova, tret que la que ja tenim estigui buida i això vol dir que és degut a l'espai en blanc
+   UNAlinia length 0 eq
+   {  %% llavors, l'afegim a l'existent
+    pop false
+   }
+   {
+    pop true
+   }ifelse
+  }if
+
+   {  %% l'afegim a una línia nova
+    %% cal abans desar l'anterior a /UNAplana i saber si és la darrera admesa o no
+    UNAplana length 1 add MAXlinPLANA eq  %% és la darrera línia admesa a la plana?
+    {  %% ho és i la desem a /UNAplana
+(es la darrera linia admesa a la plana)=
+
+%UNAplana UNAlinia
+(--aqui afegim 2--)== %pstack quit
+
+     UNAplana length dup /ARAva exch def 1 add array dup 0 UNAplana putinterval
+     dup ARAva UNAlinia put /UNAplana exch def  %% la desem
+     %% si és la darrera línia admesa, la plana també s'haurà de desar a /UNpliegO
+     %% i aquí també caldrà saber si és la darrera plana admesa o no segons MAXpagPliegO
+     UNpliegO length 1 add MAXpagPliegO eq  %% és la darrera plana admesa al pliegO?
+     {  %% si és la darrera plana admesa al pliegO i encara manca text per omplir, HAUREM DE REINICIAR EL LOOP
+        %% redefinint /MAXsuaraX augmentant caràcters i hem d'inicialitzar les variables
+        %%(al de debò aquest paràmetre quedarà igual i el que tocarem serà el cos del text abaixant-lo n punts)
+
+        %% no cal que ens assegurem que encara manca text per omplir
+        %% encara que sempre hi podria haver un final perfectament sincrònic, si som aquí és perquè encara en manca
+
+      %% per tant hem d'inicialitzar les variables i HAUREM DE REINICIAR EL LOOP
+      MAXsuaraX 1 add /MAXsuaraX exch def  %% ara són caràcters, però serà la posició màxima X de final de línia permesa
+      %% (compararà amb /suaraX i al compondre de debò ens obligarà a abaixar el cos --quants punts?)
+      /UNAplana [] def  %% les línies d'1 plana
+      /UNpliegO [] def  %% planes d'1 pliegO
+      /MAXlinPLANA NlinPLANA def  %% nombre de línies per plana
+      pop tae  %% tornem a posar la cadena de text inicial a l'stack del loop
+
+      ()  %% a %!% inicialitza /UNAlinia
+      (la plana NOHICAP al pliegOS i cal REINICIAR EL LOOP)=  %pstack quit
+
+/nihilObstatQuominusImprimatur false def
+
+/UNAlinia exch def  %% la desem i òbviament aquí NO hi afegim l'ESPAI en blanc al davant
+     }
+     {  %% la desem a /UNpliegO, però encara hi caben planes al pliegO
+      UNpliegO length dup /ARAva exch def 1 add array dup 0 UNpliegO putinterval
+      dup ARAva UNAplana put /UNpliegO exch def  %% la desem
+
+(...CUA 0 solucionada!)=
+%UNpliegO UNAplana UNAlinia MAXsuaraX
+%(DESEM la darrera PLANA i el pliegOS HA ACABAT?) pstack quit
+%% l' string que queda a l'stack enceta una nova línia que enceta una nova pàgina
+1 array astore  %% i aquesta plana a /UNpliegO
+UNpliegO length dup /ARAva exch def 1 add array dup 0 UNpliegO putinterval
+dup ARAva 4 -1 roll put /UNpliegO exch def
+%%Ara cal trobar una sortida directe d'aqui ...de moment, a sac
+exit
+
+%  dup length UNAlinia length dup /ARAva exch def add string dup 0 UNAlinia putinterval
+%  dup 3 -1 roll ARAva exch putinterval
+
+      %% i definim una nova plana buida i la nova línia que ja tenim a l'stack
+      /UNAplana [] def
+      %% definir la nova lína i eliminar l'ESPAI en blanc ja es fa sortint d'aquest ifelse
+
+/nihilObstatQuominusImprimatur true def
+     }ifelse
+    }
+    {  %% desem la línia anterior a /UNAplana
+
+%UNAplana UNAlinia
+(--aqui afegim 3--)== %pstack quit
+
+     UNAplana length dup /ARAva exch def 1 add array dup 0 UNAplana putinterval
+     dup ARAva UNAlinia put /UNAplana exch def  %% la desem
+(...desem l'anterior...)=  %pstack quit
+
+/UNAlinia exch def  %% la desem i òbviament aquí NO hi afegim l'ESPAI en blanc al davant
+
+(...CUA 1 solucionat!)=
+%UNpliegO UNAplana UNAlinia MAXsuaraX
+%% no hi ha res a l'stack: ficar UNAlinia a la cua d' UNAplana, i aquesta a la cua d' UNpliegO i sortir
+%% /UNAlinia a /UNAplana
+
+%UNAplana UNAlinia
+(--aqui afegim 4--)== %pstack quit
+
+  UNAplana length dup /ARAva exch def 1 add array dup 0 UNAplana putinterval
+  dup ARAva UNAlinia put
+%% i aquesta plana a /UNpliegO
+  UNpliegO length dup /ARAva exch def 1 add array dup 0 UNpliegO putinterval
+  dup ARAva 4 -1 roll put /UNpliegO exch def
+
+/nihilObstatQuominusImprimatur true def
+    }ifelse
+    %!%
+%    /UNAlinia exch def  %% la desem i òbviament aquí NO hi afegim l'ESPAI en blanc al davant
+%    pop  %% eliminem l'ESPAI en blanc per seguir amb el loop
+%(<<< HICAP3 pero la darrera sumada a la que hi ha supera el maxim)=  %pstack quit
+   }
+   {  %% la línia ja existeix i l'afegim a la línia que ja tenim
+    UNAlinia length 0 ne  %% ens CAL afegir l'ESPAI en blanc al davant perquè la que ja tenim NO és buida?
+    {
+     UNAlinia length dup /ARAva exch def 1 add string dup 0 UNAlinia putinterval
+     dup ARAva ( ) putinterval /UNAlinia exch def  %% la desem
+%(EP!)pstack quit
+    }if
+
+    dup length UNAlinia length dup /ARAva exch def add string dup 0 UNAlinia putinterval
+    dup 3 -1 roll ARAva exch putinterval /UNAlinia exch def  %% la desem
+    pop  %% eliminem l'ESPAI en blanc per seguir amb el loop
+(<<< HICAP1 i l'afegim a la linia que ja tenim)=  %pstack quit
+
+UNpliegO UNAplana UNAlinia MAXsuaraX
+(...CUA 2)pstack quit
+   }ifelse
+
+%(ja no troba mes espais en blanc!) pstack quit
+
+  nihilObstatQuominusImprimatur
+  {
+   %% i sortim?
+   exit
+  }if
+ }ifelse
+
+}loop
+
+}stopped
+{
+ %% (ERROR?)pstack quit
+ %% tant HICAP0 com HICAP2, peten sense res a l'stack, solució quick&dirty capturant l'error amb l'stopped:
+ %% ficar /UNAlinia a la cua d' /UNAplana, i aquesta a la cua d' /UNpliegO i sortir
+ %% /UNAlinia a /UNAplana
+
+%UNAplana UNAlinia
+(--aqui afegim 5--)== %pstack quit
+
+ UNAplana length dup /ARAva exch def 1 add array dup 0 UNAplana putinterval
+ dup ARAva UNAlinia put
+ %% i aquesta plana a /UNpliegO
+ UNpliegO length dup /ARAva exch def 1 add array dup 0 UNpliegO putinterval
+ dup ARAva 4 -1 roll put /UNpliegO exch def
+}if
+
+%%Tmestre
+%UNAplana length NlinPLANA eq
+%{  %% hem arribat al nombre de línies per pàgina previst
+% (- - - - - - - -)==
+% UNpliegO ==
+
+ %% la desem a /UNpliegO, però encara hi caben planes al pliegO
+%% UNpliegO length dup /ARAva exch def 1 add array dup 0 UNpliegO putinterval
+%% dup ARAva UNAplana put /UNpliegO exch def  %% la desem
+% /UNAplana [] def  %% inicialitzem la plana
+% /UNAlinia () def  %% inicialitzem la línia
+% /UNpliegO [] def  %% inicialitzem
+%}if
+%}forall
+
+%% quan fem paràgrafs, un loop intermig podria filtrar les vídues i les orfes movent strings de lloc
+UNpliegO dup dup dup length dup 3 string cvs print flush ( ...nombre de pàgines finals sobre... ) print flush
+NpagPliegO 3 string cvs print flush ( ...possibles\n)print flush
+1 sub get length 3 string cvs print flush ( ...nombre de línies de la darrera pàgina\n)print flush
+0 get length 3 string cvs print flush ( ...nombre de línies de la primera pàgina\n)print flush
+%UNAplana UNAlinia
+MAXsuaraX 3 string cvs print flush ( ...nombre màxim de caràcters per línia\n)print flush
+(\n...estructura:\n\n)print flush
+
+dup == /strctr exch def  %% estructura a compondre cap a plegaVeu_mestre.ps 
+
+%% el loop final agafaria totes les variables definides de composició:
+%(--loop--)pstack
+

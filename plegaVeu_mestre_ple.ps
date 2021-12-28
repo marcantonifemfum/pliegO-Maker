@@ -1,0 +1,877 @@
+%!
+%% aquesta hauria de ser la primera versió comoponedora de text per a totes o una part de les pàgines d'un pliegO 4+4 i/o 8+8
+%% ha de cridar tot l'estol d'algorismes d'aquest primer plegaVeu experimental
+
+noNULL  %% pinta el contingut de pàgina?
+{  %% comportament null: el componedor ha de tenir anellat el codi que pinta contingut de pàgina
+
+ iSeq 1 eq  %% només 1 cop
+ {
+
+%%Tot això aniria a nomes 1 vegada!
+
+  %0% captem el text a compondre provinent de la variable d'entorn
+  %%  cridem M7 des de xifratPlegaVeu.ps
+
+  %1% cridem xifratPlegaVeu.ps
+  (xifratPlegaVeu.ps) (r) file cvx exec
+
+  tripaCdL 0 eq
+  {  %% és un text d'1 sola línia
+   [  %% el fiquem dins un array per igualar-lo a /strctrIdeal
+    textCorregut
+   ]
+  }
+  {  %% és un text amb línies trencades i línies en blanc (paràgrafs) i ja ve dins l'array
+   strctrIdeal
+  }ifelse
+
+  %2% cridem Champollion_glif.ps
+  %%  pot filtrar redundàncies d'1 o més caràcters per tal només n'hi hagi 1 de seguit
+  %%  ara filtra només si hi ha 2 o més espais en blanc seguits
+  (Champollion_glif.ps) (r) file cvx exec
+
+  %% test
+  %% pop [(Peixos dins el     rostoll) (\340ligues dins el foc) (la mar dins els ulls) (els peus plens de cans) (el vent \351s pudent) (tots els d\351us van gats) () (Oh  serra mamerra) (ens roben la terra) (i ens fonen    l'  aram.)]
+
+  mark exch
+  {  %% forall
+   % {  %% stopped
+   Champollion_glif  %% encas que hi hagi més d'une espai en blanc seguit, l'elimina
+   % }stopped
+   % {
+   %  (!!!)pstack quit
+   % }if
+  }forall
+  ]
+
+  %3% cridem plegaVeu_OC2.ps
+  %%  treballem amb un valor fix de 6 /NpagPliegO (doncs ara ens basem en un 4+4 vertical amb la cara i contra fixes)
+  /NpagPliegO 6 def
+  %%  ens cal deduir el /NlinPLANA (doncs l'objectiu és omplir-les totes)
+  dup /strctrIdeal exch def length
+  %% nDlEb sub  %% hi restem el nombre de línies en blanc/paràgrafs?  %% seria /iPrgrfs amb la nova nomenclatura?
+  /tripaCdL exch def  %% nombre de canvis de línia del text
+
+  %% hi han 2 casos a contemplar, que hem de detectar a priori
+%%COM? relació línies/nombre de caràcters? max caràcters x línia?
+  %% seguim les deduccions #A# #B# fetes a feinaFetaPlegaVeuCultura_desembre2021
+  /liniaMesLlargaFa 0 def
+  strctrIdeal
+  {  %% forall per deduir /liniaMesLlargaFa
+   length dup liniaMesLlargaFa gt
+   {
+    /liniaMesLlargaFa exch def
+   }
+   {
+    pop
+   }ifelse
+  }forall
+
+  %liniaMesLlargaFa
+  %strctrIdeal
+  %(UEP)pstack quit
+
+%%Té estructura de poema?
+  /2marges 14.175 def  %% a l'A4, 5 mm per banda X/Y a l'HP LaserJet Color M553m
+  /tripaY4+4 421 def  %% (A4)
+  /tripaY8+8 297.5 def  %% (A4)
+  /tripaX4+4 2380 def  %% (A4)
+  /tripaX8+8 3368 def  %% (A4)
+  /tripaX2pg4+4 595 def  %% (A4)
+  /tripaX2pg8+8 421 def  %% (A4)
+  /tripaX1pg4+4 297.5 def  %% (A4)
+  /tripaX1pg8+8 210.5 def  %% (A4)
+
+%%TestA la línia més llarga NO és massa llarga?
+  %% si a tota tripa li suposa un cos per sota de 7
+  %% cos a que treballarem = (1000 x ample de tripa triat) / (nombre de caràcters de la línia més llarga x 600)
+  1000 tripaX1pg4+4 2marges 2 mul sub  %% restem el marges de seguretat a banda i banda
+  mul liniaMesLlargaFa 600 mul div
+  %% l'ample de la línia més llarga el fem coincidir amb l'ample de pàgina triat (estructura de poema)
+  dup /cosPV exch def  %% (<<< cos del poema)pstack quit
+  7 ge  /lalimellnoesmall exch def  %% true si podem seguir endavant
+
+  %% cal deduir quin és aquest límit de caràcters d'1 sola línia per accelerar el càlcul previ!
+  %% aquestes dades serveixen per a totes les mono amb mètrica 600 sobre 1000:
+  /maxMassaLlarga8  %% nombre de caràcters màxim per treballar a cos mínim 7
+  800 def  %% és el límit màxim per compondre 1 sola línia a cos 7 a 8+8
+  /maxMassaLlarga4  %% nombre de caràcters màxim per treballar a cos mínim 7
+  565 def  %% és el límit màxim per compondre 1 sola línia a cos 7 a 4+4
+  /maxMassaCurta8   %% nombre de caràcters mínim que no superi el cos Y de 8+8
+  %% 8+8 = 297.5 (Y) <<< li hem de restar /2marges | 1000 x 3368 / 600 x 19 = 295.4
+  19 def  %% és el límit mínim per compondre 1 sola línia que no superi Y a 8+8
+  /maxMassaCurta4  %% nombre de caràcters mínim que no superi el cos Y de 4+4)
+  %% 4+4 = 421.0 (Y) <<< li hem de restar /2marges | 1000 x 2380 / 600 x 10
+  10 def  %% és el límit mínim per compondre 1 sola línia que no superi Y a 4+4
+
+  %% caldria activar el filtre de /maxMassaLlarga4 i /maxMassaCurta4 per a la línia més llarga
+
+  lalimellnoesmall  %% sembla un poema?
+  {
+   [  %% ens fa una distribució equitativa del nombre de línies per pàgina i no necessitem plegaVeu_OC2.ps
+    /aPa tripaCdL def  %% nombre total de canvis de línia
+    /ApA NpagPliegO def
+%%Cal detectar la línia en blanc () per valorar la distribució?
+    /iP 0 def
+    {  %% loop
+     aPa ApA div ceiling cvi dup /iLin exch def
+     aPa exch sub /aPa exch def
+     strctrIdeal iP iLin getinterval  %% deixem a l'stack les arrays de distribució de línies i pàgines
+     ApA 1 sub dup 0 eq
+     {
+      pop exit
+     }
+     {
+      /ApA exch def
+      iP iLin add /iP exch def
+     }ifelse
+    }loop
+   ] dup 1 get length /NlinPLANA exch def  %% agafem el valor del nombre de línies de la 1a pàgina, doncs sempre serà la més alta
+
+%%TestB NO hi ha massa canvis de línia?
+   %% deduïm l'interliniat: (/tripaY4+4 - /cosPV) / (/NlinPLANA)  <<< l'espaia molt
+   tripaY4+4 cosPV sub  %% ens convé restar 1 cos?
+   NlinPLANA div
+   dup cosPV ge /semblaUnPoema exch def
+   /interliniaPV exch def  %% (<<< interlinia del poema)pstack quit
+   cosPV 1.2 mul /_interliniaPV exch def  %% provem el 120%
+  }if
+
+  %% tots dos han de ser true
+  semblaUnPoema
+  {
+   /strctrIdeal exch def
+  }
+  {
+   pop  %% ens carreguem l'estructura analitzada
+   [
+    NpagPliegO
+    {  %% estructura de recanvi
+     [ (no el componem perquè no sembla un poema) ]
+    }repeat
+   ] /strctrIdeal exch def
+  }ifelse
+
+  % strctrIdeal(EP!)pstack quit
+
+  false  %% fix ara
+  {  %% l'algoritme necessita tot el text corregut però, si convingués, el podríem aplicar per paràgrafs?
+%%B l'ample de línia de pàgina va trencant les línies (estructura de relat)
+   %%  ens cal donar els valors inicials de /MAXsuaraX i /UNAplana i /UNpliegO ??
+   (plegaVeu_OC2.ps) (r) file cvx exec  %% ALERTA que aquest algorisme ara està destirotat en relació a plegaVeu_OC.ps !!!
+  }if
+
+  %4% seguim amb un maxmix de plegaVeu_mestre i plegaVeu_mestre_buit
+
+  %% pel que fa a incrustar la Courier d'IBM és equivalent a -dPDFSETTINGS=/prepress (estalviant efectes secundaris)
+  <<  %% caldria saber si tots tres paràmetres són crítics
+    /AlwaysEmbed [/Courier /laLlatinaI /laLlatinaR]
+    /NeverEmbed []
+    /EmbedAllFonts true
+    /AutoRotatePages /None
+  >>setdistillerparams
+
+  /BeginEPSF
+  {
+   /b4_Inc_state save def
+   /dict_count countdictstack def
+   /op_count count 1 sub def
+   userdict begin
+   /showpage {} def
+   /setpagedevice {pop} def  % NOU ! servira per .ps amb pagina configurada ?
+   /erasepage {} def  % NOU! (06.98) test de .PS de Quark
+   %/statusdict {5 dict} def  % NOU! PageMaker 5.0 (hem de trobar una altra solucio)
+   0 setgray 0 setlinecap
+   1 setlinewidth 0 setlinejoin
+   10 setmiterlimit [] 0 setdash newpath
+   /languagelevel where
+   {
+    pop languagelevel 1 ne
+    {
+     false setstrokeadjust false setoverprint
+    }if
+   }if
+  }bind def
+
+  /EndEPSF
+  {
+   count op_count sub
+   {
+    pop
+   }repeat
+   countdictstack dict_count sub
+   {
+    end
+   }repeat
+   b4_Inc_state restore
+  }bind def
+
+  /aPortada[]def  %% hi posarem 3 strings del text, una a sota l'altre, per la portada
+
+  {  %% loop per evitar triar paràgrafs/línies en blanc ()
+   strctrIdeal
+   dup length
+
+   %% agafem aleatoriament un tram de text de fins a 3 mots
+   realtime srand  % posem la llavor de l'aleatori
+   rand exch mod get dup length
+   realtime srand  % posem la llavor de l'aleatori
+   rrand exch mod get
+   mark exch  %% per netejar sobrers
+   dup length 0 eq
+   {  %% evitem paràgrafs/línies en blanc ()
+    pop pop
+   }
+   {
+    exit
+   }ifelse
+  }loop  %% per evitar triar paràgrafs/línies en blanc ()
+
+  3
+  {
+   ( ) search
+   {
+    aPortada length dup /araVa exch def 1 add array dup 0 aPortada putinterval
+    dup 3 -1 roll araVa exch put /aPortada exch def pop
+%aPortada(--------)pstack quit
+   }
+   {
+    aPortada length dup /araVa exch def 1 add array dup 0 aPortada putinterval
+    dup 3 -1 roll araVa exch put /aPortada exch def
+%aPortada(quefem?)pstack quit
+    exit  %% i sortim!
+   }ifelse
+  }repeat
+
+  counttomark 0 ne  %% netegem sobrers?
+  {
+   cleartomark
+  }
+  {
+   pop  %% ens carreguem la mark
+  }ifelse
+
+  %% mètrica fixa per la Patufet-Mono-Mig-Italic.otf i Patufet-Mono-Mig.otf... 1/1000 = 600
+  %% quina és la paraula més llarga de les 3?
+  0 dup /lpml exch def aPortada
+  {
+   length dup lpml gt
+   {
+    /lpml exch def
+    dup /idlpml exch def 1 add
+   }
+   {
+    pop 1 add
+   }ifelse
+  }forall
+  pop
+
+%(\n ..........m'hauries de veure només 1 cop...........\n)pstack quit  %%print flush
+
+  (Patufet-Mono-Mig-Italic.otf)
+  %(/Users/femfum/PliegOS/Cultura/feinaFetaProjectePlegaVeu/Source_Code_Pro/static/SourceCodePro-MediumItalic.ttf)
+  %% Courier Medium d'IBM
+  %(/Users/femfum/elageminada/Courier_Cat/COM_____.PFB)
+  %(/Users/femfum/calaixDtipus/Rousselot/Despeinada.otf)
+  %(/Users/femfum/ArtistesDeLaRepublica/Tipografies_JordiEmbodas/Order-0000000226/Bulo-Black.otf)
+  findfont dup length dict begin
+  {
+   1 index /FID ne {def}{pop pop}ifelse
+  }forall
+  /Encoding
+  %% exclusiu de GS
+  systemdict /EncodingDirectory get /WinAnsiEncoding get
+  %% ISOLatin1Encoding
+  %% per personalitzar el xifrat a d'altres caràcters
+%  dup length array copy dup 0 /ll put  %% l·l / només per a la Courier d'IBM
+%  dup 1 /LL put  %% L·L / només per a la Courier d'IBM
+%  dup 2 /tab put  %% triangle a la dreta / només per a la Courier d'IBM
+%  dup 3 /center put  %% romb / només per a la Courier d'IBM
+  def
+  currentdict end
+  /laLlatinaI exch definefont pop
+
+  (Patufet-Mono-Mig.otf)
+  %(/Users/femfum/PliegOS/Cultura/feinaFetaProjectePlegaVeu/Source_Code_Pro/static/SourceCodePro-Medium.ttf)
+  findfont dup length dict begin
+  {
+   1 index /FID ne {def}{pop pop}ifelse
+  }forall
+  /Encoding
+  %% exclusiu de GS
+  systemdict /EncodingDirectory get /WinAnsiEncoding get
+  def
+  currentdict end
+  /laLlatinaR exch definefont pop
+
+ }if  %% només 1 cop
+
+ [
+  null  %% 0
+
+  {  %% 1
+   (\n) print flush
+   Npgn print flush  %% el núm de pàgina és una string
+   ( <<----- SEMPRE FAS PORTADA\n\n)print flush
+   (VanDeGraaf3_plegaVeu.ps) (r) file cvx exec
+   4ArtBox  %% array amb els valors de la taca de la pàgina
+   dup 0 get exch 2 get aload pop 3 -1 roll aload pop 4 -1 roll 3 -1 roll sub /Pample exch def  %% ample text portada
+   sub /Palt exch def  %% alt text portada
+
+   Pample
+   %% amb la paraula més llarga, calculem el cos per tal ens quadri amb l'ample de l' /4ArtBox
+   aPortada idlpml get length  %% amb la Patufet tots els caràcter fan el mateix
+   div  %% per omplir tot /Pample cada caràcter hauria de fer d'ample
+   1000 mul 600 div /cPrtd exch def %% doncs aquest és el cos
+   %% no fos que ens superés l'Y de Palt?
+   aPortada length cPrtd mul Palt gt
+   {  %% llavors el cos és
+    Palt aPortada length div /cPrtd exch def %% doncs aquest és el cos
+   }if
+   %% pintem la portada
+   gsave
+   0 0 0 setrgbcolor
+
+   /laLlatinaI cPrtd selectfont
+   4ArtBox 1 get aload pop translate
+   aPortada length 1 sub 0 exch 1 exch
+   {
+    dup 0 exch cPrtd mul cPrtd add neg moveto
+    aPortada exch get show
+   }for
+
+%(//////)pstack quit
+   grestore
+  }
+
+  {  %% 2
+   (\n) print flush
+   Npgn print flush  %% el núm de pàgina és una string
+   ( <<----- SOLA O BANDA ESQUERRA D'UNA DOBLE PÀGINA\n\n)print flush
+   gsave
+   1 1 1 1 setcmykcolor
+   /laLlatinaI cosPV selectfont
+   %% centrem verticalment, si no treballem amb traçat harmònic:
+   strctrIdeal Npgn cvx exec 2 sub get
+   dup length 1 sub _interliniaPV mul  %% la primera línia a compondre la calculem amb el nombre de linies menys 1
+   tripaY4+4 exch sub 2 div exch  %% x interlinia (% del cos) menys /tripaY4+4 dividit per dos 
+   {
+    [
+     {  %% 0 dreta  
+      dup stringwidth pop 2marges add tripaX1pg4+4 exch sub 3 -1 roll moveto show
+      currentpoint _interliniaPV sub exch pop
+     }
+     {  %% 1 centrat
+      dup stringwidth pop tripaX1pg4+4 exch sub 2 div 3 -1 roll moveto show
+      currentpoint _interliniaPV sub exch pop
+     }
+     {  %% 2 caixa esquerra
+      exch 2marges exch moveto show
+      currentpoint _interliniaPV sub exch pop
+     }
+    ] 1 get cvx exec
+   }forall
+   pop
+   grestore
+  }
+
+  {  %% 3
+   (\n) print flush
+   Npgn print flush  %% el núm de pàgina és una string
+   ( <<----- SOLA O BANDA DRETA D'UNA DOBLE PÀGINA\n\n)print flush
+   gsave
+   1 1 1 1 setcmykcolor
+   /laLlatinaI cosPV selectfont
+   %% centrem verticalment, si no treballem amb traçat harmònic:
+   strctrIdeal Npgn cvx exec 2 sub get
+   dup length 1 sub _interliniaPV mul  %% la primera línia a compondre la calculem amb el nombre de linies menys 1
+   tripaY4+4 exch sub 2 div exch  %% x interlinia (% del cos) menys /tripaY4+4 dividit per dos 
+   {
+    [
+     {  %% 0 dreta  
+      dup stringwidth pop 2marges add tripaX1pg4+4 exch sub 3 -1 roll moveto show
+      currentpoint _interliniaPV sub exch pop
+     }
+     {  %% 1 centrat
+      dup stringwidth pop tripaX1pg4+4 exch sub 2 div 3 -1 roll moveto show
+      currentpoint _interliniaPV sub exch pop
+     }
+     {  %% 2 caixa esquerra
+      exch 2marges exch moveto show
+      currentpoint _interliniaPV sub exch pop
+     }
+    ] 1 get cvx exec
+   }forall
+   pop
+   grestore
+  }
+
+  {  %% 4
+   (\n) print flush
+   Npgn print flush  %% el núm de pàgina és una string
+   ( <<----- SOLA O BANDA ESQUERRA D'UNA DOBLE PÀGINA\n\n)print flush
+   gsave
+   1 1 1 1 setcmykcolor
+   /laLlatinaI cosPV selectfont
+   %% centrem verticalment, si no treballem amb traçat harmònic:
+   strctrIdeal Npgn cvx exec 2 sub get
+   dup length 1 sub _interliniaPV mul  %% la primera línia a compondre la calculem amb el nombre de linies menys 1
+   tripaY4+4 exch sub 2 div exch  %% x interlinia (% del cos) menys /tripaY4+4 dividit per dos 
+   {
+    [
+     {  %% 0 dreta  
+      dup stringwidth pop 2marges add tripaX1pg4+4 exch sub 3 -1 roll moveto show
+      currentpoint _interliniaPV sub exch pop
+     }
+     {  %% 1 centrat
+      dup stringwidth pop tripaX1pg4+4 exch sub 2 div 3 -1 roll moveto show
+      currentpoint _interliniaPV sub exch pop
+     }
+     {  %% 2 caixa esquerra
+      exch 2marges exch moveto show
+      currentpoint _interliniaPV sub exch pop
+     }
+    ] 1 get cvx exec
+   }forall
+   pop
+   grestore
+  }
+
+  {  %% 5
+   (\n) print flush
+   Npgn print flush  %% el núm de pàgina és una string
+   ( <<----- SOLA O BANDA DRETA D'UNA DOBLE PÀGINA\n\n)print flush
+   gsave
+   1 1 1 1 setcmykcolor
+   /laLlatinaI cosPV selectfont
+   %% centrem verticalment, si no treballem amb traçat harmònic:
+   strctrIdeal Npgn cvx exec 2 sub get
+   dup length 1 sub _interliniaPV mul  %% la primera línia a compondre la calculem amb el nombre de linies menys 1
+   tripaY4+4 exch sub 2 div exch  %% x interlinia (% del cos) menys /tripaY4+4 dividit per dos 
+   {
+    [
+     {  %% 0 dreta  
+      dup stringwidth pop 2marges add tripaX1pg4+4 exch sub 3 -1 roll moveto show
+      currentpoint _interliniaPV sub exch pop
+     }
+     {  %% 1 centrat
+      dup stringwidth pop tripaX1pg4+4 exch sub 2 div 3 -1 roll moveto show
+      currentpoint _interliniaPV sub exch pop
+     }
+     {  %% 2 caixa esquerra
+      exch 2marges exch moveto show
+      currentpoint _interliniaPV sub exch pop
+     }
+    ] 1 get cvx exec
+   }forall
+   pop
+   grestore
+  }
+
+  {  %% 6
+   (\n) print flush
+   Npgn print flush  %% el núm de pàgina és una string
+   ( <<----- SOLA O BANDA ESQUERRA D'UNA DOBLE PÀGINA\n\n)print flush
+   gsave
+   1 1 1 1 setcmykcolor
+   /laLlatinaI cosPV selectfont
+   %% centrem verticalment, si no treballem amb traçat harmònic:
+   strctrIdeal Npgn cvx exec 2 sub get
+   dup length 1 sub _interliniaPV mul  %% la primera línia a compondre la calculem amb el nombre de linies menys 1
+   tripaY4+4 exch sub 2 div exch  %% x interlinia (% del cos) menys /tripaY4+4 dividit per dos 
+   {
+    [
+     {  %% 0 dreta  
+      dup stringwidth pop 2marges add tripaX1pg4+4 exch sub 3 -1 roll moveto show
+      currentpoint _interliniaPV sub exch pop
+     }
+     {  %% 1 centrat
+      dup stringwidth pop tripaX1pg4+4 exch sub 2 div 3 -1 roll moveto show
+      currentpoint _interliniaPV sub exch pop
+     }
+     {  %% 2 caixa esquerra
+      exch 2marges exch moveto show
+      currentpoint _interliniaPV sub exch pop
+     }
+    ] 1 get cvx exec
+   }forall
+   pop
+   grestore
+  }
+
+  {  %% 7
+   (\n) print flush
+   Npgn print flush  %% el núm de pàgina és una string
+   ( <<----- SOLA O BANDA DRETA D'UNA DOBLE PÀGINA\n\n)print flush
+   gsave
+   1 1 1 1 setcmykcolor
+   /laLlatinaI cosPV selectfont
+   %% centrem verticalment, si no treballem amb traçat harmònic:
+   strctrIdeal Npgn cvx exec 2 sub get
+   dup length 1 sub _interliniaPV mul  %% la primera línia a compondre la calculem amb el nombre de linies menys 1
+   tripaY4+4 exch sub 2 div exch  %% x interlinia (% del cos) menys /tripaY4+4 dividit per dos 
+   {
+    [
+     {  %% 0 dreta  
+      dup stringwidth pop 2marges add tripaX1pg4+4 exch sub 3 -1 roll moveto show
+      currentpoint _interliniaPV sub exch pop
+     }
+     {  %% 1 centrat
+      dup stringwidth pop tripaX1pg4+4 exch sub 2 div 3 -1 roll moveto show
+      currentpoint _interliniaPV sub exch pop
+     }
+     {  %% 2 caixa esquerra
+      exch 2marges exch moveto show
+      currentpoint _interliniaPV sub exch pop
+     }
+    ] 1 get cvx exec
+   }forall
+   pop
+   grestore
+  }
+
+  {  %% 8
+   (\n) print flush
+   Npgn print flush  %% el núm de pàgina és una string
+   M2 4 eq
+   {
+    ( <<----- ETS 4+4 i FAS CONTRAPORTADA orientada en,,, )print flush Hrtzntl == (\n\n)print flush
+    gsave
+    (capAnunciPlegaVeu_967x362.jpeg)
+    xPagina
+%(xPg4?)pstack quit
+ dup 362 mul 967 div dup 3 1 roll yPagina exch sub 0 exch dup /yTxt exch def translate
+%(mmmmm)pstack quit
+    (NouLectorDeJPEGs5.ps) (r) file
+    cvx exec
+    grestore
+    BeginEPSF
+    xPagina 90 sub 20 translate
+    1 1 scale  %% Public Domain
+    (Public_Domain_Mark_button.eps)
+    (r) file cvx exec
+    gsave
+    0 0 0 setrgbcolor
+    12 /cosCrdts exch def
+    /laLlatinaI cosCrdts selectfont
+    (Plega-Cus-Talla) stringwidth pop cosCrdts 4 mul add neg cosCrdts moveto
+    (Plega-Cus-Talla) show
+    grestore
+    EndEPSF
+    %% text centrat
+    gsave
+    0 0 0 setrgbcolor
+    %%Dada 6 a 4Banderes.ps
+    (Recuperem la literatura de canya i cordill que va popularitzar la lectura en els segles posteriors a la invenció de la impremta, la passem pel sedàs de les tecnologies digitals i d'Internet i la retornem al paper imprès. Aquest PliegO utilitza obres literàries que estan al domini públic. Sou lliures de reproduir-lo o crear-ne obres derivades mencionant-ne l'autoria.)
+    %%Dada 5 a 4Banderes.ps
+    xPagina 90 sub
+    %%Dada 4 a 4Banderes.ps
+    xPagina 90 sub
+    70  %% altura del sota Y
+    %%Dada 3 a 4Banderes.ps
+    45  %% offset X
+    %%Dada 2 a 4Banderes.ps
+    5 /COs exch def
+    %%Dada 1 a 4Banderes.ps
+    /laLlatinaI COs selectfont
+    (4Banderes.ps)
+    (r) file cvx exec
+    grestore
+    gsave
+    0 0 0 setrgbcolor
+    (AUTORIES)
+    xPagina 90 sub
+    %%Dada 4 a 4Banderes.ps
+    xPagina 90 sub
+    285  %% altura del sota Y
+    %%Dada 3 a 4Banderes.ps
+    45  %% offset X
+    %%Dada 2 a 4Banderes.ps
+    9 /COs exch def
+    %%Dada 1 a 4Banderes.ps
+    /laLlatinaR COs selectfont
+    (4Banderes.ps)
+    (r) file cvx exec
+    grestore
+    gsave
+    0 0 0 setrgbcolor
+%%    (Isabel Vila i Pujol, Teresa Claramunt i Creus, María Cambrils Sendra, Francesca Vidal i Tous, Trinitat Aldrich i de Pagès, Joaquima Santamaria i Ventura, Agnès Armengol i Altayó.)
+    (Maria Josepa Massanés, Clemencia Isaura, Trinitat Aldrich, Agnès Armengol i Altayó, Dolors Montserdà i Vidal, Emily Dickinson, Ariadna Torres, anònimes i populars.)
+    xPagina 90 sub
+    %%Dada 4 a 4Banderes.ps
+    xPagina 90 sub
+    241  %% altura del sota Y
+    %%Dada 3 a 4Banderes.ps
+    45  %% offset X
+    %%Dada 2 a 4Banderes.ps
+    7 /COs exch def
+    %%Dada 1 a 4Banderes.ps
+    /laLlatinaI COs selectfont
+    (4Banderes.ps)
+    (r) file cvx exec
+    grestore
+    gsave
+    0 0 0 setrgbcolor
+    (RECITEN)
+    xPagina 90 sub
+    %%Dada 4 a 4Banderes.ps
+    xPagina 90 sub
+    210  %% altura del sota Y
+    %%Dada 3 a 4Banderes.ps
+    45  %% offset X
+    %%Dada 2 a 4Banderes.ps
+    9 /COs exch def
+    %%Dada 1 a 4Banderes.ps
+    /laLlatinaR COs selectfont
+    (4Banderes.ps)
+    (r) file cvx exec
+    grestore
+    gsave
+    0 0 0 setrgbcolor
+    (Lia Montalvo i Ramon Fontdevila)
+    xPagina 90 sub
+    %%Dada 4 a 4Banderes.ps
+    xPagina 90 sub
+    196  %% altura del sota Y
+    %%Dada 3 a 4Banderes.ps
+    45  %% offset X
+    %%Dada 2 a 4Banderes.ps
+    7 /COs exch def
+    %%Dada 1 a 4Banderes.ps
+    /laLlatinaI COs selectfont
+    (4Banderes.ps)
+    (r) file cvx exec
+    grestore
+    gsave
+    0 0 0 setrgbcolor
+    (EQUIP PliegOS)
+    xPagina 90 sub
+    %%Dada 4 a 4Banderes.ps
+    xPagina 90 sub
+    165  %% altura del sota Y
+    %%Dada 3 a 4Banderes.ps
+    45  %% offset X
+    %%Dada 2 a 4Banderes.ps
+    9 /COs exch def
+    %%Dada 1 a 4Banderes.ps
+    /laLlatinaR COs selectfont
+    (4Banderes.ps)
+    (r) file cvx exec
+    grestore
+    gsave
+    0 0 0 setrgbcolor
+    (Mònica Garriga, David Gómez Fontanills, Marcantoni Malagarriga-Picas, Enric Senabre, Ariadna Torres)
+    xPagina 90 sub
+    %%Dada 4 a 4Banderes.ps
+    xPagina 90 sub
+    131  %% altura del sota Y
+    %%Dada 3 a 4Banderes.ps
+    45  %% offset X
+    %%Dada 2 a 4Banderes.ps
+    7 /COs exch def
+    %%Dada 1 a 4Banderes.ps
+    /laLlatinaI COs selectfont
+    (4Banderes.ps)
+    (r) file cvx exec
+    grestore
+   }
+   {
+    ( <<----- ETS 8+8 i vas SOLA O BANDA ESQUERRA D'UNA DOBLE PÀGINA\n\n)print flush
+   }ifelse
+  }
+
+  {  %% 9
+   (\n) print flush
+   Npgn print flush  %% el núm de pàgina és una string
+   ( <<----- SOLA O BANDA DRETA D'UNA DOBLE PÀGINA\n\n)print flush
+  }
+
+  {  %% 10
+   (\n) print flush
+   Npgn print flush  %% el núm de pàgina és una string
+   ( <<----- SOLA O BANDA ESQUERRA D'UNA DOBLE PÀGINA\n\n)print flush
+  }
+
+  {  %% 11
+   (\n) print flush
+   Npgn print flush  %% el núm de pàgina és una string
+   ( <<----- SOLA O BANDA DRETA D'UNA DOBLE PÀGINA\n\n)print flush
+  }
+
+  {  %% 12
+   (\n) print flush
+   Npgn print flush  %% el núm de pàgina és una string
+   ( <<----- SOLA O BANDA ESQUERRA D'UNA DOBLE PÀGINA\n\n)print flush
+  }
+
+  {  %% 13
+   (\n) print flush
+   Npgn print flush  %% el núm de pàgina és una string
+   ( <<----- SOLA O BANDA DRETA D'UNA DOBLE PÀGINA\n\n)print flush
+  }
+
+  {  %% 14
+   (\n) print flush
+   Npgn print flush  %% el núm de pàgina és una string
+   ( <<----- SOLA O BANDA ESQUERRA D'UNA DOBLE PÀGINA\n\n)print flush
+  }
+
+  {  %% 15
+   (\n) print flush
+   Npgn print flush  %% el núm de pàgina és una string
+   ( <<----- SOLA O BANDA DRETA D'UNA DOBLE PÀGINA\n\n)print flush
+  }
+
+  {  %% 16
+   (\n) print flush
+   Npgn print flush  %% el núm de pàgina és una string
+   ( <<----- SI ETS 8+8 FAS CONTRAPORTADA orientada en...)print flush (\n\n)print flush
+
+   gsave
+   (/Users/femfum/PliegOS/Cultura/feinaFetaProjectePlegaVeu/capAnunciPlegaVeu_967x362.jpeg)
+   xPagina
+
+%(xPg8?)pstack quit
+ dup 362 mul 967 div dup 3 1 roll yPagina exch sub 0 exch dup /yTxt exch def translate
+%(mmmmm)pstack quit
+   (/Users/femfum/PliegOS/codi_pliegOS/NouLectorDeJPEGs5.ps) (r) file
+   cvx exec
+   grestore
+   BeginEPSF
+   xPagina 90 sub 20 translate
+   1 1 scale  %% Public Domain
+   (/Users/femfum/PliegOS/Cultura/feinaFetaProjectePlegaVeu/Public_Domain_Mark_button.eps)
+   (r) file cvx exec
+   gsave
+   0 0 0 setrgbcolor
+   8 /cosCrdts exch def
+   /laLlatinaI cosCrdts selectfont
+   (Plega-Cus-Talla) stringwidth pop cosCrdts 2.5 mul add neg cosCrdts 1.5 mul moveto
+   (Plega-Cus-Talla) show
+   grestore
+   EndEPSF
+    %% text centrat
+    gsave
+    0 0 0 setrgbcolor
+    %%Dada 6 a 4Banderes.ps
+    (Recuperem la literatura de canya i cordill que va popularitzar la lectura en els segles posteriors a la invenció de la impremta, la passem pel sedàs de les tecnologies digitals i d'Internet i la retornem al paper imprès. Aquest PliegO utilitza obres literàries que estan al domini públic. Sou lliures de reproduir-lo o crear-ne obres derivades mencionant-ne l'autoria.)
+    %%Dada 5 a 4Banderes.ps
+    xPagina 60 sub
+    %%Dada 4 a 4Banderes.ps
+    xPagina 60 sub
+    55  %% altura del sota Y
+    %%Dada 3 a 4Banderes.ps
+    30  %% offset X
+    %%Dada 2 a 4Banderes.ps
+    3.3 /COs exch def
+    %%Dada 1 a 4Banderes.ps
+    /laLlatinaI COs selectfont
+    (/Users/femfum/PliegOS/Cultura/feinaFetaProjectePlegaVeu/4Banderes.ps)
+    (r) file cvx exec
+    grestore
+    gsave
+    0 0 0 setrgbcolor
+    (AUTORIES)
+    xPagina 60 sub
+    %%Dada 4 a 4Banderes.ps
+    xPagina 60 sub
+    190  %% altura del sota Y
+    %%Dada 3 a 4Banderes.ps
+    30  %% offset X
+    %%Dada 2 a 4Banderes.ps
+    6 /COs exch def
+    %%Dada 1 a 4Banderes.ps
+    /laLlatinaR COs selectfont
+    (/Users/femfum/PliegOS/Cultura/feinaFetaProjectePlegaVeu/4Banderes.ps)
+    (r) file cvx exec
+    grestore
+    gsave
+    0 0 0 setrgbcolor
+    (Isabel Vila i Pujol, Teresa Claramunt i Creus, María Cambrils Sendra, Francesca Vidal i Tous, Trinitat Aldrich i de Pagès, Joaquima Santamaria i Ventura, Agnès Armengol i Altayó.)
+    xPagina 60 sub
+    %%Dada 4 a 4Banderes.ps
+    xPagina 60 sub
+    160.6  %% altura del sota Y
+    %%Dada 3 a 4Banderes.ps
+    30  %% offset X
+    %%Dada 2 a 4Banderes.ps
+    4.6 /COs exch def
+    %%Dada 1 a 4Banderes.ps
+    /laLlatinaI COs selectfont
+    (/Users/femfum/PliegOS/Cultura/feinaFetaProjectePlegaVeu/4Banderes.ps)
+    (r) file cvx exec
+    grestore
+    gsave
+    0 0 0 setrgbcolor
+    (RECITEN)
+    xPagina 60 sub
+    %%Dada 4 a 4Banderes.ps
+    xPagina 60 sub
+    140  %% altura del sota Y
+    %%Dada 3 a 4Banderes.ps
+    30  %% offset X
+    %%Dada 2 a 4Banderes.ps
+    6 /COs exch def
+    %%Dada 1 a 4Banderes.ps
+    /laLlatinaR COs selectfont
+    (/Users/femfum/PliegOS/Cultura/feinaFetaProjectePlegaVeu/4Banderes.ps)
+    (r) file cvx exec
+    grestore
+    gsave
+    0 0 0 setrgbcolor
+    (Lia Montalvo i Ramon Fontdevila)
+    xPagina 60 sub
+    %%Dada 4 a 4Banderes.ps
+    xPagina 60 sub
+    130.6  %% altura del sota Y
+    %%Dada 3 a 4Banderes.ps
+    30  %% offset X
+    %%Dada 2 a 4Banderes.ps
+    4.6 /COs exch def
+    %%Dada 1 a 4Banderes.ps
+    /laLlatinaI COs selectfont
+    (/Users/femfum/PliegOS/Cultura/feinaFetaProjectePlegaVeu/4Banderes.ps)
+    (r) file cvx exec
+    grestore
+    gsave
+    0 0 0 setrgbcolor
+    (EQUIP PliegOS)
+    xPagina 60 sub
+    %%Dada 4 a 4Banderes.ps
+    xPagina 60 sub
+    110  %% altura del sota Y
+    %%Dada 3 a 4Banderes.ps
+    30  %% offset X
+    %%Dada 2 a 4Banderes.ps
+    6 /COs exch def
+    %%Dada 1 a 4Banderes.ps
+    /laLlatinaR COs selectfont
+    (/Users/femfum/PliegOS/Cultura/feinaFetaProjectePlegaVeu/4Banderes.ps)
+    (r) file cvx exec
+    grestore
+    gsave
+    0 0 0 setrgbcolor
+    (Mònica Garriga, David Gómez Fontanills, Marcantoni Malagarriga-Picas, Enric Senabre, Ariadna Torres)
+    xPagina 60 sub
+    %%Dada 4 a 4Banderes.ps
+    xPagina 60 sub
+    92  %% altura del sota Y
+    %%Dada 3 a 4Banderes.ps
+    30  %% offset X
+    %%Dada 2 a 4Banderes.ps
+    4.6 /COs exch def
+    %%Dada 1 a 4Banderes.ps
+    /laLlatinaI COs selectfont
+    (/Users/femfum/PliegOS/Cultura/feinaFetaProjectePlegaVeu/4Banderes.ps)
+    (r) file cvx exec
+    grestore
+  }
+ ]
+
+ Npgn cvx exec get cvx exec  %% el núm. de pàgina fa d'index d'execució
+
+}if  %% comportament null: anellat del codi que pinta contingut de pàgina
+
+%% prohibit fer servir showpage!
+

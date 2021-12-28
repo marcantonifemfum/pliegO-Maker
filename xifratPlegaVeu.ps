@@ -1,0 +1,438 @@
+%!
+%% desxifrem la codificació provinent de la captura de text via interfície del plegaVeu <textarea>
+%% tal i com l'entén el GS, doncs la notació octal que fa desglossar un glif codificat en Unicode, en 2 o 3 octals, per exemple
+%% /bullet que té el valor Unicode decimal 8226 (via AdobeGlyphList) es transforma en 3 octals \342\200\242 degut al desglossat
+%% binari... 010 000 000 100 010 ...que començant per la dreta agrupa els bits de 3 en 3, on cada 3 bits és un dígit octal
+%% cal acabar d'estudiar el mètode per veure si cabria tenir una estratègia alternativa de lectura d'aquesta codificació
+
+%% recursos interessants en aquest àmbit:
+%% http://www.unit-conversion.info/texttools/octal/ (lògica ídem al GS)
+%% https://onlineunicodetools.com/convert-unicode-to-octal (paral·lels)
+%% https://util.unicode.org/UnicodeJsps/character.jsp (hexa original Unicode)
+%% cal buscar als .ps de la maquinària tipogràfica del GS si hi ha cap algorisme que tracti aquesta part
+
+%% al desxifrar el text via interfície del plegaVeu <textarea>, el tornem a repicar per tal pugui treballar directament
+%% amb la /WinAnsiEncoding ara restringida (per manca de temps) a només la sintaxi catalana
+
+%% aquest anàlisi sofisticat de signes a substituir està inspirat en ~/enfony/TOTcodiPostScript/salvaparent2.ps
+
+%% en xifrats de llengües llatines, normalment podrem treballar tranquil·lament amb l'encoding:
+% systemdict /EncodingDirectory get /WinAnsiEncoding get
+% 128 get
+%% però en cas d'haber de contemplar qualsevol mena de xifrat, hauríem de treballar amb el diccionari (invertit o no):
+%systemdict /AdobeGlyphList get
+%/bullet get
+%{== == quit}forall
+%(-------)pstack quit
+
+%% si al final d'aquest anàlisi /strctrIdeal continua buida i /tripaCdL és zero, senyal que no hi ha canvis de línia/paràgrafs
+/strctrIdeal [] def
+/tripaCdL 0 def
+
+[  %% l'ordre de substitució és molt rellevant!
+ %% signes incials a cercar per sota del 32 decimal
+ (\000)  %% 0 null
+ (\b)    %% 1 \010 backspace
+ (\t)    %% 2 \011 horizontal tab
+ (\f)    %% 3 \014 form feed (FF)
+ (\r\n)  %% 4 retorn de carro dur (CR+LF)
+ (\r)    %% 5 \015 carriage return (CR)
+ (  )    %% 6 típic error del doble espai en blanc
+ %% del 32 a 126 decimal, el GS no treballa amb octals
+ %% !"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~
+ %% signes tipogràfics a cercar més enllà de l'ascii (127 decimal), seguint la taula WinAnsiEncoding
+ %% cadena de codis octal que rep l'string provinent d'una textarea (HTML/PHP via POST)
+ (\342\200\242)  %% 7   127 /bullet
+ (\342\202\254)  %% 8   128 /Euro
+                 %%     129             /bullet
+ (\342\200\232)  %% 9   130 /quotesinglbase
+ (\306\222)      %% 10  131 /florin
+                 %%     134             /quotedblbase
+ (\342\200\246)  %% 11  133 /ellipsis
+                 %%     134             /dagger
+                 %%     135             /daggerdbl
+                 %%     136             /circumflex
+                 %%     137             /perthousand
+                 %%     138             /Scaron
+                 %%     139             /guilsinglleft
+                 %%     140             /OE
+                 %%     141             /bullet
+                 %%     142             /Zcaron
+                 %%     143             /bullet
+                 %%     144             /bullet
+ (\342\200\230)  %% 12  145 /quoteleft
+ (\342\200\231)  %% 13  146 /quoteright
+ (\342\200\234)  %% 14  147 /quotedblleft
+ (\342\200\235)  %% 15  148 /quotedblright
+                 %%     149             /bullet
+ (\342\200\223)  %% 16  150 /endash
+ (\342\200\224)  %% 17  151 /emdash
+                 %%     152             /tilde
+                 %%     153             /trademark
+                 %%     154                /scaron
+                 %%     155                /guilsinglright
+                 %%     156                /oe
+                 %%     157                /bullet
+                 %%     158                /zcaron
+                 %%     159                /Ydieresis
+                 %%     160                /space
+                 %%     161                /exclamdown
+                 %%     162                /cent
+                 %%     163                /sterling
+                 %%     164                /currency
+                 %%     165                /yen
+                 %%     166                /brokenbar
+                 %%     167                /section
+                 %%     168                /dieresis
+ (\302\251)      %% 18  169 /copyright
+ (\302\252)      %% 19  170 /ordfeminine
+ (\302\253)      %% 20  171 /guillemotleft
+                 %%     172                /logicalnot
+                 %%     173                /hyphen
+ (\302\256)      %% 21  174 /registered
+                 %%     175                /macron
+ (\302\260)      %% 22  176 /degree
+ (\302\261)      %% 23  177 /plusminus
+ (\302\262)      %% 24  178 /twosuperior
+                 %%     179                /threesuperior
+                 %%     180                /acute
+                 %%     181                /mu
+                 %%     182                /paragraph
+ (\302\267)      %% 25  183 /periodcentered
+                 %%     184                /cedilla
+                 %%     185                /onesuperior
+                 %%     186                /ordmasculine
+ (\302\273)      %% 26  187 /guillemotright
+                 %%     188                /onequarter
+ (\302\275)      %% 27  189 /onehalf
+                 %%     190                /threequarters
+                 %%     191                /questiondown
+ (\303\200)      %% 28  192 /Agrave
+                 %%     193                /Aacute
+                 %%     194                /Acircumflex
+                 %%     195                /Atilde
+                 %%     196                /Adieresis
+                 %%     197                /Aring
+                 %%     198                /AE
+ (\303\207)      %% 29  199 /Ccedilla
+ (\303\210)      %% 30  200 /Egrave
+ (\303\211)      %% 31  201 /Eacute
+                 %%     202                /Ecircumflex
+                 %%     203                /Edieresis
+                 %%     204                /Igrave
+ (\303\215)      %% 32  205 /Iacute
+                 %%     206                /Icircumflex
+ (\303\217)      %% 33  207 /Idieresis
+                 %%     208                /Eth
+                 %%     209                /Ntilde
+ (\303\222)      %% 34  210 /Ograve
+ (\303\223)      %% 35  211 /Oacute
+                 %%     212                /Ocircumflex
+                 %%     213                /Otilde
+                 %%     214                /Odieresis
+                 %%     215                /multiply
+                 %%     216                /Oslash
+                 %%     217                /Ugrave
+ (\303\232)      %% 36  218 /Uacute
+                 %%     219                /Ucircumflex
+ (\303\234)      %% 37  220 /Udieresis
+                 %%     221                /Yacute
+                 %%     222                /Thorn
+                 %%     223                /germandbls
+ (\303\240)      %% 38  224 /agrave
+                 %%     225                /aacute
+                 %%     226                /acircumflex
+                 %%     227                /atilde
+                 %%     228                /adieresis
+                 %%     229                /aring
+                 %%     230                /ae
+ (\303\247)      %% 39  231 /ccedilla
+ (\303\250)      %% 40  232 /egrave
+ (\303\251)      %% 41  233 /eacute
+                 %%     234                /ecircumflex
+                 %%     235                /edieresis
+                 %%     236                /igrave
+ (\303\255)      %% 42  237 /iacute
+                 %%     238                /icircumflex
+ (\303\257)      %% 43  239 /idieresis
+                 %%     240                /eth
+                 %%     241                /ntilde
+ (\303\262)      %% 44  242 /ograve
+ (\303\263)      %% 45  243 /oacute
+                 %%     244                /ocircumflex
+                 %%     245                /otilde
+                 %%     246                /odieresis
+                 %%     247                /divide
+                 %%     248                /oslash
+                 %%     249                /ugrave
+ (\303\272)      %% 46  250 /uacute
+                 %%     251                /ucircumflex
+ (\303\274)      %% 47  252 /udieresis
+                 %%     253                /yacute
+                 %%     254                /thorn
+                 %%     255                /ydieresis
+
+ %% signes finals a cercar
+ (\n)    %% #  \012 line feed (LF)
+] /treu exch def
+
+[  %% l'ordre de substitució és molt rellevant!
+ %% signes inicials a substituir
+ ()   %% 0 null per buit, o sigui que fa desaparèixer la cadena corresponent a /treu
+ ( )  %% 1 backspace per espai en blanc
+ ( )  %% 2 tabulador horitzontal per espai en blanc
+ ( )  %% 3 form feed per espai en blanc
+ (\n) %% 4 retorn de carro dur per LF
+ (\n) %% 5 CR per LF
+ ( )  %% 6 2 espais en blanc per 1 espai en blanc
+ %% (\\) ja ens ha de venir escapats de la <textarea>
+ %% (\() ja ens ha de venir escapats de la <textarea>
+ %% (\)) ja ens ha de venir escapats de la <textarea>
+
+ %% signes tipogràfics a substituir de la taula WinAnsiEncoding
+         %%     decimal unicode nom PS del glif
+ (\177)  %% 7   127     <2022>  /bullet
+ (\200)  %% 8   128     <20AC>  /Euro
+         %%     129             /bullet
+ (\202)  %% 9   130     <201A>  /quotesinglbase 
+ (\203)  %% 10  131     <0192>  /florin
+         %%     132             /quotedblbase
+ (\205)  %% 11  133     <2026>  /ellipsis
+         %%     134             /dagger
+         %%     135             /daggerdbl
+         %%     136             /circumflex
+         %%     137             /perthousand
+         %%     138             /Scaron
+         %%     139             /guilsinglleft
+         %%     140             /OE
+         %%     141             /bullet
+         %%     142             /Zcaron
+         %%     143             /bullet
+         %%     144             /bullet
+ (\221)  %% 12  145     <2018>  /quoteleft
+ (\222)  %% 13  146     <2019>  /quoteright
+ (\223)  %% 14  147     <201C>  /quotedblleft
+ (\224)  %% 15  148     <201D>  /quotedblright
+         %%     149             /bullet
+ (\226)  %% 16  150     <2013>  /endash
+ (\227)  %% 17  151     <2014>  /emdash
+         %%     152             /tilde
+         %%     153             /trademark
+         %%     154             /scaron
+         %%     155             /guilsinglright
+         %%     156             /oe
+         %%     157             /bullet
+         %%     158             /zcaron
+         %%     159             /Ydieresis
+         %%     160             /space
+         %%     161             /exclamdown
+         %%     162             /cent
+         %%     163             /sterling
+         %%     164             /currency
+         %%     165             /yen
+         %%     166             /brokenbar
+         %%     167             /section
+         %%     168             /dieresis
+ (\251)  %% 18  169     <00A9>  /copyright
+ (\252)  %% 19  170     <00AA>  /ordfeminine
+ (\253)  %% 20  171     <00AB>  /guillemotleft
+         %%     172             /logicalnot
+         %%     173             /hyphen
+ (\256)  %% 21  174     <00AE>  /registered
+         %%     175             /macron
+ (\260)  %% 22  176     <00B0>  /degree
+ (\261)  %% 23  177     <00B1>  /plusminus
+ (\262)  %% 24  178     <00B2>  /twosuperior
+         %%     179             /threesuperior
+         %%     180             /acute
+         %%     181             /mu
+         %%     182             /paragraph
+ (\267)  %% 25  183     <00B7>  /periodcentered
+         %%     184             /cedilla
+         %%     185             /onesuperior
+         %%     186             /ordmasculine
+ (\273)  %% 26  187     <00BB>  /guillemotright
+         %%     188             /onequarter
+ (\275)  %% 27  189     <00BD>  /onehalf
+         %%     190             /threequarters
+         %%     191             /questiondown
+ (\300)  %% 28  192     <00C0>  /Agrave
+         %%     193             /Aacute
+         %%     194             /Acircumflex
+         %%     195             /Atilde
+         %%     196             /Adieresis
+         %%     197             /Aring
+         %%     198             /AE
+ (\307)  %% 29  199     <00C7>  /Ccedilla
+ (\310)  %% 30  200     <00C8>  /Egrave
+ (\311)  %% 31  201     <00C9>  /Eacute
+         %%     202             /Ecircumflex
+         %%     203             /Edieresis
+         %%     204             /Igrave
+ (\315)  %% 32  205     <00CD>  /Iacute
+         %%     206             /Icircumflex
+ (\317)  %% 33  207     <00CF>  /Idieresis
+         %%     208             /Eth
+         %%     209             /Ntilde
+ (\322)  %% 34  210     <00D2>  /Ograve
+ (\323)  %% 35  211     <00D3>  /Oacute
+         %%     212             /Ocircumflex
+         %%     213             /Otilde
+         %%     214             /Odieresis
+         %%     215             /multiply
+         %%     216             /Oslash
+         %%     217             /Ugrave
+ (\332)  %% 36  218     <00DA>  /Uacute
+         %%     219             /Ucircumflex
+ (\334)  %% 37  220     <00DC>  /Udieresis
+         %%     221             /Yacute
+         %%     222             /Thorn
+         %%     223             /germandbls
+ (\340)  %% 38  224     <00E0>  /agrave
+         %%     225             /aacute
+         %%     226             /acircumflex
+         %%     227             /atilde
+         %%     228             /adieresis
+         %%     229             /aring
+         %%     230             /ae
+ (\347)  %% 39  231     <00E7>  /ccedilla
+ (\350)  %% 40  232     <00E8>  /egrave
+ (\351)  %% 41  233     <00E9>  /eacute
+         %%     234             /ecircumflex
+         %%     235             /edieresis
+         %%     236             /igrave
+ (\355)  %% 42  237     <00ED>  /iacute
+         %%     238             /icircumflex
+ (\357)  %% 43  239     <00EF>  /idieresis
+         %%     240             /eth
+         %%     241             /ntilde
+ (\362)  %% 44  242     <00F2>  /ograve
+ (\363)  %% 45  243     <00F3>  /oacute
+         %%     244             /ocircumflex
+         %%     245             /otilde
+         %%     246             /odieresis
+         %%     247             /divide
+         %%     248             /oslash
+         %%     249             /ugrave
+ (\372)  %% 46  250     <00FA>  /uacute
+         %%     251             /ucircumflex
+ (\374)  %% 47  252     <00FC>  /udieresis
+         %%     253             /yacute
+         %%     254             /thorn
+         %%     255             /ydieresis
+
+ %% signes finals a substituir
+ () %% 48  line feed (LF) per ?
+] /fica exch def
+
+treu length fica length ne
+{
+ ( <<<< el nombre d'elements a trobar i substituir treu/fica difereixen ...pleguem!)== quit
+}if
+
+/TREUiFICA treu length def  %% el nombre d'elements de /treu i /fica que han de coincidir (pestell de sortida del loop)
+/itreu 0 def  %% index de /treu
+
+%% exemple on podem veure com es reescriuen correctament cadenes de 2 i 3 octals, dobles espais, retorns de carro, diacrítics:
+%(davant\000\rdarrera\342\200\242enlla\342\202\254enç\303\240 i  pul·lulant l'alè\r\n\n\n\r\n\nsense esma ni quaresma no\fs'escau\tfruïr!)
+
+%(Peixos dins el rostoll\nàligues dins el foc\nla mar dins els ulls\nels peus plens de cans\nel vent és pudent\ntots els déus van gats\n\nOh serra mamerra\nens roben la terra\ni ens fonen l'aram.)
+
+%(Si vinguessis per tardor\nespolsaríem l'estiu\namb llengots i mitja rialla,\ncom mestresses al badiu.\n\nSi ens veiéssim en un any\ncabdellaríem mesades,\ntotes al seu calaixer,\nmentre el temps passa debades.\n\nSi triguessis sols un segles,\ncomptats només amb la mà,\ndeixondint els dits tot d'una\ndins el Van Diemens llunyà.\n\nSi del cert la vida fuig,\nbé prou que ambdós ho sabem,\nbo i foragitant l'embolcall\nfaríem un tast a l'etern.\n\nAra però, ignorem al capdavall\nsi el temps és l'ala incerta\nd'un borinot que, cap a mi furiós,\nenvà el seu fibló no encerta.)
+
+M7  %% des nUp_pliegOS.ps ha capturat l'string provinent de la variable d'entorn
+
+mark exch
+{  %% loop general
+ 
+ {  %% loop per ficar i treure caràcters de manera que a l'stack hi deixem cadascun dels trams (strings) on s'ha fet un canvi
+  treu itreu get search
+  {
+   exch pop  %% eliminem la cadena que cerquem (treu)
+   dup length dup /araVa exch def fica itreu get dup length dup /ficaFa exch def
+   3 -1 roll add string  %% cadena on ficarem el tram anterior i la substitució que segueix
+   dup 3 -1 roll araVa exch putinterval  %% fiquem la cadena /fica que substitueix la cadena /treu
+   dup 3 -1 roll 0 exch putinterval  %% fiquem el tram anterior
+%   araVa ficaFa add /araVa exch def  %% on anirà el tram posterior a /fica
+  }
+  {
+   exit
+  }ifelse
+  exch
+ }loop
+
+ %% mentre n'hi hagi mes d'un
+ counttomark 1 gt
+ {
+
+  %% aquesta segmentació ens permet, per exemple, tenir una versió del text trencat pels retorns de carro  
+  %% array l'endreçat ideal del text: una sola pàgina i tantes línies com retorns de carro
+  itreu 48 eq  %% índex (hauria de ser el darrer de treu/fica!) de (\n) per convertir-se en ()? o ( \n)?
+  {
+   counttomark dup /tripaCdL exch def
+   copy tripaCdL array astore /strctrIdeal exch def
+  }if
+
+  counttomark /atura't exch def
+  /ici 2 def
+  {  %% loop que capgira tots els elements trobats a l'stack fins a mark
+   ici -1 roll ici 1 add /ici exch def ici atura't gt
+   {
+    exit
+   }if
+  }loop
+
+  {  %% loop empalmador de les cadenes trobades en 1 sola
+   dup length dup 3 index length add string dup 4 -1 roll
+   0 exch putinterval dup 3 -1 roll 4 -1 roll putinterval
+   counttomark 1 eq
+   {
+    exit
+   }if
+  }loop
+%(<<<)pstack quit
+
+ }if
+
+ itreu 1 add /itreu exch def
+ TREUiFICA itreu eq
+ {
+  exit
+ }if
+}loop  %% general
+
+exch pop  %% ens carreguem mark
+
+%% la cadena que ens queda a l'stack és el text corregut: han desaparegut els caràcters de canvi de linia/paràgraf \n
+%% i de moment només serveix per comptar exactament quants caràcters té el text a compondre o quan és un text d'1 sola línia
+/textCorregut exch def  %% ho deixem a l'stack?
+
+%% l'estructura inicial de composició la fem a partir de /strctrIdeal tret que sigui buida (/tripaCdL 0)
+
+[  %% l'array dins un array per poder-la ventar
+ strctrIdeal 
+%% l'altra dada que necessitem comptar és el nombre de línies en blanc (paràgrafs)
+%% aprofitant d'eliminar-ne si hi n'hi ha més d'una de seguida () ()
+ /nDlEb 0 def  %% nombre final de línies en blanc (paràgrafs)
+ /prgrf false def  %% gatell per saber si hi ha més d'un paràgraf () seguit
+ {
+  dup length 0 eq
+  {  %% ets un paràgraf?
+   nDlEb 1 add /nDlEb exch def
+   prgrf
+   {  %% si ja vens de detectar-ne un, elimina'l
+    pop
+    nDlEb 1 sub /nDlEb exch def
+   }if
+   /prgrf true def
+  }
+  {
+   /prgrf false def
+  }ifelse
+ }forall
+]
+
+/strctrIdeal exch def  %% deixem a l'stack /strctrIdeal?
+
+% nDlEb  %% deixem a l'stack el nombre de línies en blanc?
+
