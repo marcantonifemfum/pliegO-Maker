@@ -1,0 +1,310 @@
+%!
+%% Mètode de tessel·lació aleatòria, amb només 2 posicions o mòduls possibles del cairó Truchet, que jugarem amb parell/senar
+%% de manera que farem servir els operadors necessaris per activar l'upath i comprovar que, en aquesta transformació dels arcs
+%% a corbes Bézier, no es produeix el miracle de que el seu codi quedi ordenat tal i com s'observa gràficament (arcs continus)
+%% el fet que hagin estat generades en un sistema de tessel·lació modular i en un ordre que no té res a veure amb el sentit
+%% del traç de cadascun dels 2 arcs per cairó, ho condiciona tot, per exemple: aquí el generem a partir del xamfrà LL
+%% d'esquerra a dreta i de baix a dalt, però l'estratègia aleatòria de /ouera permetria altres mètodes per posicionar els
+%% cairons Truchet a l'espai
+
+%% 100{  %% podem veure què passa en una sèrie
+
+false  %% pintem o deixem l'upath a l'stack?
+/pintem exch def
+
+%% generem l'array aleatòria /ouera per a una determinada superfície x,y de cairons
+/Xous 3 def
+/Yous 3 def
+Xous Yous mul dup /maxOus exch def array /ouera exch def
+
+%% anirem omplint la /ouera (ja creada multiplicant /Xous x /Yous) a mida que anem reduïnt el valor de /maxOus per l'aleatori!
+%% si el valor aleatori hagués d'anar relacionat amb alguna dada, la posaríem al diccionari
+/dicciouera <<>> def  %% diccionari inicial de valors aleatoris que podrem anar donant de baixa amb undef
+0 1 maxOus 1 sub
+{  %% for per farcir el diccionari inicial
+ 8 string cvs dicciouera exch null put  %% clau (#) amb valor null
+}for
+
+%dicciouera {== ==} forall quit
+%% generem l'array inicial ordenada amb tots el valors
+[
+ 0 1 maxOus 1 sub
+ {  %% els convertim a literal perquè així sortiran del diccionari quan els passem a array encara que hi entrin com a string
+  8 string cvs cvn
+ }for
+] /ousXordre exch def
+
+%ousXordre (!)pstack quit
+
+%% índex per farcir l'array final /ouera
+/i 0 def
+
+{  %% loop pel farcit aleatori d' /ouera
+ realtime  % srand  %% plantem la llavor de l'aleatori
+ % rand
+ maxOus mod  %% enter entre 0 i maxOus-1
+ ousXordre exch get  %% el valor d'índex sempre hi serà (perquè anirem reduïnt maxOus)
+ dup dicciouera exch undef  %% donem de baixa el valor trobat
+ [
+  dicciouera  %% del diccionari modificat en generem de nou l'array /ousXordre
+  {
+   pop
+  }forall
+ ] /ousXordre exch def
+ ouera exch i exch put  %% per guanyar temps la farcim mantenint els enters com a strings
+ maxOus 1 sub /maxOus exch def  %% anirem reduïnt
+ i 1 add /i exch def  %% actualitzem l'índex per anar desant a /ouera
+ maxOus 0 eq  %% sortim quan maxOus valgui zero
+ {
+  exit
+ }if
+}loop  %% pel farcit aleatori d' /ouera
+
+%% assegurem que el farcit aleatori d' /ouera sumat a /cairoT és equitativament aleatori en el sentit que genera tots els dibuixos
+%% possibles, per exemple en una simple graella de 2x2 i una sèrie de 100, comprovem que els 16 dibuixos possibles hi surten
+%%ouera ==
+
+/sCala 100 def  %% (ara no s'aplica) escala del mosaic
+
+Xous /cairoX exch def  %% nombre de cairons horitzontals (+2 és el format d'ample de pàgina, en punts, final)
+Yous /cairoY exch def  %% nombre de cairons verticals (+2 és el format d'alt de pàgina, en punts, final)
+
+/araCx 0 def  %% posició x del cairó
+/araCy 0 def  %% posició y del cairó
+
+/gruixC .1 def  %% gruix de la línia del cairó Truchet
+
+/cairoT  %% mòdul (tessel·la) del mosaic dibuixat des del centre del quadrat, sense translate i adaptat o no a un stroke posterior
+{  %% atenció perquè si el dibuixessim amb Béziers directament, l'upath seria diferent
+ gruixC setlinewidth
+ [
+  {  %% 0 cairó amb arcs als xamfrans UL i LR
+   araCx .5 sub  %% X
+   araCy .5 add  %% Y
+   .5 270 0 arc
+   pintem
+   {
+    stroke
+   }if
+   araCx .5 add  %% X
+   araCy .5 sub  %% Y
+   .5 90 180 arc
+   pintem
+   {
+    stroke
+   }if
+  }
+  {  %% 1 cairó amb arcs als xamfrans LL i UR
+   araCx .5 sub  %% X
+   araCy .5 sub  %% Y
+   .5 0 90 arc
+   pintem
+   {
+    stroke
+   }if
+   araCx .5 add  %% X
+   araCy .5 add  %% Y
+   .5 180 270 arc
+   pintem
+   {
+    stroke
+   }if
+  }
+ ]
+
+ false  %% Truchet aleatori o previsible?
+ {  %% aquest és l'aleatori que demostra més variabilitat en un rang curt de cairons 2x2
+  ouera maxOus get 6 string cvs cvx exec rand add 2 mod
+  dup ==
+ }
+ {  %% previsible
+  %% 3x3 cairons que peten
+%  [ 1 0 0 0 0 1 1 0 1 ]  %% peta a (CAPelementTEnomes2Components _2_)
+ [ 0 1 1 0 0 1 0 1 0 ]  %% peta a (CAPelementTEnomes2Components _1_)
+
+  %% totes variants de 2x2 cairons
+  %% [1 0 0 1]  %% Truchet_mostra2x2_1.pdf
+  %% [0 1 1 0]  %% Truchet_mostra2x2_2.pdf
+  %% [0 0 0 0]  %% Truchet_mostra2x2_3.pdf
+  %% [1 1 1 1]  %% Truchet_mostra2x2_4.pdf
+  %% [0 1 0 0]  %% Truchet_mostra2x2_5.pdf
+  %% [0 0 1 0]  %% Truchet_mostra2x2_6.pdf
+  %% [1 0 1 0]  %% Truchet_mostra2x2_7.pdf
+  %% [0 0 1 1]  %% Truchet_mostra2x2_8.pdf
+  %% [0 1 0 1]  %% Truchet_mostra2x2_9.pdf
+  %% [1 1 0 0]  %% Truchet_mostra2x2_10.pdf
+  %% [1 0 0 0]  %% Truchet_mostra2x2_11.pdf
+  %% [1 0 1 1]  %% Truchet_mostra2x2_12.pdf
+  %% [0 0 0 1]  %% Truchet_mostra2x2_13.pdf
+  %% [1 1 0 1]  %% Truchet_mostra2x2_14.pdf
+  %% [1 1 1 0]  %% Truchet_mostra2x2_15.pdf
+  %% [0 1 1 1]  %% Truchet_mostra2x2_16.pdf
+
+  iT get
+ }ifelse
+
+ get cvx exec
+ maxOus 1 add /maxOus exch def  %% ha de córrer per l'array!
+}bind def
+
+%% format de pàgina en funció de l'escala i el nombre de repeticions amb marges del valor d'1 cairó
+<<
+  /PageSize [ cairoX 2 add cairoY 2 add]
+>> setpagedevice
+
+%% índex per orientar els Truchets previsibles d'una mostra 2x2
+/iT 0 def
+
+%% cairó de referència del primer mòdul LL
+.01 setlinewidth  %% gruix de les vores del quadrat inicial
+1 1 1 1 rectstroke
+
+1.5 1.5 translate  %% amb marges ens posem al centre del primer cairó
+
+%% aquest és l'aleatori (una sola llavor) que demostra més variabilitat en un rang curt de cairons 2x2
+realtime srand
+
+cairoY
+{  %% repeat per posicionar-se a l'inici de cada línia i comença pintant el cairó a l'angle LL del format de pàgina
+ /araCx 0 def  %% posició inicial x del cairó
+ cairoX
+ {  %% repeat que pinta els cairons en horitzontal
+  cairoT
+  araCx 1 add /araCx exch def
+  iT 1 add /iT exch def  %% índex per orientar els Truchets previsibles d'una mostra 2x2
+ }repeat  %% que pinta els cairons en horitzontal
+ araCy 1 add /araCy exch def
+}repeat  %% per posicionar-se a l'inici de cada línia
+
+
+%% showpage}repeat quit  %% podem veure què passa en una sèrie
+
+
+pintem  %% pintem o deixem l'upath a l'stack?
+{
+ showpage
+}
+{
+
+%% si mapessim les coordenades d'aquest grumulls Truchet, en un userpath, podríem fàcilment endreçar les posicicions que toquen
+%% a les 4 vores, de manera que podríem (per la petita dimensió d'aquest assaig) tancar tots els path fent un si/no dels
+%% segments que toquen a les quatre vores del cairó
+
+ %% amb false omet ucache al packedarray
+ false upath  %% deixa les instruccions vectorials del path actiu dins un packedarray (procediment) a l'stack
+
+% dup ==  %% llistem l'upath aleatori generat i en deixem una còpia a l'stack
+% stroke showpage
+
+ newpath  %% netegem
+}ifelse
+
+%%Codi estàtic d'exemple
+false
+{
+ newpath  %% netegem el path del generador de cairons amb Truchets
+
+ {  %% upath de 2x2 cairons que caldria endreçar les Bézier per tal anessin seguides i a la mateixa direcció
+  %% aquest exemple ordenat per (#) treu... deCOMordenaMalamentLesBezier_iLaDireccioTambeEsIncorrecta.pdf
+  %% el color del filet de la corba, de més fosc a més clar, ens diu amb quin ordre té ordenat el codi
+  %% demostra que per treballar amb paths continuats: ni l'ordre ni el sentit de les Béziers és el correcte
+  %% doncs treballa seguint l'ordre d'escombrat dels cairons: del xamfrà LL d'esquerra a dreta i de baix a dalt
+
+%%Què caldria fer per ordenar les Béziers d'un mateix path dins un upath?
+%1 canviar tots els 'lineto' per 'moveto'
+%2 atrapar les 6 coordenades de cada 'curveto' (amb les 2 coor del seu 'moveto' inicial) en arrays de 2 en 2
+%3 exemple... [ [nox1 noy1] [nax1 nay1] [nax2 nay2] [nox2 noy2] ] ...on [nox1 noy1] i [nox2 noy2] han de quadrar
+%% capiculats en corbes diferents, llavors, cal identificar i ordenar aquestes corbes senceres per desar-les
+%% cal veure si es pot simplifcar el codi dels 'curveto' traient coordenades amb 'rcurveto' ?
+
+  %% marquem amb %%+# l'ordre continuu de les Béziers i amb %%+! si les coordenades nodes/nanses han estat capiculades
+  %% caldria experimentar què passa si aquest path el fem servir com a línia de base d'escriptura amb els enflataGlifs#.ps
+
+%%+1
+%% (1)
+  0 setgray
+  -0.5 0.0  %% node
+  moveto  %% autèntic
+  -0.224218756 0.0  %% nansa
+  0.0 0.224218756  %% nansa
+  0.0 0.5  %% node
+  curveto
+  stroke
+
+%%+2
+%%+!
+%% (6)
+  .3 setgray
+  0.0 0.5  %% node
+  moveto  %% l'operador era fals ...perquè el canvia per lineto?
+  0.0 0.775781274  %% nansa
+  0.224218756 1.0  %% nansa
+  0.5 1.0  %% node
+  curveto
+  stroke
+
+%%+3
+%%+!
+%% (7)
+  .6 setgray
+  0.5 1.0  %% node
+  moveto  %% l'operador era fals ...perquè el canvia per lineto?
+  0.775781274 1.0  %% nansa
+  1.0 0.775781274  %% nansa
+  1.0 0.5  %% node
+  curveto
+  stroke
+
+%%+4
+%% (4)
+  .9 setgray
+  1.0 0.5  %% node
+  moveto  %% l'operador era fals ...perquè el canvia per lineto?
+  1.0 0.224218756  %% nansa
+  1.22421873 0.0  %% nansa
+  1.5 0.0  %% node
+  curveto
+  stroke
+
+  false{
+%% (2)
+  0.5 0.0  %% node
+  moveto  %% l'operador era fals ...perquè el canvia per lineto?
+  0.224218756 0.0  %% nansa
+  0.0 -0.224218756  %% nansa
+  0.0 -0.5  %% node
+  curveto
+
+%% (3)
+  1.0 -0.5  %% node
+  moveto  %% l'operador era fals ...perquè el canvia per lineto?
+  1.0 -0.224218756  %% nansa
+  0.775781274 0.0  %% nansa
+  0.5 0.0  %% node
+  curveto
+  }if
+
+  false{
+%% (5)
+  -0.5 1.0  %% node
+  moveto  %% l'operador era fals ...perquè el canvia per lineto?
+  -0.224218756 1.0  %% nansa
+  0.0 1.22421873  %% nansa
+  0.0 1.5  %% node
+  curveto
+  }if
+
+  false{
+%% (8)
+  1.0 1.5  %% node
+  moveto  %% l'operador era fals ...perquè el canvia per lineto?
+  1.0 1.22421873  %% nansa
+  1.22421873 1.0  %% nansa
+  1.5 1.0  %% node
+  curveto
+  }if
+ } cvx exec
+
+ showpage
+}if
+

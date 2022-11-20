@@ -239,17 +239,18 @@ araBlligades dup length array copy /farcitDtruchets exch def
     farcitDtruchets exch get  %% l'array farcidora
     dup length 1 sub  %% nombre d'elements de l'array farcidora
 %     dup araVa exch sub
-     1 sub dup 1 eq  %% si ni traiem 1 (doncs ja en té 1 l'array receptora) i dóna 1 és que...
-     {  %% ...no hem d'ampliar l'array
-      pop
-     }
-     {  %% hem d'ampliar l'array
+     1 sub
+% dup 1 eq  %% si ni traiem 1 (doncs ja en té 1 l'array receptora) i dóna 1 és que...
+%     {  %% ...no hem d'ampliar l'array
+%      pop
+%     }
+%     {  %% hem d'ampliar l'array
       %1 add
       %% aquí tenim el nombre d'elements a ampliar
       4 -1 roll dup length
       3 -1 roll add array dup 3 -1 roll 0 exch putinterval  %% array receptora ampliada
       exch dup length 1 sub
-     }ifelse
+%     }ifelse
      0 exch getinterval  %% prenem tots els vectorials del segon índex
      1 index 3 1 roll  %% dupliquem l'array receptora i la tornem a deixar a lloc
      araVa 1 sub exch putinterval  %% enganxem els 2 vectorials
@@ -291,18 +292,18 @@ dup null eq{iF(NULL!5)pstack quit}if
     dup length 1 sub
 % dup araVa exch sub
 1 sub
- dup 1 eq  %% si ni traiem 1 (doncs ja en té 1 l'array receptora) i dóna 1 és que...
-    {  %% no hem d'ampliar l'array
-     pop
-    }
-    {  %% hem d'ampliar l'array
+% dup 1 eq  %% si ni traiem 1 (doncs ja en té 1 l'array receptora) i dóna 1 és que...
+%    {  %% no hem d'ampliar l'array
+%     pop
+%    }
+%    {  %% hem d'ampliar l'array
     % 1 add
      %% aquí tenim el nombre d'elements a ampliar
      3 -1 roll dup length
      3 -1 roll add array dup 3 -1 roll 0 exch putinterval  %% array receptora ampliada
 %     3 1 roll
      exch dup length 1 sub
-    }ifelse
+%    }ifelse
 %%EP! codi d'ampliació i desat és erroni! (també s'hauria de retocar el d' ENLLAC3) el bo és el d' ENLLAC1
     0 exch getinterval  %% prenem tots els vectorials del segon índex
     1 index 3 1 roll  %% dupliquem l'array receptora i la tornem a deixar a lloc
@@ -341,23 +342,27 @@ dup null eq{iF(NULL!6)pstack quit}if
 %%TEST
 dup null eq{iF(NULL!7)pstack quit}if
 
+%iF 13 eq{farcitDtruchets 5 get (OOOOO)pstack quit}if
+
      dup length 1 sub  %% nombre d'elements de l'array farcidora
 % dup araVa exch sub
 1 sub 
- dup 1 eq  %% si ni traiem 1 (doncs ja en té 1 l'array receptora) i dóna 1 és que...
-     {  %% no hem d'ampliar l'array
+
+% dup 1 eq  %% si ni traiem 1 (doncs ja en té 1 l'array receptora) i dóna 1 és que...
+%     {  %% no hem d'ampliar l'array
 %%EP! aquí ens hem polit un índex que necessitem per %%+ quan l'array no s'amplia
-      pop
-     }
-     {  %% hem d'ampliar l'array
+%      pop
+%(a)==
+%     }
+%     {  %% hem d'ampliar l'array
       %% 1 add
       %% aquí tenim el nombre d'elements a ampliar
       3 -1 roll dup length
       3 -1 roll add array dup 3 -1 roll 0 exch putinterval  %% array receptora ampliada
       exch dup length 1 sub
-     }ifelse
+%(b)==
+%     }ifelse
 
-iF 13 eq{(OOOOO)pstack quit}if
 %%+ manca un índex (OJU que aquest error pot existir en alguna altra part de l'algorisme!)
 
      0 exch getinterval  %% prenem tots els vectorials del primer índex
@@ -492,7 +497,7 @@ araBlligades dup length array copy /farcitDtruchets exch def
 (a capgirar 2b)==
         }
         {  %% tenim pendent de resoldre quan tots dos vectorials tenen més de 2 elements
-(CAPelementTEnomes2Components!)pstack quit
+(CAPelementTEnomes2Components _2_)pstack quit
         }ifelse
        }ifelse
       }ifelse
@@ -558,7 +563,7 @@ araBlligades dup length array copy /farcitDtruchets exch def
 (a capgirar 2a)==
          }
          {  %% tenim pendent de resoldre quan tots dos vectorials tenen més de 2 elements
-(CAPelementTEnomes2Components!)pstack quit
+(CAPelementTEnomes2Components _1_)pstack quit
          }ifelse
         }ifelse
        }ifelse

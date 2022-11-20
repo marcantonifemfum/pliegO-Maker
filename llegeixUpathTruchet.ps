@@ -1,0 +1,158 @@
+%% llegeix un upath generat des de l'algorisme cairoTruchet3_upath.ps
+%% gestiona: setbbox, moveto, lineto, curveto
+
+%% upath d'exemple
+%% {-0.5 -0.5 1.5 1.5 setbbox 0.0 -0.5 moveto 0.0 -0.224218756 -0.224218756 0.0 -0.5 0.0 curveto 0.0 0.5 lineto 0.0 0.224218756 0.224218756 0.0 0.5 0.0 curveto 1.0 -0.5 lineto 1.0 -0.224218756 0.775781274 0.0 0.5 0.0 curveto 1.0 0.5 lineto 1.0 0.224218756 1.22421873 0.0 1.5 0.0 curveto 0.0 0.5 lineto 0.0 0.775781274 -0.224218756 1.0 -0.5 1.0 curveto 0.0 1.5 lineto 0.0 1.22421873 0.224218756 1.0 0.5 1.0 curveto 1.0 0.5 lineto 1.0 0.775781274 0.775781274 1.0 0.5 1.0 curveto 1.0 1.5 lineto 1.0 1.22421873 1.22421873 1.0 1.5 1.0 curveto}
+
+dup
+
+/iTruchets 0 def
+{
+ /curveto eq
+ {
+  iTruchets 1 add /iTruchets exch def
+ }if
+}forall
+iTruchets array /farcitDtruchets exch def
+
+/iTruchets 0 def
+{  %% forall
+ dup
+ /setbbox eq
+ {
+  pop pop pop pop pop
+ }
+ {
+  dup
+  /moveto eq
+  {
+   pop 2 array astore mark exch
+   null null null ] /araCurveto exch def
+  }
+  {
+   dup
+   /curveto eq
+   {
+    pop
+    2 array astore araCurveto exch 3 exch put
+    2 array astore araCurveto exch 2 exch put
+    2 array astore araCurveto exch 1 exch put
+    farcitDtruchets iTruchets araCurveto put
+   iTruchets 1 add /iTruchets exch def
+   }
+   {
+    dup
+    /lineto eq
+    {
+     pop 2 array astore mark exch
+     null null null ] /araCurveto exch def
+    }
+    {
+%(!)==
+    }ifelse
+   }ifelse
+  }ifelse
+ }ifelse
+}forall
+
+%% tornem a desar amb el flag de vector obert
+[
+ farcitDtruchets
+ {
+  false 2 array astore
+ }forall
+] dup /farcitDtruchets exch def
+
+%dup ==
+%% (noesquicarnnipeix)pstack
+
+%%Codi desactivat
+false{
+
+%% amb un resultat com el de l'exemple, caldria activar un algorisme que agrupés, per ordre, les Bézier que formen 1 sol traç
+%% cal comparar els cap i cues de tots els arrays, de manera que si les coordenades coincideixen s'haurien d'ordenar
+%% de manera que la cua d'una Bézier coincideixi amb el cap de la següent Bézier
+%% si el cas és cap i cap o cua i cua, coincidents, cal invertir les coordenades d'aquests dos nodes i també de les 2 nanses
+
+[  %% cadascun del arrays és una Bézier (un dels 2 arcs d'un cairó)
+ [[0.0 -0.5] [0.0 -0.224218756] [-0.224218756 0.0] [-0.5 0.0]]  %% és un arc sol
+
+ [[0.0 0.5] [0.0 0.224218756] [0.224218756 0.0] [0.5 0.0]]  %% trena A
+
+ [[1.0 -0.5] [1.0 -0.224218756] [0.775781274 0.0] [0.5 0.0]]  %% trena A
+
+ [[1.0 0.5] [1.0 0.224218756] [1.22421873 0.0] [1.5 0.0]]  %% trena B
+
+ [[0.0 0.5] [0.0 0.775781274] [-0.224218756 1.0] [-0.5 1.0]]  %% trena A
+
+ [[0.0 1.5] [0.0 1.22421873] [0.224218756 1.0] [0.5 1.0]]  %% trena B
+
+ [[1.0 0.5] [1.0 0.775781274] [0.775781274 1.0] [0.5 1.0]]  %% trena B
+
+ [[1.0 1.5] [1.0 1.22421873] [1.22421873 1.0] [1.5 1.0]]  %% trena B
+]
+
+/truchetDesgavellat exch def
+
+%% afegirem un array per cada sèrie de Béziers lligades (arcs trenats)
+%% de manera que, les corbes que ho necessitin, ja tindran les coordenades creuades en node i nanses
+/trenatsTruchet [] def
+
+truchetDesgavellat length 1 sub /iDesgavell exch def  %% índex del nombre d'arcs de l'upath a trenar
+
+%% pensem una estratègia per mitjà del comptador de combinatòries via array selespensatotes3.ps
+%% treballaríem directament amb /truchetDesgavellat per comprovar les coincidències
+%% per exemple si tenim una combinatòria... [1 1] ...voldrà dir que mirarem si el cap i la cua de l'array d'índex 1
+%% coincideixen les coordenades, llavors seria una Bézier tancada en sí mateixa (aquí servirà a partir de 2 o més)
+%% si tenim una combinatòria... [3 2] ...voldrà dir que mirarem si el cap de l'array d'íbdex 3 coincideix amb la cua de
+%% l'array d'índex 2, o sigui que el primer element de l'array de combinació (índex 0) són caps i el segon (índex 1) són cues
+%% tots els enllaços trobats en el primer pentinat de la combinatòria, es desaran a /trenatsTruchet i a partir d'aquí donarem
+%% nous valors a selespensatotes3.ps per fer una nova pentinada fins que n'haguem fet una on no hi hagi més coincidències
+%% quan les coincidències siguin de valors del mateix índex, dos 0 o dos 1, obligarà a capicular nodes/nanses d'un (el més nou)
+%% quan les coincidències siguin de valors d'índex diferents 0 i 1 o viceversa, es podran trenar diectament
+%% el trenat significa que posarem dins un mateix paquet les array successives del Truchet que pertanyi a una mateixa figura
+
+{  %% loop
+
+ 0 1 iDesgavell
+ {  %% for
+  dup /nArc exch def truchetDesgavellat exch get
+  dup null eq
+  {  %% els arcs que ja han estat trenats passen a null
+   pop
+  }
+  {
+%%CAP
+   dup 0 get  %% array de coordenades del node cap
+   %% comparem si quadra en algun dels caps de la resta
+   /aComp exch def
+
+   %% cap enrera
+   nArc 0 ne  %% tret que siguem al cap
+   {
+    nArc 1 sub -1 0
+    {  %% for
+    }for
+   }if
+
+   %% cap endavant
+   nArc iDesgavell ne  %% tret que siguem a la cua
+   {
+    nArc 1 add 1 iDesgavell
+    {  %% for
+    }for
+   }if
+
+%%CUA
+
+  }ifelse
+
+ }for
+
+(1 volta)pstack quit
+
+}loop
+
+%%Codi desactivat
+}if
+
