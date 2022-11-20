@@ -1,0 +1,634 @@
+%!
+%% Eina d'anàlisi d'un codi PS de gràfics vectorials (curveto, lineto, moveto, arc, etc) per tal d'enllaçar tots els segments
+%% que pertanyin a un mateix traç, seguits i en un determinat sentit. Això és, posar ordre i sentit al codi vectorial.
+%% Per exemple, un cercle pot estar fet per dues corbes Bézier que, malgrat es vegin com una circumferència perfecta, els seus
+%% dos traços vagin en sentits contraris, o també, dos cercles que el codi dels seus 4 traços no estigui escrit de forma ordenada
+
+%% D'entrada, posar ordre i sentit al codi vectorial ho aplicarem a la creació de línies de base per compondre un text, doncs
+%% l'ordre i el sentit del vector determinen l'ordre i el sentit dels glifs que s'hi componen (veure algorismes enflataGlifs#.ps)
+
+%% una altra aplicació de l'ordre i sentit seria per poder tancar les figures i omplir-les, jugant amb els mètodes fill/eofill
+%% amb l'even-odd rule o la non-zero winding rule
+
+%% Aquesta versió treballa el cas concret dels vectorials generats per cairoTruchet3_upath.ps, un algorisme que genera cairons
+%% Truchet dins una retícula quadrada i aleatòria, escrivint un codi vectorial sense ordre ni sentit, però coherent visualment
+
+%% Cridem cairoTruchet3_upath.ps per generar l'upath a l'stack d'un mosaic Truchet
+(cairoTruchet3_upath.ps) (r) file cvx exec
+
+
+%% Cridem llegeixUpathTruchet.ps per llegir l'upath deixat a l'stack per cairoTruchet3_upath.ps i polir el codi per tal quedin
+%% només les 8 coordenades de cada Bézier (x,y de 2 nodes i 2 nanses) a la variable /farcitDtruchets
+(llegeixUpathTruchet.ps) (r) file cvx exec
+dup ==  %% el mostre per anàlisi al prompt
+length /beziersDetectades exch def
+
+
+%% Cridem selespensatotes3_Truchet.ps per tal que, en base al nombre de Béziers que hi hagi a /truchetDesgavellat, ens faci
+%% el mapa de combinatòries possibles dels índex de cada Bézier per les dues posicions (cap i cua). Aquest algorisme també
+%% hauria de comparar les coordenades i treure com a resultat una array final amb els vectorials enllaçats en ordre i sentit
+(selespensatotes3_Truchet.ps) (r) file cvx exec
+
+%% en base a /slpt hauríem d'engegar les comparatives d'arrays de coordendes x,y del cap i la cua de /farcitDtruchets 
+
+/gatell true def  %% gatell interruptor per activar un o altre magatzem de Béziers lligades
+/nusos 0 def  %% nombre d'enllaços fets en el loop anterior (Béziers lligades)
+/iL 0 def  %% comptador de voltes de loop
+
+%% real (true) o amb l'exemple (false)?
+true
+{
+ farcitDtruchets
+}
+{
+%%Si avaluem l'algorisme amb les 16 possibles combinacions d'una superfície de 2x2 cairons ja el podrem donar per bo
+%% amb un resultat com el de l'exemple, caldria activar un algorisme que agrupés, per ordre, les Bézier que formen 1 sol traç
+%% cal comparar els cap i cues de tots els arrays, de manera que si les coordenades coincideixen s'haurien d'ordenar
+%% de manera que la cua d'una Bézier coincideixi amb el cap de la següent Bézier
+%% si el cas és cap i cap o cua i cua, coincidents, cal invertir les coordenades d'aquests dos nodes i també de les 2 nanses
+
+% [  %% cadascun del arrays és una Bézier (un dels 2 arcs d'un cairó)
+%  [[0.0 -0.5] [0.0 -0.224218756] [-0.224218756 0.0] [-0.5 0.0]]  %% 0 és un arc sol
+%  [[0.0 0.5] [0.0 0.224218756] [0.224218756 0.0] [0.5 0.0]]      %% 1 trena A
+%  [[1.0 -0.5] [1.0 -0.224218756] [0.775781274 0.0] [0.5 0.0]]    %% 2 trena A
+%  [[1.0 0.5] [1.0 0.224218756] [1.22421873 0.0] [1.5 0.0]]       %% 3 trena B
+%  [[0.0 0.5] [0.0 0.775781274] [-0.224218756 1.0] [-0.5 1.0]]    %% 4 trena A
+%  [[0.0 1.5] [0.0 1.22421873] [0.224218756 1.0] [0.5 1.0]]       %% 5 trena B
+%  [[1.0 0.5] [1.0 0.775781274] [0.775781274 1.0] [0.5 1.0]]      %% 6 trena B
+%  [[1.0 1.5] [1.0 1.22421873] [1.22421873 1.0] [1.5 1.0]]        %% 7 trena B
+% ]
+
+[  %% upath polit del Truchet_mostra2x2_1.pdf (és l'únic on un dels vectorials 2x2 es tanca)
+ [  %% 0
+   [[0.0 -0.5] [0.0 -0.224218756] [-0.224218756 0.0] [-0.5 0.0]] false  %% 0 és un arc sol
+ ]
+ [  %% 1
+  [[0.0 0.5] [0.0 0.224218756] [0.224218756 0.0] [0.5 0.0]] false  %% 1 trena A
+ ]
+ [  %% 2
+  [[0.5 0.0] [0.775781274 0.0] [1.0 0.224218756] [1.0 0.5]] false  %% 2 trena A
+ ]
+ [  %% 3
+   [[1.5 0.0] [1.22421873 0.0] [1.0 -0.224218756] [1.0 -0.5]] false  %% 3 sol
+ ]
+ [  %% 4
+  [[-0.5 1.0] [-0.224218756 1.0] [0.0 1.22421873] [0.0 1.5]] false  %% 4 sol
+ ]
+ [  %% 5
+   [[0.5 1.0] [0.224218756 1.0] [0.0 0.775781274] [0.0 0.5]] false  %% 5 trena A
+ ]
+ [  %% 6
+  [[1.0 0.5] [1.0 0.775781274] [0.775781274 1.0] [0.5 1.0]] false  %% 6 trena A
+ ]
+ [  %% 7
+  [[1.0 1.5] [1.0 1.22421873] [1.22421873 1.0] [1.5 1.0]] false  %% 7 sol
+ ]
+]
+
+}ifelse
+
+/araBlligades exch def  %% buffer de Béziers lligades a cada forall
+
+
+/ComparArrays
+{ %% per saber si dues arrays són iguals hem de comparar cadascun dels seus elements (tret que no siguin d'altres arrays, clar) 
+ /aComp exch def
+ /iDeNTiQueS true def  %% gatell x saber si són idèntiques
+
+%% ens estalviem el comparar la mida perquè aquí sempre tindran 2 elements
+%% dup length aComp length eq
+%%  {  %% si no tenen la mateixa quantitat d'elements segur que no són iguals...
+
+ /iaComp 0 def
+ {  %% forall
+  aComp iaComp get eq
+  {
+   iaComp 1 add /iaComp exch def
+  }
+  {
+   /iDeNTiQueS false def exit
+  }ifelse
+ }forall
+
+%%  }
+%%  {
+%%   /iDeNTiQueS false def pop
+%%  } ifelse
+
+ iDeNTiQueS
+}bind def
+
+%% capgira tots els elements de l'stack
+/capGira
+{
+ /tWist 1 def  %% fa rodar tots els elements de l'stack
+ counttomark {tWist -1 roll tWist 1 add /tWist exch def} repeat
+}bind def
+
+%% a /Blligades_#
+%% l'índex de les Béziers lligades a un altre índex quedaran substituits per un null
+%% l'índex de cadascuna de les /Blligades_# hi haurà [ [] true ] si es tanca en si mateixa i [ [] false ] si és oberta
+
+{  %% loop lligador de Béziers, s'atura quan 2 voltes seguides donen el mateix resultat d'enllaços fets
+ /aranusos 0 def  %% nombre d'enllaços fets en el loop present (Béziers lligades)
+
+ gatell
+ {
+  araBlligades dup length array copy
+  /Blligades_1 exch def
+  /Blligades_1 /araBuffer exch def
+ }
+ {
+  araBlligades dup length array copy
+  /Blligades_2 exch def
+  /Blligades_2 /araBuffer exch def
+ }ifelse
+
+ %% d'on agafarem les Béziers a comparar
+ araBuffer cvx exec /farcitDtruchets exch def
+
+ /iF 0 def  %% índex comptador de voltes de forall
+
+{  %% stopped
+
+ slpt
+ {  %% forall per tota la combinatòria d'arrays
+  %% per a cadascun dels arrays combinatoris:
+  dup
+  %% 1 comparem el cap del primer índex i la cua del segon índex de /farcitDtruchets
+  cvx exec farcitDtruchets exch get
+
+%%NULLd
+dup null eq
+{  %% anem directes a una altra volta de forall
+ pop pop pop
+(NULLd)==
+}
+{
+
+%%TEST el length ens dirà on anar a buscar amb seguretat el cap i la cua
+  dup length  %(<<<<0)pstack quit
+  2 sub get  %% sempre treu la darrera array en cas que n'hi hagi més d'una
+  3 get  %% la cua de la darrera array del segon índex
+  exch farcitDtruchets exch get
+
+%%NULLc
+dup null eq
+{  %% anem directes a una altra volta de forall
+ pop pop pop
+(NULLc)==
+}
+{
+
+  0 get 0 get  %% el cap de la primera array del primer índex
+  ComparArrays
+  1 index
+  %% 2 comparem la cua del primer índex i el cap del segon índex de /farcitDtruchets
+  cvx exec farcitDtruchets exch get
+
+%%TEST
+dup null eq{iF(NULL!2)pstack quit}if
+
+  0 get 0 get  %% el cap de la primera array del segon índex
+  exch farcitDtruchets exch get
+
+%%TEST
+dup null eq{iF(NULL!3)pstack quit}if
+
+%%TEST el length ens dirà on anar a buscar amb seguretat el cap i la cua
+  dup length  %(<<<<3)pstack quit
+  2 sub get  %% sempre treu la darrera array en cas que n'hi hagi més d'una
+  3 get  %% la cua de la darrera array del primer índex
+  ComparArrays
+
+  2 copy and
+  {  %% només si els dos són vertaders el vectorial es tanca
+   pop pop
+   cvx exec 2 copy
+   %% ens cal saber si comparem el mateix índex o són 2 índex diferents (aixó ens obliga a enllaçar o no)
+   eq
+   {  %% és el mateix índex
+    %% llavors aquí només canviem el darrer element de l'array, el booleà a true
+    %% primer caldrà comprovar que no s'hagi fet abans i sigui la darrera volta de loop rutinària
+    farcitDtruchets exch get dup dup length 1 sub get
+    {  %% ja ha estat detectat com a vectorial que es tanca en sí mateix i desat a true
+     pop pop
+    }
+    {  %% li afegim a la cua el gatell true de que és un vectorial que es tanca a sí mateix i desem
+     dup dup length 1 sub true put araBlligades 3 1 roll put 
+%% a cada actualització d' /araBlligades actualitzem també /farcitDtruchets
+araBlligades dup length array copy /farcitDtruchets exch def
+
+%%ENLLAÇ0
+     aranusos 1 add /aranusos exch def
+(ENLLAC0)==
+    }ifelse
+   }
+   {  %% són índex diferents
+    %% llavors, el segon índex es desa a null
+    dup araBlligades exch null put
+
+    %% aquí un test de nulls no té sentit?
+    farcitDtruchets exch get
+%    exch farcitDtruchets exch get
+
+    %% s'enllaça a la cua del primer índex dins la seva array
+    dup length 1 sub 0 exch getinterval  %% prenem tots els vectorials del segon índex
+    dup length 1 add dup /araVa exch def array dup 3 -1 roll 0 exch putinterval  %% ampliem d'1 l'array per la cua
+    exch dup  %% el primer índex a l'stack
+    farcitDtruchets exch get  %% l'array farcidora
+    dup length 1 sub  %% nombre d'elements de l'array farcidora
+%     dup araVa exch sub
+     1 sub dup 1 eq  %% si ni traiem 1 (doncs ja en té 1 l'array receptora) i dóna 1 és que...
+     {  %% ...no hem d'ampliar l'array
+      pop
+     }
+     {  %% hem d'ampliar l'array
+      %1 add
+      %% aquí tenim el nombre d'elements a ampliar
+      4 -1 roll dup length
+      3 -1 roll add array dup 3 -1 roll 0 exch putinterval  %% array receptora ampliada
+      exch dup length 1 sub
+     }ifelse
+     0 exch getinterval  %% prenem tots els vectorials del segon índex
+     1 index 3 1 roll  %% dupliquem l'array receptora i la tornem a deixar a lloc
+     araVa 1 sub exch putinterval  %% enganxem els 2 vectorials
+     dup length dup /araVa exch def 1 add array dup dup  %% eixamplant l'array
+     4 -1 roll 0 exch putinterval araVa true put  %% vector tancat!
+     %% i es desa al primer índex com a vector tancat
+     araBlligades 3 1 roll put
+%% a cada actualització d' /araBlligades actualitzem també /farcitDtruchets
+araBlligades dup length array copy /farcitDtruchets exch def
+(ENLLAC1)==
+
+%%ENLLAÇ1
+    aranusos 1 add /aranusos exch def
+   }ifelse
+  }
+  {
+(  %% mirem si un dels dos es vertader)==
+   {  %% el segon index es vertader
+(el segon index es vertader)==
+
+    pop
+    %% llavors, el segon índex es desa a null
+    dup cvx exec 2 copy araBlligades exch null put
+    %% el segon índex s'enllaça a la cua del primer índex dins la seva array
+
+    farcitDtruchets exch get
+
+%%TEST
+dup null eq{iF(NULL!4)pstack quit}if
+
+    dup length 1 sub 0 exch getinterval  %% prenem tots els vectorials del primer índex
+    dup length 1 add dup /araVa exch def array dup 3 -1 roll 0 exch putinterval  %% ampliem d'1 l'array per la cua
+
+    exch farcitDtruchets exch get
+
+%%TEST
+dup null eq{iF(NULL!5)pstack quit}if
+
+    dup length 1 sub
+% dup araVa exch sub
+1 sub
+ dup 1 eq  %% si ni traiem 1 (doncs ja en té 1 l'array receptora) i dóna 1 és que...
+    {  %% no hem d'ampliar l'array
+     pop
+    }
+    {  %% hem d'ampliar l'array
+    % 1 add
+     %% aquí tenim el nombre d'elements a ampliar
+     3 -1 roll dup length
+     3 -1 roll add array dup 3 -1 roll 0 exch putinterval  %% array receptora ampliada
+%     3 1 roll
+     exch dup length 1 sub
+    }ifelse
+%%EP! codi d'ampliació i desat és erroni! (també s'hauria de retocar el d' ENLLAC3) el bo és el d' ENLLAC1
+    0 exch getinterval  %% prenem tots els vectorials del segon índex
+    1 index 3 1 roll  %% dupliquem l'array receptora i la tornem a deixar a lloc
+    araVa 1 sub exch putinterval  %% enganxem els 2 vectorials
+    dup length dup /araVa exch def 1 add array dup dup  %% eixamplant l'array
+    4 -1 roll 0 exch putinterval araVa false put
+    %% i es desa al primer índex com a vector obert
+    araBlligades 3 1 roll put
+%% a cada actualització d' /araBlligades actualitzem també /farcitDtruchets
+araBlligades dup length array copy /farcitDtruchets exch def
+%%ENLLAÇ2
+    aranusos 1 add /aranusos exch def
+(ENLLAC2)==
+
+   }
+   {
+    {  %% el primer index es vertader
+%%A veure
+%cvx exec farcitDtruchets exch get exch farcitDtruchets exch get (!)pstack quit
+
+     %% llavors, el primer índex es desa a null
+     dup cvx exec 2 copy exch araBlligades exch null put
+
+     %% enllacem el cap del primer índex a la cua de l'array del segon índex
+     %% pesquem el segon índex
+     farcitDtruchets exch get
+
+%%TEST
+dup null eq{iF(NULL!6)pstack quit}if
+
+     % s'enllaça a la cua del primer índex dins la seva array
+     dup length 1 sub 0 exch getinterval  %% prenem tots els vectorials del segon índex
+     dup length 1 add dup /araVa exch def array dup 3 -1 roll 0 exch putinterval  %% ampliem d'1 l'array per la cua
+     3 -1 roll farcitDtruchets exch get
+
+%%TEST
+dup null eq{iF(NULL!7)pstack quit}if
+
+     dup length 1 sub  %% nombre d'elements de l'array farcidora
+% dup araVa exch sub
+1 sub 
+ dup 1 eq  %% si ni traiem 1 (doncs ja en té 1 l'array receptora) i dóna 1 és que...
+     {  %% no hem d'ampliar l'array
+%%EP! aquí ens hem polit un índex que necessitem per %%+ quan l'array no s'amplia
+      pop
+     }
+     {  %% hem d'ampliar l'array
+      %% 1 add
+      %% aquí tenim el nombre d'elements a ampliar
+      3 -1 roll dup length
+      3 -1 roll add array dup 3 -1 roll 0 exch putinterval  %% array receptora ampliada
+      exch dup length 1 sub
+     }ifelse
+
+iF 13 eq{(OOOOO)pstack quit}if
+%%+ manca un índex (OJU que aquest error pot existir en alguna altra part de l'algorisme!)
+
+     0 exch getinterval  %% prenem tots els vectorials del primer índex
+     1 index 3 1 roll  %% dupliquem l'array receptora i la tornem a deixar a lloc
+     araVa 1 sub exch putinterval  %% enganxem els 2 vectorials
+     dup length dup /araVa exch def 1 add array dup dup  %% eixamplant l'array
+     4 -1 roll 0 exch putinterval araVa false put
+     %% i es desa al primer índex com a vector obert
+     araBlligades 3 1 roll put
+%% a cada actualització d' /araBlligades actualitzem també /farcitDtruchets
+araBlligades dup length array copy /farcitDtruchets exch def
+%%ENLLAÇ3
+     aranusos 1 add /aranusos exch def
+(ENLLAC3)==
+    }if
+   }ifelse
+
+   %% 3 comparem el cap del primer índex i el cap del segon índex de /farcitDtruchets
+   cvx exec 2 copy
+   farcitDtruchets exch get
+
+%%NULLa
+dup null eq
+{  %% anem directes a una altra volta de forall
+ pop pop pop pop
+(NULLa)==
+}
+{
+   0 get 0 get  %% el cap de la primera array del segon índex
+   exch farcitDtruchets exch get
+
+%%NULLb
+   dup null eq
+   {  %% anem directes a una altra volta de forall
+    pop pop pop pop
+(NULLb)==
+   }
+   {
+
+    0 get 0 get  %% el cap del primer índex
+    ComparArrays
+
+    %% 4 comparem la cua del primer índex i la cua del segon índex de /farcitDtruchets
+    2 index 2 index farcitDtruchets exch get
+
+%%TEST
+dup null eq{iF(NULL!8)pstack quit}if
+
+%%TEST el length ens dirà on anar a buscar amb seguretat el cap i la cua
+    dup length  %(<<<<7)pstack quit
+    2 sub get  %% sempre treu la darrera array en cas que n'hi hagi més d'una
+    3 get  %% la cua de la darrera array del segon índex
+    exch farcitDtruchets exch get
+
+%%TEST
+dup null eq{iF(NULL!9)pstack quit}if
+
+%%TEST el length ens dirà on anar a buscar amb seguretat el cap i la cua
+    dup length  %(<<<<8)pstack quit
+    2 sub get  %% sempre treu la darrera array en cas que n'hi hagi més d'una
+    3 get  %% la cua de la darrera array del primer índex
+    ComparArrays
+    2 copy and
+    {  %% si tots dos són vertaders, llavors vol dir que comparem un sol vectorial perquè és el mateix índex!
+(comparem un sol vectorial)==
+     %% doncs la cua del primer índex i la cua del segon índex són iguals
+     %% i el cap del primer índex i el cap del segon index també són iguals
+     pop pop farcitDtruchets exch get
+
+%%TEST
+dup null eq{iF(NULL!10)pstack quit}if
+
+     araBlligades 3 1 roll put  %% desat
+%% a cada actualització d' /araBlligades actualitzem també /farcitDtruchets
+araBlligades dup length array copy /farcitDtruchets exch def
+    }
+    {  %% només un dels dos o cap és vertader
+     {  %% la cua del primer índex i la cua del segon índex son iguals
+      pop 2 copy  %% eliminem el boolè i dupliquem els índex
+      %% aquí haurem d'invertir les coordenades abans d'empalmar
+      farcitDtruchets exch get dup length 2 eq  %% cal saber si el vectorial del segon índex té nomes 2 elements
+      3 -1 roll farcitDtruchets exch get dup length 2 eq  %% cal saber si el vectorial del primer índex té només 2 elements
+      3 -1 roll 2 copy and
+      {  %% tots dos tenen 2 elements, llavors serà indiferent quin en capgirem
+       pop pop
+       0 get mark exch aload pop capGira 4 array astore exch pop  %% capgirem el vectorial del primer índex
+       %% llavors, el segon índex es desa a null
+       3 -1 roll araBlligades exch null put
+       exch  %% s'enllaça a la cua del primer índex dins la seva array
+       dup length 1 sub 0 exch getinterval  %% prenem tots els vectorials del segon índex
+       dup length 2 add dup /araVa exch def array dup 3 -1 roll 0 exch putinterval  %% ampliem de 2 l'array per la cua
+       dup 3 -1 roll 1 exch put  %% enganxem els 2 vectorials
+       dup 2 false put  %% vector obert
+       araBlligades 3 1 roll put  %% i es desa al primer índex
+       %% a cada actualització d' /araBlligades actualitzem també /farcitDtruchets
+       araBlligades dup length array copy /farcitDtruchets exch def
+(indiferent)==
+      }
+      {  %% si només és un qui té dos elements, serà el que capgirarem
+       {
+        pop
+        %% llavors, el segon índex es desa a null
+        3 -1 roll araBlligades exch null put
+        exch 0 get mark exch aload pop capGira 4 array astore exch pop  %% prenem i capgirem el vectorial del primer índex
+        1 index length /ampliemA exch def  %% nombre d'elements a ampliar a l'array receptora
+        1 array astore  %% a punt d'ampliar
+        dup length ampliemA add dup /araVa exch def array dup 4 -1 roll
+        0 ampliemA 1 sub getinterval  %% prenem els vectorials a incrustar
+        0 exch putinterval  %% primer el vectorial del cap
+        dup 3 -1 roll ampliemA 1 sub exch putinterval  %% enganxem el vectorial de la cua
+        dup ampliemA false put  %% vector obert
+        araBlligades 3 1 roll put  %% i es desa al primer índex
+        %% a cada actualització d' /araBlligades actualitzem també /farcitDtruchets
+        araBlligades dup length array copy /farcitDtruchets exch def
+(a capgirar 1b)==
+       }
+       {
+        {
+         %% llavors, el primer índex es desa a null
+         4 -1 roll araBlligades exch null put
+         0 get mark exch aload pop capGira 4 array astore exch pop  %% prenem i capgirem el vectorial del primer índex
+         1 index length /ampliemA exch def  %% nombre d'elements a ampliar a l'array receptora
+         1 array astore  %% a punt d'ampliar
+         dup length ampliemA add dup /araVa exch def array dup 4 -1 roll
+         0 ampliemA 1 sub getinterval  %% prenem els vectorials a incrustar
+         0 exch putinterval  %% primer el vectorial del cap
+         dup 3 -1 roll ampliemA 1 sub exch putinterval  %% enganxem el vectorial de la cua
+         dup ampliemA false put  %% vector obert
+         araBlligades 3 1 roll put  %% i es desa al primer índex
+         %% a cada actualització d' /araBlligades actualitzem també /farcitDtruchets
+         araBlligades dup length array copy /farcitDtruchets exch def
+(a capgirar 2b)==
+        }
+        {  %% tenim pendent de resoldre quan tots dos vectorials tenen més de 2 elements
+(CAPelementTEnomes2Components!)pstack quit
+        }ifelse
+       }ifelse
+      }ifelse
+
+%%ENLLAÇ4
+      aranusos 1 add /aranusos exch def
+(ENLLAC4)==
+     }
+     {
+      {  %% el cap del primer índex i el cap del segon índex son iguals
+       2 copy  %% dupliquem els índex
+       %% aquí haurem d'invertir les coordenades abans d'empalmar
+       farcitDtruchets exch get dup length 2 eq  %% cal saber si el vectorial del segon índex té nomes 2 elements
+       3 -1 roll farcitDtruchets exch get dup length 2 eq  %% cal saber si el vectorial del primer índex té només 2 elements
+       3 -1 roll 2 copy and
+       {  %% tots dos tenen 2 elements, llavors serà indiferent quin en capgirem
+        pop pop
+        0 get mark exch aload pop capGira 4 array astore exch pop  %% capgirem el vectorial del primer índex
+        %% llavors, el segon índex es desa a null
+        3 -1 roll araBlligades exch null put
+        exch  %% s'enllaça a la cua del primer índex dins la seva array
+        dup length 1 sub 0 exch getinterval  %% prenem tots els vectorials del segon índex
+        dup length 2 add dup /araVa exch def array dup 3 -1 roll 1 exch putinterval  %% ampliem de 2 l'array pel cap
+        dup 3 -1 roll 0 exch put  %% enganxem el vectorial pel cap
+        dup 2 false put  %% vector obert
+(<<< EP! aturem l'algorisme per estar segurs que s'enllacen correctament?)==
+        araBlligades 3 1 roll put  %% i es desa al primer índex
+        %% a cada actualització d' /araBlligades actualitzem també /farcitDtruchets
+        araBlligades dup length array copy /farcitDtruchets exch def
+       }
+       {  %% si només és un qui té dos elements, serà el que capgirarem
+        {
+         pop
+         %% llavors, el segon índex es desa a null
+         3 -1 roll araBlligades exch null put
+         exch 0 get mark exch aload pop capGira 4 array astore exch pop  %% prenem i capgirem el vectorial del primer índex
+         1 index length /ampliemA exch def  %% nombre d'elements a ampliar a l'array receptora
+         1 array astore  %% a punt d'ampliar
+         dup length ampliemA add dup /araVa exch def array dup 3 -1 roll 0 exch putinterval  %% /ampliemA l'array per la cua
+         dup 3 -1 roll 0 ampliemA 1 sub getinterval  %% prenem els vectorials a incrustar
+         1 exch putinterval  %% enganxem els 2 vectorials
+         dup ampliemA false put  %% vector obert
+         araBlligades 3 1 roll put  %% i es desa al primer índex
+         %% a cada actualització d' /araBlligades actualitzem també /farcitDtruchets
+         araBlligades dup length array copy /farcitDtruchets exch def
+(a capgirar 1a)==
+        }
+        {
+         {
+          %% llavors, el primer índex es desa a null
+          4 -1 roll araBlligades exch null put
+          0 get mark exch aload pop capGira 4 array astore exch pop  %% prenem i capgirem el vectorial del primer índex
+          1 index length /ampliemA exch def  %% nombre d'elements a ampliar a l'array receptora
+          1 array astore  %% a punt d'ampliar
+          dup length ampliemA add dup /araVa exch def array dup 4 -1 roll
+          0 ampliemA 1 sub getinterval  %% prenem els vectorials a incrustar
+          4 1 roll 3 -1 roll 0 exch putinterval  %% primer el vectorial del cap
+          dup 3 -1 roll 1 exch putinterval  %% enganxem el vectorial de la cua
+          dup ampliemA false put  %% vector obert
+          araBlligades 3 1 roll put  %% i es desa al primer índex
+          %% a cada actualització d' /araBlligades actualitzem també /farcitDtruchets
+          araBlligades dup length array copy /farcitDtruchets exch def
+(a capgirar 2a)==
+         }
+         {  %% tenim pendent de resoldre quan tots dos vectorials tenen més de 2 elements
+(CAPelementTEnomes2Components!)pstack quit
+         }ifelse
+        }ifelse
+       }ifelse
+
+
+
+
+%%ENLLAÇ5
+       aranusos 1 add /aranusos exch def
+(ENLLAC5)==
+      }
+      {
+(tornem a desar els 2 index)==
+       %%  com que cap és vertader, tornem a desar els 2 índex a /araBlligades
+       farcitDtruchets 1 index get
+
+%%TEST
+dup null eq{iF(NULL!11)pstack quit}if
+
+       araBlligades 3 1 roll put  %% desem el segon
+       farcitDtruchets 1 index get
+
+%%TEST
+dup null eq{iF(NULL!12)pstack quit}if
+
+       araBlligades 3 1 roll put  %% desem el primer
+%% a cada actualització d' /araBlligades actualitzem també /farcitDtruchets
+araBlligades dup length array copy /farcitDtruchets exch def
+      }ifelse
+     }ifelse
+    }ifelse
+
+ }ifelse  %% del NULLb
+
+}ifelse  %% del NULLa
+
+  }ifelse
+
+  }ifelse  %% del NULLc
+
+  }ifelse  %% del NULLd
+
+  iF 1 add /iF exch def  %% comptador de voltes de forall
+
+ }forall  %% per tota la combinatòria d'arrays
+
+}stopped
+{
+ iF iL(!!!!)pstack quit
+}if
+
+ iL 1 add /iL exch def  %% comptador de voltes de loop
+
+ nusos  %% loop anterior
+ aranusos  %% loop present
+ eq
+ {  %% s'atura quan 2 voltes seguides donen el mateix resultat d'enllaços fets
+  %% o ja en la primera volta no se n'ha detectat cap
+  %% de moment no hi posem cap controlador de que realment han estat dues voltes seguides
+  %% sempre dóna l'oportunitat de detectar si un darrer vectorial es tanca sobre si mateix
+  exit
+ }if
+
+ aranusos /nusos exch def  %% actualitzem el loop anterior
+ gatell not /gatell exch def  %% interruptor
+
+}loop  %% lligador de Béziers, s'atura quan 2 voltes seguides donen el mateix resultat d'enllaços fets
+
+%% un cop acabat?
+araBlligades
+iF iL
+(<<<<fi<<<)pstack
+
