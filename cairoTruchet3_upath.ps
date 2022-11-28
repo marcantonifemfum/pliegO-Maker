@@ -13,6 +13,8 @@ false  %% pintem o deixem l'upath a l'stack?
 /pintem exch def
 
 %% generem l'array aleatòria /ouera per a una determinada superfície x,y de cairons
+%% si mantenim tots els missatges del prompt, a partir de 32x32 s'alenteix molt l'execució amb
+%% un MacBookAir/Processador 1,8 GHz Intel Core i5/Memòria 4 GB 1600 MHz DDR3
 /Xous 3 def
 /Yous 3 def
 Xous Yous mul dup /maxOus exch def array /ouera exch def
@@ -112,15 +114,15 @@ Yous /cairoY exch def  %% nombre de cairons verticals (+2 és el format d'alt de 
   }
  ]
 
- false  %% Truchet aleatori o previsible?
+ true  %% Truchet aleatori o previsible?
  {  %% aquest és l'aleatori que demostra més variabilitat en un rang curt de cairons 2x2
   ouera maxOus get 6 string cvs cvx exec rand add 2 mod
   dup ==
  }
  {  %% previsible
   %% 3x3 cairons que peten
-%  [ 1 0 0 0 0 1 1 0 1 ]  %% peta a (CAPelementTEnomes2Components _2_)
- [ 0 1 1 0 0 1 0 1 0 ]  %% peta a (CAPelementTEnomes2Components _1_)
+%  [ 1 0 0 0 0 1 1 0 1 ]  %% peta a (CAPelementTEnomes2Components _cuesidem_)
+ [ 0 1 1 0 0 1 0 1 0 ]  %% peta a (CAPelementTEnomes2Components _capsidem_)
 
   %% totes variants de 2x2 cairons
   %% [1 0 0 1]  %% Truchet_mostra2x2_1.pdf

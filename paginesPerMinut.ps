@@ -1,0 +1,107 @@
+%% codi facilitat per Bruce Cockbu a... http://computer-programming-forum.com/36-postscript/9e1b8dc6d57c9cee.htm
+
+%!PS-Adobe-2.0
+%%Title: timepages.ps
+%%CreationDate: Sat May 23 20:14:50 1987
+%%EndComments
+%-      updated by greid                Mon Jan  4 14:04:29 1988
+%-      to use "realtime" if it is available
+% Sending this ahead of any print job will cause the execution time
+% of each page (exclusive of printing time) to be printed at the
+
+% top of that page.  Note that the file forces rasterization by
+% invoking the "image" operator.  This may actually slow down a
+% printer in which there is a strong degree of parallel processing;
+% it may not be a good measure of "pages per minute" because of this.
+
+/$timepages 18 dict def
+$timepages begin
+    /buffer 128 string def
+    /origshowpage /showpage load def
+
+    /realtime   % thanks to Dan Schullman for the suggestion
+        dup where { 1 index get } { /usertime load } ifelse
+    def
+
+    /dumpdisplaylist { %def
+        gsave
+            initgraphics
+            100 500 translate
+            1 1 8 [1 0 0 1 0 0] { (\377) } image
+        grestore
+    } bind def
+
+    /dumpoverhead realtime dumpdisplaylist realtime exch sub def
+
+    /encodetime { %def
+        3 -1 0 { %for
+            startstr exch 2 index 16#FF and put
+            -8 bitshift
+        } for
+        pop
+    } bind def 
+
+    /decodetime { %def
+        0 startstr { exch 8 bitshift add } forall
+    } bind def
+    /startstr 4 string def
+end % $timepages
+
+/showpage { %def
+    $timepages begin
+        /startdump realtime def
+        dumpdisplaylist
+        /enddump realtime def
+        /starttime decodetime def
+        /exectime startdump starttime sub 1000 div def
+        /dumptime enddump startdump sub dumpoverhead sub 1000 div def
+        dumptime .004 lt {/dumptime 0.0 def} if
+        gsave
+            initgraphics
+            72 10.55 72 mul moveto 0 16 rlineto
+            6.5 72 mul 0 rlineto 0 -16 rlineto
+            closepath 1 setgray fill 0 setgray
+            /Times-Roman findfont 12 scalefont setfont
+            100 10.6 72 mul moveto
+            statusdict begin product end show (  ) show version show
+            (  execution time = ) show
+            exectime buffer cvs show ( + ) show
+            dumptime buffer cvs show ( = ) show
+            exectime dumptime add buffer cvs show ( seconds) show
+        grestore
+        origshowpage
+        statusdict /redclose known {statusdict /redclose get exec} if
+        statusdict /printerclose known {statusdict /printerclose get exec} if
+        statusdict /scoutclose known {statusdict /scoutclose get exec} if
+        statusdict /atlasclose known {statusdict /atlasclose get exec} if
+        realtime encodetime
+    end
+} bind def
+
+%%EndProlog
+
+%%BeginSetup
+$timepages begin
+    realtime encodetime
+end
+%%  gsave
+%%      /Times-Roman findfont 12 scalefont setfont
+%%      100 10 72 mul moveto
+%%      (This page inserted by timepages.ps) show
+%%  grestore
+%%  showpage
+%%EndSetup
+
+  %%  >->->  Your PostScript Job inserted here  <-<-<  %%
+
+%% caldria saber per què ouera.ps és molt més eficient i ràpid (amb 6400 possibilitats és +d10 cops més ràpid) que nullNOindex.ps
+(/Users/femfum/enfony/enflataGlifs/ouera.ps) (r) file cvx exec  %% el codi necessita almenys un showpage !
+%(/Users/femfum/enfony/enflataGlifs/nullNOindex.ps) (r) file cvx exec  %% el codi necessita almenys un showpage !
+
+%%EOF
+
+%Any views expressed are my own and are not necessarily those     _--_|\
+%of Acorn. Any factual information is given in good faith and    /      \
+%neither I, nor Acorn can accept liability for loss or damage    \_.--._/
+%resulting from its use.   
+

@@ -1,0 +1,402 @@
+%% genera aleatòriament una àrea de X x Y cairons amb la mostra del mosaic Truchet
+%% https://en.wikipedia.org/wiki/Truchet_tiles
+
+%% hi hauria mètodes diferents per generar aquest mosaic:
+%% #1 en base a una mostra quadrada (cairó/mòdul) amb 2 arcs que es donen l'esquena i que anem rotant aleatòriament
+%% #2 en base a una bézier que fem evolucionar amb uns paràmetres aleatoris determinats
+%% #3 variant que juga amb l'escala del mòdul aleatòriament https://twitter.com/Truchet_Nested/status/1369003651054907402
+
+%% pot ser molt útil per visualitzar els diversos mètodes d'aleatorietat, doncs els grumulls ho indiquen molt bé
+%% encara més hi ajudaria si podéssim emplenar les seves àrees (cal veure com fer-ho!)
+
+true  %% quin mètode?
+{  %% mètode #1
+ /sCala 100 def  %% escala del mosaic
+
+ /cairoX 40 def  %% nombre de cairons horitzontals (+2 és el format d'ample de pàgina, en punts, final)
+ /cairoY 40 def  %% nombre de cairons verticals (+2 és el format d'alt de pàgina, en punts, final)
+
+ /araCx 0 def  %% posició x del cairó
+ /araCy 0 def  %% posició y del cairó
+
+ /angles [ -270 -180 -90 0 90 180 270 ] def  %% angles possibles d'aleatorietat del cairó
+
+ /gruixC 0 def  %% gruix de la línia del cairó Truchet
+
+ /cairoT  %% mòdul del mosaic dibuixat des del centre del quadrat
+ {
+  gsave
+  .1 setlinewidth
+  -.5 .5 translate 0 0 .5 270 0 arc stroke
+  grestore
+  gsave
+  .1 setlinewidth
+  .5 -.5 translate 0 0 .5 90 180 arc stroke
+  grestore
+ }bind def
+
+%%Aquí NO actua perquè setpagedevice inicialitza l'estat gràfic
+ sCala sCala scale
+
+ %% format de pàgina en funció de l'escala i el nombre de repeticions amb marges del valor d'1 cairó
+ <<
+   /PageSize [ cairoX 2 add cairoY 2 add]
+ >> setpagedevice
+
+ %% cairó de referència del primer mòdul LL
+ .01 setlinewidth  %% gruix de les vores del quadrat
+ 1 1 1 1 rectstroke
+
+ 1.5 1.5 translate  %% amb marges ens posem al centre del primer cairó
+
+ cairoY
+ {  %% comença a pintar els cairons a l'angle LL del format de pàgina
+  gsave
+  /araCx 0 def  %% posició inicial x del cairó
+  cairoX
+  {  %% pinta els cairons en horitzontal
+   gsave
+
+   %% estratègia per l'aleatori de l'angle de rotació del cairó
+   false
+   {
+    %% raonament tret de ~/comportaments_srand_realtime_usertime.ps 
+    /iTera 10 def  %% iteracions d'aleatorietat entre 2 sortejos seguits
+    /Tdespera 14400 def  %% constant aproximada d'un temps d'espera amb l'operador for que reparteix força equitativament
+
+    0 1 iTera
+    {
+     pop
+
+     %% realtime reparteix millor l'aleatorietat que usertime (però qüestionarem aquest mètode a l'opció false)
+     realtime srand  % posem la llavor de l'aleatori
+     rrand
+     angles length  %% 7
+     mod pop  %% primer sorteig que descartem (índex màxim a jugar)
+
+     %% com més espaiem les 2 preses de temps, l'aleatorietat millora, en el sentit que queda millor repartida
+     %% si no espaiem, amb deu mil iteracions, menys de 10 surten imparells
+     0 1 Tdespera
+     {  %% és una manera de generar un temps d'espera per espaiar les dues srand
+      %% el temps d'espera determina el repartiment de l'aleatorietat: % de cops que surten imparells vs % de cops amb parells
+      pop
+     }for
+
+     %% tant amb realtime com amb usertime, si no tornem a plantar la llavor, MAI no treu els resultats imparells!
+     realtime srand
+     rrand
+     angles length  %% 7
+     mod  %% segon sorteig (índex màxim a jugar)
+
+    }for
+    iTera{pop}repeat
+    %% deixa a l'stack un valor enter d'índex entre 0 i angles length -1
+   }
+   {  %% aquí podem comprovar i visualitzar l'aleatorietat d'aquest mètode (és molt ràpid)
+    %% caldria valorar diferències entre les dues crides de consulta del rellotge
+    realtime
+    %usertime
+
+    %% aquests dos operados maten l'aleatorietat
+    % srand  % posem la llavor de l'aleatori
+    %rrand
+
+    %% aquest és el bo
+    rand
+    angles length  %% 7
+    mod  %% deixa a l'stack un valor enter d'índex entre 0 i angles length -1
+   }ifelse
+
+   %(______________)pstack quit
+   angles exch get  %% gira el cairó pel centre en un angle aleatori mútiple de 90°
+   % dup ==
+   rotate cairoT
+   grestore
+
+   %  araCx 1 add dup /araCx exch def 0 translate
+   1 0 translate
+  }repeat
+  grestore
+
+  0 1 translate
+
+ }repeat
+
+ showpage
+}
+{  %% mètode #2
+
+ false  %% comparativa arc/bézier o ja fem grumulls?
+ {  %% comparativa arc/bézier
+  /sCala 100 def  %% escala del mosaic
+
+  /cairoX 1 def  %% nombre de cairons horitzontals (+2 és el format d'ample de pàgina, en punts, final)
+  /cairoY 1 def  %% nombre de cairons verticals (+2 és el format d'alt de pàgina, en punts, final)
+
+  /araCx 0 def  %% posició x del cairó
+  /araCy 0 def  %% posició y del cairó
+
+  /gruixC 0 def  %% gruix de la línia del cairó Truchet
+
+  /cairoT  %% mòdul del mosaic dibuixat des del centre del quadrat
+  {
+   gsave
+   .1 setlinewidth
+   -.5 .5 translate 0 0 .5 270 0 arc stroke
+   grestore
+   gsave
+   .1 setlinewidth
+   .5 -.5 translate 0 0 .5 90 180 arc stroke
+   grestore
+  }bind def
+
+  %% format de pàgina en funció de l'escala i el nombre de repeticions amb marges del valor d'1 cairó
+  <<
+    /PageSize
+    [
+     cairoX 2 add sCala mul
+     cairoY 2 add sCala mul
+    ]
+  >> setpagedevice
+
+  sCala sCala scale
+
+  %% cairó de referència del primer mòdul LL
+  .01 setlinewidth  %% gruix de les vores del quadrat
+  1 1 1 1 rectstroke
+
+  1.5 1.5 translate  %% amb marges ens posem al centre del primer cairó
+
+  cairoT
+
+  %% pintem el centre del cairó
+  gsave
+  1 0 0 setrgbcolor
+  0 0 moveto 0 0 .01 0 360 arc fill
+
+  newpath
+
+  %% càlcul d'un arc/cercle de radi 1 amb bézier
+  %% https://stackoverflow.com/questions/1734745/how-to-create-circle-with-b%C3%A9zier-curves
+  gsave
+  0 -.5 translate  %% ens traslladem al punt d'inici a la meitat del costat inferior del cairó
+  0 0 moveto
+  0 0  %% inici
+  0 .552284749831 2 div %% node 1
+  .5 .552284749831 2 div sub .5 %% node 2
+  .5 .5  %% final
+  curveto
+
+  currentpoint == ==
+
+  stroke  %% traça però elimina la posició actual
+
+  grestore
+
+  grestore
+
+  showpage
+ }
+ {  %% fem grumulls Truchet fent córrer aleatòriament una funció bézier traçadora dins una determinada àrea
+  %% fem que la funció tendeixi a tancar-se en sí mateixa
+  %% per aconseguir-ho necessitam mapar totes les posicions que ja s'han pintat
+  %% els cairons fan 1 unitat de costat, multiplicat per sCala
+
+  /sCala 100 def  %% escala del mosaic
+
+  /cairoX 8 def  %% nombre de cairons horitzontals (+2 és el format d'ample de pàgina, en punts, final)
+  /cairoY 2 def  %% nombre de cairons verticals (+2 és el format d'alt de pàgina, en punts, final)
+
+  /araCx 0 def  %% posició x del cairó
+  /araCy 0 def  %% posició y del cairó
+
+  %% format de pàgina en funció de l'escala i el nombre de repeticions amb marges del valor d'1 cairó
+  <<
+    /PageSize
+    [
+     cairoX 2 add sCala mul
+     cairoY 2 add sCala mul
+    ]
+  >> setpagedevice
+
+  sCala sCala scale
+
+  %/gruixC 1 def  %% gruix de la línia del cairó Truchet
+  .01 setlinewidth
+
+  /dNansa .552284749831 2 div def  %% distància d'una nansa per a un arc bézier de radi .5
+
+  %% límits:
+  %% sempre que una posisicó X estigui a menys de 1 de 0 o de cairoX voldrà dir que som en una vora
+  %% sempre que una posisicó Y estigui a menys de 1 de 0 o de cairoY voldrà dir que som en una vora
+
+  %% estratègia per l'aleatori de l'angle de rotació del cairó
+  true
+  {
+   %% raonament tret de ~/comportaments_srand_realtime_usertime.ps 
+   /iTera 10 def  %% iteracions d'aleatorietat entre 2 sortejos seguits
+   /Tdespera 14400 def  %% constant aproximada d'un temps d'espera amb l'operador for que reparteix força equitativament
+
+   0 1 iTera
+   {
+    pop
+
+    %% realtime reparteix millor l'aleatorietat que usertime (però qüestionarem aquest mètode a l'opció false)
+    realtime srand  % posem la llavor de l'aleatori
+    rrand
+    cairoX 1 add
+    mod pop  %% primer sorteig que descartem (índex màxim a jugar)
+
+    %% com més espaiem les 2 preses de temps, l'aleatorietat millora, en el sentit que queda millor repartida
+    %% si no espaiem, amb deu mil iteracions, menys de 10 surten imparells
+    0 1 Tdespera
+    {  %% és una manera de generar un temps d'espera per espaiar les dues srand
+     %% el temps d'espera determina el repartiment de l'aleatorietat: % de cops que surten imparells vs % de cops amb parells
+     pop
+    }for
+
+    %% tant amb realtime com amb usertime, si no tornem a plantar la llavor, MAI no treu els resultats imparells!
+    realtime srand
+    rrand
+    cairoX 1 add
+    mod  %% segon sorteig (índex màxim a jugar)
+
+   }for
+   iTera{pop}repeat
+   %% deixa a l'stack un valor enter d'índex entre 0 i cairoX (per això n'hi hem afegit un)
+  }if
+
+  %% la posició d'inici de la primera bézier, la deduïm aleatòriament dins l'àrea cairoX/cairoY
+%  realtime
+%  rand cairoX
+
+%(________)pstack quit
+% 2 sub mod  %% deixa a l'stack un enter entre 0 i cairoX-2
+
+  1 add  %% li hem d'afegir 1 perquè la posicio ha d'anar entre 1 i cairoX-1
+
+dup ==
+
+
+  rand cairoY mod  %% deixa a l'stack un enter entre 0 i cairoY-1
+  1.5 add  %% li hem d'afegir 1.5 perquè el punt d'inici Y és al mig del cairó i ha d'anar entre 1 i cairoY-1
+
+dup == %(::::::)pstack quit
+
+  2 copy moveto  %% currentpoint (la posició actual d'inici sempre s'escau a la meitat d'un dels dos costats laterals del cairó)
+  gsave  %% node d'inici en vermell
+  1 0 0 setrgbcolor .005 setlinewidth
+  2 copy moveto 2 copy .02 0 360 arc stroke
+  grestore
+
+  2 copy /cY exch def /cX exch def
+
+  %% aquí les 6 coordenades següents de la primera bézier
+
+  %% la tria de posició de la primera nansa de control determinarà l'orientació de la bézier
+  %% la triem aleatòriament (índex) entre les 4 possibles (N/S/E/O) sempre que no excedeixi els límits
+  /nansa1
+  [
+   [ dNansa 0 ]  %% NO (mestral) i NE (gregal) i SO (garbí) i SE (xaloc)
+  ] def
+
+  %% la posició de la segona nansa de control (índex) serà segons hagi sigut la posició de la primera /nansa1
+  %% sempre que no excedeixi els límits (N/S/E/O)
+  /nansa2
+  [
+   [ .5 .5 dNansa sub ]  %% NO (mestral) i NE (gregal) i SO (garbí) i SE (xaloc)
+  ] def 
+
+  %% en fem una a veure si anem bé
+  %% haurem d'interrogar amb currentpoint?
+
+  %% NO mestral i SO (garbí)
+%  nansa1 0 get aload pop
+%  cY add  %% Y nansa 1
+%  exch cX exch sub  %% X nansa 1
+%  exch
+
+  %% NE gregal i SE xaloc
+  nansa1 0 get aload pop
+  cY add  %% Y nansa 1
+  exch cX add  %% X nansa 1
+  exch
+
+
+  gsave  %% nansa 1 en blau
+  0 0 1 setrgbcolor .005 setlinewidth
+  2 copy moveto 2 copy .02 0 360 arc stroke
+  grestore
+
+
+%(- - - - - - - -)pstack quit
+
+  %% NO mestral
+%  nansa2 0 get
+%  aload pop 
+%  cY add  %% Y nansa 2
+%  exch cX exch sub  %% X nansa 2
+%  exch
+
+   %% NE gregal
+%   nansa2 0 get
+%   aload pop 
+%   cY add  %% Y nansa 2
+%   exch cX add  %% X nansa 2
+%   exch
+
+  %% SO garbí
+%  nansa2 0 get
+%  aload pop
+%  cY exch sub  %% Y nansa 2
+%  exch cX exch sub  %% X nansa 2
+%  exch
+
+  %% SE xaloc
+  nansa2 0 get
+  aload pop
+  cY exch sub  %% Y nansa 2
+  exch cX add  %% X nansa 2
+  exch
+
+
+
+  gsave  %% nansa 2 en blau
+  0 0 1 setrgbcolor .005 setlinewidth
+  2 copy moveto 2 copy .02 0 360 arc stroke
+  grestore
+
+  %% node final
+  %% NO mestral
+  %cX .5 sub cY .5 add
+
+  %% NE gregal
+  %cX .5 add cY .5 add
+
+  %% SO garbí
+  %cX .5 sub cY .5 sub
+
+  %% SE xaloc
+  cX .5 add cY .5 sub
+
+  gsave  %% node final en groc
+  1 1 0 setrgbcolor .005 setlinewidth
+  2 copy moveto 2 copy .02 0 360 arc stroke
+  grestore  
+
+  curveto stroke
+
+  %% cairó de referència del primer mòdul LL
+  gsave
+  1 0 0 setrgbcolor
+  0 setlinewidth  %% gruix de les vores del quadrat
+  cX 1 sub cY .5 sub 1 1 rectstroke
+  cX cY .5 add 2 copy moveto .5 180 270 arc stroke  %% NO mestral
+  %cX cY .5 add 2 copy moveto .5 270 0 arc stroke  %% NE gregal
+  grestore
+
+  showpage
+ }ifelse
+
+}ifelse
+

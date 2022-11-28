@@ -496,8 +496,38 @@ araBlligades dup length array copy /farcitDtruchets exch def
          araBlligades dup length array copy /farcitDtruchets exch def
 (a capgirar 2b)==
         }
-        {  %% tenim pendent de resoldre quan tots dos vectorials tenen més de 2 elements
-(CAPelementTEnomes2Components _2_)pstack quit
+        {  %% quan tots dos vectorials tenen més de 2 elements i les cues són ídem
+         %% primer ens cal saber si el primer vectorial de l'stack té més Béziers que el segon
+         dup length 2 index length gt
+         {  %% llavors capgirem el segon
+          3 -1 roll /aNULL exch def %% serà l'índex del segon que desarem a null
+          exch
+         }
+         {  %% llavors capgirem el primer
+          4 -1 roll /aNULL exch def %% serà l'índex del primer que desarem a null
+         }ifelse
+         %% el primer array de l'stack és el del vectorial que cal capgirar
+         %% primer capgirem l'ordre de les Bézier que el componen
+         mark exch aload pop pop  %% eliminem el boolè de vector obert
+         capGira ]  %% i tanquem novament el paquet
+         %% després capgirem l'orde de cadascuna de les coordenades
+         mark exch
+         {
+          mark exch aload pop capGira ]  %% i tanquem novament el paquet
+         }forall
+         ]  %% i tanquem novament el paquet
+         dup length 2 index length 1 sub dup /araVa exch def add  %% nombre d'elements a ampliar a l'array receptora
+         array dup 4 -1 roll 0 exch putinterval  %% primer el vectorial del cap
+         dup 3 -1 roll araVa exch putinterval  %% enganxem el segon vectorial de la cua
+         %% aquí comprovem si el vector es tanca en sí mateix o no
+         %% comparem la primera coordenada del primer array i la darrera coordenada del darrer array
+         dup 0 get 0 get 1 index dup length 1 sub get 3 get ComparArrays  %% el boolè l'incrustarem a la cua del l'array a desar
+         1 index length dup /araVa exch def 1 add array dup 3 -1 roll araVa exch put
+         dup 3 -1 roll 0 exch putinterval  %% i ara incrustem l'array sencera del vectorial lligat
+         araBlligades dup aNULL null put 3 1 roll put  %% i es desa l'índex farcidor a null i l'altre farcit
+         %% a cada actualització d' /araBlligades actualitzem també /farcitDtruchets
+         araBlligades dup length array copy /farcitDtruchets exch def
+(CAPelementTEnomes2Components _cuesidem_)==
         }ifelse
        }ifelse
       }ifelse
@@ -562,8 +592,39 @@ araBlligades dup length array copy /farcitDtruchets exch def
           araBlligades dup length array copy /farcitDtruchets exch def
 (a capgirar 2a)==
          }
-         {  %% tenim pendent de resoldre quan tots dos vectorials tenen més de 2 elements
-(CAPelementTEnomes2Components _1_)pstack quit
+         {  %% quan tots dos vectorials tenen més de 2 elements i els caps són ídem
+%3 -1 roll farcitDtruchets exch get
+          %% primer ens cal saber si el primer vectorial de l'stack té més Béziers que el segon
+          dup length 2 index length gt
+          {  %% llavors capgirem el segon
+           3 -1 roll /aNULL exch def %% serà l'índex del segon que desarem a null
+           exch
+          }
+          {  %% llavors capgirem el primer
+           4 -1 roll /aNULL exch def %% serà l'índex del primer que desarem a null
+          }ifelse
+          %% el primer array de l'stack és el del vectorial que cal capgirar
+          %% primer capgirem l'ordre de les Bézier que el componen
+          mark exch aload pop pop  %% eliminem el boolè de vector obert
+          capGira ]  %% i tanquem novament el paquet
+          %% després capgirem l'orde de cadascuna de les coordenades
+          mark exch
+          {
+           mark exch aload pop capGira ]  %% i tanquem novament el paquet
+          }forall
+          ]  %% i tanquem novament el paquet
+          dup length dup /araVa exch def 2 index length add  %% nombre d'elements a ampliar a l'array receptora
+          array dup
+          3 -1 roll 0 exch putinterval  %% primer el vectorial del cap
+          dup 3 -1 roll araVa exch putinterval  %% enganxem el segon vectorial de la cua
+          %% aquí comprovem si el vector es tanca en sí mateix o no
+          %% comparem la primera coordenada del primer array i la darrera coordenada del darrer array
+          dup 0 get 0 get 1 index dup length 2 sub get 3 get ComparArrays  %% el boolè l'incrustarem a la cua del l'array a desar
+          1 index dup length 1 sub 3 -1 roll put
+          araBlligades dup aNULL null put 3 1 roll put  %% i es desa l'índex farcidor a null i l'altre farcit
+          %% a cada actualització d' /araBlligades actualitzem també /farcitDtruchets
+          araBlligades dup length array copy /farcitDtruchets exch def
+(CAPelementTEnomes2Components _capsidem_)==
          }ifelse
         }ifelse
        }ifelse

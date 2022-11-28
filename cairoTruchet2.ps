@@ -1,0 +1,192 @@
+%% evolució del mètode de tessel·lació aleatòria, amb només 2 posicions possibles del cairó Truchet, que jugarem amb parell/senar
+%% podrem comparar 3 mètodes per la gestió de l'aleatori, però ens interessa sonretot el de la /ouera
+
+%% generem l'array aleatòria /ouera per a una determinada superfície
+/Xous 3 def
+/Yous 3 def
+Xous Yous mul dup /maxOus exch def array /ouera exch def
+
+%% anirem omplint la /ouera (ja creada multiplicant /Xous x /Yous) a mida que anem reduïnt el valor de /maxOus per l'aleatori!
+%% si el valor aleatori hagués d'anar relacionat amb alguna dada, la posaríem al diccionari
+/dicciouera <<>> def  %% diccionari inicial de valors aleatoris que podrem anar donant de baixa amb undef
+0 1 maxOus 1 sub
+{  %% for per farcir el diccionari inicial
+ 8 string cvs dicciouera exch null put  %% clau (#) amb valor null
+}for
+
+%%dicciouera {== ==} forall
+%% generem l'array inicial ordenada amb tots el valors
+[
+ 0 1 maxOus 1 sub
+ {  %% els convertim a literal perquè així sortiran del diccionari quan els passem a array encara que hi entrin com a string
+  8 string cvs cvn
+ }for
+] /ousXordre exch def
+
+%% índex per farcir l'array final /ouera
+/i 0 def
+
+{  %% loop
+ realtime srand  %% plantem la llavor de l'aleatori
+ rand maxOus mod  %% enter entre 0 i maxOus-1
+ ousXordre exch get  %% el valor d'índex sempre hi serà (perquè anirem reduïnt maxOus)
+ dup dicciouera exch undef  %% donem de baixa el valor trobat
+ [
+  dicciouera  %% del diccionari modificat en generem de nou l'array /ousXordre
+  {
+   pop
+  }forall
+ ] /ousXordre exch def
+ ouera exch i exch put  %% per gunayar temps la farcim mantenint els enters com a strings
+ maxOus 1 sub /maxOus exch def  %% anirem reduïnt
+ i 1 add /i exch def  %% actualitzem l'índex per anar desant a /ouera
+ maxOus 0 eq  %% sortim quan maxOus valgui zero
+ {
+  exit
+ }if
+}loop
+
+ouera ==
+
+%% triem l'estratègia
+/strtg
+%0  %% de cairoTruchet.ps
+1  %% de l'ouera
+def
+
+/sCala 100 def  %% escala del mosaic
+
+Xous /cairoX exch def  %% nombre de cairons horitzontals (+2 és el format d'ample de pàgina, en punts, final)
+Yous /cairoY exch def  %% nombre de cairons verticals (+2 és el format d'alt de pàgina, en punts, final)
+
+/araCx 0 def  %% posició x del cairó
+/araCy 0 def  %% posició y del cairó
+
+%% aquests 7 angles es poden resumir en només 2, doncs tenen el mateix comportament gràfic
+/angles
+% [ -270 -180 -90 0 90 180 270 ] def  %% 7 angles possibles d'aleatorietat del cairó
+[ 0 90 ] def  %% amb dos ja fem, però si l'aleatori el mana l'estratègia 0, l'aleatoritat varia en relació a l'array de 7 angles
+
+/gruixC 0 def  %% gruix de la línia del cairó Truchet
+
+/cairoT  %% mòdul del mosaic dibuixat des del centre del quadrat
+{
+ gsave
+ .1 setlinewidth
+ -.5 .5 translate 0 0 .5 270 0 arc stroke
+ grestore
+ gsave
+ .1 setlinewidth
+ .5 -.5 translate 0 0 .5 90 180 arc stroke
+ grestore
+}bind def
+
+%% format de pàgina en funció de l'escala i el nombre de repeticions amb marges del valor d'1 cairó
+<<
+  /PageSize [ cairoX 2 add cairoY 2 add]
+>> setpagedevice
+
+%% cairó de referència del primer mòdul LL
+.01 setlinewidth  %% gruix de les vores del quadrat
+1 1 1 1 rectstroke
+
+1.5 1.5 translate  %% amb marges ens posem al centre del primer cairó
+
+cairoY
+{  %% repeat per posicionar-se a l'inici de cada línia i comença pintant el cairó a l'angle LL del format de pàgina
+ gsave
+ /araCx 0 def  %% posició inicial x del cairó
+ cairoX
+ {  %% repeat que pinta els cairons en horitzontal
+  [
+   {  %% estratìegia 0 de cairoTruchet.ps
+    gsave
+    true
+    {  %% variant de l'estratègia per l'aleatori de l'angle de rotació del cairó
+
+     %% raonament tret de ~/comportaments_srand_realtime_usertime.ps 
+     /iTera 10 def  %% iteracions d'aleatorietat entre 2 sortejos seguits
+     /Tdespera 14400 def  %% constant aproximada d'un temps d'espera amb l'operador for que reparteix força equitativament
+
+     0 1 iTera
+     {
+      pop
+
+      %% realtime reparteix millor l'aleatorietat que usertime (però qüestionarem aquest mètode a l'opció false)
+      realtime srand  % posem la llavor de l'aleatori
+      rrand
+      angles length  %% 7
+      mod pop  %% primer sorteig que descartem (índex màxim a jugar)
+
+      %% com més espaiem les 2 preses de temps, l'aleatorietat millora, en el sentit que queda millor repartida
+      %% si no espaiem, amb deu mil iteracions, menys de 10 surten imparells
+      0 1 Tdespera
+      {  %% és una manera de generar un temps d'espera per espaiar les dues srand
+       %% el temps d'espera determina el repartiment de l'aleatorietat: % de cops que surten imparells vs % de cops amb parells
+       pop
+      }for
+
+      %% tant amb realtime com amb usertime, si no tornem a plantar la llavor, MAI no treu els resultats imparells!
+      realtime srand
+      rrand
+      angles length  %% 7
+      mod  %% segon sorteig (índex màxim a jugar)
+
+     }for
+     iTera{pop}repeat
+     %% deixa a l'stack un valor enter d'índex entre 0 i angles length -1
+    }
+    {  %% variant de l'estratègia més simplificada
+     %% aquí podem comprovar i visualitzar l'aleatorietat d'aquest mètode (és molt ràpid)
+     %% caldria valorar diferències entre les dues crides de consulta del rellotge
+     realtime
+     %usertime
+
+     %% aquests dos operados maten l'aleatorietat
+     % srand  % posem la llavor de l'aleatori
+     %rrand
+
+     %% aquest és el bo
+     rand
+     angles length  %% 7
+     mod  %% deixa a l'stack un valor enter d'índex entre 0 i angles length -1
+    }ifelse
+
+    %(______________)pstack quit
+    angles exch get  %% gira el cairó pel centre en un angle aleatori mútiple de 90°
+    % dup ==
+
+    rotate cairoT
+    grestore
+   }  %% estratìegia 0
+
+   {  %% estratìegia 1 de l'ouera
+    gsave
+    ouera maxOus get 6 string cvs cvx exec 2 mod
+
+    angles exch get  %% gira el cairó pel centre en un angle aleatori mútiple de 90°
+    rotate cairoT
+
+    maxOus 1 add /maxOus exch def
+    grestore
+   }  %% estratìegia 1
+  ]
+
+  strtg get exec  %% executem l'estratègia triada
+
+  1 0 translate  %% sempre es mou d'esquerra a dreta 1 unitat de cairó
+
+ }repeat  %% que pinta els cairons en horitzontal
+
+ grestore
+
+ 0 1 translate
+
+}repeat  %% per posicionar-se a l'inici de cada línia
+
+%% si mapessim les coordenades d'aquest grumulls Truchet, en un userpath, podríem fàcilment endreçar les posicicions que toquen
+%% a les 4 vores, de manera que podríem (per la petita dimensió d'aquest assaig) tancar tots els path fent un si/no dels
+%% segments que toquen a les quatre vores del cairó
+
+showpage
+

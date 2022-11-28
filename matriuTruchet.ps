@@ -1,0 +1,1970 @@
+%% amb unes matrius mínimes de 3x3 4x2 5x5 valorem la casuística dels moviments, entre cairons, dels arcs Truchet
+%% seguint una línia contínua de corbes Bézier que les tracen fins a tancar una primera figura
+%% som lluny encara de contemplar tots els casos i ens quedem en el primer rang de Truchets traçades des del xamfra LL
+%%ARA definim el moviment inicial per triar a quin cairó comencem a %%+figX3_defineix!
+
+%%Cal veure quina estratègia d'atzars podem modular, doncs és clau pel comportament gràfic
+/ARAtime realtime def  %% estratègia de la resta?
+
+%% gs -q -dNOSAFER -o re.pdf -sDEVICE=pdfwrite -f matriuTruchet.ps 
+
+%%+fig_1 indica els valors fixes, sense atzar, que hem establert per analitzar el comportament de l'algorisme
+/xCairons 5 def
+/yCairons 5 def  %% no pot valdre menys de 2
+
+%% matriu de cairons (mòduls)
+
+%% estat inicial de la matriu de cairons d'una estructura 3x3
+%% cada cairó és una array, si hi té 2 nulls és un xamfrà i amb 1 és una vora
+%% [
+
+%% 0  [  ...segueix l'ordre E/S/O/N i la successió de coordenades x,y,x,y
+%%     null  ...índex X del cairó de l'esquerra (null si no n'hi ha cap)
+%%     1  ...índex Y del cairó de sota
+%%     1  ...índex X del cairó de la dreta
+%%     null  ...índex Y del cairó de dalt (null si no n'hi ha cap)
+%%    ]
+
+%% segueix 0... [0 1 2 null] [1 1 null null]
+
+%% 1  [null 2 1 0]    [0 2 2 0]    [1 2 null 2]
+
+%% 2  [null null 1 1] [0 null 2 1] [1 null null 2]
+
+%%    0               1            2
+
+%% ]
+
+%% establim l'ordre dels cairons, d'esquerra a dreta i de dalt a baix
+/iCairo 0 def  %% índex que ens situa en quin cairó estem
+
+xCairons yCairons mul dup
+/MAXcairo exch def  %% total de cairons de la matriu
+1 sub /maxiCairo exch def  %% índex màxim de la matriu de cairons
+
+%% establim l'ordre d'índex dels 4 punts possibles d'inici/conexió de les Bézier Truchet: O > S > E > N
+%% oest (índex 0), sud (índex 1), est (índex 2), nord (índex 3)
+%% els 4 punts possibles d'inici/conexió/final de les Bézier Truchet estan situats a la meitat de cadascun dels 4 costats
+
+[  %% genera l'estat inicial de la matriu per a qualsevol estructura de cairons
+
+ %% tractem, a part, la primera línia
+ [ null 1 1 null ]  %% primer cairó (xamfrà) de la primera línia
+ 0 1 xCairons 3 sub
+ {  %% for que genera les posicions dels cairons d'entremig de la primera línia
+  dup 2 add 1 exch null 4 array astore
+ }for
+ [ xCairons 2 sub 1 null null ]  %% darrer cairó (xamfrà) de la primera línia
+
+ %% generem els cairons d'entremig de cada línia d'entremig
+ /somY 0 def
+ 1 1 yCairons 2 sub
+ {  %% for
+  pop  %% que només serveix pels tombs que fa i no pas pels índex que genera
+  /somX 0 def
+
+  %% tractem, a part, el primer cairó de cada línia d'entremig
+  [ null somY dup 2 add exch somX 1 add exch ]  %% el primer cairó de cada línia d'entremig
+
+  1 1 xCairons 2 sub
+  {  %% for dels cairons d'entremig de la línia d'entremig
+   pop  %% que només serveix pels tombs que fa i no pas pels índex que genera
+   somX dup 2 add somY 2 add exch somY
+   4 array astore
+   somX 1 add /somX exch def
+  }for
+
+  %% tractem a part el darrer cairó de cada línia d'entremig
+  [ xCairons 2 sub somY dup 2 add exch null exch ]
+  somY 1 add /somY exch def
+ }for
+
+ %% tractem, a part, la darrera línia
+ [ null null 1 yCairons 2 sub ]  %% primer cairó (xamfrà) de la darrera línia
+
+ 0 1 xCairons 3 sub
+ {  %% for que genera les posicions dels cairons d'entremig de la darrera línia
+  dup null exch 2 add yCairons 2 sub 4 array astore
+ }for
+
+ [ xCairons 2 sub dup null exch null exch ]  %% darrer cairó (xamfrà) de la darrera línia
+
+]  %% l'ordre dels cairons: d'esquerra a dreta i de dalt a baix
+%% matriu de cairons per validar i desar l'estat de cada punt: punts a la vora i punts a l'interior, plens/buits
+%% i així poder decidir el traçat aleatori de Bézier segons la lògica Truchet
+/matriuDcairons exch def
+
+%%Qüestions resoltes:
+%0 com detectem la posició d'índex X/Y de la graella en base a l'índex absolut dins la matriu?
+%% definim el valor de l'índex absolut de la matriu de cairons /iCairo que busquen
+%/iCairo 15 def
+%% l'índex /iY es dedueix d' /iCairo dividit per /yCairons però validant només la part entera
+%iCairo yCairons idiv /iY exch def
+%% l'índex /iX es dedueix multiplicant /xCairons per /iY i restar-ho de /iCairo
+%iCairo xCairons iY mul sub /iX exch def
+%% traiem el resultat per la pantalleta:
+%(\n >>> index X de la matriu de cairons... )print flush iX 3 string cvs print flush
+%(\n >>> index Y de la matriu de cairons... )print flush iY 3 string cvs print flush
+%% de fet també aquests dos valors queden perfectament deduïts en cadascuna de les arrays definides a matriuDcairons
+%% on, per exemple: el primer valor (més 1) en dóna /iX i el segon valor (menys 1) en dóna  /iY
+%% matriuDcairons iCairo get ==
+%% Fem el càlcul a l'inrevés: donat /iX /iY esbrinem el seu índex /iCairo fent,,, (/iY x /xCairons) + /iX
+
+%1 com detectem els cairons de les vores i els xamfrans?
+%% detectant els índex de cadascuna de les arrays de la matriu de cairons, que són:
+%% null a l'índex 0 toca a la vora O
+%% null a l'índex 1 toca a la vora S
+%% null a l'índex 2 toca a la vora E
+%% null a l'índex 3 toca a la vora N
+%% null a l'index 0 i 1 és el xamfrà LL
+%% null a l'index 1 i 2 és el xamfrà LR
+%% null a l'index 2 i 3 és el xamfrà UR
+%% null a l'index 0 i 3 és el xamfrà UL
+[
+ 6  %% 0 Oest
+ 2  %% 1 Sud
+ 3  %% 2 Est
+ 1  %% 3 Nord
+] /iVores exch def  %% d'ús per generar el /mapaDvores
+
+%2 com detectem els cairons de l'interior?
+%% no tenen cap null a l'array de la /matriuDcairons i tenen índex 0 al /mapaDvores 
+
+%3 fem un quadrat màgic per indexar els 9 tipus de cairons possibles, d'interior, vores i xamfrans, de manera que:
+%% 7 1 4 > índex indicadors de vores xamfrans: 7 UL | 1 vora N | 4 UR
+%% 6 0 3 > índex indicadors de vores xamfrans: 6 vora O | 0 cap vora | 3 vora E
+%% 8 2 5 > índex indicadors de vores xamfrans: 8 LL | 2 vora S | 5 LR
+%% els dos nombres dels laterals han de sumar el nombre del xamfrà (aquesta propietat encara no sabem si la farem servir)
+%% 7 UL = 6 O + 1 N
+%% 8 LL = 6 O + 2 S
+%% 5 LR = 2 S + 3 E
+%% 4 UR = 3 E + 1 N
+[  %% procediments pels 9 tipus de cairons indexats a /mapaDvores
+ {  %% 0
+  (::Qmagic:: Cairó intern, cap vora | x fer)== quit
+ }  %% 0
+
+ {  %% 1
+  (::Qmagic:: Cairó vora Nord | x fer)== quit
+ }  %% 1
+
+ {  %% 2
+  (::Qmagic:: Cairo vora Sud | x fer)==  quit
+%%TANQUEMiSORTIM
+0 0 1 setrgbcolor stroke
+%%Test direccional: pintem una rodoneta groga cap on /anemA
+gsave 1 1 0 setrgbcolor vModul 20 div /rd exch def araBx araBy 2 copy moveto rd 0 360 arc fill grestore
+matriuDcairons == i ==  %% mirem si l'actualització de l'estat al darrer cairó on em pintat és correcte
+showpage quit
+ }  %% 2
+
+ {  %% 3
+  (::Qmagic:: Cairo vora Est | x fer)== quit
+%%TANQUEMiSORTIM
+0 0 1 setrgbcolor stroke
+%%Test direccional: pintem una rodoneta groga cap on /anemA
+gsave 1 1 0 setrgbcolor vModul 20 div /rd exch def araBx araBy 2 copy moveto rd 0 360 arc fill grestore
+matriuDcairons == i ==  %% mirem si l'actualització de l'estat al darrer cairó on em pintat és correcte
+showpage quit
+ }  %% 3
+
+ {  %% 4
+  (::Qmagic:: Cairó xamfrà UR | x fer)== quit
+ }  %% 4
+
+ {  %% 5
+  (::Qmagic:: Cairó xamfrà LR)==
+
+  %% identifiquem les 3 possibles Béziers que toquen vores i que podem pintar en aquest xamfrà
+  %% interrogant 3 combinacions possibles de /4mitgeres i /anemA
+
+  4mitgeres 2 eq anemA 1 eq and  %% venim de l'Est i anem al Sud?
+  {  %% X1
+%%+figX1
+(::Qmagic:: X1.5)==  %% xamfrà X1
+   iCairo /iCairoX exch def  %% redefinim per detectar Béziers ue no ens afecten en cairons que toquen vores
+   %% aquí ens cal decidir per atzar cap a quina direcció continuem, però per confirmar-ho ens cal abans:
+   [true false] %(%Calendar%) currentdevparams /Second get
+(::Qmagic:: ::0::ATZAR!)==
+realtime ARAtime sub dup /ARAtime exch def 2 mod get  %% atzar cap a 2 direccions possibles on tirar
+   {  %% tracem una línia en direcció al cairó Oest?
+    %% interroguem l'estat per si la posició és buida i si no, saber si no ho és per col·lisió o perquè tanquem la figura
+    %% mitgera S que toca vores del cairó O (a l'esquerra) on aniríem
+    iCairo 1 sub dup /iCairoX exch def matriuDcairons exch get 1 get
+    %% si a la posició hi ha un booleà és que col·lisiona o taquem la figura
+    dup type /booleantype eq  %% si a la posició hi ha un booleà és que col·lisiona o taquem la figura
+    {  %% llavors triem els valors de (seguimCAPalESTNORD) tret que tanquem la figura
+     %% ens cal comparar els X,Y on aniríem a parar amb els x,y inicials de la figura
+(::Qmagic:: oTANQUEMlaFIGURA seguimCAPalESTNORD1)pstack quit
+    }
+    {  %% tracem una línia (de llarg vModul) en direcció al cairó Oest (a l'esquerra)
+     %% aquí només definim els nous índex de /4mitgeres i /anemA
+(::Qmagic:: seguimCAPalOEST1) == %pstack quit
+     4Costats 0 get  %% cap a l'Oest
+     cvx exec
+%%Test
+%0 1 0 setrgbcolor stroke showpage quit 
+    }ifelse
+     %% llavors fixem la decisió en ferm per seguir més endavant amb la resta de rutines de dibuix
+   }
+   {  %% tracem dues línies fent xamfrà en direcció Est/Nord del mateix cairó?
+    matriuDcairons iCairo dup /iCairoX exch def get 2 get  %% mitgera E que toca vores al mateix cairó on som
+    dup type /booleantype eq  %% si a la posició hi ha un booleà és que col·lisiona o taquem la figura
+    {  %% llavors triem els valors de (seguimCAPalOEST) tret que tanquem la figura
+     pop  %% l'hauríem d'interrogar?
+     %% per saber si tanquem la figura, extraiem 2 línies de la rutina 0 de /8Xamfrans que ens calcula araBx i araBy 
+     araBx vModul 2 div add iBezierX eq araBy vModul 2 div add iBezierY eq and
+     {
+(::Qmagic:: seguimCAPalESTNORD2) == %pstack quit
+(::Qmagic:: i TANQUEMlaFIGURA! 2)==
+      8Xamfrans 0 get  %% venim de l'Oest i trenquem cap al Nord
+      cvx exec closepath
+
+%%TANQUEMiSORTIM
+0 0 1 setrgbcolor stroke
+%%Test direccional: pintem una rodoneta groga cap on /anemA
+gsave 1 1 0 setrgbcolor vModul 20 div /rd exch def araBx araBy 2 copy moveto rd 0 360 arc fill grestore
+matriuDcairons ==  %% mirem si l'actualització de l'estat al darrer cairó on em pintat és correcte
+showpage quit
+
+     }
+     {
+
+(::Qmagic:: seguimCAPalOEST2)pstack quit
+     }ifelse
+%%SOMAQUÍ
+    }
+    {  %% tracem dues línies (de llarg vModul/2) fent xamfrà en direcció Est/Nord del mateix cairó
+
+(::Qmagic:: seguimCAPalESTNORD) == %pstack quit
+     8Xamfrans 0 get  %% venim de l'Oest i trenquem cap al Nord
+     cvx exec
+%%Test
+%0 1 0 setrgbcolor stroke showpage quit 
+    }ifelse
+   }ifelse
+
+  }
+  {  %% o és una X2 o és una X3 o correspon a una de les 2 posicions que no toquen vores
+
+   4mitgeres 1 eq anemA 2 eq and  %% venim del Sud i anem al l'Est?
+%%+figX2
+   dup
+   {
+    (::Qmagic:: X2.5)==
+%quit
+   }if %% xamfrà X2
+
+   4mitgeres 3 eq anemA 2 eq and  %% venim del Nord i anem a l'Est
+%%+figX3
+   dup
+   {
+    (::Qmagic:: X3.5)==
+%quit
+   }if  %% xamfrà X2
+
+   or  %% o és una X2 o una X3
+   {
+    iCairo /iCairoX exch def  %% redefinim per detectar Béziers ue no ens afecten en cairons que toquen vores
+    %% aquí ens cal decidir per atzar cap a quina direcció continuem, però per confirmar-ho ens cal abans:
+    [true false] %(%Calendar%) currentdevparams /Second get
+(::Qmagic:: ::1::ATZAR!)==
+realtime ARAtime sub dup /ARAtime exch def 2 mod get   %% atzar cap a 2 direccions possibles on tirar
+    {  %% tracem una línia en direcció al cairó Nord?
+     %% interroguem l'estat per si la posició és buida i si no, saber si no ho és per col·lisió o perquè tanquem la figura
+     %% mitgera E que toca vores del cairó N (a sobre) on aniríem
+     iCairo xCairons sub dup /iCairoX exch def matriuDcairons exch get 2 get
+     %% si a la posició hi ha un booleà és que col·lisiona o taquem la figura
+     dup type /booleantype eq  %% si a la posició hi ha un booleà és que col·lisiona o taquem la figura
+     {  %% llavors triem els valors de (seguimCAPalSUDOEST) tret que tanquem la figura
+      %% ens cal comparar els X,Y on aniríem a parar amb els x,y inicials de la figura
+(::Qmagic:: OTANQUEMLAFIGURA OTRIEMCAPalSUDOEST)pstack quit
+     }
+     {  %% tracem una línia (de llarg vModul) en direcció al cairó Nord (a sobre)
+      %% aquí només definim els nous índex de /4mitgeres i /anemA
+(::Qmagic:: seguimCAPalNORD) == %pstack quit
+      4Costats 3 get  %% cap al Nord
+      cvx exec
+%%Test
+%0 1 0 setrgbcolor stroke showpage quit 
+     }ifelse
+      %% llavors fixem la decisió en ferm per seguir més endavant amb la resta de rutines de dibuix
+    }
+    {  %% tracem dues línies fent xamfrà en direcció Sud/Oest del mateix cairó?
+     matriuDcairons iCairo dup /iCairoX exch def get 1 get  %% mitgera S que toca vores al mateix cairó on som
+     dup type /booleantype eq  %% si a la posició hi ha un booleà és que col·lisiona o taquem la figura
+     {  %% llavors triem els valors de (seguimCAPalNORD) tret que tanquem la figura
+      %% ens cal comparar els X,Y on aniríem a parar amb els x,y inicials de la figura
+      araBx vModul 2 div sub iBezierX eq
+      araBy vModul 2 div sub iBezierY eq
+      and  %% venint del Sud i anant cap a l'oest?
+      {
+       (::Qmagic:: TANQUEMlaFIGURA! 1)==
+       8Xamfrans 1 get  %% venim del Nord i trenquem cap a l'Oest
+       cvx exec closepath
+
+%%TANQUEMiSORTIM
+0 0 1 setrgbcolor stroke
+%%Test direccional: pintem una rodoneta groga cap on /anemA
+gsave 1 1 0 setrgbcolor vModul 20 div /rd exch def araBx araBy 2 copy moveto rd 0 360 arc fill grestore
+matriuDcairons ==  %% mirem si l'actualització de l'estat al darrer cairó on em pintat és correcte
+showpage quit
+
+      }
+      {
+       (::Qmagic:: oTIREMCAPalNORD)pstack quit
+      }ifelse
+     }
+     {  %% tracem dues línies (de llarg vModul/2) fent xamfrà en direcció Sud/Oest del mateix cairó
+
+(::Qmagic:: seguimCAPalSUDOEST) == %pstack quit
+      8Xamfrans 1 get  %% venim del Nord i trenquem cap a l'Oest
+      cvx exec
+%%Test
+%0 1 0 setrgbcolor stroke showpage quit 
+     }ifelse
+    }ifelse
+   }
+   {
+iCairoX anemA(::Qmagic:: >>> /anemA correspon a una de les 2 posicions que no toquen vores?... PLEGUEM!)pstack quit
+   }ifelse
+  }ifelse
+ }  %% 5
+
+ {  %% 6
+  (::Qmagic:: Cairó vora Oest)== quit
+ }  %% 6
+
+ {  %% 7
+  (::Qmagic:: Cairó xamfrà UL)== quit
+ }  %% 7
+
+ {  %% 8
+  (::Qmagic:: Cairó xamfrà LL)== quit
+ }  %% 8
+] /Qmagic exch def  %% procediments pel comportament dels 9 tipus de cairons indexats a /mapaDvores que s'utilitzen dins el loop
+
+
+[  %% generem el mapa d'índexs per detectar els cairons als 4 xamfrans, a les 4 vores i posició interna
+ matriuDcairons
+ {  %% forall que segueix la lògica del quadrat màgic
+  /i 0 def
+  0 exch
+  {  %% forall
+   dup null eq
+   {
+    pop iVores i get add
+   }
+   {
+    pop
+   }ifelse
+
+   i 1 add /i exch def
+  }forall
+
+ }forall
+]  %%== quit
+/mapaDvores exch def
+%% exemple del resultat /mapaDvores d'una matriu de cairons de 5x5
+%% [
+%%  7 1 1 1 4
+%%  6 0 0 0 3
+%%  6 0 0 0 3
+%%  6 0 0 0 3
+%%  8 2 2 2 5
+%% ]
+
+%4 successió d'atzars i avaluacions que ens calen per anar construint els Truchets amb una successió de Béziers:
+%% 4.1 > triar un cairó d'inici /iCairo (índex) dels /xCairons x /yCairons de /matriuDcairons
+%% 4.1.1 > per no repetir /MAXcairo caldria actualitzar-lo en base a un array d'índex on treguessim els cairons plens (4.5)
+realtime %srand rand
+MAXcairo mod
+
+%%UPAS.0
+%%+figX
+%%X1/X2/X3
+pop maxiCairo  %% ara sempre serà el LL, p.e. amb una matriu de 5x5 és 24
+%% aquest és l'índex del cairó on situem l'inici, circumscrit o no, del gromull Truchet
+
+%%+fig_2
+%pop 7
+%%+fig_3
+%pop 8
+%dup ==
+%% desem el valor triat de l'índex absolut de la matriu de cairons /iCairo
+/iCairo exch def
+
+%%UPAS.1
+%% l'índex de la coordenada /iY es dedueix d' /iCairo dividit per /yCairons però validant només la part entera
+iCairo yCairons idiv /iY exch def
+%% l'índex de la coordenada /iX es dedueix multiplicant /xCairons per /iY i restant de /iCairo
+iCairo xCairons iY mul sub /iX exch def
+
+%%UPAS.2
+%% 4.2 > triar una de les 4 mitgeres possibles (O/S/E/N) com a punt d'inici de la primera Bézier i desar-ho a coordenades x,y
+realtime %srand rand
+ 4 mod
+%%pop 0  %% mitgera O
+%%+fig_3
+%pop 1  %% mitgera S
+%%+fig_2
+%pop 2  %% mitgera E
+%%+fig_1
+%pop 3  %% mitgera N (fora cairó)
+%pop 1  %% mitgera S (dins el mateix cairó)
+
+%%+figX1_defineix!
+%pop 2  %% mitgera E
+%(X1.3)==  %% xamfrà X1
+
+%%+figX2_defineix!
+%pop 1  %% mitgera S
+%(X2.3)==  %% xamfrà X2
+
+%%+figX3_defineix!
+pop 3  %% mitgera N
+(X3.3)==  %% xamfrà X3
+
+
+%% aquest és l'índex circumscrit o inscrit del cairó on som i es situa el node d'inici de la Bézier (al cairó següent o no)
+%% també és l'índex del procediment que anem a buscar dins /fa1aBezier que apuntarà a la crida d'un constructor /4Bezier##
+
+/4mitgeres exch def  %% O=0/S=1/E=2/N=3
+
+%% 4.2.1 > és gràcies a l'índex del cairó /iCairo i al valor del mòdul que podrem deduir la distància X,Y de la coordenada actual
+/vModul 10 def  %% valor del mòdul o costat del cairó
+vModul 2 div /migModul exch def
+
+%%UPAS.3
+iX vModul mul /mX exch def  %% coordenada absoluta X actual (LL del cairó) presa des de l'origen de la matriu fixat a 4.3
+%% 4.2.2.1 > però hem de corregir la Y perquè l'origen de l'eix de coordenades és al punt LL i no al UL
+matriuDcairons iCairo get 1 get dup null eq
+{
+ pop 0
+}
+{
+ yCairons exch sub vModul mul
+}ifelse
+/mY exch def  %% coordenada absoluta Y actual (LL del cairó) presa des de l'origen de la matriu fixat a 4.3
+
+%%UPAS.4
+%% 4.2.2 > amb el valor del mòdul deduim el format de pàgina amb /xCairons /yCairons més els 4 marges triats
+vModul /4marges exch def
+<<
+  /PageSize
+  [
+   vModul xCairons mul 4marges 2 mul add
+   vModul yCairons mul 4marges 2 mul add
+  ]
+>>setpagedevice
+
+%%UPAS.5
+%% 4.3 > la tria de la primera mitgera (inici de Bézier i figura)
+4marges dup translate  %% ens posem a l'inici (xamfrà LL) de l'àrea Truchet 
+gsave
+.9 .9 .9 setrgbcolor
+mX mY vModul vModul rectfill  %% pintem el cairó escollit en el primer atzar
+grestore
+%% fem la graella de cairons
+gsave
+0 0 0 setrgbcolor 0 setlinewidth
+%% perímetre de la graella
+0 0 xCairons vModul mul yCairons vModul mul rectstroke
+%% graella horitzontal
+0 vModul yCairons vModul mul
+{
+ dup 0 exch moveto xCairons vModul mul exch lineto stroke
+}for
+%% graella vertical
+vModul dup xCairons vModul mul
+{
+ dup 0 moveto yCairons vModul mul lineto stroke
+}for
+grestore
+
+%%UPAS.6
+%% l'índex de les /4mitgeres triat en el segon atzar ens deixa a l'stack la posició x,y d'inici de la Bézier
+[
+ {mX mY migModul add}  %% O=0
+ {mX migModul add mY}  %% S=1
+ {mX vModul add mY migModul add}  %% E=2
+ {mX migModul add mY vModul add}  %% N=3
+] /iBezier exch def
+
+iBezier 4mitgeres get cvx exec
+%2 copy 2 copy 
+/iBezierY exch def /iBezierX exch def  %% coordenades d'inici de la Bézier
+%% com que són coordenades absolutes aquestes dues variables són les que ens indicaran si hem pogut tancar o no la figura
+%moveto 2 0 360 arc 1 0 0 setrgbcolor fill
+
+%% 4.3.1 > ens porta a triar quatre possibles punts finals per traçar la corba:
+%% NO | SO | SE | NE (sempre que sigui possible pel fet d'estar o no en una de les 4 vores i xamfrans)
+%% aquests 4 situadors de la coordenada de punt final aniran desats en una array amb també les 2 nanses d'entremig
+
+%%UPAS.7
+matriuDcairons iCairo get 4mitgeres get null eq  %% consultem si la mitgera del cairó escollit toca vores o no
+{
+ /esNULL true def
+ (TOCA VORES)==
+
+%%+figX
+(X1.0)==  %% xamfrà X1
+
+%%+figX2
+%(X2.0)==  %% xamfrà X2
+
+%%+figX3
+%(X3.0)==  %% xamfrà X3
+
+}
+{
+ /esNULL false def
+ (NO toca vores)==
+}ifelse
+
+%% 4.3.2 > aquests 4 possibles finals només es donen quan iniciem una nova figura, el primer cairó, a partir de la 2ona Bézier
+%% només són possibles 2 finals que, en 2 sentits cadascun, s'aniran succeint fins que tanquem la figura
+%%UPAS.8
+[  %% mantenim la lògica dels índex que es mouen a posicions similars a O=0/S=1/E=2/N=3
+ {  %% 0
+(mitgera O)==
+  esNULL  %% aquest el mana /4mitgeres i és aqui on hem de tirar el daus novament
+  {  %% toca la vora del costat esquerre de la matriu de cairons
+   %% només podem jugar amb la Bézier NE índex 3 o SE índex 2
+   [2 3]
+   %(%Calendar%) currentdevparams /Second get
+(::2::ATZAR!)==
+realtime ARAtime sub dup /ARAtime exch def 2 mod get
+  }
+  {  %% NO toca la vora del costat esquerre de la matriu de cairons
+   %% podem jugar amb totes 4 Bézier NO índex 0, SO índex 1, SE índex 2, NE índex 3
+   realtime %srand rand
+ 4 mod
+%%+fig_3_1aB
+%pop 0  %% nou índex que apunta al constructor de la 1a Bézier
+  }ifelse
+
+  4BezierEO exch get cvx exec  %% tracem la Bézier que toca
+ }
+ {  %% 1
+(mitgera S)==
+  esNULL  %% aquest el mana /4mitgeres i és aqui on hem de tirar el daus novament
+  {  %% toca la vora del costat de sota de la matriu de cairons
+   %% només podem jugar amb la Bézier NO índex 0 o NE índex 3
+   [0 3]
+   %(%Calendar%) currentdevparams /Second get
+   realtime 2 mod get
+
+%%+figX2
+pop 3 (X2.1)==  %% xamfrà X2
+
+  }
+  {  %% NO toca la vora del costat esquerre de la matriu de cairons
+   %% podem jugar amb totes 4 Bézier NO índex 0, SO índex 1, SE índex 2, NE índex 3
+   realtime srand rand 4 mod
+%pop 2  %% nou índex que apunta al constructor de la 1a Bézier
+  }ifelse
+
+  4BezierNS exch get cvx exec  %% tracem la Bézier que toca
+ }
+ {  %% 2
+(mitgera E)==
+  esNULL  %% aquest el mana /4mitgeres i és aqui on hem de tirar el daus novament
+  {  %% toca la vora del costat dret de la matriu de cairons
+   %% només podem jugar amb la Bézier NO índex 0 o SO índex 1
+   [0 1]
+   %(%Calendar%) currentdevparams /Second get
+   realtime 2 mod get
+
+%%+figX1
+pop 1 (X1.1)==  %% xamfrà X1
+
+  }
+  {  %% NO toca la vora del costat esquerre de la matriu de cairons
+   %% podem jugar amb totes 4 Bézier NO índex 0, SO índex 1, SE índex 2, NE índex 3
+   realtime srand rand 4 mod
+%%+fig_2
+%pop 2  %% nou índex que apunta al constructor de Bézier
+%pop 3
+  }ifelse
+
+  4BezierEO exch get cvx exec  %% tracem la Bézier que toca
+ }
+ {  %% 3
+(mitgera N)==
+  esNULL  %% aquest el mana /4mitgeres i és aqui on hem de tirar el daus novament
+  {  %% toca la vora del costat de dalt de la matriu de cairons
+   %% només podem jugar amb la Bézier SO índex 1 o SE índex 2
+   [1 2]
+   %(%Calendar%) currentdevparams /Second get
+realtime 2 mod get
+  }
+  {  %% NO toca la vora del costat esquerre de la matriu de cairons
+   %% podem jugar amb totes 4 Bézier NO índex 0, SO índex 1, SE índex 2, NE índex 3
+   realtime srand rand 4 mod
+%%+fig_1
+%pop 3  %% nou índex que apunta al constructor de Bézier
+%pop 0
+
+%%+figX3
+pop 2 (X3.1)== %% xamfrà X3
+
+  }ifelse
+
+  4BezierNS exch get cvx exec  %% cridem el constructor i tracem la Bézier que toca
+ }
+] /fa1aBezier exch def
+
+%% 4.4 > el punt final escollit (en funció de /4mitgeres) ens indica en quin cairó continuem
+
+%%UPAS.9
+/dNansa .552284749831  %% distància d'una nansa per a un arc Bézier d'un radi de valor 1 (les 2 nanses són idèntiques)
+vModul 2 div mul def  %% distància d'una nansa per a un arc Bézier d'un radi de mig cairó
+
+%%Podrem simplificar els moviments de les 4 Béziers possibles dins l'algorisme aparellant les descripcions E/O i N/S
+%% doncs veiem que les 4 coordenades que tracen la Bézier a partir de la mitgera triada E/O o N/S es descriuen igual
+%% des del punt d'inici iBezierX/iBezierY, però ens calen 2 array diferenciats /4BezierEO i /4BezierNS
+%%Pero ens cal deduir, primer, si tracem la Bézier dins del mateix cairó on som o el node final va a parar a la mitgera
+%% d'un atre cairó veí situat a O/S/E/N (doncs llavors haurem d'actualitzar iCairo)
+%%UPAS.10
+[
+ {  %% 0 NO
+  (4BezierEO DALT NO)==
+  iBezierX iBezierY moveto  %% node d'inici comú també a BAIX
+  iBezierX dNansa sub iBezierY  %% la primera nansa és comuna també a BAIX
+  iBezierX migModul sub iBezierY migModul add dNansa sub  %% segona nansa
+  iBezierX migModul sub iBezierY migModul add  %% node final
+  curveto
+
+  currentpoint /araBy exch def /araBx exch def
+  /anemA 3 def  %% índex de la posició N al node del punt final de la Bézier, circumscrita o inscrita (cairó següent o no)
+
+  %% si 4mitgeres és al E, llavors és que pintem la Bézier dins el mateix cairó
+  4mitgeres 2 eq
+  {
+   (--0 pintem dins el mateix cairo EO--)==
+   /pintemFORAcairo false def
+
+   %% mantenim les vores buides amb null i marquem les plenes amb un booleà
+   %% els índex cardinals del cairó d'inici i final de la Bézier queden desats a /matriuDcairons
+   matriuDcairons iCairo get dup dup 4mitgeres get null eq
+   {  %% les vores plenes les marquem amb false
+    4mitgeres false put
+   }
+   {  %% les mitgeres plenes les maquem amb true
+    4mitgeres true put
+   }ifelse
+
+   dup anemA get null eq
+   {  %% les vores plenes les marquem amb false
+    anemA false put
+   }
+   {  %% les mitgeres plenes les maquem amb true
+    anemA true put
+   }ifelse
+%== iCairo == (<<<<)== stroke showpage quit
+  }
+  {
+   (--0 pintem fora cairo EO--)==
+   /pintemFORAcairo true def
+
+   %% a quin cairó haurem pintat la Bézier?
+   [
+    {iCairo 1 sub}
+    {iCairo xCairons add}
+    {iCairo 1 add}
+    {iCairo xCairons sub}
+   ]
+   4mitgeres  %% índex/orientació del node d'inici de la Bézier
+   get cvx exec  %/CairoOHPLB exch def  %% cairó on haurem pintat la Bézier
+   %% els índex cardinals del cairó d'inici i final de la Bézier queden desats a /matriuDcairons
+   matriuDcairons exch get dup dup
+   %% invertim líndex cardinal per encertar el punt d'inici de la Bézier al cairó on l'haurem pintat
+   [ 2 null 0 ] 4mitgeres get /venimD exch def
+   venimD get null eq
+   {  %% les vores plenes les marquem amb false
+    venimD false put
+   }
+   {  %% les mitgeres plenes les maquem amb true
+    venimD true put
+   }ifelse
+
+   dup anemA get null eq
+   {  %% les vores plenes les marquem amb false
+    anemA false put
+   }
+   {  %% les mitgeres plenes les maquem amb true
+    anemA true put
+   }ifelse
+  }ifelse
+
+ }
+ {  %% 1 SO
+  (4BezierEO BAIX SO)==
+  iBezierX iBezierY moveto  %% node d'inici comú també a DALT
+  iBezierX dNansa sub iBezierY  %% la primera nansa és comuna també a DALT
+  iBezierX migModul sub iBezierY migModul sub dNansa add  %% segona nansa
+  iBezierX migModul sub iBezierY migModul sub  %% node final
+  curveto
+
+  currentpoint /araBy exch def /araBx exch def
+  /anemA 1 def  %% índex de la posició S al node del punt final de la Bézier, circumscrita o inscrita (cairó següent o no)
+%%+figX1
+(X1.2)==  %% xamfrà X1
+
+  %% si 4mitgeres és al E, llavors és que pintem la Bézier dins el mateix cairó
+  4mitgeres 2 eq
+  {
+   (--1 pintem dins el mateix cairo EO--)==
+   /pintemFORAcairo false def
+%%+figX1
+(X1.4)==  %% xamfrà X1
+
+   %% mantenim les vores buides amb null i marquem les plenes amb un booleà
+   %% els índex cardinals del cairó d'inici i final de la Bézier queden desats a /matriuDcairons
+   matriuDcairons iCairo get dup dup 4mitgeres get null eq
+   {  %% les vores plenes les marquem amb false
+    4mitgeres false put
+   }
+   {  %% les mitgeres plenes les maquem amb true
+    4mitgeres true put
+   }ifelse
+
+   dup anemA get null eq
+   {  %% les vores plenes les marquem amb false
+    anemA false put
+   }
+   {  %% les mitgeres plenes les maquem amb true
+    anemA true put
+   }ifelse
+%== iCairo == (<<<<)== stroke showpage quit
+  }
+  {
+   (--1 pintem fora cairo EO--)==
+   /pintemFORAcairo true def
+
+   %% a quin cairó haurem pintat la Bézier?
+   [
+    {iCairo 1 sub}
+    {iCairo xCairons add}
+    {iCairo 1 add}
+    {iCairo xCairons sub}
+   ]
+   4mitgeres  %% índex/orientació del node d'inici de la Bézier
+   get cvx exec  %/CairoOHPLB exch def  %% cairó on haurem pintat la Bézier
+   %% els índex cardinals del cairó d'inici i final de la Bézier queden desats a /matriuDcairons
+   matriuDcairons exch get dup dup
+   %% invertim líndex cardinal per encertar el punt d'inici de la Bézier al cairó on l'haurem pintat
+   [ 2 null 0 ] 4mitgeres get /venimD exch def
+   venimD get null eq
+   {  %% les vores plenes les marquem amb false
+    venimD false put
+   }
+   {  %% les mitgeres plenes les maquem amb true
+    venimD true put
+   }ifelse
+
+   dup anemA get null eq
+   {  %% les vores plenes les marquem amb false
+    anemA false put
+   }
+   {  %% les mitgeres plenes les maquem amb true
+    anemA true put
+   }ifelse
+  }ifelse
+
+ }
+ {  %% 2 SE
+  (4BezierEO BAIX SE)==
+  iBezierX iBezierY moveto  %% node d'inici comú també a DALT
+  iBezierX dNansa add iBezierY  %% primera nansa
+  iBezierX migModul add iBezierY migModul sub dNansa add  %% segona nansa
+  iBezierX migModul add iBezierY migModul sub  %% node final
+  curveto
+
+  currentpoint /araBy exch def /araBx exch def
+  /anemA 1 def  %% índex de la posició S al node del punt final de la Bézier, circumscrita o inscrita (cairó següent o no)
+
+  %% si 4mitgeres és al O, llavors és que pintem la Bézier dins el mateix cairó
+  4mitgeres 0 eq
+  {
+   (--2 pintem dins el mateix cairo EO--)==
+   /pintemFORAcairo false def
+
+   %% mantenim les vores buides amb null i marquem les plenes amb un booleà
+   %% els índex cardinals del cairó d'inici i final de la Bézier queden desats a /matriuDcairons
+   matriuDcairons iCairo get dup dup 4mitgeres get null eq
+   {  %% les vores plenes les marquem amb false
+    4mitgeres false put
+   }
+   {  %% les mitgeres plenes les maquem amb true
+    4mitgeres true put
+   }ifelse
+
+   dup anemA get null eq
+   {  %% les vores plenes les marquem amb false
+    anemA false put
+   }
+   {  %% les mitgeres plenes les maquem amb true
+    anemA true put
+   }ifelse
+%== iCairo == (<<<<)== stroke showpage quit
+  }
+  {
+   (--2 pintem fora cairo EO--)==
+   /pintemFORAcairo true def
+
+   %% a quin cairó haurem pintat la Bézier?
+   [
+    {iCairo 1 sub}
+    {iCairo xCairons add}
+    {iCairo 1 add}
+    {iCairo xCairons sub}
+   ]
+   4mitgeres  %% índex/orientació del node d'inici de la Bézier
+   get cvx exec  %/CairoOHPLB exch def  %% cairó on haurem pintat la Bézier
+   %% els índex cardinals del cairó d'inici i final de la Bézier queden desats a /matriuDcairons
+   matriuDcairons exch get dup dup
+   %% invertim líndex cardinal per encertar el punt d'inici de la Bézier al cairó on l'haurem pintat
+   [ 2 null 0 ] 4mitgeres get /venimD exch def
+   venimD get null eq
+   {  %% les vores plenes les marquem amb false
+    venimD false put
+   }
+   {  %% les mitgeres plenes les maquem amb true
+    venimD true put
+   }ifelse
+
+   dup anemA get null eq
+   {  %% les vores plenes les marquem amb false
+    anemA false put
+   }
+   {  %% les mitgeres plenes les maquem amb true
+    anemA true put
+   }ifelse
+  }ifelse
+
+ }
+ {  %% 3 NE
+  (4BezierEO DALT NE)==
+  iBezierX iBezierY moveto  %% node d'inici
+  iBezierX dNansa add iBezierY  %% primera nansa
+  iBezierX migModul add iBezierY migModul add dNansa sub  %% segona nansa
+  iBezierX migModul add iBezierY migModul add  %% node final
+  curveto
+
+  currentpoint /araBy exch def /araBx exch def
+  /anemA 3 def  %% índex de la posició N al node del punt final de la Bézier, circumscrita o inscrita (cairó següent o no)
+
+  %% si 4mitgeres és al O, llavors és que pintem la Bézier dins el mateix cairó
+  4mitgeres 0 eq
+  {
+   (--3 pintem dins el mateix cairo EO--)==
+   /pintemFORAcairo false def
+
+   %% mantenim les vores buides amb null i marquem les plenes amb un booleà
+   %% els índex cardinals del cairó d'inici i final de la Bézier queden desats a /matriuDcairons
+   matriuDcairons iCairo get dup dup 4mitgeres get null eq
+   {  %% les vores plenes les marquem amb false
+    4mitgeres false put
+   }
+   {  %% les mitgeres plenes les maquem amb true
+    4mitgeres true put
+   }ifelse
+
+   dup anemA get null eq
+   {  %% les vores plenes les marquem amb false
+    anemA false put
+   }
+   {  %% les mitgeres plenes les maquem amb true
+    anemA true put
+   }ifelse
+%== iCairo == (<<<<)== stroke showpage quit
+  }
+  {
+   (--3 pintem fora cairo EO--)==
+   /pintemFORAcairo true def
+
+   %% a quin cairó haurem pintat la Bézier?
+   [
+    {iCairo 1 sub}
+    {iCairo xCairons add}
+    {iCairo 1 add}
+    {iCairo xCairons sub}
+   ]
+   4mitgeres  %% índex/orientació del node d'inici de la Bézier
+   get cvx exec  %/CairoOHPLB exch def  %% cairó on haurem pintat la Bézier
+   %% els índex cardinals del cairó d'inici i final de la Bézier queden desats a /matriuDcairons
+   matriuDcairons exch get dup dup
+   %% invertim líndex cardinal per encertar el punt d'inici de la Bézier al cairó on l'haurem pintat
+   [ 2 null 0 ] 4mitgeres get /venimD exch def
+   venimD get null eq
+   {  %% les vores plenes les marquem amb false
+    venimD false put
+   }
+   {  %% les mitgeres plenes les maquem amb true
+    venimD true put
+   }ifelse
+
+   dup anemA get null eq
+   {  %% les vores plenes les marquem amb false
+    anemA false put
+   }
+   {  %% les mitgeres plenes les maquem amb true
+    anemA true put
+   }ifelse
+  }ifelse
+
+ }
+]
+/4BezierEO exch def
+
+%%UPAS.11
+[
+ {  %% 0 NO
+  (4BezierNS DALT NO)==
+  iBezierX iBezierY moveto  %% node d'inici comú també a BAIX
+  iBezierX iBezierY dNansa add  %% primera nansa
+  iBezierX migModul sub dNansa add iBezierY migModul add  %% segona nansa
+  iBezierX migModul sub iBezierY migModul add  %% node final
+  curveto
+
+  currentpoint /araBy exch def /araBx exch def
+  /anemA 0 def  %% índex de la posició O al node del punt final de la Bézier, circumscrita o inscrita (cairó següent o no)
+
+  %% si 4mitgeres és al S, llavors és que pintem la Bézier dins el mateix cairó
+  4mitgeres 1 eq
+  {
+   (--0 pintem dins el mateix cairo NS--)==
+   /pintemFORAcairo false def
+
+   %% mantenim les vores buides amb null i marquem les plenes amb un booleà
+   %% els índex cardinals del cairó d'inici i final de la Bézier queden desats a /matriuDcairons
+   matriuDcairons iCairo get dup dup 4mitgeres get null eq
+   {  %% les vores plenes les marquem amb false
+    4mitgeres false put
+   }
+   {  %% les mitgeres plenes les maquem amb true
+    4mitgeres true put
+   }ifelse
+
+   dup anemA get null eq
+   {  %% les vores plenes les marquem amb false
+    anemA false put
+   }
+   {  %% les mitgeres plenes les maquem amb true
+    anemA true put
+   }ifelse
+%== iCairo == (<<<<)== stroke showpage quit
+  }
+  {
+   (--0 pintem fora cairo NS--)==
+   /pintemFORAcairo true def
+
+   %% a quin cairó haurem pintat la Bézier?
+   [
+    {iCairo 1 sub}
+    {iCairo xCairons add}
+    {iCairo 1 add}
+    {iCairo xCairons sub}
+   ]
+   4mitgeres  %% índex/orientació del node d'inici de la Bézier
+   get cvx exec  %/CairoOHPLB exch def  %% cairó on haurem pintat la Bézier
+   %% els índex cardinals del cairó d'inici i final de la Bézier queden desats a /matriuDcairons
+   matriuDcairons exch get dup dup
+   %% invertim líndex cardinal per encertar el punt d'inici de la Bézier al cairó on l'haurem pintat
+   [ null 3 null 1 ] 4mitgeres get /venimD exch def
+   venimD get null eq
+   {  %% les vores plenes les marquem amb false
+    venimD false put
+   }
+   {  %% les mitgeres plenes les maquem amb true
+    venimD true put
+   }ifelse
+
+   dup anemA get null eq
+   {  %% les vores plenes les marquem amb false
+    anemA false put
+   }
+   {  %% les mitgeres plenes les maquem amb true
+    anemA true put
+   }ifelse
+  }ifelse
+
+ }
+ {  %% 1 SO
+  (4BezierNS BAIX SO)==
+  iBezierX iBezierY moveto  %% node d'inici comú també a DALT
+  iBezierX iBezierY dNansa sub  %% primera nansa
+  iBezierX migModul sub dNansa add iBezierY migModul sub  %% segona nansa
+  iBezierX migModul sub iBezierY migModul sub  %% node final
+  curveto
+
+  currentpoint /araBy exch def /araBx exch def
+  /anemA 0 def  %% índex de la posició O al node del punt final de la Bézier, circumscrita o inscrita (cairó següent o no)
+
+  %% si 4mitgeres és al N, llavors és que pintem la Bézier dins el mateix cairó
+  4mitgeres 3 eq
+  {
+   (--1 pintem dins el mateix cairo NS--)==
+   /pintemFORAcairo false def
+
+   %% mantenim les vores buides amb null i marquem les plenes amb un booleà
+   %% els índex cardinals del cairó d'inici i final de la Bézier queden desats a /matriuDcairons
+   matriuDcairons iCairo get dup dup 4mitgeres get null eq
+   {  %% les vores plenes les marquem amb false
+    4mitgeres false put
+   }
+   {  %% les mitgeres plenes les maquem amb true
+    4mitgeres true put
+   }ifelse
+
+   dup anemA get null eq
+   {  %% les vores plenes les marquem amb false
+    anemA false put
+   }
+   {  %% les mitgeres plenes les maquem amb true
+    anemA true put
+   }ifelse
+%== iCairo == (<<<<)== stroke showpage quit
+  }
+  {
+   (--1 pintem fora cairo NS--)==
+   /pintemFORAcairo true def
+
+   %% a quin cairó haurem pintat la Bézier?
+   [
+    {iCairo 1 sub}
+    {iCairo xCairons add}
+    {iCairo 1 add}
+    {iCairo xCairons sub}
+   ]
+   4mitgeres  %% índex/orientació del node d'inici de la Bézier
+   get cvx exec  %/CairoOHPLB exch def  %% cairó on haurem pintat la Bézier
+   %% els índex cardinals del cairó d'inici i final de la Bézier queden desats a /matriuDcairons
+   matriuDcairons exch get dup dup
+   %% invertim líndex cardinal per encertar el punt d'inici de la Bézier al cairó on l'haurem pintat
+   [ null 3 null 1 ] 4mitgeres get /venimD exch def
+   venimD get null eq
+   {  %% les vores plenes les marquem amb false
+    venimD false put
+   }
+   {  %% les mitgeres plenes les maquem amb true
+    venimD true put
+   }ifelse
+
+   dup anemA get null eq
+   {  %% les vores plenes les marquem amb false
+    anemA false put
+   }
+   {  %% les mitgeres plenes les maquem amb true
+    anemA true put
+   }ifelse
+  }ifelse
+ }
+ {  %% 2 SE
+  (4BezierNS BAIX SE)==
+  iBezierX iBezierY moveto  %% node d'inici comú també a DALT
+  iBezierX iBezierY dNansa sub  %% primera nansa
+  iBezierX migModul add dNansa sub iBezierY migModul sub  %% segona nansa
+  iBezierX migModul add iBezierY migModul sub  %% node final
+  curveto
+
+  currentpoint /araBy exch def /araBx exch def
+  /anemA 2 def  %% índex de la posició E al node del punt final de la Bézier, circumscrita o inscrita (cairó següent o no)
+
+%%+figX3
+(X3.2)==  %% xamfrà X3
+
+  %% si 4mitgeres és L N, llavors és que pintem la Bézier dins el mateix cairó
+  4mitgeres 3 eq
+  {
+   (--2 pintem dins el mateix cairo NS--)==
+   /pintemFORAcairo false def
+
+%%+figX3
+(X3.4)==  %% xamfrà X3
+
+   %% mantenim les vores buides amb null i marquem les plenes amb un booleà
+   %% els índex cardinals del cairó d'inici i final de la Bézier queden desats a /matriuDcairons
+   matriuDcairons iCairo get dup dup 4mitgeres get null eq
+   {  %% les vores plenes les marquem amb false
+    4mitgeres false put
+   }
+   {  %% les mitgeres plenes les maquem amb true
+    4mitgeres true put
+   }ifelse
+
+   dup anemA get null eq
+   {  %% les vores plenes les marquem amb false
+    anemA false put
+   }
+   {  %% les mitgeres plenes les maquem amb true
+    anemA true put
+   }ifelse
+%== iCairo == (<<<<)== stroke showpage quit
+  }
+  {
+   (--2 pintem fora cairo NS--)==
+   /pintemFORAcairo true def
+
+   %% a quin cairó haurem pintat la Bézier?
+   [
+    {iCairo 1 sub}
+    {iCairo xCairons add}
+    {iCairo 1 add}
+    {iCairo xCairons sub}
+   ]
+   4mitgeres  %% índex/orientació del node d'inici de la Bézier
+   get cvx exec  %/CairoOHPLB exch def  %% cairó on haurem pintat la Bézier
+   %% els índex cardinals del cairó d'inici i final de la Bézier queden desats a /matriuDcairons
+   matriuDcairons exch get dup dup
+   %% invertim líndex cardinal per encertar el punt d'inici de la Bézier al cairó on l'haurem pintat
+   [ null 3 null 1 ] 4mitgeres get /venimD exch def
+   venimD get null eq
+   {  %% les vores plenes les marquem amb false
+    venimD false put
+   }
+   {  %% les mitgeres plenes les maquem amb true
+    venimD true put
+   }ifelse
+
+   dup anemA get null eq
+   {  %% les vores plenes les marquem amb false
+    anemA false put
+   }
+   {  %% les mitgeres plenes les maquem amb true
+    anemA true put
+   }ifelse
+  }ifelse
+ }
+ {  %% 3 NE
+  (4BezierNS DALT NE)==
+  iBezierX iBezierY moveto  %% node d'inici
+  iBezierX iBezierY dNansa add  %% primera nansa
+  iBezierX migModul add dNansa sub iBezierY migModul add  %% segona nansa
+  iBezierX migModul add iBezierY migModul add  %% node final
+  curveto
+
+  currentpoint /araBy exch def /araBx exch def
+  /anemA 2 def  %% índex de la posició E al node del punt final de la Bézier, circumscrita o inscrita (cairó següent o no)
+
+%%+figX2
+(X2.2)==  %% xamfrà X2
+
+  %% si 4mitgeres és al S, llavors és que pintem la Bézier dins el mateix cairó
+  4mitgeres 1 eq
+  {
+   (--3 pintem dins el mateix cairo NS--)==
+   /pintemFORAcairo false def
+
+%%+figX2
+(X2.4)==  %% xamfrà X2
+
+   %% mantenim les vores buides amb null i marquem les plenes amb un booleà
+   %% els índex cardinals del cairó d'inici i final de la Bézier queden desats a /matriuDcairons
+   matriuDcairons iCairo get dup dup 4mitgeres get null eq
+   {  %% les vores plenes les marquem amb false
+    4mitgeres false put
+   }
+   {  %% les mitgeres plenes les maquem amb true
+    4mitgeres true put
+   }ifelse
+
+   dup anemA get null eq
+   {  %% les vores plenes les marquem amb false
+    anemA false put
+   }
+   {  %% les mitgeres plenes les maquem amb true
+    anemA true put
+   }ifelse
+
+%== iCairo == (<<<<)== stroke showpage quit
+  }
+  {
+   (--3 pintem fora cairo NS--)==
+   /pintemFORAcairo true def
+
+   %% a quin cairó haurem pintat la Bézier?
+   [
+    {iCairo 1 sub}
+    {iCairo xCairons add}
+    {iCairo 1 add}
+    {iCairo xCairons sub}
+   ]
+   4mitgeres  %% índex/orientació del node d'inici de la Bézier
+   get cvx exec  %/CairoOHPLB exch def  %% cairó on haurem pintat la Bézier
+   %% els índex cardinals del cairó d'inici i final de la Bézier queden desats a /matriuDcairons
+   matriuDcairons exch get dup dup
+   %% invertim líndex cardinal per encertar el punt d'inici de la Bézier al cairó on l'haurem pintat
+   [ null 3 null 1 ] 4mitgeres get /venimD exch def
+   venimD get null eq
+   {  %% les vores plenes les marquem amb false
+    venimD false put
+   }
+   {  %% les mitgeres plenes les maquem amb true
+    venimD true put
+   }ifelse
+
+   dup anemA get null eq
+   {  %% les vores plenes les marquem amb false
+    anemA false put
+   }
+   {  %% les mitgeres plenes les maquem amb true
+    anemA true put
+   }ifelse
+  }ifelse
+
+%%Test
+%true
+%{
+% 4mitgeres  %% punt d'inici de la B des de l'orientació del cairó d'on venim
+% anemA  %% punt final de la B des de l'orientació del cairó on estem ara
+% iCairo  %% cairó on estem ara
+% (\\\\\\)pstack stroke showpage quit
+%}if
+
+ }
+]
+/4BezierNS exch def
+
+%%UPAS.12
+%(--hi han coordenades?)pstack quit
+%% pinta la primera (1a) Bézier de forma circumscrita des d'una de les 4 mitgeres del cairó actual
+fa1aBezier 4mitgeres get cvx exec
+
+%% 4.5 > el segon cairó sempre serà vàlid per seguir traçant
+%% 4.5.1 > però la seva posició ens condicionarà: som en una vora? 
+
+%% 4.6 > al punt final del segon cairó ja podríem entrar en un loop on interrogarem el cairó segënt (el tercer i+)
+%% és vàlid? som en una vora? el cairó és buit, migple o ple?
+
+%% 4.6.1 > si NO ho és de vàlid, cal veure:
+%% si seguim perfilant per la vora
+%% si podem tancar la figura
+%% si tornem a 4.3 triant el segon final possible
+
+%% 4.7 > serà vàlid si és migple o buit?
+
+%%ENS CAL aclarir:
+
+%%Què ens indica el sentit/direcció de cap on anem? (esquerra/dreta/amunt/avall)
+%% l'índex que triem un cop siguem al node d'inici i sabem a quin cairó estem i cap a quin cairó anem o podem anar:
+%% 0 si la corba va cap a l'O després podrem triar d'anar cap al N o S
+%% 1 si la corba va cap al S després podrem triar d'anar cap al E o O
+%% 2 si la corba va cap a l'E després podrem triar d'anar cap al N o S
+%% 3 si la corba va cap al N després podrem triar d'anar cap al E o O
+
+%%Què ens indica que una determinada direcció cap a un determinat cairó NO és possible?
+%% un cop siguem al node final d'una corba ens hem d'interrogar cap a aquin cairó podem anar
+%% 0 si som en un node final O només podem anar al cairó de l'esquerra (iCairo -1) triant d'anar cap al N o S
+%% 1 si som en un node final S només podem anar al cairó de baix (iCairo + xCairons) triant d'anar cap a l'O o E
+%% 2 si som en un node final E només podem anar al cairó de la dreta (iCairo + 1) triant d'anar cap al N o S
+%% 3 si som en un node final N només podem anar al cairó de dalt (iCairo - xCairons) triant d'anar cap a l'O o E
+%% al cairó que podem anar (només 1) ens cal demanar via /matriuDcairons si la direcció triada és buida (false)
+
+/8Truchets  %% defineix les 8 Béziers possibles als cairons Truchet per a dins del loop
+[  %% la descripció cardinal dels punts de sortida i arribada és dins del mateix cairó on es pinta
+ [  %% 0 anem a l'oest
+  null %% 0 des de l'oest
+  {  %% 1 des del S
+   (>>> anem cap a l'Oest des del Sud)==
+   %%  el node d'inici ja hi és
+   araBx araBy dNansa add  %% primera nansa
+   araBx migModul sub dNansa add araBy migModul add  %% segona nansa
+   araBx migModul sub araBy migModul add  %% node final
+   curveto
+   currentpoint /araBy exch def /araBx exch def
+  }  %% 1 des del S
+  null  %% 2 (des de l'est) impossible
+  {  %% 3
+   (>>> anem cap a l'Oest des del Nord)==
+   %%  el node d'inici ja hi és
+   araBx araBy dNansa sub  %% primera nansa
+   araBx migModul sub dNansa add araBy migModul sub  %% segona nansa
+   araBx migModul sub araBy migModul sub  %% node final
+   curveto
+   currentpoint /araBy exch def /araBx exch def
+  }  %% 3 des del N?
+ ]
+ [  %% 1 anem al sud
+  {
+   (>>> anem cap al Sud des de l'Oest)==
+   %% el node d'inici ja hi és
+   araBx dNansa add araBy  %% primera nansa
+   araBx migModul add araBy migModul sub dNansa add  %% segona nansa
+   araBx migModul add araBy migModul sub  %% node final
+   curveto
+   currentpoint /araBy exch def /araBx exch def
+  }
+  null
+  {
+   (>>> anem cap al Sud des de l'Est)==
+   %% el node d'inici ja hi és
+   araBx dNansa sub araBy  %% primera nansa
+   araBx migModul sub araBy migModul sub dNansa add  %% segona nansa
+   araBx migModul sub araBy migModul sub  %% node final
+   curveto
+   currentpoint /araBy exch def /araBx exch def
+  }
+ ]
+ [  %% 2 anem a l'est
+  null
+  {
+   (>>> anem cap a l'Est des del Sud)==
+   %% el node d'inici ja hi és
+   araBx araBy dNansa add  %% primera nansa
+   araBx migModul add dNansa sub araBy migModul add  %% segona nansa
+   araBx migModul add araBy migModul add  %% node final
+   curveto
+   currentpoint /araBy exch def /araBx exch def
+  }
+  null
+  {
+   (>>> anem cap a l'Est des del Nord)==
+   %% el node d'inici ja hi és
+   araBx araBy dNansa sub  %% primera nansa
+   araBx migModul add dNansa sub araBy migModul sub  %% segona nansa
+   araBx migModul add araBy migModul sub  %% node final
+   curveto
+   currentpoint /araBy exch def /araBx exch def
+  }
+ ]
+ [  %% 3 anem al nord
+  {  %% 0 des de l'oest
+   (>>> anem cap al Nord des de l'Oest)==
+   %% el node d'inici ja hi és
+   araBx dNansa add araBy  %% primera nansa
+   araBx migModul add araBy migModul add dNansa sub  %% segona nansa
+   araBx migModul add araBy migModul add  %% node final
+   curveto
+   currentpoint /araBy exch def /araBx exch def
+  }  %% 0 des de l'oest 
+  null  %% 1 des del sud
+  {
+   (>>> anem cap al Nord des de l'Est)==
+   %% el node d'inici ja hi és
+   araBx dNansa sub araBy  %% primera nansa
+   araBx migModul sub araBy migModul add dNansa sub  %% segona nansa
+   araBx migModul sub araBy migModul add  %% node final
+   curveto
+   currentpoint /araBy exch def /araBx exch def
+  }  %% 2 des de l'est
+ ]
+] def
+
+/4Costats  %% defineix les 4 línies perpendiculars possibles, de llarg vModul, per enllaçar amb la Bézier quan toca vores
+[
+ {  %% 0 cap a l'Oest
+%  araBx araBy moveto  %% cal, si ja tenim el currentpoint del darrer curveto?
+  araBx vModul sub araBy lineto
+  currentpoint /araBy exch def /araBx exch def
+ }  %% 0
+ {  %% 1 cap al Sud
+%  araBx araBy moveto  %% cal, si ja tenim el currentpoint del darrer curveto?
+  araBx araBy vModul sub lineto
+  currentpoint /araBy exch def /araBx exch def
+ }  %% 1
+ {  %% 2 cap a l'Est
+%  araBx araBy moveto  %% cal, si ja tenim el currentpoint del darrer curveto?
+  araBx vModul add araBy lineto
+  currentpoint /araBy exch def /araBx exch def
+ }  %% 2
+ {  %% 3 cap al Nord
+%  araBx araBy moveto  %% cal, si ja tenim el currentpoint del darrer curveto?
+  araBx araBy vModul add lineto
+  currentpoint /araBy exch def /araBx exch def
+  %% i actualitzem iCairo
+  iCairo xCairons sub  %% cap al Nord
+  /iCairo exch def  %% cairó on hem pintat la perpendicular
+ }  %% 3
+] def
+
+/8Xamfrans  %% defineix les 8 L possibles (vModul/2 + vModul/2) per enllaçar amb la Bézier quan volta un xamfrà
+[
+ {  %% 0 venim de l'Oest i trenquem cap al Nord
+%  araBx araBy moveto  %% cal, si ja tenim el currentpoint del darrer curveto?
+  araBx vModul 2 div add araBy lineto
+  araBx vModul 2 div add araBy vModul 2 div add lineto
+  currentpoint /araBy exch def /araBx exch def
+ }  %% 0
+ {  %% 1 venim del Nord i trenquem cap a l'Oest
+%  araBx araBy moveto  %% cal, si ja tenim el currentpoint del darrer curveto?
+  araBx araBy vModul 2 div sub lineto
+  araBx vModul 2 div sub araBy vModul 2 div sub lineto
+  currentpoint /araBy exch def /araBx exch def
+%%Aquí és bo actualitzar /anemA ?
+anemA 1 sub /anemA exch def
+
+ }  %% 1
+ {  %% 2 venim del Sud i trenquem cap a l'Oest
+%  araBx araBy moveto  %% cal, si ja tenim el currentpoint del darrer curveto?
+  araBx araBy vModul 2 div add lineto
+  araBx vModul 2 div sub araBy vModul 2 div add lineto
+  currentpoint /araBy exch def /araBx exch def
+ }  %% 2 
+ {  %% 3 venim de l'Oest i trenquem cap al Sud
+%  araBx araBy moveto  %% cal, si ja tenim el currentpoint del darrer curveto?
+  araBx vModul 2 div add araBy lineto
+  araBx vModul 2 div add araBy vModul 2 div sub lineto
+  currentpoint /araBy exch def /araBx exch def
+ }  %% 3
+ {  %% 4 venim de l'Est i trenquem cap al Sud
+%  araBx araBy moveto  %% cal, si ja tenim el currentpoint del darrer curveto?
+  araBx vModul 2 div sub araBy lineto
+  araBx vModul 2 div sub araBy vModul 2 div sub lineto
+  currentpoint /araBy exch def /araBx exch def
+ }  %% 4
+ {  %% 5 venim del Sud i anem cap a l'Est
+%  araBx araBy moveto  %% cal, si ja tenim el currentpoint del darrer curveto?
+  araBx araBy vModul 2 div add lineto
+  araBx vModul 2 div add araBy vModul 2 div add lineto
+  currentpoint /araBy exch def /araBx exch def
+ }  %% 5
+ {  %% 6 venim del Nord i anem cap a l'Est
+%  araBx araBy moveto  %% cal, si ja tenim el currentpoint del darrer curveto?
+  araBx araBy vModul 2 div sub lineto
+  araBx vModul 2 div add araBy vModul 2 div sub lineto
+  currentpoint /araBy exch def /araBx exch def
+ }  %% 6
+ {  %% 7 venim de l'Est i anem cap al Nord
+%  araBx araBy moveto  %% cal, si ja tenim el currentpoint del darrer curveto?
+  araBx vModul 2 div sub araBy lineto
+  araBx vModul 2 div sub araBy vModul 2 div add lineto
+  currentpoint /araBy exch def /araBx exch def
+ }  %% 7
+] def
+
+/i 0 def  %% índex per controlar el loop
+
+%%Test
+1 0 1 setrgbcolor stroke showpage
+matriuDcairons ==
+anemA == quit
+
+
+%{  %% stopped
+
+{  %% loop que viatja per la matriu de cairons fins que tanca una figura
+ %% quan hi entrem per primera vegada ja hi haurà pintada la primera Bézier
+
+%%HEM de saber a quin cairó anirem ara per pintar PERÒABANS avaluarem l'estat de les seves mitgeres!
+
+
+%%LPAS.0
+%%+#A en funció de si /pintemFORAcairo deduïm a quin /iCairo hem pintat la Bézier, o sigui, on som (#1L)
+ %% deduïm a quin cairó HEM pintat la Bézier, tret que la primera Bézier abans del loop es pinti dins el cairó
+ pintemFORAcairo
+ {  %% com a mínim és a partir de la 2a Bézier que es pinta fora cairó
+  [ 
+   {iCairo 1 sub}  %% 0 cap a l'Oest
+   {iCairo xCairons add}  %% 1 cap al Sud
+   {iCairo 1 add}  %% 2 cap a l'Est
+   {iCairo xCairons sub}  %% 3 cap al Nord
+  ]
+  4mitgeres  %% índex/orientació del node d'inici de la Bézier (del cairó anterior d'on venim)
+  get cvx exec /iCairo exch def  %% cairó on hem pintat la Bézier
+ }if
+ /pintemFORAcairo true def  %% valor fix a parir de a 2a Bézier
+
+%% tenim una doble manera de comprovar que la Bézier pintada toca vores:
+
+%1% si l'array del cairó duu false a l'índex d' /anemA
+%matriuDcairons iCairo get anemA get false eq  %% consultem si la Bézier toca vores cap on ha anat
+%{
+% /tocaVores true def
+% (TOCA VORES)==
+%}
+%{
+% /tocaVores false def
+% (NO toca vores)==
+%}ifelse
+%tocaVores
+%{  %% si toca vores cal saber:
+%% en quina mitgera estem
+%4mitgeres ==
+%% si som en un xamfrà
+%}if
+
+%%+#B via /iCairo consultem el /mapaDvores per saber si és un cairó de l'interior o toca vores, ho desem a /BezierENferm
+ %2% si iCairo no és zero al /mapaDvores
+ mapaDvores iCairo get dup 0 eq
+ {
+  pop
+  (LOOP >> - - - - cairo NO toca vores - - - -)==
+  /BezierENferm false def  %% encara no sabem cap on pintarem la propera Bézier
+ }
+ {  %% toca vores i sabem on som (/anemA és xamfrà o mitgera) per barallar quina de les 1 o 2 opcions tenim en cada cas
+  Qmagic exch get
+  cvx exec
+  (LOOP >> - - - - cairo TOCA vores - - - -)==
+iCairo ==
+anemA ==
+  /BezierENferm true def  %% sabem cap on pintarem la propera Bézier
+ }ifelse
+
+%%+#C si /BezierENferm és true (toca vores) anem a l'opció on ja gairebé sabem cap on dibuixarem la Bézier
+ BezierENferm  %% sabem cap on pintarem la propera Bézier?
+ { %% SÍ que gairebé ho sabem, perquè la Bézier toca alguna de les 4 vores o xamfrans (predit per /Qmagic)
+   %% i segons la posició d'on acaba el traç a /anemA dins del iCairo hi pot haver 1 o 2 opcions
+  %% llavors desem l'estat d'aquest cairó que pintarem i ho deixem tot apunt per fer treballar 8Truchets i triar cap on tirem
+%%+#C1 al /iCairo on hem pintat la Bézier desem l'estat del punt final /anemA a /matriuDcairons
+  matriuDcairons iCairo get
+  dup anemA get null eq
+  {  %% les vores plenes les marquem amb false
+   anemA false put
+  }
+  {  %% les mitgeres plenes les maquem amb true
+   anemA true put
+  }ifelse
+
+  %% /anemA passa a ser /4mitgeres
+%%+#C2 /anemA passa a ser /4mitgeres, invertit, perquè és el punt d'inici del cairó següent
+  anemA /4mitgeres exch def  %% invertit perquè és el punt d'inici del cairó següent
+
+  [
+   [  %% 0 des de l'Oest
+    3  %% anem al Nord
+    1  %% anem al Sud
+   ]  %% 0 des de l'O només podem anar al S o al N
+
+   [  %% 1 des del Sud
+    2  %% anem a l'Est
+    0  %% anem a l'Oest
+   ]  %% 1 des del S només podem anar a l'O o l'E
+
+   [  %% 2 des de l'Est
+    1  %% anem al Sud
+    3 %% anem al Nord
+   ]  %% 2 des de l'E només podem anar al S o al N
+
+   [  %% 3 des del Nord
+    0  %% anem a l'Oest
+    2  %% anem a l'Est
+   ]  %% 3 des del N només podem anar a l'O o l'E
+  ]
+  %% és l'índex que apunta a un dels 4 arrays cardinals de /8Truchets d'on es tria un dels 2 algorismes possibles de cada
+%%+#C3 via /4mitgeres triem l'array (desat a /suaraONanem) amb els 2 índex que apuntaran als 2 algorismes possibles de cada array cardinal de /8Truchets
+  4mitgeres get dup /suaraONanem exch def
+
+%% fem anar sempre l'atzar de les 2 possibilitats i comprovem si és buida
+
+%%Sembla com si realtime dóna sèries més compensades de 0 o 1 fent 2 mod i usertime dóna resultats molt constants fent 2 mod
+%realtime
+%usertime
+% srand rand
+
+%%L'aleatori més compensat quan només hi ha 2 possibilitats l'aconseguim cridant el rellotge del GS (diu l'hora de la màquina)
+%% (%Calendar%) /IODevice resourcestatus  %% existeix el recurs del calendari+rellotge?
+%% {  %% existeix! (probablement siguem dins GS)
+  %(%Calendar%) currentdevparams
+%%  dup /Running get
+%%  {
+%%{== ==}forall quit
+%%  ( EL RELLOTGE INTERN DE GS)== quit
+%% l'ideal seria poder jugar amb mi·lisegons, però segons el punt jugant amb el minut donem més opcions 
+  %/Minute get
+%  /Second get
+%%  }
+%%  {  %% si Running es a false deixem un missatge d'avis, pero no fem res ...
+%%   pop
+%%   (\n ... >>> Hi ha %Calendar% pero Running es a false :\( \n) print flush
+%%  }ifelse
+%% }
+%% {
+%%  (\n ... >>> NO hi ha %Calendar% PLEGUEM! :\( \n) print flush quit
+%% }ifelse
+
+(LOOP >> ::3::ATZAR!)==
+realtime ARAtime sub dup /ARAtime exch def 2 mod dup /suaraMod exch def get matriuDcairons iCairo get exch get dup ==
+
+%%+#C4 triem per atzar (2 possibilitats) dins l'array /suaraONanem i mirem el seu estat al /mapaDvores per saber si és buida
+dup type /integertype eq
+{  %% si és un enter és buida
+ pop  %% ens el carreguem doncs el que val és l'índex
+ suaraONanem suaraMod get
+}
+{  %% és plena
+ suaraMod 0 eq
+ {  %% agafem la contrària que hauria d'estar buida
+  suaraONanem 1 get
+ }
+ {  %% agafem la contrària que hauria d'estar buida
+  suaraONanem 0 get
+ }ifelse
+}ifelse
+dup ==
+%% amb l'index cardinal de sortida que tenim aquí cridem la funció per dibuixar la Truchet cap al punt cardinal que toca
+/anemA exch def
+
+%%COMPROVAR SI AQUESTA CASUÍSTICA NO ES DÓNA PER ALGUNA RAÓ
+%%TEST per anar cap al Nord des de l'Est
+%4mitgeres 2 eq anemA 1 eq and{/anemA 3 def}if
+
+8Truchets anemA get  %% array que ens situa cap a on anem des del cairó on som
+4mitgeres get cvx exec  %% procediment que pinta la Bézier des d'on hi anem des del cairó on som
+
+%%CAL comprovar si es tanca la figura o no
+  %% ens cal comparar els X,Y on anirem a parar amb els x,y inicials de la figura
+  araBx iBezierX eq
+  araBy iBezierY eq
+  and  %% venint del Sud i anant cap a l'oest?
+  {
+   (LOOP >> TANQUEMlaFIGURA! 0)==
+   closepath
+
+  %% llavors desem l'estat d'aquest cairó que hem traçat i que pintarem ara
+  matriuDcairons iCairo get
+  dup anemA get null eq
+  {  %% les vores plenes les marquem amb false
+   anemA false put
+  }
+  {  %% les mitgeres plenes les maquem amb true
+   anemA true put
+  }ifelse
+
+%%TANQUEMiSORTIM
+0 0 1 setrgbcolor stroke
+%%Test direccional: pintem una rodoneta groga cap on /anemA
+gsave 1 1 0 setrgbcolor vModul 20 div /rd exch def araBx araBy 2 copy moveto rd 0 360 arc fill grestore
+matriuDcairons ==  %% mirem si l'actualització de l'estat al darrer cairó on em pintat és correcte
+(LOOP >> #0)==
+showpage quit
+
+  }if
+
+%%ENS cal actualitzar /matriuDcairons
+%% llavors desem l'estat d'aquest cairó que ja hem pintat
+matriuDcairons iCairo get
+dup anemA get null eq
+{  %% les vores plenes les marquem amb false
+ anemA false put
+}
+{  %% les mitgeres plenes les maquem amb true
+ anemA true put
+}ifelse
+
+%%ARASOMAQUÍ i seguim perquè no tanquem i ho deixem a punt pel cairó següent on hem de seguir pintant
+%%LPAS.3
+  %% el punt final de la Bézier que ja hem pintat es converteis en punt d'inici de la nova que pintarem ara
+  [
+   2  %% 0 l'O passa a l'E
+   3  %% 1 el S passa al N
+   0  %% 2 l'E passa a l'O
+   1  %% 3 el N passa al S
+  ] anemA get /4mitgeres exch def  %% invertit perquè és el punt d'inici del nou cairó
+
+
+%%A QUIN CAIRÓ ANEM?
+  [
+   {iCairo 1 add}  %% 0 cap a l'Est
+   {iCairo xCairons sub}  %% 1 cap al Nord
+   {iCairo 1 sub}  %% 2 cap a l'Oest
+   {iCairo xCairons add}  %% 3 cap al Sud
+  ]
+  4mitgeres  %% índex/orientació del node d'inici de la Bézier (del cairó anterior d'on venim)
+  get cvx exec /iCairo exch def  %% cairó on hem pintat la Bézier
+
+  [
+   [  %% 0 des de l'Oest
+    3  %% anem al Nord
+    1  %% anem al Sud
+   ]  %% 0 des de l'O només podem anar al S o al N
+
+   [  %% 1 des del Sud
+    2  %% anem a l'Est
+    0  %% anem a l'Oest
+   ]  %% 1 des del S només podem anar a l'O o l'E
+
+   [  %% 2 des de l'Est
+    1  %% anem al Sud
+    3 %% anem al Nord
+   ]  %% 2 des de l'E només podem anar al S o al N
+
+   [  %% 3 des del Nord
+    0  %% anem a l'Oest
+    2  %% anem a l'Est
+   ]  %% 3 des del N només podem anar a l'O o l'E
+  ]
+  anemA  %% és l'índex que apunta a un dels 4 arrays cardinals de /8Truchets d'on es tria un dels 2 algorismes possibles de cada
+  get
+  %(%Calendar%) currentdevparams /Second get
+(LOOP >> ::4::ATZAR!)==
+realtime ARAtime sub dup /ARAtime exch def 2 mod get  %% triem 1 dels dos índex de l'array
+  /anemA exch def
+
+iCairo ==
+4mitgeres ==
+anemA ==
+(LOOP >> <<< ARASOMAQUI)== %quit
+
+
+ }
+ {  %% NO ho sabem i ara som en algun dels cairons que no toca vores
+  %% llavors, activem els mecanismes per triar-la
+(LOOP >> --- hi passem? ---)pstack quit
+
+%%LPAS.3
+  %% el punt final de la Bézier que ja hem pintat es converteis en punt d'inici de la nova que pintarem ara
+  [
+   2  %% 0 l'O passa a l'E
+   3  %% 1 el S passa al N
+   0  %% 2 l'E passa a l'O
+   1  %% 3 el N passa al S
+  ] anemA get /4mitgeres exch def  %% invertit perquè és el punt d'inici del nou cairó
+
+
+%%A QUIN CAIRÓ ANEM?
+  [
+   {iCairo 1 add}  %% 0 cap a l'Est
+   {iCairo xCairons sub}  %% 1 cap al Nord
+   {iCairo 1 sub}  %% 2 cap a l'Oest
+   {iCairo xCairons add}  %% 3 cap al Sud
+  ]
+  4mitgeres  %% índex/orientació del node d'inici de la Bézier (del cairó anterior d'on venim)
+  get cvx exec /iCairo exch def  %% cairó on hem pintat la Bézier
+
+%%LPAS.??
+  %% ens cal triar cap a on pintem la nova Bézier (orientació) des del nou node d'orígen cap al node final
+  %% es tria l'índex /anemA que apunta a un dels algorismes de /8Truchets que pinta una de les 8 Béziers possibles
+%%ATZAR:
+%% creuant l'ordre dels valors dels arrays Oest/Est i Sud/Nord la tendència és a fer diagonals perpendiculars en dent de serra
+%% sense creuar l'ordre dels arrays Oest/Est i Sud/Nord la tendència és fer diagonals seguides, d'anada i tornada
+  [
+   [  %% 0 des de l'Oest
+    3  %% anem al Nord
+    1  %% anem al Sud
+   ]  %% 0 des de l'O només podem anar al S o al N
+
+   [  %% 1 des del Sud
+    2  %% anem a l'Est
+    0  %% anem a l'Oest
+   ]  %% 1 des del S només podem anar a l'O o l'E
+
+   [  %% 2 des de l'Est
+    1  %% anem al Sud
+    3 %% anem al Nord
+   ]  %% 2 des de l'E només podem anar al S o al N
+
+   [  %% 3 des del Nord
+    0  %% anem a l'Oest
+    2  %% anem a l'Est
+   ]  %% 3 des del N només podem anar a l'O o l'E
+  ] anemA  %% és l'índex que apunta a un dels 4 arrays cardinals de /8Truchets d'on es tria un dels 2 algorismes possibles de cada
+
+  get
+
+%dup == quit
+
+%% són índex amb valors de zero o u, que trien dins els arrays cardinals de /8Truchets (triats per /anemA)
+%% des del punt d'inici de l'algorisme que pinta una de les 8 Béziers possibles
+%%+fig_1
+% [ 1 0 0 0 0 1 1 ]  %% aquesta array és la clau de ruta de com es forma i mou el gromull Truchet
+[ 1 1 0 0 1 1 0 1 0]  %% tantes bézier com elements de l'array +1 es pintaran
+%%+fig_2
+%[ 0 1 1 ]  %% clau de ruta
+%%+fig_3
+%[ 1 1 0 ]  %% clau de ruta
+i  %% aquest és l'índex de voltes de loop
+get get  %% aquest valor serà el nou /anemA
+
+%%+fat
+%  realtime srand rand 2 mod get  %% triem 1 dels dos índex de l'array
+  /anemA exch def
+
+
+%%LPAS.!!
+%% aquest redefinició és sobrera? perquè /4mitgeres el tornem a definir més avall abans de fer res més?
+  [
+   2  %% 0 l'O passa a l'E
+   3  %% 1 el S passa al N
+   0  %% 2 l'E passa a l'O
+   1  %% 3 el N passa al S
+  ] 4mitgeres  %% índex del node d'inici des del cairó anterior d'on venim
+  get /4mitgeres exch def  %% i que invertim l'orientació/índex per situar-lo en funció del cairó de la Bézier pintada
+
+
+
+
+ }ifelse
+
+
+
+
+
+%% aqui hi havia LPAS.1
+
+%%Test
+%i 800 eq  %% sortim quan hem pintat la Bézier que fa +1 de l'índex
+%{
+% 0 1 0 setrgbcolor stroke showpage
+% matriuDcairons (!)pstack quit  %% mirem si l'actualització de l'estat al darrer cairó on em pintat la Bézier és correcte
+%}if
+
+
+%%Aquí ens cal saber si hi ha posicions prohibides per a la segona Bézier i següents
+%%PRIMER ens cal saber si /iCairo és fora de rang? (seria a partir de la 2a enllà?)
+%iCairo ==  %% o més petit que zero
+%% o més gran que /maxiCairo
+
+%%LPAS.2
+%%SEGON ens cal demanar via /matriuDcairons si /anemA és buida (integer) o trepitja (true) o toca vores (false/null)
+ %% dades de la Bézier que ja hem pintat
+ matriuDcairons iCairo get %dup 4mitgeres get ==
+ anemA get  %% només pot ser true o false?  %(::::anem DE cap A)== 0 0 1 setrgbcolor stroke showpage quit
+
+%%Hem de filtrar que no sigui un integer!
+%dup
+ type /integertype eq
+{  %% si és un enter ens el carreguem i hi posem true
+(LOOP >> #1)==
+%  pop
+ true
+
+%%LPAS.1
+ i 1 ge  %% a partir de la 2a volta de loop haurem d'actualitzar l'estat del cairó on hem pintat la Bézier
+ { 
+%%FEM EL DESAT de l'estat aquí? i aquesta estratègia de registre és correcte
+   matriuDcairons iCairo get dup dup
+   %% invertim líndex cardinal per encertar el punt d'inici de la Bézier al cairó on l'haurem pintat
+%   [ null 3 null 1 ] 4mitgeres get /venimD exch def
+%   venimD
+   4mitgeres get null eq
+   {  %% les vores plenes les marquem amb false
+%    venimD
+    4mitgeres false put
+   }
+   {  %% les mitgeres plenes les marquem amb true
+%    venimD
+    4mitgeres true put
+   }ifelse
+
+   dup anemA get null eq
+   {  %% les vores plenes les marquem amb false
+    anemA false put
+   }
+   {  %% les mitgeres plenes les marquem amb true
+    anemA true put
+   }ifelse
+ }if
+
+}
+{  %% tant si és un null o un booleà voldrà dir o que trepitgem vora lliure o mitgera ocupada, i caldrà analitzar-ho
+(LOOP >> #2)==
+% dup null eq
+% {  %% és un null, hi i posem false com a que la vora ja és plena
+%  pop false
+% }if
+
+ false
+}ifelse
+
+
+%%LPAS.5
+{
+(LOOP >> #3)==
+%%Fem una array /8Truchets amb totes les Béziers possibles
+ 8Truchets anemA get  %% array que ens situa cap a on anem des del cairó on som
+ 4mitgeres get cvx exec  %% procediment que pinta la Bézier des d'on hi anem des del cairó on som
+}
+
+%%LPAS.4
+{  %% false, toca vores o mitgeres trepitjades d'un cairó!
+ {LOOP >> ::: hem de tenir cura del posicionament de la Bézier, via /Qmagic i /mapaDvores ? :::}
+ iCairo anemA  %% cairó on som i punt des d'on hem de seguir cap a?
+ matriuDcairons i pstack
+  %% serà en funció i ens diu a quina vora OSEN som?
+ 1 0 0 setrgbcolor stroke
+
+ showpage
+ quit
+
+%%Haurem de filtrar si /iCairo surt de rang per tornar-lo a definir, i potser també /4mitgeres i /anemA
+%%DECISIONS
+%%Si toca vores:
+%% cal saber a quina de ls 4mitgeres som, o si som en un xamfrà, i decidir si anem cap a l'esquerra/dreta o tanquem el xamfrà
+
+%%Si trepitja:
+
+%%Si és buida:
+
+}ifelse
+
+
+ i 1 add /i exch def
+
+
+%%SORTIM VIA TEST
+%%+fig_1
+%%Sortim del loop quan:
+         %% tantes bézier com el valor de l'enter +1 es pintaran
+ i 9 eq  %% el nombre de voltes de loop coincideix amb el nombre d'elements de la clau de ruta
+
+%%+fig_2
+% i 3 eq  %% el nombre de voltes de loop coincideix amb el nombre d'elements de la clau de ruta
+%%+fig_3
+% i 3 eq  %% el nombre de voltes de loop coincideix amb el nombre d'elements de la clau de ruta
+ {
+%  4mitgeres  %% punt d'inici de la B des de l'orientació del cairó d'on venim
+%  anemA  %% punt final de la B des de l'orientació del cairó on estem ara
+%  iCairo  %% cairó on estem ara
+%  iBezierX iBezierY araBx araBy  %% l'ídem d'aquest parell de coordenades haurà de ser el detector de final de loop
+  matriuDcairons  (LOOP >> //9//)pstack
+  2 setlinewidth
+  0 1 1 setrgbcolor stroke showpage quit
+ }if
+
+%%LPAS.6
+%%SORTIM VIA TANCAMENT DE LA FIGURA
+ %% ens cal comprovar si l'x,y final... currentpoint == == ...coincideix amb... iBezierY == iBezierX ==
+ %% doncs llavors hauríem tancat la figura i faríem un.. closepath (traçant o omplint)
+ iBezierX araBx eq
+ {
+  iBezierY araBy eq
+  {
+(LOOP >> TANQUEMlaFIGURA! 3) ==
+%   1 0 1 setrgbcolor
+ closepath
+% stroke
+%   matriuDcairons == (TANCAT!)==
+%   exit
+
+%%TANQUEMiSORTIM
+0 0 1 setrgbcolor stroke
+%%Test direccional: pintem una rodoneta groga cap on /anemA
+gsave 1 1 0 setrgbcolor vModul 20 div /rd exch def araBx araBy 2 copy moveto rd 0 360 arc fill grestore
+matriuDcairons ==  %% mirem si l'actualització de l'estat al darrer cairó on em pintat és correcte
+showpage quit
+
+  }if
+ }if
+
+
+%%LPAS.7
+ %% actualitzem
+ [
+  2  %% 0 l'O passa a l'E
+  3  %% 1 el S passa al N
+  0  %% 2 l'E passa a l'O
+  1  %% 3 el N passa al S
+ ] 4mitgeres  %% índex del node d'inici des del cairó anterior d'on venim
+ get /4mitgeres exch def  %% i que invertim l'orientació/índex per situar-lo en funció del cairó de la Bézier pintada
+
+%%EP: quan el generador de Truchets ja rodi i vagi fent figures, a partir de la primera hauríem de tenir valorat si hi ha cap
+%% cairó que ja tingui les 4 mitgeres plenes, llavors, el seu índex l'hauríem de marcar per tal que el bombo aleatori l'obviés
+
+}loop  %% que viatja per la matriu de cairons fins que tanca una primera figura
+
+%}stopped
+%{
+% maxiCairo
+% iCairo pstack  %% peta perquè el càlcul de l'índex marxa fora del rang permès
+% 0 0 1 setrgbcolor stroke
+%}if
+
+%%Qüestions d'aleatorietat:
+%% perquè gairebé sempre els truchets van en diagonal?
+%% perquè rarament segueixen una trajectòria horitzontal?
+
+%showpage
+ 

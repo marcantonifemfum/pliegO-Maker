@@ -1,0 +1,79 @@
+%% evitem repeticions innecessàries en un sorteig d'elements indexats
+%% escull un índex d'una array, un a un cada vegada, de manera que només entren al sorteig els elements actius (no /gatell)
+%% o sigui que, seqüencialment, no es compten a l'indexat els que ja hem escollit (/gatell), ens els saltem
+%% és un mètode paral·lel a ouera.ps i caldria saber per què nullNOindex.ps és més lent o ineficient
+
+/araRai %[ 0 1 2 3 4 5]  %% array amb elements qualsevol, i aquí fem coincidir els enters amb el seu índex
+80 80 mul array def
+
+/gatell false def  %% quin gatell fem servir per detectar l'índex escollit: null? true? false?
+
+/iL 0 def  %% per comptar voltes del loop
+
+{  %% loop
+ araRai length /nINDEX exch def  %% nombre d'elements totals de l'array
+
+ realtime  %% aleatori pel sorteig
+
+ araRai
+ {  %% compta el nombre d'elements NO /gatell de l'array
+  gatell eq
+  {
+   nINDEX 1 sub /nINDEX exch def
+  }if
+ }forall
+
+ nINDEX  %% nombre d'elements NO /gatell de l'array
+ %% dup ==  %% aquí comprovem que n'escollim un i només un de diferent cada vegada
+
+ %% sortim?
+ nINDEX 0 eq  %% quan el nombre d'elements NO /gatell és zero (o sigui, són tots /gatell)
+ {
+  exit
+ }if
+
+ mod  %% ens dóna un índex entre zero i n-1 elements no /gatell
+ /aNULL exch def
+
+ %% marquem amb /gatell l'element escollit ignorant els que ja són a /gatell
+ /i 0 def  %% índex absolut de l'array
+ /iNULL 0 def  %% índex de només els NO /gatell
+ /podemSortir false def  %% voltem el forall només l'imprescindible
+
+ araRai
+ {  %% forall
+  aNULL iNULL eq
+  {  %% aquí el valor final de /i serà l'índex escollit que marcarem amb /gatell a /araRai
+   i /ficaNULL exch def
+   /podemSortir true def
+  }if
+
+  gatell ne
+  {
+   iNULL 1 add /iNULL exch def
+   podemSortir
+   {  %% sortim quan topem amb el primer element no /gatell, un cop hem definit /ficaNULL per estalviar voltes al forall
+    exit
+   }if
+  }if
+
+  i 1 add /i exch def
+ }forall
+
+%i ==  %% +1 volta de forall o index absolut escollit = /ficaNULL
+%(!!!!)pstack quit
+
+ %% marquem a /gatell
+ araRai ficaNULL  %%dup ==  %% aquí comprovem que n'escollim un i només un de diferent cada vegada
+ gatell put
+
+%araRai ==
+
+ iL 1 add /iL exch def
+}loop
+
+%araRai ==  %% array tota a /gatell
+%iL ==  %% tantes voltes al loop com elements tingui l'array /araRai
+
+showpage  %% aquest showpage és necessari si volem fer servir paginesPerMinut.ps
+

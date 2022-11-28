@@ -1,0 +1,293 @@
+%% com en una ouera, hi fiquem ous i mirem si n'hi ha en un determinat lloc (graella X/Y) fins que s'ompli
+%% aquest exercici posa en crisi la uniformitat de distribució de l'aleatoriaetat en un determinat rang de possibilitats
+%% és un mètode paral·lel a nullNOindex.ps per evitar repeticions innecessàries en un sorteig d'elements indexats 
+%% caldria saber per què ouera.ps és molt més eficient i ràpid (amb 6400 possibilitats és +d10 cops més ràpid) que nullNOindex.ps
+
+%% 6400 possibilitats
+/Xous 80 def
+/Yous 80 def
+
+false
+{  %% string
+ Xous Yous mul string
+ dup 20 (\001) putinterval %% fiquem
+ dup 20 1 getinterval ==   %% traiem
+}
+{  %% array
+ Xous Yous mul dup /maxOus exch def array /ouera exch def
+ 
+% dup 20 1 put  %% fiquem
+% dup 20 get == %% traiem
+}ifelse
+
+%% tombola dels ous
+/araOus 0 def
+
+false
+{
+
+ % si el duu llavors farceix una cadena segons la sintaxi del Creation Date d'AcrobatPDF
+ (%Calendar%) /IODevice resourcestatus  % existeix el recurs del calendari+rellotge?
+
+ {  % existeix! (probablement siguem dins GS)
+  pop pop  % ens carreguem les altres dues respostes del query
+  /QuinaHoraEs () def  % cadena d'inici per l'hora
+  (%Calendar%) currentdevparams %{== ==}forall quit
+  dup /Running get
+  {  % suposem q per refiar-nos del calendari aquesta entrada ha d'estar a true
+   dup /Year get
+   4 string cvs /aNY exch def
+   dup /Month get
+   2 string cvs /MeS exch def
+   dup /Day get
+   2 string cvs /Dia exch def
+   dup /Hour get
+   2 string cvs dup length dup 2 ne {1 add exch (00) dup 3 -1 roll 1 exch putinterval exch}if
+   QuinaHoraEs length dup /afegit exch def add string dup 0 QuinaHoraEs putinterval
+   dup afegit 4 -1 roll putinterval /QuinaHoraEs exch def
+
+QuinaHoraEs length dup /afegit exch def 1 add string dup 0 QuinaHoraEs putinterval
+dup afegit (:) putinterval /QuinaHoraEs exch def
+
+   dup /Minute get dup 0 eq{3141618}{dup}ifelse/miNUT exch def  % x srand
+   2 string cvs dup length dup 2 ne {1 add exch (00) dup 3 -1 roll 1 exch putinterval exch}if
+   QuinaHoraEs length dup /afegit exch def add string dup 0 QuinaHoraEs putinterval
+   dup afegit 4 -1 roll putinterval /QuinaHoraEs exch def
+   
+QuinaHoraEs length dup /afegit exch def 1 add string dup 0 QuinaHoraEs putinterval
+dup afegit (:) putinterval /QuinaHoraEs exch def
+   
+   /Second get dup miNUT mul /llevor exch def  % x srand
+   2 string cvs dup length dup 2 ne {1 add exch (00) dup 3 -1 roll 1 exch putinterval exch}if
+   QuinaHoraEs length dup /afegit exch def add string dup 0 QuinaHoraEs putinterval
+   dup afegit 4 -1 roll putinterval /QuinaHoraEs exch def
+  }
+  {  % si Running es a false deixem un missatge d'avis, pero no fem res...
+   pop
+   (\n...>>> Hi ha %Calendar% pero Running es a false :-\( \n\n) print flush
+   (00:00:00)/QuinaHoraEs exch def
+   (1959)/aNY exch def
+   (11)/MeS exch def
+   (24)/Dia exch def
+  }ifelse
+ }
+ {
+  (\n...>>> NO hi ha %Calendar% pero no hi fa res... ;-\) \n\n) print flush
+  (00:00:00)/QuinaHoraEs exch def
+  (1959)/aNY exch def
+  (11)/MeS exch def
+  (24)/Dia exch def
+ }ifelse
+ % si NO existeix... probablement siguem a Distiller
+
+{  %% loop
+
+%%Xous
+ %% raonament tret de ~/comportaments_srand_realtime_usertime.ps 
+ /iTera 10 def  %% iteracions d'aleatorietat entre 2 sortejos seguits
+ /Tdespera 14400 def  %% constant aproximada d'un temps d'espera amb l'operador for que reparteix força equitativament
+
+ 0 1 iTera
+ {
+  pop
+
+  %% realtime reparteix millor l'aleatorietat que usertime (però qüestionarem aquest mètode a l'opció false)
+  realtime srand  % posem la llavor de l'aleatori
+  rrand
+  Xous
+  mod pop  %% primer sorteig que descartem (índex màxim a jugar)
+
+  %% com més espaiem les 2 preses de temps, l'aleatorietat millora, en el sentit que queda millor repartida
+  %% si no espaiem, amb deu mil iteracions, menys de 10 surten imparells
+  0 1 Tdespera
+  {  %% és una manera de generar un temps d'espera per espaiar les dues srand
+   %% el temps d'espera determina el repartiment de l'aleatorietat: % de cops que surten imparells vs % de cops amb parells
+   pop
+  }for
+
+  %% tant amb realtime com amb usertime, si no tornem a plantar la llavor, MAI no treu els resultats imparells!
+%  realtime
+llevor srand
+  rrand
+  Xous
+  mod  %% segon sorteig (índex màxim a jugar)
+
+ }for
+ iTera{pop}repeat
+ %% deixa a l'stack un valor enter d'índex entre 0 i Xous -1
+
+%%Yous
+ %% raonament tret de ~/comportaments_srand_realtime_usertime.ps 
+ /iTera 10 def  %% iteracions d'aleatorietat entre 2 sortejos seguits
+ /Tdespera 14400 def  %% constant aproximada d'un temps d'espera amb l'operador for que reparteix força equitativament
+
+ 0 1 iTera
+ {
+  pop
+
+  %% realtime reparteix millor l'aleatorietat que usertime (però qüestionarem aquest mètode a l'opció false)
+  realtime srand  % posem la llavor de l'aleatori
+  rrand
+  Yous
+  mod pop  %% primer sorteig que descartem (índex màxim a jugar)
+
+  %% com més espaiem les 2 preses de temps, l'aleatorietat millora, en el sentit que queda millor repartida
+  %% si no espaiem, amb deu mil iteracions, menys de 10 surten imparells
+  0 1 Tdespera
+  {  %% és una manera de generar un temps d'espera per espaiar les dues srand
+   %% el temps d'espera determina el repartiment de l'aleatorietat: % de cops que surten imparells vs % de cops amb parells
+   pop
+  }for
+
+  %% tant amb realtime com amb usertime, si no tornem a plantar la llavor, MAI no treu els resultats imparells!
+%  realtime
+llevor srand
+  rrand
+  Yous
+  mod  %% segon sorteig (índex màxim a jugar)
+
+ }for
+ iTera{pop}repeat
+ %% deixa a l'stack un valor enter d'índex entre 0 i Yous -1
+
+%%Aquests aleatoris no tenen el resultat de repartiment esperat!
+%% tret que encebem el rellotge amb la crida al recurs (%Calendar%) de Ghostcript
+
+ %% posició x/y dins l'array unidimensional
+% 1 sub  %% valor de Y on se'n resta 1 i es multiplica per Xous i després es suma al resultat de l'aleatori de Xous
+ Xous mul  %% es multiplica per Xous
+ add  %% es suma al resultat de l'aleatori de Xous
+
+ dup ouera exch get
+
+ null eq
+ {
+  ouera exch 1 put  %% el fiquem a l'ouera
+  araOus 1 add /araOus exch def
+ }
+ {
+  pop
+ }ifelse
+
+% maxOus
+ 20 araOus eq
+ {
+  exit
+ }if
+
+}loop
+ ouera ==
+}
+{
+ false
+ {
+  realtime srand
+
+  %% agafant el temps al calendari del GS tampoc no millora aquí l'aleatorietat
+  %llevor srand
+
+  /number
+  {
+   rand exch mod
+  } bind def
+
+  %% nombre d'elements (fotos) a barallar
+  %enTens
+  maxOus 1 add /AfotoS exch def
+  AfotoS array /BoMBo exch def
+
+  0  % index comptador per l'array
+  AfotoS 3 mul  %% tres cops el nombre d'elements
+  {  %% repeat
+   /HiEra false def
+
+   %% sempre sortira un enter entre 0 i AfotoS-1
+   AfotoS number /HiEs exch def
+
+   BoMBo
+   {
+    HiEs eq
+    {
+     /HiEra true def exit
+    }if
+   }forall
+
+   HiEra not
+   {
+    dup BoMBo exch HiEs put 1 add
+   }if
+  }repeat
+
+  pop
+
+  %% el treiem per ordre de l'aleatori actual i mirem si som al final per un null
+  %BoMBo RODAi get dup null eq
+  %{
+  % pop enTens dup /RODAi exch def
+  %}if
+
+  %AlbUm /0 get /iCanals get {== ==}forall (kkkkk)pstack quit
+
+  %% ni realtime srand ni amb GS no sempre pot omplir tota l'array de la combinatòria multiplicant per 3 el nombre d'elements
+  BoMBo
+  pstack
+
+  %/BOMBOi exch def
+ }
+ {
+%%Aquesta és la bona!
+%% per què ouera.ps és molt més eficient i ràpid (amb 6400 possibilitats és +d10 cops més ràpid) que nullNOindex.ps ?
+
+realtime /tempsAra exch def
+
+  %% anirem omplint la /ouera (ja creada multiplicant /Xous x /Yous) a mida que anem reduïnt el valor de /maxOus per l'aleatori!
+  %% si el valor aleatori hagués d'anar relacionat amb alguna dada, la posaríem al diccionari
+  /dicciouera <<>> def  %% diccionari inicial de valors aleatoris que podrem anar donant de baixa amb undef
+  0 1 maxOus 1 sub
+  {  %% for per farcir el diccionari inicial
+   8 string cvs dicciouera exch null put  %% clau (#) amb valor null
+  }for
+
+  %%dicciouera {== ==} forall
+  %% generem l'array inicial ordenada amb tots el valors
+  [
+   0 1 maxOus 1 sub
+   {  %% els convertim a literal perquè així sortiran del diccionari quan els passem a array encara que hi entrin com a string
+    8 string cvs cvn
+   }for
+  ] /ousXordre exch def
+
+  %% índex per farcir l'array final /ouera
+  /i 0 def
+
+  {  %% loop
+   realtime  %% ara és 100% aleatori
+% srand  %% plantem la llavor de l'aleatori
+% rand  %% aquest mètode fa que la sèrie es repeteixi igual cada vegada!
+    maxOus mod  %% enter entre 0 i maxOus-1
+
+   ousXordre exch get  %% el valor d'índex sempre hi serà (perquè anirem reduïnt maxOus)
+   dup dicciouera exch undef  %% donem de baixa el valor trobat
+   [
+    dicciouera  %% del diccionari modificat en generem de nou l'array /ousXordre
+    {
+     pop
+    }forall
+   ] /ousXordre exch def
+   ouera exch i exch put  %% per gunayar temps la farcim mantenint els enters com a strings
+   maxOus 1 sub /maxOus exch def  %% anirem reduïnt
+   i 1 add /i exch def  %% actualitzem l'índex per anar desant a /ouera
+   maxOus 0 eq  %% sortim quan maxOus valgui zero
+   {
+    exit
+   }if
+  }loop
+
+  ouera ==
+
+realtime tempsAra sub ==
+
+showpage  %% aquest showpage és necessari si volem fer servir paginesPerMinut.ps 
+
+ }ifelse
+}ifelse

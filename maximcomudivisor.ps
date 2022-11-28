@@ -1,0 +1,49 @@
+%!
+%% algorisme d'Euclides pel màxim comú divisor de dos nombres enters
+%% https://ca.wikipedia.org/wiki/Algorisme_d%27Euclides
+
+%% dos valors enters, on és indiferent quin és el més gran
+/A 462 def
+/B 1071 def
+
+%% ens assegurem que sempre seran positius
+A abs /A exch def
+B abs /B exch def
+
+%% a dividend el major dels nombres (a divisor el menor)
+A B gt
+{
+ A B
+}
+{
+ B A
+ 2 copy /B exch def
+ /A exch def
+}ifelse
+
+/i 0 def  %% eficiència algorísmica
+
+{  %% loop
+ {  %% stopped
+  mod /R exch def
+  B /A exch def 
+  R /B exch def
+  B 0 eq
+  {
+   exit
+  }if
+  A B
+  i 1 add /i exch def
+ }stopped
+ {
+  i 1 add /i exch def
+  (...hem fet servir nombres reals!)== exit
+ }if
+}loop
+
+%% resultat del MCD
+A ==
+
+%% eficiència algorísmica
+i ==
+

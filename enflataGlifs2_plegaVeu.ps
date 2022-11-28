@@ -14,12 +14,20 @@
 %% nova crida gs 9.55
 %% gs -q -dNOSAFER -o enflataGlifs2_plegaVeu.pdf -sDEVICE=pdfwrite -dAutoRotatePages=/None -f enflataGlifs2_plegaVeu.ps
 
+%%PV20.1
+%%Ho traslladem a PV20.0
 %%MENÚ: format i nivells de qualitat
-<<
-  /PageSize [842 595]  %% l'escala de treball ens pot ajudar a guanyar precisió: a més gran format, més precisió
-  /HWResolution [4000 4000]  %% la resolució del dispositiu (de 72 a 4000) també juga amb setflat pel flattenpath de segmentació
->>setpagedevice
-.2 setflat  %% valors de .2 (qualitat màxima, molts segments) a 100 (qualitat mínima, pocs segments)
+%<<
+%  /PageSize [842 595]  %% l'escala de treball ens pot ajudar a guanyar precisió: a més gran format, més precisió
+%  /HWResolution
+%  [
+%   4000 4000  %% màxim
+%   %72 72  %% mínim
+%  ]  %% la resolució del dispositiu (de 72 a 4000) també juga amb setflat pel flattenpath de segmentació
+%>>setpagedevice
+%.2  %% màxim
+%%100  %% mínim
+% setflat  %% flatness: valors de .2 (qualitat màxima, molts segments) a 100 (qualitat mínima, pocs segments)
 
 %%MENÚ: Text a escriure (compondre)
 %(tant de sol als turmells, de mar llisa i daurada)
@@ -28,16 +36,17 @@
 %(WmVlUkTjSiRhQgPfOeNdMcLKaJvIuHtGsFrEqDZpCYoBXnA) %% a la GrissomFour la b peta?
 %(Repressió: tres mil tres-cent (3300) represaliats pel cap baix i anem sumant)
 
-%%PV textos plegaVeu
+%%PV20.1 textos plegaVeu
 %% 100 glifs
-%(Efectivament, era tot tan bell! semblava que la terra contenta de veure's habitada s'havia deixondit)
-(Sag)
+(Efectivament, era tot tan bell! semblava que la terra contenta de veure's habitada s'havia deixondit)
+%(Afer que mai no es resol però)
 /tae exch def
 
 %%Unicode
 %%EP no perdem de vista l'algorisme repicaHTMLentities.ps com a eina lectora de cadenes Unicode
 /ctts 1 def  %% octets de treball (byte senzill o doble o més)
 
+%%PV20.1
 %%MENÚ: sentit d'escriptura per alfabets diferents al llatí o altres efectes
 %% per escriure d'esquerra a dreta: true (occidental)
 %% per escriure de dreta a esquerra: false (oriental)
@@ -52,15 +61,16 @@ eAd
 {  %% de dreta a esquerra dels octets dins la cadena de text a escriure
  /iGac tae length ctts idiv 1 sub def  %% índex inicial pel glif a composar
  %% la divisió fa sentit quan treballem a doble octet o més
- /MAXglif 0 def  %% límit de glifs a compondre
+ /MAXglif -1 def  %% límit de glifs a compondre
 }ifelse
 
+%%PV20.1
 %%MENÚ: tipografia i cos de treball (hi hauria cap relació ideal entre cos i nombre de segments que inclouen un glif?)
 %(/Users/femfum/calaixDtipus/Balius/TR00032-2020/Patufet/otf/Patufet-Mono-Mig-Italic.otf)
 (/Users/femfum/calaixDtipus/Balius/TR00032-2020/Patufet/otf/Patufet-Mono-Mig.otf)
 %(/Users/femfum/calaixDtipus/PepelPatau/furafont/tipus/Chupada-Bold\ italic.otf)
 
-80 selectfont
+10 selectfont
 
 %%Unicode
 %% així seria l'array bidimensional d'Encoding basada en Unicode per poder treballar en doble octet
@@ -83,7 +93,8 @@ eAd
 %%EP no perdem de vista l'algorisme repicaHTMLentities.ps com a eina lectora de cadenes Unicode
 
 
-%%MENÚ: traç componedor
+%%PV20.1
+%%MENÚ: traç componedor i sentit (esquerra/dreta o viceversa) de la línia de base
 %% el path actiu pot, en la direcció en que el dibuixem, condicionar el sentit del componedor
 %% també ens ajuda a construir una componedora universal per tota mena d'alfabets i escriptura creativa
 
@@ -144,25 +155,58 @@ repeatB
 }if
 
 %%RECTA
-%100 80 moveto 500 300 lineto
-%500 300 lineto
-%250 500 lineto
+%100 200 moveto 700 200 lineto  %% d'esquerra a dreta
+%700 200 moveto 100 200 lineto  %% de dreta a esquerra
+%% fent 2 rectes hi pot haver 2 comportaments: adaptació progressiva al pendent o adaptació estricte del path
+%% l'exemple més evident és quan volem recórrer un quadrat: activant les variables %%!! el recorrem fidelment
+%% i si no ho fem, en funció de com s'acosta el glif al canvi de sentit, es compensa amb un pendent al vèrtex següent
+%100 200 moveto 350 400 lineto 700 200 lineto
 
 %%QUADRAT
 %% 100 100 moveto 100 400 lineto 400 400 lineto 400 100 lineto closepath  %% amb closepath fa un segment menys al flattenpath
 %100 100 moveto 100 400 lineto 400 400 lineto 400 100 lineto 100 100 lineto
 
-%%ARC
-400 200 200 0 270 arc
+%%ARC no podem controlar la direcció doncs sempre pinta en el sentit contrari a les agulles del rellotge
+%400 300 200 0 270 arc  %% de dreta a esquerra
 %% pintem l'arc
 %gsave stroke grestore
 
 %%BÉZIER
-%100 100 moveto
-%50 400 600 150 700 500 curveto
+%100 100 moveto 50 400 600 150 700 500 curveto  %% d'esquerra a dreta
 %% aquesta és dibuixada en sentit contrari de l'anterior
-%700 500 moveto
-%600 150 50 400 100 100 curveto
+%700 500 moveto 600 150 50 400 100 100 curveto  %% de dreta a esquerra
+
+%%Truchet
+%% la crida a... pintaBezierDarrayTruchet_upath.ps ...posa a l'stack l'upath d'un dibuix Truchet
+(pintaBezierDarrayTruchet_upath.ps) (r) file cvx exec
+%% llevem primer el setbbox executant-lo, per tal posar-ne els valors a l'stack
+dup 0 5 getinterval cvx exec
+%% cridant pathbbox per configurar el format de pàgina
+pathbbox
+
+%%PV20.0
+%%MENÚ: format i nivells de qualitat
+/vores alacse def  %% vores en funció de l'escala definida a... pintaBezierDarrayTruchet_upath.ps
+<<
+exch 4 -1 roll sub vores 2 mul add exch  %% alt Y de pàgina amb les /vores
+3 -1 roll 4 -1 roll sub vores 2 mul add 3 -1 roll  %% ample X de pàgina amb les /vores
+exch 2 array astore /PageSize exch  %% l'escala de treball ens pot ajudar a guanyar precisió: a més gran format, més precisió
+  /HWResolution
+  [
+   4000 4000  %% màxim
+   %72 72  %% mínim
+  ]  %% la resolució del dispositiu (de 72 a 4000) també juga amb setflat pel flattenpath de segmentació
+>>setpagedevice
+.2  %% màxim
+%100  %% mínim
+ setflat  %% flatness: valors de .2 (qualitat màxima, molts segments) a 100 (qualitat mínima, pocs segments)
+
+%% situem l'inici pel flattenpath en funció de les vores
+vores dup translate
+%% executem la resta del vectorial per deixar en memòria el traçat (path) a punt de flattenpath
+cvx exec
+%(<<<<- - - - - )pstack quit
+
 
 %% l'enflatador de path, fent latent el traçat segmentat
 flattenpath
@@ -198,6 +242,7 @@ dup /nSi exch def  %% nombre de segments inicial (a voltes una recta aparentment
 %%De què ens hauria de servir mesurar si el tram de segmentació més petit és més gran o no que l'ample del Bbox pel cos triat?
 %% per exemple: seria útil per recalcular la línia de base del glif, quan el seu ample inclogui diversos segments
 
+%%PV20.1
 %%MENÚ: sentit d'escriptura del componedor per alfabets diferents al llatí o altres efectes
 %% true: en el mateix sentit que s'ha dibuixat el path componedor i false en el contrari
 %% això fa que es compongui per la línia de base (allà on la situem), sigui per la part interior o exterior del path
@@ -243,6 +288,9 @@ suaraX suaraY moveto  %% punt d'inici del primer glif
 %%Test pel loop de dins el for
 /ES 0 def
 /NOes 0 def
+
+%%PV2.1.1 acumulat d'amples dels glifs compostos
+/TxGlifs 0 def
 
 %% dins el pathforall apuntaria dins al proc de lineto
 iil 0 2 sentit exch 1 index add exch ifl  %% comencem enretirant els dos índex x,y inicials, recorrent tot el segmentat
@@ -297,11 +345,15 @@ suaraX == suaraY ==  %% x,y del node d'inici del segment componedor
 %% ens caldria actuar aquí per alfabets, com el japonès, que componen en vertical)
    pop  %% valor Y per fonts amb composició vertical (en composició horitzontal s'elimina)
 
+%%PV20.1
+dup == (^ pitch)==
 %%EP!
 %% tenint aquí l'ample del glif, el primer que hauríem d'avaluar és quants trams l'inclouen i si l'actual s'esgota
 %dS XtramEscriu add gt(||||)pstack quit
 dup /xGlif exch def  %% pesquem l'ample per pintar en vermell la línia de base glif a glif
 
+%%PV20.1.1
+xGlif TxGlifs add /TxGlifs exch def
 
 %%Nou
 %   dS xGlif lt  %% els segments acumulats NO superen l'ample del glif?
@@ -346,7 +398,7 @@ dup XtramEscriu add dS gt  %% el posicionat x del glif, esgota el segment?
     Encoding exch get  %% nom del glif a compondre
 
 %%Test
-dup ==  %% nom del glif que componem
+dup ==  (^ nom del glif) == %% nom del glif que componem
 
 gsave  %% preservem l'estat gràfic del glif que componem
 newpath
@@ -360,17 +412,20 @@ newpath
 
 %%EP!
 %% no hi ha diferències entre l'ample de la línia de base que ens dóna cshow o amb la que obtenim amb stringwidth
+%%PV20.1
 %%TEST
 0 setlinewidth
 1 0 0 setrgbcolor
 %currentpoint pop xGlif sub 0 lineto stroke  %% pintem la línia de base del glif amb ample corresponent a cadascun
 0 0 moveto xGlif 0 lineto stroke  %% pintem la línia de base del glif amb ample corresponent a cadascun
 
+%%PV20.1
 %%NouNou
 %%Prosa
 0  %% desplaçament horitzontal del glif, de manera que suma a la distància X entre glifs (podríem activar aquí el kerning!)
 %    XtramEscriu dS sub  %% 0 gt  %% si la distància x és més gran que zero, és que ja ens hem menjat el segment
 
+%%PV20.1
 %%MENÚ: línia de base: aquí podem decidir on situem la línia de base del glif en relació al path componedor
     %% part superior del FontBBox (caldria calcular-la)
     0  %% desplaçament vertical Y des de la línia de base natural en punts
@@ -390,13 +445,15 @@ itransform  % dóna les coordenades del punt x,y (eix normal) en punts tipogràfic
 /suaraY exch def
 /suaraX exch def
 
+%%PV20.1
 %% ens diu els segments que s'inclouen dins un mateix glif
 %%Test
-segmentsARAglif ==
+segmentsARAglif == (^ segments)==
 %(passo)==
 
 /segmentsARAglif 0 def
 
+%%PV20.1
 %%Sentit d'escriptura per alfabets diferents al llatí o altres efectes
     XtramEscriu add /XtramEscriu exch def  %% x del glif següent
 
@@ -449,9 +506,11 @@ segmentsARAglif ==
   exit
  }if
 
-%%Nou
+%%Nou%%!!
 %% activant de nou aquestes variables fa que l'inici dels glifs quadrin amb l'inici dels nodes d'enllaç?
 %% un cop hem mesurat la distància del segment ja podem actualitzar x,y node inicial pel següent
+%% l'exemple més evident és quan volem recórrer un quadrat: activant aquestes variables el recorrem fidelment
+%% i si no ho fem, en funció de com s'acosta el glif al canvi de sentit, es compensa amb un pendent al vèrtex següent
 % araX /suaraX exch def
 % araY /suaraY exch def
 
@@ -473,6 +532,10 @@ segmentsARAglif ==
 %exit
 
 }for  %% que compon per la línia de base (o cap/peus del FontBBox), indistintament per la part interior o exterior del path
+
+%%PV info clau
+dS == (^ /dS longitud de segments planxats)==
+TxGlifs == (^ /TxGlif longitud d'amples dels glifs compostos)==
 
 %apfa araX araY suaraX suaraY
 (b r o s s a)pstack

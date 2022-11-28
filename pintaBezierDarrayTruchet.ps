@@ -1,0 +1,78 @@
+%!
+%% a partir d'arrays de coordenades Bézier extretes de lligaVectorials.ps les pintem
+
+%% pintem i comprovem el sentit en que ha estat pintada marcant el cap o la cua
+
+%% aquestes dues Béziers es pinten en sentits contraris?
+
+[
+
+ [
+  [[1.5 2.0] [1.22421873 2.0] [1.0 1.77578127] [1.0 1.5]]
+  [[1.0 1.5] [1.0 1.22421873] [0.775781274 1.0] [0.5 1.0]]
+  [[0.5 1.0] [0.224218756 1.0] [0.0 0.775781274] [0.0 0.5]]
+  [[0.0 0.5] [0.0 0.224218756] [0.224218756 0.0] [0.5 0.0]]
+  [[0.5 0.0] [0.775781274 0.0] [1.0 0.224218756] [1.0 0.5]]
+  [[1.0 0.5] [1.0 0.775781274] [1.22421873 1.0] [1.5 1.0]] false
+ ]
+
+ [
+  [[1.0 -0.5] [1.0 -0.224218756] [1.22421873 0.0] [1.5 0.0]]
+  [[1.5 0.0] [1.77578127 0.0] [2.0 0.224218756] [2.0 0.5]]
+  [[2.0 0.5] [2.0 0.775781274] [1.77578127 1.0] [1.5 1.0]] false
+ ]
+
+] /lesCorbes exch def
+
+/alacse 100 def
+<</PageSize[300 300]>>setpagedevice
+
+alacse dup scale  %% treballem amb Béziers que tenen valors només de 0 a 2
+
+%1 0 0 setrgbcolor 0 0 .01 .01 rectfill
+%showpage quit
+
+0 setlinewidth
+.5 .5 translate  %% dibuixem des del centre del cairó
+
+0 1 1
+{  %% for
+ dup
+ [ {1 0 0 setrgbcolor} {0 0 1 setrgbcolor} ]
+ exch get cvx exec
+ lesCorbes exch get
+
+ {  %% forall
+  dup type /booleantype eq
+  {
+   {
+    closepath stroke
+   }
+   {
+    currentpoint stroke
+   }ifelse
+  }
+  {
+   /i 0 def
+   {  %% forall
+    i 0 eq
+    {
+     cvx exec moveto
+ %% marca el cap
+ gsave 1 1 0 setrgbcolor currentpoint .01 .01 rectfill grestore
+    }
+    {
+     cvx exec
+    }ifelse
+    i 1 add /i exch def
+   }forall
+   curveto
+  }ifelse
+ }forall
+
+ %% marca la cua
+ gsave 0 0 0 setrgbcolor .01 .01 rectfill grestore
+}for
+
+showpage
+
