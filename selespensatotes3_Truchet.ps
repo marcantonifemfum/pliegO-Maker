@@ -1,0 +1,197 @@
+%!
+%% Aquest algorisme permet fer totes les combinacions possibles d'un joc d'enters (elsQjuguen)
+%% envers a com els agrupem (llocsONcombinen), d'una forma universal i per qualsevol cosa (les treu x la pantalleta)
+%% l'algorisme manega un sistema d'índex que genera estrictament les combinacions vàlides dins un paquet
+
+%% Sense necessitat de descartar-ne cap per redundàncies o superació de límits va estar creat inicialment per aplicar-lo
+%% a la composició de línies de la Biblia de Guttenberg («El Arte de Imprimir o la Bíblia de 42 líneas» tesi de Luz Rangel)
+%% a la tesi de la Luz l'utilitzem pels tipus d'espais de separació (n'hi ha 3 o 4) a combinar en una línia
+%% ara l'adaptem al generador de patrons Truchet, amb Béziers de traç continuu, com a línia de base per compondre text
+
+%%+! marcat amb %%+! hi tenim els punts on es generen dades de la combinatòria, ara desades a l'array /slpt (abans via prompt)
+%% no acumulem a l'stack les arrays de combinatòria, desant-les en una array oberta, perquè ens arrisquem a l'stackoverflow
+%% doncs p.e. ja peta si /elsQjuguen té 549 elements a combinar agrupats en 2 a /llocsONcombinen, tenim 549 2 exp = 301401
+
+%% condicionants actuals:
+%% a l'array /elsQjuguen només hi poden haver enters correlatius (si no ho són ara peta al final del càlcul)
+
+%% millores a fer:
+%% pot resultar molt útil la funció de posar només 2 índex a /elsQjuguen, el primer i l'últim, de forma que ell ja farcirà
+%% els intermitjos. Ara ja ho fa, però peta al final amb un: Error: /rangecheck in --get-- Operand stack: --nostringval-- -1
+%% caldria veure quines diferències hi ha envers... selespensatotes4.ps ...que treballa amb strings en comptes d'arrays
+%% el fet de treballar amb arrays permet gestionar bé el zero (treballant amb índex és important)
+%% s'hauria d'estudiar si és eficient gestionar altres tipus d'objectes que no siguin enters correlatius (els índex són eficients)
+%% s'hauria de fer una prova de velocitat per saber quines diferències estratègiques són més eficients
+
+/elsQjuguen
+[  %% aplicat als Truchets, haurem de generar una array tant gran com Béziers -1 detectades per llegeixUpathTruchet.ps
+ 0 1 beziersDetectades 1 sub
+ {}for
+] def  %% hauríem de posar un filtre per si aquest array podés tenir 1 sol element (peta!)
+
+%% nombre d'elements que agruparem per generar la combinatòria
+%% 2 són, el primer pel node del cap i el segon pel node de la cua
+/llocsONcombinen 2 def  %% hauríem de posar un filtre si aquest valor podés valer zero (peta!)
+
+elsQjuguen 0 get llocsONcombinen 1 sub
+{
+ dup
+}repeat
+llocsONcombinen array astore
+/BiNaCio exch def  %% valor inicial de la combinatòria d'espais
+
+%%+!
+elsQjuguen length llocsONcombinen exp cvi
+dup array /slpt exch def  %% l'array /slpt és el magatzem que contindrà totes les combinacions diferents possibles
+%% valor de sortida del loop general de combinacions (totes -1 que és el valor inical de BiNaCio)
+1 sub /Kampora exch def
+
+%%+!
+slpt 0
+BiNaCio  %% ==  %% treiem x la pantalleta la combinació inicial
+llocsONcombinen array copy  %% tallem amb amb el composite object present aquí
+put
+%(<<<0>>>) ==
+
+%% valor de l'índex d'unitats
+llocsONcombinen 1 sub /iU exch def
+
+%% valor màxim d'un sumador
+elsQjuguen dup length 1 sub get /maxSum exch def
+
+%% valor mínim d'un sumador
+elsQjuguen 0 get /minSum exch def
+
+%% valor inicial de l'índex sumador que no és d'unitats
+iU 1 sub /iNOu exch def
+
+%% índex inicial on escriure la combinatòria al magatzem /slpt
+0 /COMBi exch def
+
+%{  %% stopped
+
+{  %% loop generador de combinacions
+ BiNaCio iU get maxSum eq  % el sumador d'unitats ha arribat al seu valor maxim?
+ {
+%(IF1)==
+  % inicialitzem BiNaCio per les unitats a minSum
+  BiNaCio iU minSum put
+  % tret que el valor situat a iNOu hagi arribat al maxim
+  BiNaCio iNOu get maxSum eq
+  {
+%(IF2)==
+   % endarrerim d'1 iNOu i sumem 1 al seu valor...   
+   % tret que hi hagi algun minSum entremig de iNOu i iU
+   false /hiHA1Entremig exch def
+   iNOu 1 add 1 iU 1 sub
+   {  % si n'hi ha algun el detectarem en aquest for
+%(FOR1)==
+    dup BiNaCio exch get minSum eq
+    {
+     true /hiHA1Entremig exch def /iNOu exch def  % es el nou iNOu !
+    }
+    {
+     pop
+    }ifelse
+   }for
+   hiHA1Entremig
+   {  % doncs llavors afegim 1 al valor del darrer l'iNOu d'entremig
+%(IF3)==
+    BiNaCio iNOu get 1 add BiNaCio exch iNOu exch put
+
+%%+!
+    slpt
+    COMBi 1 ads dup /COMBi exch def  % fem correr l'index del magatzem
+    BiNaCio %% ==  % treiem x la pantalleta
+    llocsONcombinen array copy  %% tallem amb amb el composite object present aquí
+    put
+%(<<<1>>>) ==
+   }
+   {
+%(ELSE3)==
+    iNOu 1 sub
+
+%%EP!
+%dup 0 lt{pop 0}if
+
+    /iNOu exch def
+    % aqui hi ha d'anar un loop x detectar que anant enrere no hi hagi un iNOu igual a maxSum
+    {  %% loop
+%(LOOP1)==
+     BiNaCio iNOu get maxSum eq
+     {
+      iNOu 1 sub
+
+%%EP!
+%dup 0 lt{pop 0}if
+
+      /iNOu exch def
+     }
+     {
+      exit
+     }ifelse
+    }loop
+    BiNaCio iNOu get 1 add BiNaCio exch iNOu exch put
+    % ...i inicialitzem a minSum els valors que vagin de iNOu+1 fins iU
+    iNOu 1 add 1 iU {BiNaCio exch minSum put}for
+
+%%+!
+    slpt
+    COMBi 1 add dup /COMBi exch def  % fem correr l'index del magatzem
+    BiNaCio  %% ==  % treiem x la pantalleta
+    llocsONcombinen array copy  %% tallem amb amb el composite object present aquí
+    put
+%(<<<2>>>) ==
+   }ifelse
+  }
+  {
+%(ELSE2)==
+   % afegim 1 al valor de iNOu tret que hi hagi algun minSum entremig de iNOu i iU
+   iNOu 1 add 1 iU 1 sub
+   {  % si n'hi ha algun el detectarem en aquest for
+    dup BiNaCio exch get minSum eq
+    {
+     /iNOu exch def  % nou iNOu !
+    }
+    {
+     pop
+    }ifelse
+   }for
+   BiNaCio iNOu get 1 add BiNaCio exch iNOu exch put
+
+%%+!
+   slpt
+   COMBi 1 add dup /COMBi exch def  %% fem córrer l'índex del magatzem
+   BiNaCio  %% ==  % treiem x la pantalleta
+   llocsONcombinen array copy  %% tallem amb amb el composite object present aquí
+   put
+%(<<<3>>>) ==
+  }ifelse
+ }
+ {
+%(ELSE1)==
+  {  %% loop sumador d'unitats
+   BiNaCio iU get 1 add BiNaCio exch iU exch put
+
+%%+!
+   slpt
+   COMBi 1 add dup /COMBi exch def  %% fem córrer l'índex del magatzem
+   BiNaCio  %% ==
+   llocsONcombinen array copy  %% tallem amb amb el composite object present aquí
+   put
+%(<<<4>>>) ==
+   BiNaCio iU get maxSum eq {exit}if
+  }loop
+ }ifelse
+ Kampora COMBi eq {exit}if
+}loop  %% generador de combinacions
+
+%}stopped
+%{(<<<<)pstack}if
+
+%%+!
+%slpt ==
+
+%% dóna una valor d'índex -1 de les arrays combinatòries
+%% COMBi ==
+
