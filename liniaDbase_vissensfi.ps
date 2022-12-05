@@ -1,0 +1,199 @@
+%!
+%% hauria de calcular per a un determinat format x,y, un determinat nombre de pàgines i un determinat principi i final
+%% la linia de base que es cargola en diagonal en funció d'un determinat interliniat que comença i acaba a la mateixa pàgina
+
+%% representarem gràficament el que ha de fer l'algorisme amb la funció de la recta:
+/cruilla
+{
+ %% Necessitem dos punts de la recta del vector que li creuen, i dos punts de la recta del potencial creuador
+
+ %% dos punts de la recta del vector que li creuen 
+ /y2 exch def /x2 exch def /y1 exch def /x1 exch def
+ %% dos punts de la recta del potencial creuador
+ /_y2 exch def /_x2 exch def /_y1 exch def /_x1 exch def
+
+ %% càlcul dels elements de la funció de la recta del vector que li creuen
+ %1% segons y = m * x + n busquem l'equivalència de n pel primer punt
+ %2% busquem l'equivalència de n pel segon punt
+ %3% substituïm el valor de n del segon punt dins l'equivalència de n del primer (o a l'inrevés) i així deduïm m
+ y2 x2 neg y1 x1 neg
+ %% o indistintament y1 x1 neg y2 x2 neg
+ %% i treballem les operacions de deducció del valor de m (associat a x):
+ 3 -1 roll neg add 3 1 roll neg add exch
+ %% si val zero ho passem a .000001 per evitar l'indefinedresult
+ dup 0 eq {pop .000001}if
+ div /m exch def
+ %4% un cop tenim el valor de m el substituïm a qualsevol de les dues equivalències per trobar n
+ %% algorítmicament treballem les operacions de deducció del valor de n:
+ y2 x2 neg m mul add /n exch def
+
+% %% Àrea de treball i detecció
+% %% currentpagedevice /PageSize get aload pop
+% %% 0 0 moveto 0 1 index lineto 2 copy lineto pop 0 lineto closepath  %% path del MediaBox
+% 0 0 moveto 0 iAlt lineto iAmple iAlt lineto iAmple 0 lineto closepath  %% path actiu de l'àrea a diagramar
+% true upath cvlit /cAmi exch def  %% com a user path per comprovar l'insideness
+   
+ %% càlcul dels elements de la funció de la recta del vector creuador
+ %% algorisme de càlcul d'm i n de la funció de la recta dels raig creuador
+ _y2 _x2 neg _y1 _x1 neg
+ 3 -1 roll neg add 3 1 roll neg add exch
+ %% si val zero ho passem a .000001 per evitar l'indefinedresult
+ dup 0 eq {pop .000001}if
+ div /m2 exch def
+ _y2 _x2 neg m2 mul add /n2 exch def
+
+ %% calculem el valor x del punt de creuament (associat a m) computant les dues funcions
+ m n m2 n2
+ %% si les rectes són paral·leles i no es creuen, aquí donarà un indefinedresult (divisió per zero)
+ {
+  3 -1 roll neg add 3 1 roll neg add div
+ }stopped
+
+ {
+  (\n\n>>> les dues linies son paral·leles! <<<\n\n) print flush quit
+ }
+ {
+  /Cx exch def
+  %% calculem el valor y del punt de creuament, indistintament amb m n o m2 o n2
+  m Cx mul n add /Cy exch def
+  %% m2 Cx mul 0 add /Cy exch def
+
+false{  %% ara no cal
+  %% el punt de creuament és dins la pàgina?
+  gsave
+  Cx gsave Cy cAmi %% avaluador de si el punt és dins el MediaBox
+  inufill % interroga el píxel d'un Userpath en positiu (+ false charpath)
+  %% inueofill %% interroga el píxel d'un Userpath i perfila (+ true charpath)
+  %% not % negativa !!!
+  grestore grestore
+  {  %% visualitzem el creuament sempre que sigui dins del format de pàgina!
+   %% aquí cal avaluar si els paths pintats (stroke) es toquen o no, llavors caldrà, per fer-ho bé, una doble comprovació:
+   %% cadascuna de les dues línies caldrà fer-ne un upath per comprovar si el punt x,y de creuament, el toca, doncs només si
+   %% totes dues compleixen la condició, podrem estar segurs que realment els paths pintats es creuen!
+   gsave
+   x1 y1 moveto x2 y2 lineto  %% Primer recta
+   true upath cvlit /cAmi exch def  %% com a user path per comprovar l'insideness
+   Cx gsave Cy cAmi inustroke  %% interroga el píxel d'un userpath, com a path obert que només es pot traçar
+   grestore grestore
+   gsave
+   _x1 _y1 moveto _x2 _y2 lineto  %% Segona recta
+   true upath cvlit /cAmi exch def  %% com a user path per comprovar l'insideness
+   Cx gsave Cy cAmi inustroke  %% interroga el píxel d'un userpath, com a path obert que només es pot traçar
+   grestore grestore
+   and  %% només si tots dos són vertaders
+   {  %% aquest és l'únic cas on ara ens interessa desar les dades
+%0%    0 1 0 0 setcmykcolor Cx Cy 3 3 rectfill  %% quadrat de comprovació del punt de creuament
+%0&    Cy Cx (\n\n >>> les línies es toquen i creuen a: ) print flush
+%0%    32 string cvs print flush (, ) print flush 32 string cvs print flush (\n\n) print flush
+   }
+   {  %% si el píxel de l'insideness ens la juga i no troba el punt de coincidència (cal treballar amb +gruix?)
+    %% o un error de l'insideness pot ser provocat pel sentit com es tracen les línies?
+%0%    0 1 0 0 setcmykcolor Cx Cy 3 3 rectfill  %% quadrat de comprovació del punt de creuament
+%0%    (\n\n >>> els paths NO ES TOQUEN!) print flush
+%0%    Cy Cx (\n >>> pero les línies es creuen a: ) print flush
+%0%    32 string cvs print flush (, ) print flush 32 string cvs print flush (\n\n) print flush
+   }ifelse
+  }
+  {
+%0%   (\n\n >>> el punt de creuament es FORA la pagina!) print flush
+%0%   Cy Cx (\n >>> pero les línies es creuen a: ) print flush
+%0%   32 string cvs print flush (, ) print flush 32 string cvs print flush (\n\n) print flush
+  }ifelse
+
+}if
+
+ }ifelse
+}bind def
+
+%% nombre de pàgines del llançat
+8
+/npLl exch def
+
+%% format x,y de cadascuna de les pàgines del llançat d'un 4Up
+297.5 /xPagina exch def
+421.0 /yPagina exch def
+
+%% el raonament per fer la primera volta seria:
+%% partint del costat esquerre de la primera pàgina, a una distància vertical (interliniat) en funció del cos triat, tirem una
+%% línia per totes les pàgines per tornar fins el costat dret de la primera pàgina a la distància vertical de l'interliniat
+
+%% ens caldrà calcular els punts de pas, d'entrada i sortida, de cadascuna de les pàgines intermitges, però només a la 1a volta
+%% doncs les següents, tindran el valor de l'interliniat triat
+100
+/iL exch def  %% interliniat
+
+
+%% format del simulacre
+<<
+  /PageSize
+  [
+   xPagina npLl 1 add mul
+   yPagina
+  ]
+>>setpagedevice
+
+
+%% línia de base vis sens fi de la primera volta
+0 yPagina iL sub
+2 copy 2 array astore /_x1_y1 exch def
+moveto  %% partint del costat esquerre de la primera pàgina
+xPagina npLl 1 add mul yPagina iL 2 mul sub
+2 copy 2 array astore /_x2_y2 exch def
+lineto  %% fins el costat dret de la primera pàgina
+
+2 setlinewidth
+0 0 1 setrgbcolor
+stroke
+
+0 setlinewidth
+
+[  %% array amb les coordenades del punt de pas de la línia de base, vis sens fi, a esquerra i dreta de cada pàgina
+
+ %% verticals de separació de pàgines
+ 0 1 npLl 1 add 
+ {  %% for
+  xPagina mul dup 0
+% 2 copy
+  2 array astore /x1y1 exch def
+%  moveto
+  yPagina
+% 2 copy
+  2 array astore /x2y2 exch def
+%  lineto stroke 
+
+  %% càlcul de l'encreuament de les verticals amb la línia de base vis sens fi, via funció de la recta
+  x1y1 cvx exec x2y2 cvx exec  %% coordenades de la vertical del costat de la pàgina 
+  _x1_y1 cvx exec _x2_y2 cvx exec  %% coordenades d'inici i final de la línia de base vis sens fi
+  cruilla Cx Cy 2 array astore 
+ }for
+
+] dup ==
+/aBase exch def
+
+aBase 0 get cvx exec moveto
+
+1 1 aBase length 1 sub
+{  %% for
+ dup 2 mod 0 eq {1 0 0 setrgbcolor}{1 1 1 setrgbcolor}ifelse
+ aBase exch get dup cvx exec lineto stroke cvx exec moveto
+}for
+
+%aBase 9 get cvx exec lineto stroke
+
+%% format que té l'array de posicions d'un 4Up per traçar les línies de base en diagonal (vis sens fi) pàgina a pàgina
+%% calculades amb la funció de la recta, on es creuen les 2 línies, la línia de base amb la vertical de la vora de la pàgina
+%[
+% [-2.3752969e-07 321.0]  %% 0 primera pàgina, punt x,y d'inici de la línia de base a la vora esquerra
+% [297.5 309.888885]  %% 1 punt final de la vora dreta de la primera pàgina i punt d'inici de la segona
+% [595.0 298.777771]  %% 2 ...i segueix
+% [892.5 287.666656]  %% 3
+% [1190.0 276.555542]  %% 4
+% [1487.5 265.444458]  %% 5
+% [1785.0 254.333328]  %% 6
+% [2082.5 243.222229]  %% 7
+% [2380.0 232.111115]  %% 8 punt final, vora dreta, de la darrera pàgina i d'inici de la primera (vora esquerra)
+% [2677.5 221.0]  %% 0 altra cop primera pàgina, és el punt final de la vora dreta
+%]
+
+showpage
+

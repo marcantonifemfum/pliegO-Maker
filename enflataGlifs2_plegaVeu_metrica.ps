@@ -10,7 +10,7 @@
 
 %% mirem d'implementar un control més ben ponderat del posicionament dels glifs
 
-%%MENÚ: marcarà les variables clau de gestió de l'algorisme
+%%MENÚ#: marcarà les variables clau de gestió de l'algorisme
 
 %% línia de comanda perquè no ens giri la pàgina del PDF resultant en funció de l'orientació del text
 %% gs -q -dNOSAFER -o out.pdf -sDEVICE=pdfwrite -dAutoRotatePages=/None -c .setpdfwrite -f enflataGlifs2.ps
@@ -18,20 +18,20 @@
 %% gs -q -dNOSAFER -o metrica.pdf -sDEVICE=pdfwrite -dAutoRotatePages=/None -f enflataGlifs2_plegaVeu_metrica.ps
 
 %%PV20.1
-%%MENÚ: format i nivells de qualitat
+%%MENÚ0: format i nivells de qualitat per la fragmentació del cursus
 <<
   /PageSize [842 595]  %% l'escala de treball ens pot ajudar a guanyar precisió: a més gran format, més precisió
   /HWResolution
   [
-%   4000 4000  %% màxim
-   72 72  %% mínim
+   4000 4000  %% màxim
+%   72 72  %% mínim
   ]  %% la resolució del dispositiu (de 72 a 4000) també juga amb setflat pel flattenpath de segmentació
 >>setpagedevice
 % .2  %% màxim
 100  %% mínim
  setflat  %% flatness: valors de .2 (qualitat màxima, molts segments) a 100 (qualitat mínima, pocs segments)
 
-%%MENÚ: Text a escriure (compondre)
+%%MENÚ1: text a escriure (compondre)
 %(tant de sol als turmells, de mar llisa i daurada)
 %(AGNUS DEI MIRABILIS SERRATUM AGNUS DEI MIRABILIS SERRATUM AGNUS DEI MIRABILIS SERRATUM AGNUS DEI MIRABILIS SERRATUM AGNUS DEI MIRABILIS SERRATUM AGNUS DEI MIRABILIS SERRATUM AGNUS DEI MIRABILIS SERRATUM)
 %(sí, no, potser, sí, no, potser, sí, no, potser, sí, no, potser, sí, no, potser, sí, no, potser, sí, no, potser, sí, no, potser)
@@ -49,7 +49,7 @@
 /ctts 1 def  %% octets de treball (byte senzill o doble o més)
 
 %%PV20.1
-%%MENÚ: sentit d'escriptura per alfabets diferents al llatí o altres efectes
+%%MENÚ2: sentit d'escriptura per alfabets diferents al llatí o altres efectes
 %% per escriure d'esquerra a dreta: true (occidental)
 %% per escriure de dreta a esquerra: false (oriental)
 /eAd true def
@@ -67,7 +67,7 @@ eAd
 }ifelse
 
 %%PV20.1
-%%MENÚ: tipografia i cos de treball (hi hauria cap relació ideal entre cos i nombre de segments que inclouen un glif?)
+%%MENÚ3: tipografia i cos de treball (hi hauria cap relació ideal entre cos i nombre de segments que inclouen un glif?)
 %(/Users/femfum/calaixDtipus/Balius/TR00032-2020/Patufet/otf/Patufet-Mono-Mig-Italic.otf)
 %(/Users/femfum/calaixDtipus/Balius/TR00032-2020/Patufet/otf/Patufet-Mono-Mig.otf)
 %(/Users/femfum/calaixDtipus/PepelPatau/furafont/tipus/Chupada-Bold\ italic.otf)
@@ -100,7 +100,7 @@ eAd
 
 
 %%PV20.1
-%%MENÚ: traç componedor i sentit (esquerra/dreta o viceversa) de la línia de base
+%%MENÚ4: ductus (traç) componedor i sentit (esquerra/dreta o viceversa) de la línia de base
 %% el path actiu pot, en la direcció en que el dibuixem, condicionar el sentit del componedor
 %% també ens ajuda a construir una componedora universal per tota mena d'alfabets i escriptura creativa
 
@@ -164,7 +164,7 @@ repeatB
 %100 200 moveto 700 200 lineto  %% d'esquerra a dreta
 %700 200 moveto 100 200 lineto  %% de dreta a esquerra
 %% fent 2 rectes hi pot haver 2 comportaments: adaptació progressiva al pendent o adaptació estricte del path
-%% l'exemple més evident és quan volem recórrer un quadrat: activant les variables %%!! el recorrem fidelment
+%% l'exemple més evident és quan volem recórrer un quadrat: activant les variables %%!! %%MENÚ7 el recorrem fidelment
 %% i si no ho fem, en funció de com s'acosta el glif al canvi de sentit, es compensa amb un pendent al vèrtex següent
 %100 200 moveto 350 400 lineto 700 200 lineto
 
@@ -176,12 +176,12 @@ repeatB
 %100 100 moveto 100 400 lineto 400 400 lineto 400 100 lineto 100 100 lineto
 
 %%ARC no podem controlar la direcció doncs sempre pinta en el sentit contrari a les agulles del rellotge
-400 300 200 0 270 arc  %% de dreta a esquerra
+%400 300 200 0 270 arc  %% de les 3 a les sis (en sentit contrari a les agulles)
 %% pintem l'arc
 %gsave stroke grestore
 
 %%BÉZIER
-%100 100 moveto 50 400 600 150 700 500 curveto  %% d'esquerra a dreta
+100 100 moveto 50 400 600 150 700 500 curveto  %% d'esquerra a dreta
 %% aquesta és dibuixada en sentit contrari de l'anterior
 %700 500 moveto 600 150 50 400 100 100 curveto  %% de dreta a esquerra
 
@@ -208,7 +208,7 @@ flattenpath
 
 %%PVcec
 %%Pintem el path segmentat? (blau)
-false{
+true{
 gsave 0 setlinewidth 0 0 1 setrgbcolor stroke grestore
 }if
 
@@ -232,9 +232,10 @@ true{
 %% per exemple: seria útil per recalcular la línia de base del glif, quan el seu ample inclogui diversos segments
 
 %%PV20.1
-%%MENÚ: sentit d'escriptura del componedor per alfabets diferents al llatí o altres efectes
-%% true: en el mateix sentit que s'ha dibuixat el path componedor i false en el contrari
-%% això fa que es compongui per la línia de base (allà on la situem), sigui per la part interior o exterior del path
+%%MENÚ5: sentit d'escriptura del componedor en relació al sentit de dibuix del cursus
+%% true: en el mateix sentit que s'ha dibuixat el cursus (path) componedor (part interior) i false en el contrari (part exterior)
+%% això sempre que respectem la línia de base natural del glif, doncs podem moure-la modificant el valor zero de %%MENÚ6:
+%% pot ser útil també per alfabets diferents al llatí o altres efectes
 /seC true def
 
 %% decidim el sentit de lectura x,y dels segments
@@ -322,7 +323,7 @@ suaraX == suaraY ==  %% x,y del node d'inici del segment componedor
 
 %%Test
 %%PVcec
-false{
+true{
  %% pintem el node de la cua del segment
  gsave
  araX araY 2 copy translate
@@ -440,7 +441,7 @@ newpath
 %% no hi ha diferències entre l'ample de la línia de base que ens dóna cshow o amb la que obtenim amb stringwidth
 %%PV20.1
 %%PVcec
-false{
+true{
 %%TEST
 0 setlinewidth
 1 0 0 setrgbcolor
@@ -456,14 +457,14 @@ false{
 %    XtramEscriu dS sub  %% 0 gt  %% si la distància x és més gran que zero, és que ja ens hem menjat el segment
 
 %%PV20.1
-%%MENÚ: línia de base: aquí podem decidir on situem la línia de base del glif en relació al path componedor
+%%MENÚ6: línia de base: aquí podem decidir on situem la línia de base del glif en relació al cursus (path) componedor
     %% part superior del FontBBox (caldria calcular-la)
     0  %% desplaçament vertical Y des de la línia de base natural en punts
     %% part inferior del FontBBox (caldria calcular-la i aplicar-hi el multiplicador de la mètrica 1/1000)
     moveto
 
-%%PVsense pintar!
-false{
+%%PVsense pintar! (a true si volem que pinti)
+true{
    glyphshow  %% posicionem el glif
 }if
 
@@ -475,8 +476,8 @@ currentpoint  %% el final del glif és el del nou origen del següent
 pop 0  %%  rectifiquem cada vegada la posició Y sobre la línia de base natural (l'X no s'ha de rectificar)
 
 
-%%PVsense pintar!
-pop exch pop 1 index 3  1 roll
+%%PVsense pintar! (comentar si volem que pinti)
+%pop exch pop 1 index 3  1 roll
 
 
 transform  % dóna les coordenades del punt x,y (eix normal) en unitats del dispositiu de sortida (device pixels)
@@ -555,12 +556,19 @@ false{
  }if
 
 %%Nou%%!!
-%% activant de nou aquestes variables fa que l'inici dels glifs quadrin amb l'inici dels nodes d'enllaç?
-%% un cop hem mesurat la distància del segment ja podem actualitzar x,y node inicial pel següent
-%% l'exemple més evident és quan volem recórrer un quadrat: activant aquestes variables el recorrem fidelment
+%% activant de nou aquestes variables fa que l'inici dels glifs quadrin amb l'inici dels nodes d'enllaç del cursus segmentat
+%% sempre que l'ample del glif sigui menor que l'ample del tram segmentat del cursus, doncs sinó mai no el compon
+%% component sobre una corba, a molta resolució, no ens compondrà res (tots els segments seran més petits que l'ample dels glif)
+%% pot tenir sentit en segons quins casos, però ho desaconsellem per a les corbes (és per treballar exclusivament amb rectes)
+%% lògica? un cop hem mesurat la distància del segment ja podem actualitzar x,y node inicial pel següent?
+%% l'exemple d'ús més evident és quan volem recórrer un quadrat: activant aquestes variables el recorrem fidelment
 %% i si no ho fem, en funció de com s'acosta el glif al canvi de sentit, es compensa amb un pendent al vèrtex següent
-% araX /suaraX exch def
-% araY /suaraY exch def
+%%MENÚ7: l'inici dels glifs quadra amb l'inici dels nodes d'enllaç del cursus segmentat?
+false
+{
+ araX /suaraX exch def
+ araY /suaraY exch def
+}if
 
 %%PVmut
 false{
@@ -595,13 +603,13 @@ tae iGac MAXglif iGac sub getinterval ==
 %%PVclau
 %%PVmut
 true{
-dS == (^ /dS longitud de segments planxats)==
-TxGlifs == (^ /TxGlif longitud d'amples dels glifs compostos)==
-suaraX == suaraY == (^ suaraX | suaraY)==
+dS == (^ /dS ample de la linia de base del darrer glif compost\n\n)print flush
+TxGlifs == (^ /TxGlif longitud d'amples dels glifs compostos\n\n)print flush
+suaraX == suaraY == (^ suaraX | suaraY\n\n)print flush
 }if
 
 %apfa araX araY suaraX suaraY
-suaraX ==
+%suaraX ==
 (b r o s s a)pstack
 
 showpage

@@ -1,0 +1,634 @@
+%!
+%% Donada una determinada seqüència de dades per genenar els vectorials d'una línia de base i un text a escriure
+%% hauríem de compondre, per cada tram de vectorial, cadascun dels glifs, duplicant si convé els glifs fronterers entre trams
+%% per exemple: al vissensfi poètic convindria duplicar glifs fronterers, però en un encolumnat tradicional, no
+
+%% aquest hauria de ser l'algorisme previ que adaparíem a /compOnedors per executar dins nUp_pliegOS.ps
+%%PVcec evitem de pintar res que no sigui el mateix text (o ni això si només mesurem la mètrica)
+%%PVmut matem missatges del prompt 
+%%PVsense pintar! (no componem re)
+
+%%VisSensFi
+%% seqüència de dades per genenar els vectorials d'una línia de base
+%% array de posicions d'un 4Up per traçar les línies de base en diagonal (vis sens fi) pàgina a pàgina
+%% calculada amb liniaDbase_vissensfi.ps amb moltes de les dades que ja ens poden venir d'aquí
+[
+ [-2.3752969e-07 321.0]  %% 0 primera pàgina, punt x,y d'inici de la línia de base a la vora esquerra
+ [297.5 309.888885]  %% 1 punt final de la vora dreta de la primera pàgina i punt d'inici de la segona
+ [595.0 298.777771]  %% 2 ...i segueix
+ [892.5 287.666656]  %% 3
+ [1190.0 276.555542]  %% 4
+ [1487.5 265.444458]  %% 5
+ [1785.0 254.333328]  %% 6
+ [2082.5 243.222229]  %% 7
+ [2380.0 232.111115]  %% 8 punt final, vora dreta, de la darrera pàgina i d'inici de la primera (vora esquerra)
+ [2677.5 221.0]  %% 0 altra cop primera pàgina, és el punt final de la vora dreta
+]
+/aBase exch def
+
+%%VisSensFi
+%% nombre de pàgines del llançat
+8
+/npLl exch def
+
+%%VisSensFi
+%% format x,y de cadascuna de les pàgines del llançat d'un 4Up
+297.5 /xPagina exch def
+421.0 /yPagina exch def
+
+%% el raonament per fer la primera volta seria:
+%% partint del costat esquerre de la primera pàgina, a una distància vertical (interliniat) en funció del cos triat, tirem una
+%% línia per totes les pàgines per tornar fins el costat dret de la primera pàgina a la distància vertical de l'interliniat
+
+%% el càlcul dels punts de pas, d'entrada i sortida, de cadascuna de les pàgines intermitges, només cal a la 1a volta
+%% doncs els següents des deduiran, cap avall, amb el valor de l'interliniat triat
+
+%%VisSensFi
+100
+/iL exch def  %% interliniat
+
+%%VisSensFi
+%% format de pàgina pel simulacre
+<<
+  /PageSize
+  [
+   xPagina npLl 1 add mul
+   yPagina
+  ]
+
+  /HWResolution
+  [
+   4000 4000  %% màxim
+%   72 72  %% mínim
+  ]  %% la resolució del dispositiu (de 72 a 4000) també juga amb setflat pel flattenpath de segmentació
+
+>>setpagedevice
+%% acurat del planxat (flatness)
+% .2  %% màxim
+100  %% mínim
+setflat  %% flatness: valors de .2 (qualitat màxima, molts segments) a 100 (qualitat mínima, pocs segments)
+
+%%Raonaments per la versió d'enflataGlifs que cal executar aquí
+%% 1 > com que serà molt important controlar la distància acumulada, de glifs compostos dins la recta, tenim les variables
+%% /TxGlifs (suma d'amples dels glifs compostos) i /dS (distància del segment enflatat) que ens poden facilitar aquesta dada
+%% 2 > l'index /iGac serà fonamental per repetir els glifs que puguin cavalcar entre pàgines
+%% 3 > quan s'esgota el darrer segment enflatat (guia de la línia de base de composició) aturem la composició de text
+%% 4 > tampoc no val perdre de vista /segmentsARAglif que ens diu els segments que s'inclouen dins un mateix glif
+%% 5 > quan s'esgota el text a compondre (i no s'esgoten els segments enflatats) ens aturem
+%% 6 > com un poema, podríem descriure quina és la filosofia de treball de l'algorisme?
+%% un paquet de posicions /apfa producte del flattenpath, segmentador del cursus de la línia de base
+%% el for dels segments ho abraça tot i compon per la línia de base indistintament per la part interior o exterior del path
+%% dins el for hi ha un loop i a dins hi ha cshow que invoca un procediment per a un glif, això en cada volta de loop
+
+%%Valorem quins menús d' enflataGlifs2_plegaVeu_metrica.ps farem variables o fixes
+
+%%MENÚ0: format i nivells de qualitat per la fragmentació del cursus
+%% ja ve definit aquí més amunt
+
+%%MENÚ1: text a escriure (compondre)
+(Tant de sol als turmells, de mar llisa i daurada. Agafades de mans, no es diuen res.)
+/tae exch def
+
+%%MENÚ2: octets de treball i sentit d'escriptura per alfabets diferents al llatí o altres efectes
+%%Unicode
+%%EP no perdem de vista l'algorisme repicaHTMLentities.ps com a eina lectora de cadenes Unicode
+/ctts 1 def  %% octets de treball (byte senzill o doble o més)
+%% per escriure d'esquerra a dreta: true (occidental)
+%% per escriure de dreta a esquerra: false (oriental)
+/eAd true def
+
+%%MENÚ3: tipografia i cos de treball
+%(/Users/femfum/calaixDtipus/Balius/TR00032-2020/Patufet/otf/Patufet-Mono-Mig-Italic.otf)
+%(/Users/femfum/calaixDtipus/Balius/TR00032-2020/Patufet/otf/Patufet-Mono-Mig.otf)
+%(/Users/femfum/calaixDtipus/PepelPatau/furafont/tipus/Chupada-Bold\ italic.otf)
+(/Users/femfum/calaixDtipus/Gentium/GentiumPlus-5.000-developer/GentiumPlus-I.ttf)
+
+85  %% encara li queda
+%24.2
+selectfont
+
+%% mètrica fixa per la Patufet-Mono-Mig-Italic.otf i Patufet-Mono-Mig.otf
+%(A) stringwidth (<<<< 1/1000 = 600 )pstack quit
+
+%% tou de rutines: càlcul de l'índex del glif inicial i final
+eAd
+{   %% d'esquerra a dreta dels octets dins la cadena de text a escriure
+ /iGac 0 def  %% índex inicial pel glif a composar
+ %% la divisió fa sentit quan treballem a doble octet o més
+ /MAXglif tae length ctts idiv def  %% límit de glifs a compondre
+}
+{  %% de dreta a esquerra dels octets dins la cadena de text a escriure
+ /iGac tae length ctts idiv 1 sub def  %% índex inicial pel glif a composar
+ %% la divisió fa sentit quan treballem a doble octet o més
+ /MAXglif -1 def  %% límit de glifs a compondre
+}ifelse
+
+%%MENÚ3.1: xifrat
+%%Unicode
+%% així seria l'array bidimensional d'Encoding basada en Unicode per poder treballar en doble octet
+%% caldria classificar-les pel primer octet i que el contingut correspongués al segon, exemple:
+%% [
+%%  [
+%%   #00 segon octet
+%%   ...
+%%   #ff
+%%  ]  %% 00 primer octet
+%%  ...
+%%  [
+%%   #00 segon octet
+%%   ...
+%%   #ff
+%%  ]  %% ff primer octet
+%% ]
+%% crida de GS al xifrat que fem servir
+/Encoding systemdict /EncodingDirectory get /WinAnsiEncoding get def
+%%EP no perdem de vista l'algorisme repicaHTMLentities.ps com a eina lectora de cadenes Unicode
+
+
+%%MENÚ6: línia de base: aquí podem decidir on situem la línia de base del glif en relació al cursus (path) componedor
+
+%% és dins aquest for on hem de fer les crides successives a una versió d'enflataGlif adaptada
+aBase 0 get cvx exec moveto
+
+%%E M B O L I C A D O R A
+
+%%VisSensFi
+1 1 aBase length 1 sub
+{  %% for
+ dup /NO1 exch def
+{  %% stopped
+
+ dup 2 mod 0 eq {1 0 0 setrgbcolor}{0 0 0 setrgbcolor}ifelse
+ aBase exch get
+
+%%OJU aquí doncs fem fer moveto/lineto a cada tram simulat de nova pàgina de llançat (dins el for a partir dela segona!)
+ NO1 1 gt
+ {
+  Mveto cvx exec moveto
+ }if
+ dup /Mveto exch def
+
+ cvx exec lineto
+% stroke
+% cvx exec moveto
+
+%%MENÚ4: ductus (traç) componedor i sentit (esquerra/dreta o viceversa) de la línia de base
+%% el path actiu pot, en la direcció en que el dibuixem, condicionar el sentit del componedor
+%% també ens ajuda a construir una componedora universal per tota mena d'alfabets i escriptura creativa
+
+%% fent 2 rectes hi pot haver 2 comportaments: adaptació progressiva al pendent o adaptació estricte del path
+%% l'exemple més evident és quan volem recórrer un quadrat: activant les variables %%!! %%MENÚ7 el recorrem fidelment
+%% i si no ho fem, en funció de com s'acosta el glif al canvi de sentit, es compensa amb un pendent al vèrtex següent
+
+%% l'enflatador de path, fent latent el traçat segmentat
+ flattenpath
+
+ [
+
+  {  %% proc moveto, deixa 2 coordenades x,y a l'stack
+   % == == (m)==
+  }
+  {  %% proc lineto, deixa 2 coordenades x,y a l'stack
+   % == == (l)==
+  }
+  {  %% aquí hem de donar un error (quan pot passar això?)
+   ( ...hi ha curveto ...sortim!)pstack quit
+  }
+  {  %% proc closepath, inicialment sense efectes
+  }
+  pathforall
+
+ ]
+ /apfa exch def
+
+%%PVcec
+%%Pintem el path segmentat? (blau)
+ true{
+ gsave 0.2 setlinewidth 0 0 1 setrgbcolor stroke grestore
+ }if
+
+%%EP! ens cal netejar tant el traçat latent del path com el dels glifs
+ newpath
+
+ apfa length dup /MAXxy exch def 2 idiv
+ %% dup 12 string cvs (\n)print flush  ( ...nombre de nodes del path: ) print flush print flush
+ 1 sub dup /nS exch def  %% nombre de segments
+ dup /nSi exch def  %% nombre de segments inicial (a voltes una recta aparentment contínua té diversos trams de planxat)
+
+%%PVmut
+ true{
+ 12 string cvs (\n)print flush  ( ...nombre de trams planxats: ) print flush print flush (\n\n)print flush
+ }
+ {
+  pop
+ }ifelse
+
+%%De què ens hauria de servir mesurar si el tram de segmentació més petit és més gran o no que l'ample del Bbox pel cos triat?
+%% per exemple: seria útil per recalcular la línia de base del glif, quan el seu ample inclogui diversos segments
+
+%%MENÚ5: sentit d'escriptura del componedor en relació al sentit de dibuix del cursus
+%% true: en el mateix sentit que s'ha dibuixat el cursus (path) componedor (part interior) i false en el contrari (part exterior)
+%% això sempre que respectem la línia de base natural del glif, doncs podem moure-la modificant el valor zero de %%MENÚ6:
+%% pot ser útil també per alfabets diferents al llatí o altres efectes
+ /seC true def
+
+%% decidim el sentit de lectura x,y dels segments
+ seC
+ {  %% en el mateix sentit que s'ha dibuixat el path componedor
+  /iil 0 def  %% índex d'inici de lectura
+  /ifl MAXxy 1 sub def  %% índex del final de lectura
+  /sentit {add} def  %% endavant
+ }
+ {  %% en el sentit contrari que s'ha dibuixat el path componedor
+  /iil MAXxy 1 sub def  %% índex d'inici de lectura
+  /ifl 0 def  %% índex del final de lectura
+  /sentit {neg add} def  %% endarrera
+ }ifelse
+
+%% l'algorisme enflatador que teniem dins els procs de pathforall de moveto/lineto
+%% computem segments i nodes
+ /segmentsARAglif 0 def  %% hauria de comptar els segments que abracen l'ample de cada glif
+ /txtEsgotat false def  %% gatell per saber si hem esgotat el text a compondre
+
+%% dins el pathforall apuntaria dins del proc moveto
+ /XtramEscriu 0 def  %% acumulat x, dins un mateix segment, del cursor que compon els glifs sobre el path
+ /dS 0 def  %% mida (distància) del segments acumulada
+
+%% x,y del node inicial del segment (aquest només es crida el primer cop)
+%% l'hem de pescar o del cap o la cua d'/apfa
+ seC
+ {
+  /suaraX apfa iil get def
+  /suaraY apfa iil 1 sentit get def
+ }
+ {
+  /suaraY apfa iil get def
+  /suaraX apfa iil 1 sentit get def
+ }ifelse
+
+ suaraX suaraY moveto  %% punt d'inici del primer glif
+
+%%Test pel loop de dins el for
+ /ES 0 def
+ /NOes 0 def
+
+%%PV2.1.1 acumulat d'amples dels glifs compostos
+ /TxGlifs 0 def
+
+ %% dins el pathforall apunta al proc de lineto
+ %% sentit de lectura dels segments (sentit d'escriptura en la direcció de com s'han dibuixat)
+ %% comencem enretirant els dos índex x,y inicials (doncs ja els hem desat a suaraX i suaraY) recorrent tot el segmentat /apfa
+ iil  %% índex d'inici de lectura
+ 0 2 sentit exch 1 index add exch  %% salt, endavant o endarrera
+ ifl  %% índex final de lectura
+ %suaraX suaraY(vvvvv)pstack quit
+ {  %% for que compon per la línia de base (o cap/peus del FontBBox), indistintament per la part interior o exterior del path
+
+  seC
+  {  %% x,y del node final del segment
+   apfa exch dup 2 index exch get /araX exch def 1 add get /araY exch def
+  }
+  {  %% x,y del node final del segment
+   apfa exch dup 2 index exch get /araY exch def 1 sub get /araX exch def
+  }ifelse
+
+%%PVmut
+  false{
+  araX == araY ==  %% x,y del node final del segment
+  (- - - - - - - - -)==
+  suaraX == suaraY ==  %% x,y del node d'inici del segment componedor
+  }if
+
+  %% distància del segment (teorema de Pitàgores)
+  araX suaraX sub abs dup mul  %% el quadrat del valor x
+  araY suaraY sub abs dup mul  %% el quadrat del valor y
+  add sqrt
+
+%%Nou
+  dS add  %% hi sumem la distàcia del segment acmulada
+
+  /dS exch def  %% l'arrel quadrada de la suma ens dóna la distància del segment
+
+  segmentsARAglif 1 add /segmentsARAglif exch def
+
+  %% situem l'eix de coordenades en el pla del segment o per pintar el node o per pintar el glif (o totes dues coses)
+  gsave
+
+%%Test
+%%PVcec
+  true{
+  %% pintem el node de la cua del segment
+  gsave
+  araX araY 2 copy translate
+  suaraY sub exch suaraX sub
+  %% filtre per evitar 0 0 atan = indefineresult
+  2 copy eq
+  {
+   dup 0 eq
+   {
+    pop
+   }
+   {
+    atan
+   }ifelse
+  }
+  {
+   atan  %% angle del segment en relació al node anterior
+  }ifelse
+  rotate  %% pot ser la rotació per pintar la perpendicular del node o la línia de base per pintar el glif
+  0 1 0 setrgbcolor 0 setlinewidth
+  0 -50 moveto 0 50 lineto stroke  %% amb una perpendicular al segment del flattenpath
+  grestore
+ }if
+
+%%R O D A PER CADA GLIF
+  %% aquí hauríem d'activar un avaluador que ens digués si el glif que ara toca encara hi cap
+  {  %% loop per recórrer el segment, fins que s'esgoti, amb els glifs a compondre
+
+   {  %% el proc componedor per cshow deixa a l'stack el codi i l'ample x,y de composició del glif
+
+%%Sentit d'escriptura per alfabets diferents al llatí o altres efectes
+%% ens caldria actuar aquí per alfabets, com el japonès, que componen en vertical)
+    pop  %% valor Y per fonts amb composició vertical (en composició horitzontal s'elimina)
+
+%%PV20.1
+%%PVmut
+  false{
+  dup == (^ pitch)==
+  }if
+
+%%EP!
+%% tenint aquí l'ample del glif, el primer que hauríem d'avaluar és quants trams l'inclouen i si l'actual s'esgota
+%dS XtramEscriu add gt(||||)pstack quit
+   dup /xGlif exch def  %% pesquem l'ample per pintar en vermell la línia de base glif a glif
+
+%%PV20.1.1
+   xGlif TxGlifs add /TxGlifs exch def
+
+%%Nou
+%   dS xGlif lt  %% els segments acumulats NO superen l'ample del glif?
+   dup XtramEscriu add dS gt  %% el posicionat x del glif, esgota el segment?
+
+   {  %% si l'esgota el segment, pot ser per dues raons:
+
+%%Aquí el valor de dS és el de la hipotenusa que necessitem pel càlcul d'inici del 1er glif de la pàgina següent?
+dS == (^^)==
+
+    %% perquè l'ample de composició del glif abraça 2 o més segments (cal calcular quants segments hi caben en un ample?)
+    %% perquè ja no hi han més segments però sí que hi ha més text (cal saber quan de text queda per compondre)
+    %% llavors:
+    %% ni pintem el glif, ni fem córrer l'index iGac
+
+%%Nou
+    /dS 0 def
+    pop pop  %% ens carreguem l'ample i codi del glif
+%% com que hem de canviar de segment, també el deixem a zero!
+    /XtramEscriu 0 def
+%    /XtramEscriu XtramEscriu dS sub def  %% però inicialitzem XtramEscriu amb l'ample que sobra
+
+    /cmpnm false def  %% componem? (de moment no actua)
+
+%%Test
+%ES 1 add dup == /ES exch def
+%/NOes 0 def
+
+%%PV20.1.1 desfem la suma acumulada d'amples de glif
+    TxGlifs xGlif sub /TxGlifs exch def
+
+%%NO sempre hauríem de sortir?
+%%PVmut
+  false{
+  (<<< sortim)==
+  }if
+
+    exit  %% temporalment tant si hi ha o no més segments, sortim del loop de forma fixa
+
+   }
+   {  %% com que no s'esgota, componem el glif i fem córrer l'índex iGac
+%%Test
+%NOes 1 add dup == /NOes exch def
+%%Test pel loop de dins el for
+%/ES 0 def
+
+    exch  %% el codi del glif a cercar
+
+%1 string dup 3 -1 roll 0 exch put stringwidth
+
+    Encoding exch get  %% nom del glif a compondre
+
+%%Test
+%%PVmut
+  false{
+  dup ==  (^ nom del glif) == %% nom del glif que componem
+  }if
+
+   gsave  %% preservem l'estat gràfic del glif que componem
+   newpath
+
+   suaraX suaraY 2 copy translate
+   araY sub exch araX sub atan  %% angle del segment en relació al node anterior
+
+%% cal entendre que fa realment aquesta rotació i les seves possibilitats
+   -180 sub  %% en quina direcció de lectura ens convé?
+%% pop 0  %% si rotem a zero ens ho escriu en línia recta passant del path establert
+   rotate  %% pot ser la rotació per pintar la perpendicular del node o la línia de base per pintar el glif
+
+%%EP!
+%% no hi ha diferències entre l'ample de la línia de base que ens dóna cshow o amb la que obtenim amb stringwidth
+%%PV20.1
+%%PVcec
+  true{
+  %%TEST
+  gsave
+  0 setlinewidth
+  1 1 1 setrgbcolor  %% té sentit pintar la línia de base blanca si pinta per sobre del path segmentat en blau
+  %currentpoint pop xGlif sub 0 lineto stroke  %% pintem la línia de base del glif amb ample corresponent a cadascun
+  0 0 moveto xGlif 0 lineto stroke  %% pintem la línia de base del glif amb ample corresponent a cadascun
+  grestore
+  }if
+
+%%PV20.1
+%%NouNou
+%%Prosa
+%6  %% si en passem de cert valor (aprox 60% del cos?) es col·lapsen els glifs?
+    0  %% desplaçament horitzontal del glif, de manera que suma a la distància X entre glifs (podríem activar aquí el kerning!)
+%    XtramEscriu dS sub  %% 0 gt  %% si la distància x és més gran que zero, és que ja ens hem menjat el segment
+
+%%PV20.1
+%%MENÚ6: línia de base: aquí podem decidir on situem la línia de base del glif en relació al cursus (path) componedor
+    %% part superior del FontBBox (caldria calcular-la)
+    0  %% desplaçament vertical Y des de la línia de base natural en punts
+    %% part inferior del FontBBox (caldria calcular-la i aplicar-hi el multiplicador de la mètrica 1/1000)
+    moveto
+
+%%PVsense pintar! (a true si volem que pinti)
+  true{
+     glyphshow  %% posicionem el glif
+  }if
+
+%%Nou
+   currentpoint  %% el final del glif és el del nou origen del següent
+
+%%NouNou
+   pop 0  %%  rectifiquem cada vegada la posició Y sobre la línia de base natural (l'X no s'ha de rectificar)
+
+%%PVsense pintar! (comentar si volem que pinti)
+%pop exch pop 1 index 3  1 roll
+
+
+   transform  % dóna les coordenades del punt x,y (eix normal) en unitats del dispositiu de sortida (device pixels)
+   grestore
+   itransform  % dóna les coordenades del punt x,y (eix normal) en punts tipogràfics
+%% noves coordenades d'inici (amb l'eix sense rotar)
+   /suaraY exch def
+   /suaraX exch def
+
+%%PV20.1
+%% ens diu els segments que s'inclouen dins un mateix glif
+%%Test
+%%PVmut
+  false{
+  segmentsARAglif == (^ segments)==
+%(passo)==
+  }if
+
+   /segmentsARAglif 0 def
+
+%%PV20.1
+%%Sentit d'escriptura per alfabets diferents al llatí o altres efectes
+    XtramEscriu add /XtramEscriu exch def  %% x del glif següent
+
+%%Unicode
+%%EP no perdem de vista l'algorisme repicaHTMLentities.ps com a eina lectora de cadenes Unicode
+    iGac ctts  %% aquí és on podríem treballar amb strings a doble octet o més
+%%Sentit d'escriptura per alfabets diferents al llatí o altres efectes
+    %% eAd decideix si llegim la cadena de text de dreta a esquerra (sub) o d'esquerra a dreta (add)
+    eAd {add}{sub}ifelse
+
+%%TEST
+%dup 2 eq{(....)pstack quit}if
+
+    /iGac exch def
+
+    %% exhaurim els glifs?
+    %% quan s'esgota el text (el repetim o ens aturem?) i no s'esgoten els segments
+    iGac MAXglif eq
+    {
+%%PVmut
+  false{
+       (\n ...hem esgotat els )print flush MAXglif 12 string cvs print flush ( glifs que tenia el text\n)print flush
+       ( ...encara ens queden )print flush nS 12 string cvs print flush ( segments per compondre\n)print flush
+%% en el cas de les rectes llargues aquest % no és acurat doncs hauria de computar el % que ha fet del darrer per ser exactes
+       ( ...queda per compondre el )print flush nS 100 mul nSi div round cvi 12 string cvs print flush (% del recorregut\n)print flush
+    }if
+
+     %% si tenim una mitjana de segments/glif hauríem de poder deduir el nombre de caràcters que faltarien per esgotar el text
+%%TEST
+  /txtEsgotat true def
+       exit
+      }if
+      /cmpnm true def  %% componem? (de moment no actua)
+     }ifelse
+
+%%TEST
+%exit
+   }  %% proc componedor de cshow
+%%Unicode
+%%EP no perdem de vista l'algorisme repicaHTMLentities.ps com a eina lectora de cadenes Unicode
+   tae iGac ctts  %% aquí és on podríem treballar amb strings a doble octet o més
+   getinterval
+   %% aquest operador, per sí sol, no compon ni pinta cap glif, tal com diu el PLRM3:
+   %% «cshow does not paint the glyph and does not change the current point, although proc may do so»
+   cshow  %% sense necessitat de posicionar-nos, dins el proc, ens dóna el codi i l'ample x,y de composició del glif
+
+  }loop  %% per recórrer el segment, fins que s'esgoti, amb els glifs a compondre
+
+  grestore  %% desactivem la rotació de la línia de base de composició
+
+  %% aquí hauríem de decidir si aturem l'algorisme o tornem a començar el text fins a esgotar els segments
+  txtEsgotat
+  {  %% si hem esgotat el text sortim del for dels segments
+   exit
+  }if
+
+%%Nou%%!!
+%% activant de nou aquestes variables fa que l'inici dels glifs quadrin amb l'inici dels nodes d'enllaç del cursus segmentat
+%% sempre que l'ample del glif sigui menor que l'ample del tram segmentat del cursus, doncs sinó mai no el compon
+%% component sobre una corba, a molta resolució, no ens compondrà res (tots els segments seran més petits que l'ample dels glif)
+%% pot tenir sentit en segons quins casos, però ho desaconsellem per a les corbes (és per treballar exclusivament amb rectes)
+%% lògica? un cop hem mesurat la distància del segment ja podem actualitzar x,y node inicial pel següent?
+%% l'exemple d'ús més evident és quan volem recórrer un quadrat: activant aquestes variables el recorrem fidelment
+%% i si no ho fem, en funció de com s'acosta el glif al canvi de sentit, es compensa amb un pendent al vèrtex següent
+%%MENÚ7: l'inici dels glifs quadra amb l'inici dels nodes d'enllaç del cursus segmentat?
+  false
+  {
+   araX /suaraX exch def
+   araY /suaraY exch def
+  }if
+
+%%PVmut
+  false{
+  (...segment...)==
+  }if
+
+  %% quan s'esgoten els segments i no s'esgota el text?
+  nS 1 sub 0 eq
+  {
+
+%%PVmut?
+  true{
+    (\n ...hem esgotat els segments i queden encara... ) print flush
+    MAXglif iGac sub ctts idiv abs 12 string cvs print flush  %% glifs que encara queden per compondre
+    ( ...glifs per compondre\n\n)print flush
+
+%%PVclau resta de text dins l'string /tae que encara queda per compondre
+    tae iGac MAXglif iGac sub getinterval ==
+  }if
+
+   exit
+  }
+  {
+   nS 1 sub /nS exch def
+  }ifelse
+
+%%TEST
+%exit
+
+ }for  %% que compon per la línia de base (o cap/peus del FontBBox), indistintament per la part interior o exterior del path
+
+%%PVclau
+%%PVmut
+  false{
+  dS == (^ /dS ample de la linia de base del darrer glif compost\n\n)print flush
+  TxGlifs == (^ /TxGlif longitud d'amples dels glifs compostos\n\n)print flush
+  suaraX == suaraY == (^ suaraX | suaraY\n\n)print flush
+  }if
+
+%apfa araX araY suaraX suaraY
+%suaraX ==
+  (b r o s s a)pstack
+
+%XtramEscriu iGac dS
+%% TxGlifs ==
+%(/////)pstack quit
+%exit
+%newpath
+
+%%Aturar el componedor quan el final de l'ample del glif sobrepassa l'ample de la línia de base establerta
+%% però ara NO pintem aquest glif i necessitem pintar-lo!
+
+%%Si restem el valor de la hipotenusa (línia de base en pendent és /dS) de... ^ /TxGlif longitud d'amples dels glifs compostos
+%% ens donarà la distància que encara ens queda de l'ample del darrer glif que no quedarà del tot pintat a la pàgina
+%% i que el primer glif de la pàgina següent haurenm de repetir des del mateix punt d'inici exacte (valor X en negatiu)
+
+%%Cal veure si es pot fer servir la lògica de... fusHorariLiterari_xPliegOS.ps on es compon sempre conjuntament tot el text
+
+
+}stopped{(ONPETA)pstack quit}if
+
+%%VisSensFi
+}for
+
+
+showpage
+
