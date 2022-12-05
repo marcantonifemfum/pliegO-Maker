@@ -6,7 +6,7 @@
 %%  Per a intèrprets `GNU GPL Ghostscript´ però també, amb ben pocs retocs, pot córrer
 %%  amb l'Adobe Acrobat Distiller o amb el PSNormalizer Framework/Apple pstopdf a MacOSX.
 %%
-%%  `Copyleft 2017-2021 :: l'Ametlla de Merola :: Marcantoni Malagarriga-Picas´
+%%  `Copyleft 2017-2022 :: l'Ametlla de Merola :: Marcantoni Malagarriga-Picas´
 %%  `<http://www.femfum.com> | <marcantoni@femfum.com>´
 %%  `https://github.com/marcantonifemfum/pliegO-Maker´
 %%  `http://pliegos.net/maker´
@@ -32,7 +32,7 @@
 %%
 %%  All the comments inside the code are in catalan [ca], we hope to add english annotations in future versions
 %%  
-%%  `Copyleft 2017-2021 :: l'Ametlla de Merola :: Marcantoni Malagarriga-Picas´
+%%  `Copyleft 2017-2022 :: l'Ametlla de Merola :: Marcantoni Malagarriga-Picas´
 %%  `<http://www.femfum.com> | <marcantoni@femfum.com>´
 %%  `https://github.com/marcantonifemfum/pliegO-Maker´
 %%  `http://pliegos.net/maker´
@@ -74,7 +74,7 @@
 %%NOUgs9.55 marca el que hem desactivat temporalment en relació a la transparència
 %% com que és un canvi progressiu des de la 9.53 permeten mantenir els operadors eliminats afegint -dALLOWPSTRANSPARENCY
 
-%% glosari:
+%% glossari:
 %% full: peça de paper que s'imprimeix (MediaBox), en algun dels formats estàndards o no (ISO, JIS, ARCH, Ansi, etc)
 %% plana: anvers o revers, cadascuna de les 2 cares del full de paper
 %% pàgina: les del pliegO acabat, i dins la plana són cadascuna les àrees on es compon el document, limitades pel plec i tall
@@ -121,8 +121,10 @@
 
 %%M? donar la possibilitat de rotació i/o mirall del contingut de determinades pàgines?
 
-%%M0 donar la possibilitat de triar pàgines en blanc? (false) sobre l'esquema del desplegat de planes
+%%M? donar la possibilitat de triar pàgines en blanc? (false) sobre l'esquema del desplegat de planes
 %% no activarem aquesta opció encara a l'espera de com es configuri la tria a la interfície d'usuari
+
+%%M0 capturar quina és la llengua del navegador per tal d'activar determinades informacions en català o anglès
 
 %%M1 donar la possibilitat de fer visible la vora de la pàgina d'imposició, sigui o no dins una capa i com?
 %% capturem la variable d'entorn generada amb PHP des de PHP2PS2PHPgeneracioicapturadunavariabledentorn.php
@@ -137,7 +139,7 @@
  }ifelse
 }
 {
- false  %% fem visible la vora de la pàgina del llançat? (imposició) més endavant podrem posar-ho en una capa
+ true  %% fem visible la vora de la pàgina del llançat? (imposició) més endavant podrem posar-ho en una capa
 %% (\n Ghostscript no pot capturar aquesta variable d'entorn!\n\n)print flush
 }ifelse
 
@@ -159,7 +161,7 @@
  }ifelse
 }
 {
- 4
+ 1
 %% (\n Ghostscript no pot capturar aquesta variable d'entorn!\n\n)print flush
 }ifelse
 
@@ -217,18 +219,18 @@
 }ifelse
 
 %%M6 índex a l'algorisme de composició independent del nUp triat
-(MRCT_lab) getenv
+(MRCT_labal) getenv
 {
  dup length 0 eq
- {  %% si la variable existeix però arriba buida...
-  pop 1
+ {  %% si la variable existeix però arriba buida (ve de la interfície però per algun motiu arriba sense dades)
+  pop 0  %% activem l'algorisme de reglatge
  }
- {
+ {  %% ve de la interfície correctament
   cvx exec  %% és una string!
  }ifelse
 }
-{
- 7  %% 0 algorisme de reglatge
+{  %% la variable d'entorn NO existeix perquè l'executem via Terminal, en local, per línia de comanda
+ 1  %% 0 algorisme de reglatge
     %% 1 fus horari
     %% 2 interrogador de variables
     %% 3 algorisme buit i només pintaria els marges de pàgina?
@@ -236,7 +238,10 @@
     %% 5 inocula codi pdf per farcir Reference XObjectes
     %% 6 traçat harmònic VanDeGraaf
 
-    %% 7 plegaVeu mestre buit (amb el text de capçalera de la La polla xica, pica...)
+    %% 7 plegaVeu mestre ple (restringit a les condicions del plegaVeu de l'Espai Òmnium 19.12.21)
+    %% ara mateix aquesta versió dóna Error: /undefined in mEtrica
+
+    %% 8 vis sens fi?
 
 %% (\n Ghostscript no pot capturar aquesta variable d'entorn!\n\n)print flush
 }ifelse
@@ -246,46 +251,95 @@
 {  %% la variable d'entorn existeix perquè ve de la <textarea> via interfície
  dup length 0 eq
  {  %% si la variable existeix però arriba buida...
-  pop (aquesta pàgina és buida per manca de dades)  %% text de farcit que ens indica que la variable ha arribat buida
+  pop (Aquest plegaVeu no duu cap text!)  %% text de farcit que ens indica que la variable ha arribat buida
   %% després de l'string hi hauria d'haver un dígit per redefinir el valor de la variable d'entorn MRCT_lab?
-(/////)pstack exit
+  %(/////)pstack exit
  }
- {  %% aquesta és 
-(!!!!)pstack exit
+ {  %% ve de la interfície correctament 
+  %pop (aquí arriba el text que hem escrit o capturat)
+  %(!!!!)pstack exit
   %% és una string a polir i decodificar via plegaVeu_mestre_ple.ps 
   %% després de l'string hi hauria d'haver un dígit per redefinir el valor de la variable d'entorn MRCT_lab?
  }ifelse
 }
-{   %% la variable d'entorn NO existeix perquè executem l'applet en local pel Terminal via línia de comanda
+{  %% la variable d'entorn NO existeix perquè executem l'applet en local pel Terminal via línia de comanda
 %%RELLEVANT: si volem reflectir un error PS al prompt de la interfície necessitem sortir amb exit
 %% llavors surt del GS, doncs sinó sempre fa un pdf buit
 %(nnnn)pstack exit  
 %(text a compondre)  %% text en manual que posem nosaltres
 
-(Una polla xica, pica, pellarica, camatorta i becarica va tenir sis polls xics, pics, pellarics, camacurts i becarics. Si la polla no hagués sigut xica, pica, pellarica, camatorta i becarica, els sis polls no haguessin sigut xics, pics, pellarics, camacurts i becarics.)
+(Una polla xica, pica, pellarica, camatorta i becarica va tenir sis polls xics, pics, pellarics, camacurts i becarics.\nSi la polla no hagués sigut xica, pica, pellarica, camatorta i becarica, els sis polls no haguessin sigut xics, pics, pellarics, camacurts i becarics.)
+
+%% almenys per línia de comanda interpreta correctament els canvis de línia
+%% aquest vers es pot veure com queda curt en nombre de línies (4) i pàgines a omplir (6), deixant-ne dues en blanc correctament
+%(agafaré aquest meu cor balb,
+%per llançar-lo lluny, enllà,
+%i un cop après l'art de tirar
+%et regalaré la fona)
+
+%(De cos present et necessita la meva primavera\no acabaré vomitant flors mutilades,\nque jo no vull tornar-me lletra\nper fer-te imatge i mentida,\nque ens vull elèctrics i brutals\nen mig del desastre, morint,\nsi cal, al cos de l'altre,\nsacsejats pel tro, bruts de desfici,\nescampats al paisatge de l'abril més salvatge,\nla tempesta que esclati!)
+
+%(boja, goja o fada?)  %% amb només una g, o una f, podem veure el control minimalista compositiu?
+
+%% sense res o amb espais en blanc dins aquesta string seguiríem amb un Error: /undefinedresult in --div--
+%% però aquí no té sentit, doncs és només via interfície que es pot cometre aquesta badada de no posar-hi res
+%(             )
+
 
 %(Peixos dins el rostoll\nàligues dins el foc\nla mar dins els ulls\nels peus plens de cans\nel vent és pudent\ntots els déus van gats\n\nOh serra mamerra\nens roben la terra\ni ens fonen l'aram.)
 
 %(Si vinguessis per tardor\nespolsaríem l'estiu\namb llengots i mitja rialla,\ncom mestresses al badiu.\n\nSi ens veiéssim en un any\ncabdellaríem mesades,\ntotes al seu calaixer,\nmentre el temps passa debades.\n\nSi triguessis sols un segles,\ncomptats només amb la mà,\ndeixondint els dits tot d'una\ndins el Van Diemens llunyà.\n\nSi del cert la vida fuig,\nbé prou que ambdós ho sabem,\nbo i foragitant l'embolcall\nfaríem un tast a l'etern.\n\nAra però, ignorem al capdavall\nsi el temps és l'ala incerta\nd'un borinot que, cap a mi furiós,\nenvà el seu fibló no encerta.)
 
+%%EP! perquè no sembla un poema? (perquè tenia una línia de més de 64 caràcters i feia abaixar el cos per sota de 7)
+%(segle xvi 00\nsoleta jo aquí si voleu que us vagi a obrir\nara que n'és hora si voleu venir món marit\nés de fora on a Montalbà demà bé serà mig hora\n\nla rutina tutelada de maria josepa massanés facebook l'ou\nmatrones acudiu acudir\ncom les que un xiprer tindran fer corones per als vells desitjat\ndes dels herois morts)
+%(segle xvi 00\nsoleta jo aquí si voleu que us vagi a obrir\nara que n'és hora si voleu venir món marit\nés de fora on a Montalbà demà bé serà mig hora\n\nla rutina tutelada de maria josepa massanés facebook l'ou\nmatrones acudiu acudir\ncom les que un xiprer tindran fer corones per als vells desitjat\ndes dels herois morts\ni ara què tal?\nuna més, a veure?\ni encara una altra?\nno entenem perquè no l'admet!\nho fa el nombre de línies?\ntambé en relació al 120% de la interlínia triada?\nfins que no desxifrem el codi no ho sabrem\naquesta podria ser la línia que fes vessar el got\ntampoc\ntampoc encara?\nres a fer!\nno, que va home!\nva home vaaaaaa!)
+
+%% aquesta va, doncs tot i que són línies molt curtes, repartides, no superen el màxim Y
+%(sol\ni de\ndol i\namb vetusta\ngonella\nem veig)
+
 %(El bou pesant, veient la gent\nque tantes coses oferia,\ndiu que volia fer un present\nal dolç Infant de l'Establia.\n\nI quan minvà una mica el fred\ni l'Infantó ja no plorava,\nsortí amb pas lent, dins l'aire net,\nsota la nit florida i blava.\n\nVa caminar per fondes valls\ni resseguia la carena.\nSent el clarí de tots els galls,\nperò ja du la rica ofrena.\n\nSaltant de goig i bruelant,\nel bou baixà de la muntanya,\ni s'oferia al dolç Infant\namb una estrella a cada banya.)
 
   %% després de l'string hi hauria d'haver un dígit per redefinir el valor de la variable d'entorn MRCT_lab?
-%% (\n Ghostscript no pot capturar aquesta variable d'entorn!\n\n)print flush
+%% (\n Ghostscript no pot capturar aquesta variable d'entorn!\n\n)print flush exit
+
+%%MarcelDuchamp
+%%Aquesta cadena de text té tots els canvis de línia convertits a \n?
+%%No té cap més tractament que el fet de ser ISO-8859-1
+%(/Library/WebServer/Documents/www.pliegos.net/maker/txt/theCreativeAct_MarcelDuchamp.txt)
+%(r) file 65535 string readstring pop
+
+%% (Just Like) Starting Over | John Lennon
+%(Our life together is so precious together\nWe have grown, we have grown\nAlthough our love is still special\nLet's take a chance and fly away\nSomewhere alone\nIt's been too long since we took the time\nNo-one's to blame, I know time flies so quickly\nBut when I see you darling\nIt's like we both are falling in love again\nIt'll be just like starting over\nStarting over\nEveryday we used to make it love\nWhy can't we be making love nice and easy\nIt's time to spread our wings and fly\nDon't let another day go by my love\nIt'll be just like starting over\nStartin' over\nWhy don't we take off alone\nTake a trip somewhere far, far away\nWe'll be together all alone again\nLike we used to in the early days\nWell, well, well darling\nIt's been too long since we took the time\n\nNo-one's to blame, I know time flies so quickly\nBut when I see you darling\nIt's like we both are falling in love again\nIt'll be just like starting over\nStarting over, Look out\nOur life together\nIs so precious together\nWe have grown, mmh we have grown\nAlthough our love still is special\nLet's take a chance and fly away somewhere\nStarting over \(over and over and over\))
+
+%% Je te laisserai des mots | Patrick Watson
+%(Je te laisserai des mots
+%En-dessous de ta porte
+%En-dessous de les murs qui chantent
+%Tout près de la place où tes pieds passent
+%Cachés dans les trous de ton divan
+%Et quand tu es seule pendant un instant
+%Ramasse-moi
+%Quand tu voudras
+%Embrasse-moi
+%Quand tu voudras
+%Ramasse-moi
+%Quand tu voudras)
+
 }ifelse 
 
 %% (a veure?)pstack quit
 
 %% fi de MENÚ de capçalera
 
-/M7 exch def  %% comportament del cos de text
+/M7 exch def  %% composició de text
 /M6 exch def  %% índex a l'algorisme de composició independent del nUp triat
 /M5 exch def  %% en cas que el plec no sigui proporcional (ràtio full/pàgina diferent)i, forcem mantenir la ràtio?
 /M4 exch def  %% format estàndard de full (d'impressora)
 /M3 exch def  %% orientació del full
 /M2 exch def  %% quin nUp de pliegOS escollim?
 /M1 exch def  %% fem visible la vora de la pàgina d'imposició? (llançat)
-%%/M0 exch def  %% donar la possibilitat de triar pàgines en blanc? (false) sobre l'esquema del desplegat de planes
+%%/M0 exch def  %% capturem la llengua del navegador
+%%/M? exch def  %% donar la possibilitat de triar pàgines en blanc? (false) sobre l'esquema del desplegat de planes
 
 /compOnedors
 [
@@ -300,8 +354,14 @@
 
 % (compon_VanDeGraaf.ps)  %% 7 el bo i millor per compondre text
 % (plegaVeu_mestre_buit.ps)  %% 7 plegaVeu mestre
-% (plegaVeu_mestre_ple.ps)  %% 7 veste'n Anton que el que es queda ja es compon!
- (plegaVeu_mestre_ple_StEsteve.ps)  %% 7 dinar familiar de Sant Esteve 2021 
+
+ (plegaVeu_mestre_ple.ps)  %% 7 veste'n Anton que el que es queda ja es compon!
+ %% ara mateix aquesta verssió dóna Error: /undefined in mEtrica
+ 
+% (plegaVeu_mestre_ple_StEsteve.ps)  %% 7 dinar familiar de Sant Esteve 2021 
+
+ (mesuraTripa.ps)  %% 8  pel vis sens fi?
+
 ] def
 
 /pliegOS_nUpS
@@ -310,7 +370,7 @@
 
  [  %% 1 1hvUpHV una pàgina (en dúplex), horitzontal o vertical, imposada en un full horitzontal o vertical
 
-%%MENÚ M0 donar la possibilitat de triar pàgines en blanc? (false)
+%%MENÚ M? donar la possibilitat de triar pàgines en blanc? (false)
   [  %% 0 desplegat de planes al full (MediaBox) on a cada plana (anvers/revers) hi ha tota la sèrie sencera de pàgines del full
    %% true = la pàgina es compon / false = pàgina en blanc (s'enretira a la següent) / null = la pàgina no toca en aquesta plana
    [  %% anvers (a#índex:#númDpàgina)
@@ -369,12 +429,10 @@
     [0 0 xPagina yPagina] dup
     rectclip  %% retallem la vora de la pàgina (equivalent a TrimBox)
     %% transparència que trepitja encara que estigui a sota de tot
-    %/Overlay
+%%NOUgs9.55 obliga a incloure -dALLOWPSTRANSPARENCY a la línia d'execució
+    /Overlay .setblendmode true .setalphaisshape 1 .setstrokeconstantalpha
 
-%%NOUgs9.55
-%/Normal .setblendmode 1 .setalphaisshape  %% .setopacityalpha eliminat al GS 9.53
-
-    1 1 1 setrgbcolor  %% vermell? blanc? negre?
+    1 0 0 setrgbcolor  %% vermell? blanc? negre?
     1 setlinewidth  %% gruix per tal vessi mig punt als marges del full
     rectstroke  %% pintem la vora de la pàgina (equivalent a TrimBox)
    }
@@ -438,7 +496,7 @@
 
  [  %% 2 2vUpHV dues pàgines verticals (en dúplex) imposades DE COSTAT en un full horitzontal o vertical
 
-%%MENÚ M0 donar la possibilitat de triar pàgines en blanc? (false)
+%%MENÚ M? donar la possibilitat de triar pàgines en blanc? (false)
   [  %% 0 desplegat de planes al full (MediaBox) on a cada plana (anvers/revers) hi ha tota la sèrie sencera de pàgines del full
    %% true = la pàgina es compon / false = pàgina en blanc (s'enretira a la següent) / null = la pàgina no toca en aquesta plana
    [  %% anvers (a#índex:#númDpàgina)
@@ -526,12 +584,10 @@
     [0 0 xPagina yPagina] dup
     rectclip  %% retallem la vora de la pàgina (equivalent a TrimBox)
     %% transparència que trepitja encara que estigui a sota de tot
-    %/Overlay
+%%NOUgs9.55 obliga a incloure -dALLOWPSTRANSPARENCY a la línia d'execució
+    /Overlay .setblendmode true .setalphaisshape 1 .setstrokeconstantalpha
 
-%%NOUgs9.55
-%/Normal .setblendmode 1 .setalphaisshape  %% .setopacityalpha eliminat al GS 9.53
-
-    1 1 1 setrgbcolor  %% vermell? blanc? negre?
+    1 0 0 setrgbcolor  %% vermell? blanc? negre?
     1 setlinewidth  %% gruix per tal vessi mig punt als marges del full
     rectstroke  %% pintem la vora de la pàgina (equivalent a TrimBox)
    }
@@ -631,7 +687,7 @@
 
  [  %% 4 4vUpHV quatre pàgines verticals (en dúplex) imposades de costat, 2+2, en un full horitzontal o vertical
 
-%%MENÚ M0 donar la possibilitat de triar pàgines en blanc? (false)
+%%MENÚ M? donar la possibilitat de triar pàgines en blanc? (false)
   [  %% 0 desplegat de planes al full (MediaBox) on a cada plana (anvers/revers) hi ha tota la sèrie sencera de pàgines del full
    %% true = la pàgina es compon / false = pàgina en blanc (s'enretira a la següent) / null = la pàgina no toca en aquesta plana
    [  %% anvers (a#índex:#númDpàgina)
@@ -754,10 +810,8 @@
     [0 0 xPagina yPagina] dup
     rectclip  %% retallem la vora de la pàgina (equivalent a TrimBox)
     %% transparència que trepitja encara que estigui a sota de tot
-    %/Overlay
-
-%%NOUgs9.55
-%/Normal .setblendmode 1 .setalphaisshape  %% .setopacityalpha eliminat al GS 9.53
+%%NOUgs9.55 obliga a incloure -dALLOWPSTRANSPARENCY a la línia d'execució
+    /Overlay .setblendmode true .setalphaisshape 1 .setstrokeconstantalpha
 
     1 0 0 setrgbcolor  %% vermell? blanc? negre?
     1 setlinewidth  %% gruix per tal vessi mig punt als marges del full
@@ -862,7 +916,7 @@
  null  %% 7 flexàgons i tetraflexàgons? https://www.youtube.com/watch?v=LiyQ0Q4KB0c https://www.youtube.com/watch?v=qIwUCH1aSQs 
 
  [  %% 8 8vUpH vuit pàgines verticals (en dúplex) imposades de costat, 4+4, en un full horitzontal
-%%MENÚ M0 donar la possibilitat de triar pàgines en blanc? (false)
+%%MENÚ M? donar la possibilitat de triar pàgines en blanc? (false)
   [  %% 0 desplegat de planes al full (MediaBox) on a cada plana (anvers/revers) hi ha tota la sèrie sencera de pàgines del full
    %% true = la pàgina es compon / false = pàgina en blanc (s'enretira a la següent) / null = la pàgina no toca en aquesta plana
    [  %% anvers (a#índex:#númDpàgina)
@@ -1088,10 +1142,8 @@
     [0 0 xPagina yPagina] dup
     rectclip  %% retallem la vora de la pàgina (equivalent a TrimBox)
     %% transparència que trepitja encara que estigui a sota de tot
-    %/Overlay
-
-%%NOUgs9.55
-%/Normal .setblendmode 1 .setalphaisshape  %% .setopacityalpha eliminat al GS 9.53
+%%NOUgs9.55 obliga a incloure -dALLOWPSTRANSPARENCY a la línia d'execució
+    /Overlay .setblendmode true .setalphaisshape 1 .setstrokeconstantalpha
 
     1 0 0 setrgbcolor  %% vermell? blanc? negre?
     1 setlinewidth  %% gruix per tal vessi mig punt als marges del full
@@ -1470,7 +1522,7 @@ mark
 %% incrusta al Catalog el layout de com es veurà el document a l'obrir
 /PageLayout /TwoPageLeft  %% la pàgina 1 (senar) a l'esquerra, emparellada amb la següent
 /ViewerPreferences
-<<  %% aquests paràmetres es detecten automàticament però no queden reflectits al manejador de la HP Color LaserJet M553
+<<  %% aquests paràmetres es detecten automàticament però, malgrat manen, no es fixen al driver de la HP Color LaserJet M553
   %% cal comprovar si amb el gestor d'impressió del direct PDF (?) també es comporta de la mateixa manera
 
    %% a la impressora HP Color LaserJet M553 el dúplex 8upH i 4upV quadra bé pel cantó més ample
@@ -1485,10 +1537,12 @@ mark
 /Subject %(Turn one simple sheet of paper into a little awesome book)
 (Féu que un sol full de paper esdevingui un llibret excepcional)
 /Title NpliegOS
-/Author (copyleft 2017-2021: Marcantoni Malagarriga-Picas <marcantoni@femfum.com>)
-/Keywords (microbooks, print, fold, cut, read, nUps, pliego, PliegOS, en Patufet, Barcelona)
+/Author (copyleft 2017-2022: Marcantoni Malagarriga-Picas <marcantoni@femfum.com>)
+/Keywords %(poesia, literatura, canya i cordill, fil i canya, plegaVeu, en Patufet,)
+(chapbooks, microbooks, print, fold, cut, read, nUps, PliegOS, en Patufet, Catalonia, Barcelona)
 /Creator (PliegO'Maker {FemFum PostScript Applet} | http://pliegos.net/maker)
 /DOCINFO pdfmark
+%% podríem generar un camp privat per desar-hi tots els paràmetres clau de les variables aleatòries que han fet el PDF
 
 %(////*fi*////)pstack  %% brossa a l'stack?
 %% mentre gs no deixa brossa a l'stack, pstopdf deixa dos índex a l'stack (per què?)
