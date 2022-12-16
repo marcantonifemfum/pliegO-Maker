@@ -1,0 +1,41 @@
+%!
+%% genera un PDF amb pagines buides a diferents formats en creixement àuric
+
+8
+/nPagines exch def
+
+1000
+/costatEstret exch def
+
+1 1 nPagines
+{  %% for
+ dup
+ <<
+   /PageSize
+   costatEstret dup
+   5 -1 roll sqrt mul  %% multipliquem per l'arrel de: 1, 2, 3, etc
+
+   true  %% juguem aleatòriament en horitzontal o vertical?
+   {
+    5 -1 roll 2 mod 0 eq
+    {
+     exch  %% si volem jugar en horitzontal
+    }if
+   }
+   {
+    5 -1 roll pop
+   }ifelse
+
+   2 array astore
+   %% posem fora de l'abast del diccionari una còpia del format
+   dup 4 1 roll
+ >>setpagedevice
+ 1 0 0 setrgbcolor 2 setlinewidth
+ 0 exch 0 exch aload pop 4 copy rectstroke  %% fem un perfilat d'1 punt a tota al vora del format
+ %% pintem una creu
+ 0 setlinewidth
+ dup 0 exch moveto 1 index 0 lineto stroke
+ moveto lineto stroke
+ showpage
+}for
+

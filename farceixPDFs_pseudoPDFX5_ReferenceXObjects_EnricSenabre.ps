@@ -1,0 +1,175 @@
+%!
+%% És una alternativa a... inocula.ps ...en paral·lel a incrustar, via Reference XObjects, un PDF dins un altre
+%% gràcies a les noves funcions... https://ghostscript.readthedocs.io/en/latest/Language.html#scripting-the-pdf-interpreter
+%% de l'intèrpret Ghostscript (a partir de la versió 9.55) d' «Scripting the PDF interpreter» podem inocular tots els objectes
+%% d'una determinada pàgina d'un PDF dins una altre pàgina d'un altre PDF que generem 'on the fly' dins l'intèrpret
+
+%% A data d'avui (desembre de 2022) aquesta funcionalitat d'intercanvi de dades que recull la ISO 15930 PDF/X-5 (pdf 1.6)
+%% https://www.iso.org/standard/55844.html ...a nivell de producte final, només coneixem l'Adobe Acrobat (Reader o Professional)
+%% que contempli com a detectables els anomenats... Reference XObjects ...dins un programari d'ús per la indústria
+%% cap dels PDF Viewers que s'han implementat darrerament per als navegadors (Firefox/Chrome) ni a Linux, ho contempla
+%% El projecte pliegOS a través de pliegO'Maker el té implementat de manera bàsica dins l'algoritme... inocula.ps
+
+%% Amb el codi que segueix, arribem als mateixos resultats que els plantejats per la filosofia dels Reference XObjects, però
+%% sense la necessitat de fer servir un programari de visualització (PDF Viewer) que ho activi de forma remota, doncs el
+%% resultat de la crida ja queda completament integrat dins el nou PDF resultant
+
+%%
+
+noNULL  %% pinta el contingut de pàgina?
+{ %% anellem el codi sencer perquè no és aleatori
+
+%%Dos mètodes de lectura
+ true
+ /MdL exch def
+
+ MdL
+ {  %% diversos fitxers (nUp x 2 pàgines) d'1 sola pàgina separats
+  [  %% array de paths als fitxers PDF per ordre
+%%L'1 i el 4 van bé, però el 5 falla ¿? cal verure què no li agrada!
+   (/Users/femfum/PliegOS/codi_pliegOS/PDFscripting/separatSenabre/Ncj1.pdf)  %% 0
+   (/Users/femfum/PliegOS/codi_pliegOS/PDFscripting/separatSenabre/Ncj2.pdf)  %% 1
+   (/Users/femfum/PliegOS/codi_pliegOS/PDFscripting/separatSenabre/Ncj3.pdf)  %% 2
+   (/Users/femfum/PliegOS/codi_pliegOS/PDFscripting/separatSenabre/Ncj4.pdf)  %% 3
+   (/Users/femfum/PliegOS/codi_pliegOS/PDFscripting/separatSenabre/Ncj5.pdf)  %% 4
+   (/Users/femfum/PliegOS/codi_pliegOS/PDFscripting/separatSenabre/Ncj6.pdf)  %% 5
+   (/Users/femfum/PliegOS/codi_pliegOS/PDFscripting/separatSenabre/Ncj7_pla.pdf)  %% 6
+   (/Users/femfum/PliegOS/codi_pliegOS/PDFscripting/separatSenabre/Ncj8.pdf)  %% 7
+  ]  %% fem ell llançat 1 per 1
+  Npgn cvx exec 1 sub
+  %iSeq 1 sub
+  %iPln
+  get
+  /pedeefa exch def
+
+  %1% deixa una instància oberta a memòria sense cap objecte a l'stack que permet anar interrogant
+  pedeefa (r) file dup /elF exch def runpdfbegin  %% cal tancar-la amb runpdfend al final
+
+  %3% inicialitzem per intervenir dins l'estructura del pdf, afegint noves branques de dades, com la dels formularis
+  /Context1 .PDFInit def
+  pedeefa Context1 .PDFFile
+
+  Context1 .PDFInfo /NumPages get /pAimposar exch def  %% nombre de pàgines a imposar del PDF a incrustar
+  %% aquí podem treure conclusions de si l' M2, pel pliegOS escollit, podrem fer el llançat de totes les pàgines
+  %% si en quedaran de buides a pliegOS (EP! n'hi pot haver de forçades) o si no les podrem imposar totes
+ }
+ {  %% un sol fitxer de nUp x 2 pàgines
+%  iSeq 1 eq  %% només 1 cop al principi
+%  {  %% aquí dins és crític què i com ho posem
+   %0% adreça al pdf a incrustar
+
+%%EP cal saber quina bruixa o paràmetre del PDF fa que l'escala no rutlli com cal
+   %(/Users/femfum/515-Book_Manuscript-1184-2-10-20221020.pdf)
+   %(/Users/femfum/Downloads/Origin_of_Patterning_LU_OPT.pdf)
+
+%%De l'Enric, falla també la imposició en algun punt, amb fitxers vecorials teòricament molt simples
+   %(/Users/femfum/PliegOS/codi_pliegOS/PDFscripting/ACJ_pliego_test_1a_pla.pdf)
+   (/Users/femfum/PliegOS/codi_pliegOS/PDFscripting/ACJ_pliego_test_1a_pla_GS955.pdf)
+%%Aquest va bé perquè és tot imatge
+%(/Users/femfum/PliegOS/codi_pliegOS/PDFscripting/separatSenabre/ACJ_pliego_test_1b_pngs.pdf)
+
+   %(/Users/femfum/Downloads/Descarregues/ARA/ara_1290898800_num1.pdf)
+   %(/Users/femfum/PliegOS/codi_pliegOS/PDFscripting/8auricsHVgranFormat.pdf)
+   %(/Users/femfum/PliegOS/codi_pliegOS/PDFscripting/8auricsV.pdf)
+   %(/Users/femfum/PliegOS/codi_pliegOS/PDFscripting/8auricsH.pdf)
+   %(/Users/femfum/PliegOS/codi_pliegOS/PDFscripting/8auricsHV.pdf)
+   /pedeefa exch def
+
+   %1% deixa una instància oberta a memòria sense cap objecte a l'stack que permet anar interrogant
+   pedeefa (r) file dup /elF exch def runpdfbegin  %% cal tancar-la amb runpdfend al final
+
+   %3% inicialitzem per intervenir dins l'estructura del pdf, afegint noves branques de dades, com la dels formularis
+   /Context1 .PDFInit def
+   pedeefa Context1 .PDFFile
+
+   Context1 .PDFInfo /NumPages get /pAimposar exch def  %% nombre de pàgines a imposar del PDF a incrustar
+   %% aquí podem treure conclusions de si l' M2, pel pliegOS escollit, podrem fer el llançat de totes les pàgines
+   %% si en quedaran de buides a pliegOS (EP! n'hi pot haver de forçades) o si no les podrem imposar totes
+%  }if  %% un cop!
+
+}ifelse  %% dos mètodes de lectura
+
+%gsave
+
+ MdL
+ {
+  1 pdfgetpage dup /Pdict exch def
+ }
+ {  %2% interroguem el MediaBox i el deixa a l'stack
+  Npgn cvx exec pdfgetpage dup /Pdict exch def
+ }ifelse
+
+ /MediaBox get  %% de la primera pàgina (no és un índex i per tant comença per 1!)
+ %{== ==}forall(<<<<?)== quit
+
+ %2 pdfgetpage /MediaBox get  %% de la segona, etc
+ /araMediaBox exch def
+
+%%TEST
+%/Rotate get 0 ne
+%{(<<< NOZERO)pstack quit}if
+
+ %% deducció de l'escala de treball per adaptar al màxim cada pàgina del PDF que llegim a la pàgina del llançat
+ %% es podria optar també per igualar els amples o alts de les pàgines que llegim al format de pàgina del llançat
+ %% vegeu: igualatPerLaXmesAmplePossible.pdf i igualatPerLaYmesAltaPossible.pdf llegint 8auricsH.pdf i 8auricsV.pdf
+ %% calculem el format de pàgina a partir del MediaBox de la pàgina que llegim
+ araMediaBox aload pop 3 -1 roll sub exch 3 -1 roll sub exch 
+ 2 copy ge  %% el costat més gran o igual (quadrat) de la pàgina que llegim
+ {  %% orientació horitzontal de la pàgina a imposar: l' X és el costat més gran
+  /Odivisor false def
+ }
+ {  %% orientació vertical de la pàgina a imposar: l' Y és el costat més gran
+  /Odivisor true def
+ }ifelse
+ %% el costat més gran de la pàgina del llançat
+ xPagina yPagina gt
+ {  %% l'orientació del llançat és horitzontal
+  Odivisor
+  {  %% però l'orientació de la pàgina a imposar és vertical
+   exch pop yPagina exch div  %% escala de treball
+  }
+  {  %% però l'orientació de la pàgina a imposar és horitzontal
+   pop xPagina exch div  %% escala de treball
+  }ifelse
+ }
+ {  %% l'orientació del llançat és vertical
+  Odivisor
+  {  %% però l'orientació de la pàgina a imposar és vertical
+   exch pop yPagina exch div  %% escala de treball
+  }
+  {  %% però l'orientació de la pàgina a imposar és horitzontal
+   pop xPagina exch div  %% escala de treball
+  }ifelse
+ }ifelse
+
+% dup scale  %% adapta al màxim cada pàgina del PDF que llegim dins la pàgina del llançat
+%%Què millora si escalem via matriu?
+[ exch 0 0 2 index 0 0 ] concat
+
+ MdL
+ {
+  %%Pàgina -1 com a índex
+  Context1 0 .PDFDrawPage  %% repiquem la pàgina Npgn però cridada com a índex
+  Context1 .PDFClose
+  runpdfend
+  elF closefile
+ }
+ { %% primer mètode de pintar la pàgina
+  %%Pàgina Npgn -1 com a índex
+  Context1 Npgn cvx exec 1 sub .PDFDrawPage  %% repiquem la pàgina Npgn però cridada com a índex
+
+%grestore
+
+  %% segon mètode per pintar la pàgina
+  % Pdict  %{== ==}forall (||||)== quit  %% pdfshowpage
+
+  Context1 .PDFClose
+  runpdfend
+
+  elF closefile
+
+%(<<<<)pstack quit
+ }ifelse
+
+}if  %% noNULL anellem el codi sencer perquè no és aleatori per pàgina
+

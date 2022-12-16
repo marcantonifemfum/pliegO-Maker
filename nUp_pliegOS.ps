@@ -51,7 +51,7 @@
 %%  along with this program.  If not, see <http://www.gnu.org/licenses/>
 
 
-%% generem un algorisme vàlid per a tots els desplegats nUp, vegeu http://www.pliegOS.net
+%% generem un algorisme vàlid per a tots els llançats nUp, vegeu http://www.pliegOS.net
 %% filosofia pliegOS: "Turn one simple sheet of paper into a little awesome book"
 
 %% per a ús directe en impressores PostScript o en intèrprets per generar PDFs, preferiblement Ghostscript (GS)
@@ -73,6 +73,7 @@
 %%Canviarem tots els .setopacityalpha per .setalphaisshape
 %%NOUgs9.55 marca el que hem desactivat temporalment en relació a la transparència
 %% com que és un canvi progressiu des de la 9.53 permeten mantenir els operadors eliminats afegint -dALLOWPSTRANSPARENCY
+%% gs -q -dNOSAFER -dALLOWPSTRANSPARENCY -dAutoRotatePages=/None -o surt.pdf -sDEVICE=pdfwrite -f nUp_pliegOS.ps
 
 %% glossari:
 %% full: peça de paper que s'imprimeix (MediaBox), en algun dels formats estàndards o no (ISO, JIS, ARCH, Ansi, etc)
@@ -161,7 +162,7 @@
  }ifelse
 }
 {
- 1
+ 4
 %% (\n Ghostscript no pot capturar aquesta variable d'entorn!\n\n)print flush
 }ifelse
 
@@ -230,7 +231,7 @@
  }ifelse
 }
 {  %% la variable d'entorn NO existeix perquè l'executem via Terminal, en local, per línia de comanda
- 1  %% 0 algorisme de reglatge
+ 9  %% 0 algorisme de reglatge
     %% 1 fus horari
     %% 2 interrogador de variables
     %% 3 algorisme buit i només pintaria els marges de pàgina?
@@ -241,7 +242,10 @@
     %% 7 plegaVeu mestre ple (restringit a les condicions del plegaVeu de l'Espai Òmnium 19.12.21)
     %% ara mateix aquesta versió dóna Error: /undefined in mEtrica
 
-    %% 8 vis sens fi?
+    %% filosofies d'imposició
+    %% 8 visSensFi_senseEnflafaGlifs.ps
+
+    %% 9 farceixPDFs_pseudoPDFX5_ReferenceXObjects_EnricSenabre.ps
 
 %% (\n Ghostscript no pot capturar aquesta variable d'entorn!\n\n)print flush
 }ifelse
@@ -360,7 +364,13 @@
  
 % (plegaVeu_mestre_ple_StEsteve.ps)  %% 7 dinar familiar de Sant Esteve 2021 
 
- (mesuraTripa.ps)  %% 8  pel vis sens fi?
+% (mesuraTripa.ps)  %% 8  pel vis sens fi?
+% (filosofiesDimposicio.ps)  %% 8 filosofies d'imposició
+% (filosofiesDimposicio_visSensFi_cosPendent.ps)  %% 8
+ (visSensFi_senseEnflafaGlifs.ps)  %% 8
+
+ %% 9 farcidor de PDFs
+ (/Users/femfum/PliegOS/codi_pliegOS/PDFscripting/farceixPDFs_pseudoPDFX5_ReferenceXObjects_EnricSenabre.ps)
 
 ] def
 
@@ -430,11 +440,14 @@
     rectclip  %% retallem la vora de la pàgina (equivalent a TrimBox)
     %% transparència que trepitja encara que estigui a sota de tot
 %%NOUgs9.55 obliga a incloure -dALLOWPSTRANSPARENCY a la línia d'execució
+gsave
     /Overlay .setblendmode true .setalphaisshape 1 .setstrokeconstantalpha
 
-    1 0 0 setrgbcolor  %% vermell? blanc? negre?
+    1 0 1 setrgbcolor  %% magenta? gris? vermell? blanc? negre?
     1 setlinewidth  %% gruix per tal vessi mig punt als marges del full
+    [2] 1 setdash  %% discontínua
     rectstroke  %% pintem la vora de la pàgina (equivalent a TrimBox)
+grestore
    }
    {
     [0 0 xPagina yPagina]
@@ -585,11 +598,14 @@
     rectclip  %% retallem la vora de la pàgina (equivalent a TrimBox)
     %% transparència que trepitja encara que estigui a sota de tot
 %%NOUgs9.55 obliga a incloure -dALLOWPSTRANSPARENCY a la línia d'execució
+gsave
     /Overlay .setblendmode true .setalphaisshape 1 .setstrokeconstantalpha
 
-    1 0 0 setrgbcolor  %% vermell? blanc? negre?
+    1 0 1 setrgbcolor  %% magenta? gris? vermell? blanc? negre?
     1 setlinewidth  %% gruix per tal vessi mig punt als marges del full
+    [2] 1 setdash  %% discontínua
     rectstroke  %% pintem la vora de la pàgina (equivalent a TrimBox)
+grestore
    }
    {
     [0 0 xPagina yPagina]
@@ -811,11 +827,14 @@
     rectclip  %% retallem la vora de la pàgina (equivalent a TrimBox)
     %% transparència que trepitja encara que estigui a sota de tot
 %%NOUgs9.55 obliga a incloure -dALLOWPSTRANSPARENCY a la línia d'execució
+gsave
     /Overlay .setblendmode true .setalphaisshape 1 .setstrokeconstantalpha
 
-    1 0 0 setrgbcolor  %% vermell? blanc? negre?
+    1 0 1 setrgbcolor  %% magenta? gris? vermell? blanc? negre?
     1 setlinewidth  %% gruix per tal vessi mig punt als marges del full
+    [2] 1 setdash  %% discontínua
     rectstroke  %% pintem la vora de la pàgina (equivalent a TrimBox)
+grestore
    }
    {
     [0 0 xPagina yPagina]
@@ -1143,11 +1162,14 @@
     rectclip  %% retallem la vora de la pàgina (equivalent a TrimBox)
     %% transparència que trepitja encara que estigui a sota de tot
 %%NOUgs9.55 obliga a incloure -dALLOWPSTRANSPARENCY a la línia d'execució
+gsave
     /Overlay .setblendmode true .setalphaisshape 1 .setstrokeconstantalpha
 
-    1 0 0 setrgbcolor  %% vermell? blanc? negre?
+    1 0 1 setrgbcolor  %% magenta? gris? vermell? blanc? negre?
     1 setlinewidth  %% gruix per tal vessi mig punt als marges del full
+    [2] 1 setdash  %% discontínua
     rectstroke  %% pintem la vora de la pàgina (equivalent a TrimBox)
+grestore
    }
    {
     [0 0 xPagina yPagina]
@@ -1517,6 +1539,19 @@ _anversrevers
  }forall  %% per cadascuna de les pàgines (TrimBox/ArtBox) de la plana
 }forall  %% per l'anvers i el revers del full (planes)
 
+%% per la farcidora de PDFs caldria tancar la instància en memòria runpdfend ?
+M6 1000 eq
+{
+ MdL
+ {
+ }
+ {
+  (taquem el PDFscripting)==
+  Context1 .PDFClose
+  runpdfend
+ }ifelse
+}if
+
 %% pdfmarks
 mark
 %% incrusta al Catalog el layout de com es veurà el document a l'obrir
@@ -1525,10 +1560,11 @@ mark
 <<  %% aquests paràmetres es detecten automàticament però, malgrat manen, no es fixen al driver de la HP Color LaserJet M553
   %% cal comprovar si amb el gestor d'impressió del direct PDF (?) també es comporta de la mateixa manera
 
-   %% a la impressora HP Color LaserJet M553 el dúplex 8upH i 4upV quadra bé pel cantó més ample
-  /Duplex /DuplexFlipLongEdge  %% posem el què posem al driver d'impressió Reader/MacOSX aquest paràmetre mana!
-
-%  /Duplex /DuplexFlipShortEdge  %% el necessita el 4upH horitzontal
+   %% a la impressora HP Color LaserJet M553 i el driver d'impressió de l'AdobeAcrobatReader/MacOSX:
+   %% encara que, per defecte, surti una altra configuració de dúplex al driver, mana el paràmetre que tinguem aquí actiu
+   %% el que sí que, creiem, no podem manar des d'aquí, és imprimir al 100% (NO forçar mai el 'Fit' als marges d'impressió)
+   /Duplex /DuplexFlipLongEdge  %% el necessita el el 8Up i el 4Up
+   % /Duplex /DuplexFlipShortEdge
 >>  %% activem les opcions del dúplex d'impressió?
 /DOCVIEW pdfmark
 
