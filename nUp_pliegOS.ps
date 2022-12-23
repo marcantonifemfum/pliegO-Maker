@@ -181,6 +181,7 @@
 }
 {
  false  %% pel plegaVeu 19.12.21 forcem el 4+4 sempre en vertical (el 8+8 ja ho fa per defecte)
+%%EP! el 2Up en vertical talla els originals (cal revisar també ne H perquè es veu menys però també passa!)
 %% (\n Ghostscript no pot capturar aquesta variable d'entorn!\n\n)print flush
 }ifelse
 
@@ -215,6 +216,7 @@
  }ifelse
 }
 {
+%%EP! true falla a 8auricsHVgranFormat.pdf quan treballa en 4Up i l'orientació de pàgina és V
  false
 %% (\n Ghostscript no pot capturar aquesta variable d'entorn!\n\n)print flush
 }ifelse
@@ -1540,7 +1542,7 @@ _anversrevers
 }forall  %% per l'anvers i el revers del full (planes)
 
 %% per la farcidora de PDFs caldria tancar la instància en memòria runpdfend ?
-M6 1000 eq
+M6 9 eq
 {
  MdL
  {

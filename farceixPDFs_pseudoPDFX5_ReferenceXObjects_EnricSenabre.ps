@@ -20,13 +20,21 @@ noNULL  %% pinta el contingut de pàgina?
 { %% anellem el codi sencer perquè no és aleatori
 
 %%Dos mètodes de lectura
- true
+ false
  /MdL exch def
 
  MdL
  {  %% diversos fitxers (nUp x 2 pàgines) d'1 sola pàgina separats
   [  %% array de paths als fitxers PDF per ordre
-%%L'1 i el 4 van bé, però el 5 falla ¿? cal verure què no li agrada!
+   (/Users/femfum/PliegOS/codi_pliegOS/PDFscripting/separatSenabre/Ncj1.pdf)  %% 0
+   (/Users/femfum/PliegOS/codi_pliegOS/PDFscripting/separatSenabre/Ncj2.pdf)  %% 1
+   (/Users/femfum/PliegOS/codi_pliegOS/PDFscripting/separatSenabre/Ncj3.pdf)  %% 2
+   (/Users/femfum/PliegOS/codi_pliegOS/PDFscripting/separatSenabre/Ncj4.pdf)  %% 3
+   (/Users/femfum/PliegOS/codi_pliegOS/PDFscripting/separatSenabre/Ncj5.pdf)  %% 4
+   (/Users/femfum/PliegOS/codi_pliegOS/PDFscripting/separatSenabre/Ncj6.pdf)  %% 5
+   (/Users/femfum/PliegOS/codi_pliegOS/PDFscripting/separatSenabre/Ncj7_pla.pdf)  %% 6
+   (/Users/femfum/PliegOS/codi_pliegOS/PDFscripting/separatSenabre/Ncj8.pdf)  %% 7
+%%X simular un 8Up
    (/Users/femfum/PliegOS/codi_pliegOS/PDFscripting/separatSenabre/Ncj1.pdf)  %% 0
    (/Users/femfum/PliegOS/codi_pliegOS/PDFscripting/separatSenabre/Ncj2.pdf)  %% 1
    (/Users/femfum/PliegOS/codi_pliegOS/PDFscripting/separatSenabre/Ncj3.pdf)  %% 2
@@ -49,25 +57,55 @@ noNULL  %% pinta el contingut de pàgina?
   /Context1 .PDFInit def
   pedeefa Context1 .PDFFile
 
-  Context1 .PDFInfo /NumPages get /pAimposar exch def  %% nombre de pàgines a imposar del PDF a incrustar
+  Context1 .PDFInfo
+
+%% pot haver-hi problemes amb les transparències?
+%/UsesTransparency
+%/PageHasTransparency true put
+
+%/NumPages get /pAimposar exch def  %% nombre de pàgines a imposar del PDF a incrustar
   %% aquí podem treure conclusions de si l' M2, pel pliegOS escollit, podrem fer el llançat de totes les pàgines
   %% si en quedaran de buides a pliegOS (EP! n'hi pot haver de forçades) o si no les podrem imposar totes
  }
  {  %% un sol fitxer de nUp x 2 pàgines
-%  iSeq 1 eq  %% només 1 cop al principi
-%  {  %% aquí dins és crític què i com ho posem
+  iSeq 1 eq  %% només 1 cop al principi
+  {  %% aquí dins és crític què i com ho posem
    %0% adreça al pdf a incrustar
 
 %%EP cal saber quina bruixa o paràmetre del PDF fa que l'escala no rutlli com cal
    %(/Users/femfum/515-Book_Manuscript-1184-2-10-20221020.pdf)
    %(/Users/femfum/Downloads/Origin_of_Patterning_LU_OPT.pdf)
+   %(/Users/femfum/Tipografia_organica.pdf)
+   %(/Users/femfum/SOS-pirineus_WEB_V3.pdf)
+   %(/Users/femfum/Ma_et_al-2017-Nature.pdf)
+   %(/Users/femfum/Future_of_Text_Book_2020.pdf)
+   %(/Users/femfum/festesDelVent2022elPlaDeSantaMaria.pdf)
+   %(/Users/femfum/els-secrets-de-l-ecoedicio_123120.pdf)
+   %(/Users/femfum/Albert-Forns-Chuck-Palahunik-a-Barcelona.pdf)
+   %(/Users/femfum/PP-Gramatica-dels-noms-propis.pdf)
+
+
+%%Corregit /CropBox
+   %(/Users/femfum/extracte_mossegar-la-poma_pla_aZero.pdf)
+   %(/Users/femfum/extracte_mossegar-la-poma_foraCropBox_pla.pdf)
+   (/Users/femfum/PliegOS/codi_pliegOS/PDFscripting/ACJ_pliego_test_1a_pla_foraCropBox.pdf)
 
 %%De l'Enric, falla també la imposició en algun punt, amb fitxers vecorials teòricament molt simples
+%%Però hem vist que NO HI TE RES A VEURE el codi del tou dels stream/endstream dins els /Contents de pàgina
    %(/Users/femfum/PliegOS/codi_pliegOS/PDFscripting/ACJ_pliego_test_1a_pla.pdf)
-   (/Users/femfum/PliegOS/codi_pliegOS/PDFscripting/ACJ_pliego_test_1a_pla_GS955.pdf)
+   %(/Users/femfum/PliegOS/codi_pliegOS/PDFscripting/ACJ_pliego_test_1a_pla_aZero.pdf)
 %%Aquest va bé perquè és tot imatge
 %(/Users/femfum/PliegOS/codi_pliegOS/PDFscripting/separatSenabre/ACJ_pliego_test_1b_pngs.pdf)
 
+%%Aquests van bé!
+   %(/Users/femfum/PliegOS/codi_pliegOS/PDFscripting/testMediaBox.pdf)
+   %(/Users/femfum/Downloads/quantum_theory.pdf)
+   %(/Users/femfum/01.NMG_TESI.pdf)
+   %(/Users/femfum/iva_maslac.pdf)
+   %(/Users/femfum/rar_1405807201.pdf)
+   %(/Users/femfum/rar_1401573601.pdf)
+   %(/Users/femfum/PliegOS/codi_pliegOS/patufet_avuiFa100anys_19200410-23204.pdf)
+   %(/Users/femfum/PliegOS/codi_pliegOS/EnPatufet_any1_n1_19040103-9.pdf)
    %(/Users/femfum/Downloads/Descarregues/ARA/ara_1290898800_num1.pdf)
    %(/Users/femfum/PliegOS/codi_pliegOS/PDFscripting/8auricsHVgranFormat.pdf)
    %(/Users/femfum/PliegOS/codi_pliegOS/PDFscripting/8auricsV.pdf)
@@ -85,7 +123,7 @@ noNULL  %% pinta el contingut de pàgina?
    Context1 .PDFInfo /NumPages get /pAimposar exch def  %% nombre de pàgines a imposar del PDF a incrustar
    %% aquí podem treure conclusions de si l' M2, pel pliegOS escollit, podrem fer el llançat de totes les pàgines
    %% si en quedaran de buides a pliegOS (EP! n'hi pot haver de forçades) o si no les podrem imposar totes
-%  }if  %% un cop!
+  }if  %% un cop!
 
 }ifelse  %% dos mètodes de lectura
 
@@ -96,8 +134,24 @@ noNULL  %% pinta el contingut de pàgina?
   1 pdfgetpage dup /Pdict exch def
  }
  {  %2% interroguem el MediaBox i el deixa a l'stack
-  Npgn cvx exec pdfgetpage dup /Pdict exch def
+  Npgn cvx exec
+
+%%Un truc per començar més enllà de la pàgina 1 del PDF
+%4 add
+
+  pdfgetpage dup /Pdict exch def
  }ifelse
+
+%%Hem detectat problemes amb PDFs amb la clau /CropBox, doncs sembla influenciar en la configuració del /MediaBox del full
+%% on fem el llançat, anul·lant-la i aplicant el valor de la darrera pàgina que es llança ...de fet el /CropBox sempre mana
+%% sobre el /MediaBox, el problema està que dins el context de la imposició no queda blindat i actua sobre el /MediaBox del
+%% full (podem fer una consulta a gs-devel), llavors, abans d'anul·lar-lo, l'hauríem d'interrogar per saber si és ídem al
+%% /MediaBox de la pàgina que llancem dins l'nUp doncs, en aquest cas, li hauríem de corregir el seu posicionat (la resta ja
+%% encaixaria dins el rectclip del llançat) ...com sigui, el que cal saber és si via PDF scripting podem anar més enllà de la
+%% interrogació per modificar el contingut (diccionaris o streams) del PDF que estem llançant, just abans de pintar-lo
+%% si NO fos així, prèviament hauríem d'executar CaLi2CoPi, per a cadascun dels PDFs a imposar, i filtra/modificar el necessari
+%% per exemple: hem de permetre imposar PDFs encriptats? signats? 
+%dup /CropBox undef  %% de moment no en fa cas
 
  /MediaBox get  %% de la primera pàgina (no és un índex i per tant comença per 1!)
  %{== ==}forall(<<<<?)== quit
@@ -113,7 +167,8 @@ noNULL  %% pinta el contingut de pàgina?
  %% es podria optar també per igualar els amples o alts de les pàgines que llegim al format de pàgina del llançat
  %% vegeu: igualatPerLaXmesAmplePossible.pdf i igualatPerLaYmesAltaPossible.pdf llegint 8auricsH.pdf i 8auricsV.pdf
  %% calculem el format de pàgina a partir del MediaBox de la pàgina que llegim
- araMediaBox aload pop 3 -1 roll sub exch 3 -1 roll sub exch 
+ araMediaBox aload pop 3 -1 roll sub abs exch 3 -1 roll sub abs exch  %% cal treballar amb el valor absolut!
+ 2 copy /YaImposar exch def /XaImposar exch def
  2 copy ge  %% el costat més gran o igual (quadrat) de la pàgina que llegim
  {  %% orientació horitzontal de la pàgina a imposar: l' X és el costat més gran
   /Odivisor false def
@@ -124,6 +179,7 @@ noNULL  %% pinta el contingut de pàgina?
  %% el costat més gran de la pàgina del llançat
  xPagina yPagina gt
  {  %% l'orientació del llançat és horitzontal
+(oH CAL afinar l'escala com %%+)pstack quit
   Odivisor
   {  %% però l'orientació de la pàgina a imposar és vertical
    exch pop yPagina exch div  %% escala de treball
@@ -134,41 +190,68 @@ noNULL  %% pinta el contingut de pàgina?
  }
  {  %% l'orientació del llançat és vertical
   Odivisor
-  {  %% però l'orientació de la pàgina a imposar és vertical
+  {  %% i l'orientació de la pàgina a imposar també és vertical
    exch pop yPagina exch div  %% escala de treball
+%%+ ens cal saber si aquesta escala no fa que l'ample de la pàgina imposada superi encara la que disposa el llançat
+   dup XaImposar mul xPagina 2 copy gt
+   {  %% corregim l'escala, doncs l'X encara NO encaixa dins la pàgina del llançat
+    XaImposar div  %% escala corregida
+    exch pop exch pop
+   }
+   {
+(NO hem de corregir l'escala)pstack quit
+   }ifelse
   }
   {  %% però l'orientació de la pàgina a imposar és horitzontal
    pop xPagina exch div  %% escala de treball
+(oV CAL afinar l'escala com %%+)pstack quit
   }ifelse
  }ifelse
 
-% dup scale  %% adapta al màxim cada pàgina del PDF que llegim dins la pàgina del llançat
-%%Què millora si escalem via matriu?
-[ exch 0 0 2 index 0 0 ] concat
+ dup scale  %% adapta al màxim cada pàgina del PDF que llegim dins la pàgina del llançat
+%% ídem si escalem via matriu
+%[ exch 0 0 2 index 0 0 ] concat
 
  MdL
  {
+
+%%TEST
+%pedeefa Context1 .PDFStream
+%(<<<<)pstack
+%%Brossa d'un diccionari Info?
+%{== ==}forall %(<<<<)pstack
+% quit
+
   %%Pàgina -1 com a índex
   Context1 0 .PDFDrawPage  %% repiquem la pàgina Npgn però cridada com a índex
-  Context1 .PDFClose
-  runpdfend
-  elF closefile
+%  Context1 .PDFClose
+%  runpdfend
+%  elF closefile
+
  }
  { %% primer mètode de pintar la pàgina
   %%Pàgina Npgn -1 com a índex
-  Context1 Npgn cvx exec 1 sub .PDFDrawPage  %% repiquem la pàgina Npgn però cridada com a índex
+  Context1 Npgn cvx exec
+
+%%Un truc per començar més enllà de la pàgina 1 del PDF
+%4 add
+
+  1 sub .PDFDrawPage  %% repiquem la pàgina Npgn però cridada com a índex
 
 %grestore
 
   %% segon mètode per pintar la pàgina
   % Pdict  %{== ==}forall (||||)== quit  %% pdfshowpage
 
-  Context1 .PDFClose
-  runpdfend
+%  Context1 .PDFClose
+%  runpdfend
 
-  elF closefile
+%  elF closefile
 
-%(<<<<)pstack quit
+%%EP no ajuda a millorar?
+%initgraphics
+%initmatrix
+%grestoreall
  }ifelse
 
 }if  %% noNULL anellem el codi sencer perquè no és aleatori per pàgina
