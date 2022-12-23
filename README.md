@@ -20,7 +20,7 @@ _Féu que un sol full de paper esdevingui un llibret excepcional_
 
 PliegO'Maker és ara mateix en una fase inicial de desenvolupament. El nucli, escrit en llenguatge PostScript, obeeix a una estratègia d'imposició de pàgines (l'anvers i revers d'un sol full de paper), que facilita un diagramat aleatori d'imatges i text.
 
-La diagramació *líquida* treballa en paral·lel al flux d'imposició (llançat/nUp), i no necessàriament amb pàgines pre-maquetades. Aquest «liquid layout» es basa en el comportament dels traçats harmònics. El quadratí tipogràfic (Em module) és un cànon clàssic per compondre pàgines i que ara actualitzem a l'era digital. La pre-impressió, en PDF, ens permet treballar amb capes, continguts etiquetats, anotacions, metadades i etc.
+La diagramació *líquida* treballa en paral·lel al flux d'imposició (llançat/nUp), i no necessàriament amb pàgines pre-maquetades. Aquest «liquid layout» es basa en el comportament dels traçats harmònics. El quadratí tipogràfic (Em module) és un cànon clàssic per compondre pàgines que ara actualitzem a l'era digital. La pre-impressió, en PDF, ens permet treballar amb capes, continguts etiquetats, anotacions, metadades i etc.
 
 Un «pliego» és un sol full de paper que, un cop plegat i tallat, es transforma en un llibret (inspirat en el clàssic Patufet). Només necessitarem una impressora, un xic de manualitat i el tindrem, en poca estona, enllestit per llegir.
 
