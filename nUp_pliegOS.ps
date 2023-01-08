@@ -6,7 +6,7 @@
 %%  Per a intèrprets `GNU GPL Ghostscript´ però també, amb ben pocs retocs, pot córrer
 %%  amb l'Adobe Acrobat Distiller o amb el PSNormalizer Framework/Apple pstopdf a MacOSX.
 %%
-%%  `Copyleft 2017-2022 :: l'Ametlla de Merola :: Marcantoni Malagarriga-Picas´
+%%  `Copyleft 2017-2023 :: l'Ametlla de Merola :: Marcantoni Malagarriga-Picas´
 %%  `<http://www.femfum.com> | <marcantoni@femfum.com>´
 %%  `https://github.com/marcantonifemfum/pliegO-Maker´
 %%  `http://pliegos.net/maker´
@@ -32,7 +32,7 @@
 %%
 %%  All the comments inside the code are in catalan [ca], we hope to add english annotations in future versions
 %%  
-%%  `Copyleft 2017-2022 :: l'Ametlla de Merola :: Marcantoni Malagarriga-Picas´
+%%  `Copyleft 2017-2023 :: l'Ametlla de Merola :: Marcantoni Malagarriga-Picas´
 %%  `<http://www.femfum.com> | <marcantoni@femfum.com>´
 %%  `https://github.com/marcantonifemfum/pliegO-Maker´
 %%  `http://pliegos.net/maker´
@@ -438,18 +438,22 @@
 %%[ /ca 1 /CA 1 /BM /Multiply /SetTransparency pdfmark  %% parametre equivalent amb Distiller de la crida
    M1  %% pintem la vora de les pàgines del llançat?
    {
-    [0 0 xPagina yPagina] dup
+    %% capturem la matriu per situar i pintar el rectangle net de retall de la pàgina del llançat
+    matrix currentmatrix /xirtam exch def
+
+    [0 0 xPagina yPagina] %dup
     rectclip  %% retallem la vora de la pàgina (equivalent a TrimBox)
+
     %% transparència que trepitja encara que estigui a sota de tot
 %%NOUgs9.55 obliga a incloure -dALLOWPSTRANSPARENCY a la línia d'execució
-gsave
-    /Overlay .setblendmode true .setalphaisshape 1 .setstrokeconstantalpha
+%gsave
+%    /Overlay .setblendmode true .setalphaisshape 1 .setstrokeconstantalpha
 
-    1 0 1 setrgbcolor  %% magenta? gris? vermell? blanc? negre?
-    1 setlinewidth  %% gruix per tal vessi mig punt als marges del full
-    [2] 1 setdash  %% discontínua
-    rectstroke  %% pintem la vora de la pàgina (equivalent a TrimBox)
-grestore
+%    1 0 1 setrgbcolor  %% magenta? gris? vermell? blanc? negre?
+%    1 setlinewidth  %% gruix per tal vessi mig punt als marges del full
+%    [2] 1 setdash  %% discontínua
+%    rectstroke  %% pintem la vora de la pàgina (equivalent a TrimBox)
+%grestore
    }
    {
     [0 0 xPagina yPagina]
@@ -596,18 +600,22 @@ grestore
   {  %% 2 TrimBox fix de la pàgina d'imposició?
    M1  %% pintem la vora de les pàgines del llançat?
    {
-    [0 0 xPagina yPagina] dup
+    %% capturem la matriu per situar i pintar el rectangle net de retall de la pàgina del llançat
+    matrix currentmatrix /xirtam exch def
+
+    [0 0 xPagina yPagina] %dup
     rectclip  %% retallem la vora de la pàgina (equivalent a TrimBox)
+
     %% transparència que trepitja encara que estigui a sota de tot
 %%NOUgs9.55 obliga a incloure -dALLOWPSTRANSPARENCY a la línia d'execució
-gsave
-    /Overlay .setblendmode true .setalphaisshape 1 .setstrokeconstantalpha
+%gsave
+%    /Overlay .setblendmode true .setalphaisshape 1 .setstrokeconstantalpha
 
-    1 0 1 setrgbcolor  %% magenta? gris? vermell? blanc? negre?
-    1 setlinewidth  %% gruix per tal vessi mig punt als marges del full
-    [2] 1 setdash  %% discontínua
-    rectstroke  %% pintem la vora de la pàgina (equivalent a TrimBox)
-grestore
+%    1 0 1 setrgbcolor  %% magenta? gris? vermell? blanc? negre?
+%    1 setlinewidth  %% gruix per tal vessi mig punt als marges del full
+%    [2] 1 setdash  %% discontínua
+%    rectstroke  %% pintem la vora de la pàgina (equivalent a TrimBox)
+%grestore
    }
    {
     [0 0 xPagina yPagina]
@@ -825,18 +833,22 @@ grestore
   {  %% 2 TrimBox fix de la pàgina d'imposició?
    M1  %% pintem la vora de les pàgines del llançat?
    {
-    [0 0 xPagina yPagina] dup
+    %% capturem la matriu per situar i pintar el rectangle net de retall de la pàgina del llançat
+    matrix currentmatrix /xirtam exch def
+
+    [0 0 xPagina yPagina] %dup
     rectclip  %% retallem la vora de la pàgina (equivalent a TrimBox)
+
     %% transparència que trepitja encara que estigui a sota de tot
 %%NOUgs9.55 obliga a incloure -dALLOWPSTRANSPARENCY a la línia d'execució
-gsave
-    /Overlay .setblendmode true .setalphaisshape 1 .setstrokeconstantalpha
+%gsave
+%    /Overlay .setblendmode true .setalphaisshape 1 .setstrokeconstantalpha
 
-    1 0 1 setrgbcolor  %% magenta? gris? vermell? blanc? negre?
-    1 setlinewidth  %% gruix per tal vessi mig punt als marges del full
-    [2] 1 setdash  %% discontínua
-    rectstroke  %% pintem la vora de la pàgina (equivalent a TrimBox)
-grestore
+%    1 0 1 setrgbcolor  %% magenta? gris? vermell? blanc? negre?
+%    1 setlinewidth  %% gruix per tal vessi mig punt als marges del full
+%    [2] 1 setdash  %% discontínua
+%    rectstroke  %% pintem la vora de la pàgina (equivalent a TrimBox)
+%grestore
    }
    {
     [0 0 xPagina yPagina]
@@ -1160,18 +1172,22 @@ grestore
   {  %% 2 TrimBox fix de la pàgina d'imposició?
    M1  %% pintem la vora de les pàgines del llançat?
    {
-    [0 0 xPagina yPagina] dup
+    %% capturem la matriu per situar i pintar el rectangle net de retall de la pàgina del llançat
+    matrix currentmatrix /xirtam exch def
+
+    [0 0 xPagina yPagina] %dup
     rectclip  %% retallem la vora de la pàgina (equivalent a TrimBox)
+
     %% transparència que trepitja encara que estigui a sota de tot
 %%NOUgs9.55 obliga a incloure -dALLOWPSTRANSPARENCY a la línia d'execució
-gsave
-    /Overlay .setblendmode true .setalphaisshape 1 .setstrokeconstantalpha
+%gsave
+%    /Overlay .setblendmode true .setalphaisshape 1 .setstrokeconstantalpha
 
-    1 0 1 setrgbcolor  %% magenta? gris? vermell? blanc? negre?
-    1 setlinewidth  %% gruix per tal vessi mig punt als marges del full
-    [2] 1 setdash  %% discontínua
-    rectstroke  %% pintem la vora de la pàgina (equivalent a TrimBox)
-grestore
+%    1 0 1 setrgbcolor  %% magenta? gris? vermell? blanc? negre?
+%    1 setlinewidth  %% gruix per tal vessi mig punt als marges del full
+%    [2] 1 setdash  %% discontínua
+%    rectstroke  %% pintem la vora de la pàgina (equivalent a TrimBox)
+%grestore
    }
    {
     [0 0 xPagina yPagina]
@@ -1275,7 +1291,7 @@ aA
 dup 1 get dup /_ordre exch def  %% ordre seqüencial de pàgines a imposar amb les intruccions de posicionat i rotació
 length /stopBP exch def  %% índex on aturem les crides de BeginPage
 
-dup 2 get /pTrimBox exch def  %% pinta el TrimBox de cada pàgina que s'imposa
+dup 2 get /pTrimBox exch def  %% retalla el TrimBox de cada pàgina que s'imposa
 
 dup 4 get /NpliegOS exch def  %% ID literal del pliegOS
 
@@ -1407,13 +1423,13 @@ dup
 
  dup stopBP lt  %% si NO som al final de l'index de pàgines a imposar
  {
-  %% valor que hem definit al procediment 1 del pliegOS (ara 2vUpHV)
+  %% valor que hem definit al procediment 1 de /pliegOS_nUpS
   _ordre exch get /T_R get cvx exec  %% ordre seqüencial de pàgines a imposar amb les intruccions de posicionat i rotació
 
-  %% valor que hem definit al procediment 2 del pliegOS (ara 2vUpHV)
-  pTrimBox  %% fem el TrimBox de la pàgina a imposar, pintant la vora? i retallant!
+  %% valor que hem definit al procediment 2 de /pliegOS_nUpS
+  pTrimBox  %% retallem el TrimBox de la pàgina a imposar
 
-  %% valor que hem definit al procediment 3 del pliegOS (ara 2vUpHV)
+  %% valor que hem definit al procediment 3 de /pliegOS_nUpS
   %% cal escalar, via ràtio, un cop posicionades les pàgines (clip+vora)
 %  pRATio dup scale  %% és millor escalar a BenginPage que no pas dins l'algorisme componedor?
  }if
@@ -1526,19 +1542,46 @@ _anversrevers
    %% treballem amb les mides sense escalar doncs l'aplica BeginPage
    %% treballem amb les coordenades de pàgina independents a la seva rotació o translació, doncs ho aplica BeginPage
    %% si hi ha elements de l'estat gràfic que ultrapassen el showpage, és millor anellar-ho tot
-   %% tants showpage com pàgines totals (anvers+revers) tingui l'nUp
+   %% tants showpage com pàgines totals del llançat (anvers+revers) tingui l'nUp
 
    gsave
    compOnedors M6 get (r) file cvx exec  %% pesquem i executem l'algorisme de composició independent del nUp triat
    grestore
 
+   M1  %% pintem la vora de les pàgines del llançat?
+   {  %% cridem la matrix de posicionament per tal de pintar el rectangle de les vores de la pàgina del llançat
+    %% que, aquí sí! es sobreposen a tot (sense necessitat d'efectes de transparència)
+    %% quedaria molt elegant posar-ho en una capa per tal que es pogués deshabilitar manualment
+    gsave
+    xirtam setmatrix
+    1 0 1 setrgbcolor  %% magenta? gris? vermell? blanc? negre?
+    1 setlinewidth  %% gruix per tal vessi mig punt als marges del full
+    [2] 1 setdash  %% discontínua
+    [0 0 xPagina yPagina] rectstroke  %% pintem la vora de la pàgina (equivalent a TrimBox)
+    grestore
+   }if
+
    showpage  %% tants showpage com pàgines totals (anvers+revers) tingui l'nUp
   }
   {
+   M1  %% pintem la vora de les pàgines del llançat?
+   {  %% cridem la matrix de posicionament per tal de pintar el rectangle de les vores de la pàgina del llançat
+    %% que, aquí sí! es sobreposen a tot (sense necessitat d'efectes de transparència)
+    %% quedaria molt elegant posar-ho en una capa per tal que es pogués deshabilitar manualment
+    gsave
+    xirtam setmatrix
+    1 0 1 setrgbcolor  %% magenta? gris? vermell? blanc? negre?
+    1 setlinewidth  %% gruix per tal vessi mig punt als marges del full
+    [2] 1 setdash  %% discontínua
+    [0 0 xPagina yPagina] rectstroke  %% pintem la vora de la pàgina (equivalent a TrimBox)
+    grestore
+   }if
+
    showpage  %% l'algorisme del componedor NO treballa, però la pàgina es pinta en blanc
   }ifelse
 
  }forall  %% per cadascuna de les pàgines (TrimBox/ArtBox) de la plana
+
 }forall  %% per l'anvers i el revers del full (planes)
 
 %% per la farcidora de PDFs caldria tancar la instància en memòria runpdfend ?
