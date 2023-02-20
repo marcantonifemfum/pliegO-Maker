@@ -1,0 +1,311 @@
+%! Nou Lector De JPEGs ...
+%%SNRD adaptació pel projecte sonar+PAPER pel sònar+D 2023
+%%% Analisi documentat en VB d'un email del 6Q del 20.01.05 (eina segelladora de la DiBa1)
+%%% Millora la lectura en fitxers JPEG que fins ara eren il·legibles o duien miniatures
+%%% que feien confondre les dades de la imatge
+
+%% gs -q -dNOSAFER -o despesesANC_documental_llill.pdf -sDEVICE=pdfwrite -f NouLectorDeJPEGs2.ps
+
+%% el fitxer a explorar...
+
+%% RGB amb thumbnail
+%(C:/Documents and Settings/Administrador/Escritorio/JpegAmbMiniatura.jpg)
+
+%% RGBs il.legibles abans (n'hi ha que son definitivament incorrectes pel DCTDecode...)
+%(C:/MaRCanToni/FemFum/taller_d'applets/aramateix/iTime/rellotges/*.jpg)
+
+%% RGB normal
+%(C:/MaRCanToni/FemFum/Drupa2004/fotos/DSC00132.JPG)
+%(C:/MaRCanToni/FemFum/Drupa2004/adf/*.jpg)
+
+%% CMYK (oju que amb aquest cal invertir el Decode, doncs si no surt en negatiu!)
+%(C:/MaRCanToni/FemFum/taller_d'applets/aramateix/Protec/cal.ligrama/PColino50CMYK.jpg)
+
+%% 256 Ng
+%(C:/MaRCanToni/FemFum/taller_d'applets/aramateix/gubia/256_3.JPG)
+
+%% marcadors d'inici o final incorrectes
+%(C:/MaRCanToni/FemFum/taller_d'applets/aramateix/iTime/rellotges/473163D3d01.jpg)
+
+%(C:/Documents and Settings/Administrador/Datos de programa/Mozilla/Profiles/default/ypebb6ug.slt/Cache/*)
+%(C:/MaRCanToni/CosesJesus/*)
+%(*)
+%(C:/MaRCanToni/FemFum/ETbd/llistats/albada1_2.JPG)
+
+%%(/eraalescriptori/HagaseLaLuz/postATypI_doctoratFinal/347.jpg)
+
+%%(/Users/femfum/Polynorma/imatgesProducte/LesImatges/1639.jpg)
+
+%%(/Users/femfum/empremt/iconesFinalsPoly/bones/*)
+%(/Users/femfum/Polynorma/logosFabricants/LogosMarcaCmyk/*)
+
+%(/Users/femfum/ArtistesDeLaRepublica/documental_llill/bolus/despeses/*)
+
+%(/Users/femfum/PliegOS/sonarD2023_paper/*)
+
+%%SNRD l'adreça ve de l'stack
+
+%{  % del filefor
+
+{  %d'stopped
+
+%% captura de dades del JPEG i comprovacio de si existeix...
+dup status
+{
+ pop pop
+ % el fitxer fa...
+ /FiFtxr exch def pop
+ dup /elD'ara exch def  % path+Nom del fitxer que processem
+ (r) file /tesela exch def  % fitxer de lectura
+}
+{
+ (NO HI ES...) == tesela closefile quit
+}ifelse
+
+
+%% mirem el cap i els peus (marcadors d'inici i final) del fitxer aviam si son normatius...
+
+ tesela FiFtxr 2 sub setfileposition
+ tesela 2 string readstring pop <FFD9> eq {(PEUS OK) ==
+
+ tesela dup 0 setfileposition
+ 2 string readstring pop <FFD8> eq {(CAP OK) ==
+
+ /SoRTiM false def  % pestell de sortida
+
+%% explorem el fitxer per localitzar els marcadors significatius que duen les dades d'imatge (qualsevol d'ells es valid)
+
+ {  % loop
+  tesela 2 string readstring  %% llegim el segment
+  {
+   /SeGMeNT exch def
+   0 1 6
+     {
+      [<FFC0> <FFC1> <FFC2> <FFC3> <FFC5> <FFC6> <FFC7>]  %% marcadors significatius
+      exch get SeGMeNT eq
+      {
+       (JA EL TINC !!!) ==
+       tesela 10 string readstring pop
+
+       %% captura del valor de files (y)
+       dup dup 3 get 256 mul exch 4 get add (\n >>>> Files (Y) ... ) print flush dup ==
+       /_B exch def  % (Y) FILES D'IMATGE
+
+       %% captura del valor de columnes (x)
+       dup dup 5 get 256 mul exch 6 get add (\n >>>> Columnes (X) ... ) print flush dup ==
+       /_A exch def  % (X) COLUMNES D'IMATGE
+
+       %% captura dels components de color (1, 3 o 4 canals)
+       dup dup 7 get (\n >>>> Components de Color ... ) print flush dup ==
+       /CNL exch def
+
+       %% bits per component de color (o per pixel)
+       dup dup 2 get (\n >>>> Bits x Comp ... ) print flush dup == (\n\n) print flush
+       /bXp exch def
+
+       /SoRTiM true def
+      }if
+     } for
+   SoRTiM not {
+               tesela 2 string readstring {  % llegim la llargada del segment per saltar al seguent...
+                                           dup 0 get 256 mul exch 1 get add
+                                           2 sub string tesela exch readstring {pop}{pop tesela closefile exit}ifelse
+                                          }{pop tesela closefile exit}ifelse
+              }if
+  }
+  {pop tesela closefile exit}ifelse
+  SoRTiM {tesela closefile exit} if
+ } loop
+
+SoRTiM not {(\n\n <<<< NO podem llegir correctament les dades d'aquest JPEG\n\n) print flush} if
+
+
+%% construim la imatge
+
+{
+ [
+  0
+  % 1 canal (ploma, escala de grisos)
+  {/DCD [0 1] def /SCE {/DeviceGray setcolorspace} def}
+  0
+  % 3 canals (RGB, L*a*b*)
+  {/DCD [0 1 0 1 0 1] def /SCE {/DeviceRGB setcolorspace} def}
+  % 4 canals (CMYK)
+  {/DCD [1 0 1 0 1 0 1 0] def /SCE {/DeviceCMYK setcolorspace} def}
+]
+CNL get exec
+
+} stopped
+{ % canals incorrectes
+ (\n\n <<<< Canals Incorrectes...\n\n) print flush
+}if
+
+%%SNRD multiplicador que ens dóna el valor d'ample _A
+%% escala  1 = 100% = 72 dpi
+XYlogo _A div
+/Scl exch def 
+
+ [ _A Scl mul _B Scl mul ] /frmtPGN exch def
+
+{  % stopped
+
+%%SNRD eliminat dins el context
+%% <</PageSize frmtPGN>> setpagedevice
+
+ SCE  % cridem l'espai de color
+ gsave
+
+%%SNRD generem les transfer functions aleatories, ara només aptes per RGB
+ %% ja hem plantat la llavor a sonarD2023_paper.ps
+ %% fabriquem aleatòriament un valor de 0 a 255 per canal
+ CNL
+ {
+  rand 256 mod  %% entre 0 i 256-1 per canal
+ }repeat
+
+ /255a1 1 255 div def  % conversor de valors 0-255 a 0-1
+ [
+  0
+  {  %% escala de grisos
+   (\n\n>> EP! la imatge no es RGB! >>\n\n)print flush quit
+   255a1 mul /gRis exch def
+  }  %% escala de grisos
+  0
+  {  %% RGB
+   [
+    {255a1 mul /R exch def}
+    {255a1 mul /G exch def}
+    {255a1 mul /B exch def}
+   ] {cvx exec}forall
+  }  %% RGB
+  {  %% CMYK
+   (\n\n>> EP! la imatge no es RGB! >>\n\n)print flush quit
+   [
+    {255a1 mul 1 exch sub dup /C exch def .3 mul /$C exch def}
+    {255a1 mul 1 exch sub dup /M exch def .59 mul /$M exch def}
+    {255a1 mul 1 exch sub dup /Y exch def .11 mul /$Y exch def}
+    {255a1 mul 1 exch sub dup /K exch def /$K exch def}
+   ] {cvx exec}forall
+  }  %% CMYK
+ ] CNL get cvx exec  %% conversió al color a valors 0/1 per canal
+
+%R G B(!!!)pstack quit
+   %% desem les transfers en un fitxer/string
+   true setglobal
+   /aFeGeiX 16000 string def  %% buffer d'escriptura
+   aFeGeiX /NullEncode filter /Ctransfer exch def  %% fitxer d'escriptura
+   false setglobal
+
+%%SNRD valor de calibració de color, ara fix, entre >0 i 1
+   /RaNG .5 def  %% veurem quin valor ens va millor per imprimir
+   %% filtrem el valor de RaNG perque estigui entre + gran de zero i 1
+   %RaNG 0 le {0.1 /RaNG exch def} if  %% si és 0 o més petit el deixem a .1
+  
+   %% escrivim els 3 array de transferència
+   %% Roig
+   R RaNG sub 0 le
+   {
+    0 /MinR exch def
+   }
+   {
+    R RaNG sub /MinR exch def
+   }ifelse
+   Ctransfer (/TransferR[) writestring
+   R 0 eq
+   {
+    256 {Ctransfer 48 write Ctransfer 32 write} repeat
+   }
+   {
+    R MinR sub 256 div MinR exch R
+    {
+     20 string cvs Ctransfer exch writestring Ctransfer 32 write
+    }for
+   }ifelse
+   Ctransfer (]def ) writestring
+   %% Verd
+   G RaNG sub 0 le
+   {
+    0 /MinG exch def
+   }
+   {
+    G RaNG sub /MinG exch def
+   }ifelse
+   Ctransfer (/TransferG[) writestring
+   G 0 eq
+   {
+    256
+    {
+     Ctransfer 48 write Ctransfer 32 write
+    }repeat
+   }
+   {
+    G MinG sub 256 div MinG exch G
+    {
+     20 string cvs Ctransfer exch writestring Ctransfer 32 write
+    }for
+   }ifelse
+   Ctransfer (]def ) writestring
+   %% Blau
+   B RaNG sub 0 le
+   {
+    0 /MinB exch def
+   }
+   {
+    B RaNG sub /MinB exch def
+   }ifelse
+   Ctransfer (/TransferB[) writestring
+   B 0 eq
+   {
+    256
+    {
+     Ctransfer 48 write Ctransfer 32 write
+    }repeat
+   }
+   {
+    B MinB sub 256 div MinB exch B
+    {
+     20 string cvs Ctransfer exch writestring Ctransfer 32 write
+    }for
+   }ifelse
+   Ctransfer (]def ) writestring
+
+   %% finalment escrivim la crida de la transfer
+   Ctransfer
+   ({255 mul cvi TransferR exch get}{255 mul cvi TransferG exch get}{255 mul cvi TransferB exch get}{0 mul}setcolortransfer )
+   writestring
+
+   %% tanquem!
+   Ctransfer closefile
+
+   aFeGeiX cvx exec  %% cridem la transfer
+%(!)pstack quit
+
+%%SNRD ja fem un tanslate a sonarD2023_paper.ps 
+ 0 0 translate
+
+ _A Scl mul _B Scl mul scale
+ <<
+   /ImageType 1
+   /Width _A
+   /Height _B
+   /BitsPerComponent bXp
+   /Decode DCD
+   /ImageMatrix [_A 0 0 _B neg 0 _B]
+   /DataSource  elD'ara (r) file <</ColorTransform 1>> /DCTDecode filter
+ >> image grestore
+} stopped
+{
+ elD'ara print flush ( <<<< JPEG incompatible amb el filtre DCTDecode de PostScript...\n\n) print flush
+}
+{
+%%SNRD eliminat dins el context
+ %% showpage
+} ifelse
+
+ }{(CAP KAPPUT)==}ifelse
+}{(PEUS KAPPUT)==}ifelse
+
+
+} stopped {clear (... PETADA !!\n\n) print flush}if
+
+%}256 string filenameforall

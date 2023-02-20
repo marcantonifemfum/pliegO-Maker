@@ -1,0 +1,60 @@
+%!
+%% algorisme pel prototip del sonarD2023
+%% genera un plec amb aleatorietat de tots els seus elements
+
+noNULL  %% pinta el contingut de pàgina?
+{  %% comportament null: el componedor ha de tenir anellat el codi que pinta contingut de pàgina
+ gsave
+
+ %% posicionem els 2 logos del sonar2023
+ %% a la portada (pàgina 1)
+ Npgn cvx exec 1 eq
+ {
+  %% Npgn ==  %% test ídem buit.ps
+  %% mesurem a una quarta part de l'ample de la pàgina del llançat i posicionem la imatge del logo al xamfrà ur
+  xPagina dup 4 div dup /XYlogo exch def  %% el logo del Sònar les quadrat
+  sub /oiX exch def  %% origen x
+  yPagina XYlogo sub /oiY exch def %% origen y
+
+  gsave
+  % 1 0 0 setrgbcolor oiX oiY XYlogo dup rectfill  %% per simular hi pintem un uqadrat vermell
+  % /Helvetica XYlogo selectfont oiX oiY moveto 1 1 1 setrgbcolor (A)show
+
+  %% funció de tranferència aleatoria per 3 canals
+  realtime srand  %% perquè les 3 crides rand variïn, plantem la llavor de l'aleatori només 1 vegada
+  %% els valors RGB random els fem dins a NouLectorDeJPEGs10.ps
+  %rand 256 mod  %% entre 0 i 256-1 per R
+  %rand 256 mod  %% entre 0 i 256-1 per G
+  %rand 256 mod  %% entre 0 i 256-1 per B
+ 
+  oiX oiY translate
+  mark
+  %(/Users/femfum/PliegOS/sonarD2023_paper/sonar2023_logo_113x113.jpg)
+  (/Users/femfum/PliegOS/sonarD2023_paper/sonar2023_logoAR.jpeg)
+  (/Users/femfum/PliegOS/sonarD2023_paper/NouLectorDeJPEGs10.ps) (r) file cvx exec
+  cleartomark  %% aquest algorisme deixa brossa
+  grestore
+ }if
+
+ %% a la contra (pàgina M2 2 mul)
+ Npgn cvx exec M2 2 mul eq
+ {
+  %% Npgn ==  %% test ídem buit.ps
+  gsave
+  % 0 0 0 setrgbcolor 0 0 XYlogo dup rectfill  %% per simular hi pintem un uqadrat negre
+  % /Helvetica XYlogo selectfont 0 0 moveto 1 1 1 setrgbcolor (A)show
+
+  0 0 translate
+  mark
+  %(/Users/femfum/PliegOS/sonarD2023_paper/sonar_30aniversari_logo_113x113.jpg)
+  (/Users/femfum/PliegOS/sonarD2023_paper/sonar_30aniversari_logoAR.jpeg)
+  (/Users/femfum/PliegOS/sonarD2023_paper/NouLectorDeJPEGs10.ps) (r) file cvx exec
+  cleartomark  %% aquest algorisme deixa brossa
+%(<<< random?)pstack quit
+  grestore
+ }if
+
+ grestore
+}if  %% comportament null: anellat del codi que pinta contingut de pàgina
+
+%% prohibit fer servir showpage!
