@@ -65,7 +65,7 @@
 %% des de la versió 9.52 del GS han desactivat .setpdfwrite (hemde documentar bé què suposa això ara)
 %% la crida alternativa informen que és...
 %% gs -q -dNOSAFER -o resultat.pdf -sDEVICE=pdfwrite -dAutoRotatePages=/None -c 3000000 setvmthreshold -f nUp_pliegOS.ps
-%%NOVA crida pel GS v9.55
+%%NOVA crida a partir del GS v9.55
 %% gs -q -dNOSAFER -o plegaVeu.pdf -sDEVICE=pdfwrite -dAutoRotatePages=/None -f nUp_pliegOS.ps
 %%Error: /undefined in /--.beginpage-- provocat per l'operador de transparència .setopacityalpha
 %%   **** WARNING: .setopacityalpha is deprecated (as of 9.53.0) and will be removed in a future release
@@ -181,7 +181,7 @@
 }
 {
  false  %% pel plegaVeu 19.12.21 forcem el 4+4 sempre en vertical (el 8+8 ja ho fa per defecte)
-%%EP! el 2Up en vertical talla els originals (cal revisar també ne H perquè es veu menys però també passa!)
+%%EP! el 2Up en vertical talla els originals (cal revisar també en H perquè es veu menys però també passa!)
 %% (\n Ghostscript no pot capturar aquesta variable d'entorn!\n\n)print flush
 }ifelse
 
@@ -233,7 +233,7 @@
  }ifelse
 }
 {  %% la variable d'entorn NO existeix perquè l'executem via Terminal, en local, per línia de comanda
- 9  %% 0 algorisme de reglatge
+ 10  %% 0 algorisme de reglatge
     %% 1 fus horari
     %% 2 interrogador de variables
     %% 3 algorisme buit i només pintaria els marges de pàgina?
@@ -248,6 +248,9 @@
     %% 8 visSensFi_senseEnflafaGlifs.ps
 
     %% 9 farceixPDFs_pseudoPDFX5_ReferenceXObjects_EnricSenabre.ps
+
+    %% 10 sonar+PAPER
+
 
 %% (\n Ghostscript no pot capturar aquesta variable d'entorn!\n\n)print flush
 }ifelse
@@ -373,6 +376,9 @@
 
  %% 9 farcidor de PDFs
  (/Users/femfum/PliegOS/codi_pliegOS/PDFscripting/farceixPDFs_pseudoPDFX5_ReferenceXObjects_EnricSenabre.ps)
+
+ %% 10 sonar+PAPER
+ (/Users/femfum/PliegOS/sonarD2023_paper/sonarD2023_paper.ps)
 
 ] def
 
