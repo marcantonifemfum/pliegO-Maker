@@ -1,0 +1,813 @@
+%% arborescècies numèriques
+%% https://ca.wikipedia.org/wiki/Figures_de_Lichtenberg
+%% gs -q -dNOSAFER -o out.pdf -sDEVICE=pdfwrite -dAutoRotatePages=/None -c .setpdfwrite -f faLichtenberg.ps
+%% gs -q -dNOSAFER -o out.pdf -sDEVICE=pdfwrite -f faLichtenberg.ps
+
+%% piulada fundacional
+%% https://twitter.com/jagarikin/status/929727540092026882 ...traduït del japonès:
+%% Seleccioneu un zero aleatòriament (Fill), seguiu l'element pAre i afegiu-ne 1 a tots els valors del recorregut
+%% fem els 14 primers passos segons l'exemple aleatori de @jagarikin
+
+%%                                       ##0###  ##00##  ##00## 
+%%      #0#  ##0#  ##00#  #000#  #0000#  #0100#  #0110#  #0110#
+%% #0#  010  #010  #0210  01310  012410  013510  013610  013610
+%% 010  020  0130  0140#  0150#  #0160#  #0170#  #0180#  01290#
+%% #0#  #0#  #00#  #00##  #00##  ##00##  ##00##  ##00##  #000##
+%%                                                                         ## ## ## ## ## ## 00 ##   ## ## ## ## ## ## 00 ##
+%% ## ## ## 00 00 ## ##   ## ## ## 00 00 00 ##   ## ## ## 00 00 00 00 ##   ## ## ## 00 00 00 01 00   ## ## ## 00 00 00 01 00
+%% ## ## 00 01 01 00 ##   ## ## 00 01 01 01 00   ## ## 00 01 01 02 01 00   ## ## 00 01 01 03 02 00   ## ## 00 01 01 03 02 00
+%% ## 00 01 03 06 01 00   ## 00 01 03 07 02 00   ## 00 01 03 08 03 00 ##   ## 00 01 03 09 04 00 ##   ## 00 01 03 09 04 00 ##
+%% 00 01 02 03 10 00 ##   00 01 02 03 11 00 ##   00 01 02 03 12 00 ## ##   00 01 02 03 13 00 ## ##   00 01 02 04 14 00 ## ##
+%% ## 00 00 00 00 ## ##   ## 00 00 00 00 ## ##   ## 00 00 00 00 ## ## ##   ## 00 00 00 00 ## ## ##   ## 00 00 01 00 ## ## ##
+%%                                                                                                   ## ## ## 00 ## ## ## ##
+
+%% aquests valors s'actualitzen a cada volta de loop
+/pAre 1 def  %% valor inicial de pAre
+/ipAre [1 1] def  %% localització inicial [iY iX] del pAre
+
+/iFill [null null] def  %% localització inicial [iY iX] del primer valor Fill (que sempre valdrà 1 perquè suma 1 a un zero)
+
+[
+%% aquesta és la matriu mínima inicial
+ [null    0 null]
+ [   0    1    0]
+ [null    0 null]
+
+
+% [null 0 null]
+% [ 0 1 0 ]
+% [ 0 pAre 0 ]
+% [null 0 null]
+
+% [null 0 0 0 null] 
+% [ 0 1 3 1 0 ] 
+% [ 0 1 5 0 null] 
+% [null 0 0 null null] 
+
+% [null null 0 0 null null]
+% [null 0 1 1 0 null]
+% [ 0 1 3 6 1 0 ]
+% [ 0 1 2 9 0 null]
+% [null 0 0 0 null null]
+
+% [null null null null null null 00 null]
+% [null null null 00 00 00 01 00]
+% [null null 00 01 01 03 02 00]
+% [null 00 01 03 09 04 00 null]
+% [00 01 02 04 14 00 null null]
+% [null 00 00 01 00 null null null]
+% [null null null 00 null null null null]
+
+%%MATRIUS amb ERRORs
+% [null null    0 null null]
+% [null    0    1    0 null]
+% [   0    1    4    1    0]
+% [null    0    5    0 null]
+% [null    1   11    0 null]
+% [   0    1    4    1    0]
+% [null    0    1    0 null]
+% [null null    0 null null]
+
+% [null    0    0    0 null null null null]
+% [   0    1    2    3    0 null null null]
+% [null    0    1    4    0    0 null null]
+% [   0    4   15    9    4    3    0 null]
+% [   0    3    0    0    0    2    1    0]
+% [   0    2    0 null null    0    0 null]
+% [   0    1    0 null null null null null]
+% [null    0 null null null null null null]
+
+]
+/araLichtenberg exch def
+
+/ARAitera 0 def  %% comptador d'iteracions
+/aRa 1 def  %% valor inicial del comptador per generar imatges de la generació del llamp
+
+%1024  %% sempre constant, doncs les iteracions seran multiples seves
+8
+
+%8 %% el doble d'aquest valor és cada quan es generarà una imatge del llamp en construcció (tret dels 4 o 5 primers passos)
+
+%%SNRD
+128
+
+%4096
+%2048
+%1024
+
+2 mul dup /fctrD exch def  %% el doble d'aquest valor és cada quan es generarà una imatge del llamp en construcció
+%% i multiplicat per 100 és el màxim valor de voltes que deixarem fer al loop 1 abans no considerem que som en un culdesac
+%% também dèiem que és un múltiple i factor de divisió pel valor del píxel
+
+mul 2 sub  %% múltiple -2
+/MAXitera exch def  %% a quantes iteracions decidim sortir? (la matriu tindrà valors de zero a +1 de MAXitera)
+
+%% si activem el rellotge PS, és molt lent i al no treballar amb mil·lisegons no serveix per millorar l'atzar
+%% sinó tot el contrari, si treballem només en segons (la resta són minuts/hores/dia/mes/any) inviable en una excució
+
+{  %% loop 0 generador de la Lichtenberg
+ /NOzero true def  %% gatell per saber quan i on em localitzat el zero inicial on situar Fill
+
+ araLichtenberg dup length 1 sub /iY exch def  %% índex màxim vertical
+ dup 0 get dup length 1 sub /iX exch def  %% índex màxim horitzontal
+ /caP exch def  %% primera línia de dades
+ iY get /peuS exch def  %% darrera línia de dades
+
+ %% activem els aleatoris per trobar el zero (iFill) on apuntarem el raig Lichtenberg des de pAre
+ araLichtenberg
+
+ realtime srand  %% és l'operador PS amb millor comportament per posar la llavor de l'aleatori (activant el rellotge GS millor)
+ rrand iY 1 add mod
+
+ dup iFill exch 0 exch put  %% aleatori vertical de l'array
+ get dup /aFill exch def  %% array on hem d'escollir un dels zeros de sortida del raig
+
+ realtime srand  %% l'aleatorietat necessita altra cop plantar la llavor?
+ rrand iX 1 add mod
+ %% per millorar l'aleatorietat, vegeu... comportaments_srand_realtime_usertime.ps
+
+%pop 0
+%dup ==
+
+ dup iFill exch 1 exch put  %% aleatori horitzontal de l'array escollida per trobar el zero
+
+ get 0 eq
+ {
+  /NOzero false def
+ }
+ {
+% (hiPASSO2?)==
+
+%realtime srand rrand 2 mod 0 eq  %% fem aleatòria la tendència?
+%iFill 1 get 2 mod 0 eq  %% fa que totes s'assemblin molt
+%{
+
+%% sembla la millor opció
+  iFill 1 get 1 iX  %% tendeix el llamp de SO/NE
+
+%}
+%{
+% iX -1 iFill 1 get  %% tendeix el llamp de SE/NO
+%}ifelse
+
+  %% l'aleatorietat és millor la línia d'abans?
+%iFill 1 get 2 mod 0 eq
+%{
+% realtime srand rrand iX 1 add mod 1 iX  %% tendeix el llamp de SO/NE
+%}{
+% iX -1 realtime srand rrand iX 1 add mod  %% tendeix el llamp de SE/NO
+%}ifelse
+
+  {
+   dup aFill exch get 0 eq
+   {
+    iFill exch 1 exch put
+    /NOzero false def
+    exit
+   }if
+   pop
+  }for
+ }ifelse
+
+ NOzero
+ {
+%(hiPASSO?)==
+  0 1 iX
+  {
+   dup aFill exch get 0 eq
+   {
+    iFill exch 1 exch put
+    /NOzero false def
+    exit
+   }if
+   pop
+  }for
+ }if
+
+ NOzero
+ {  %% si no localitzéssim un zero, arrossegaríem un greu error
+  (\n\n ...G e n e r a l   F a i l u r e !\n\n\n)print flush quit
+ }if
+
+ %% gatells per saber si creixem per algun dels 4 costats
+ /XcreixO false def
+ /XcreixE false def
+ /YcreixN false def
+ /YcreixS false def
+
+%%TEST d' iFill trobat a l'aleatori
+% iFill ==
+%%/iFill [2 2] def
+
+ %% en sentit d'iFill cap a ipAre:
+ %% valorem la distància x (si és negativa va cap a l'esquerra i positiva cap a la dreta)
+ ipAre 1 get iFill 1 get sub /dX exch def
+ %% valorem la distància y (si és negativa va cap amunt i positiva cap avall)
+ ipAre 0 get iFill 0 get sub /dY exch def
+
+ %% valor inicial del recorregut numèric del llamp
+ %% nLlamp anirà desant els valors que vagin tenint les diferents caselles del recorregut des d' iFill fins a pAre
+%%TEST si volem simular determinats valors en posicions a les matrius /araLichtenberg de prova
+ /nLlamp 1 def  %% comença per 1 perquè sempre li sumem 1 al zero d' iFill
+ /araL_creix false def  %% fem créixer la matriu /araLichtenberg ?
+
+ %% abans de fer el loop del llamp li fiquem 1 al zero de iFill
+ araLichtenberg iFill aload pop 3 -1 roll 3 -1 roll get exch 1 put  %% i es desa automàticament a /araLichtenberg
+
+%araLichtenberg (<<<<)pstack quit
+%%Potser hauria d'estar fora del loop1?
+  %% a partir d'iFill haurà de desar els recorreguts successius del llamp fins que coincideixi amb ipAre
+  iFill 2 array copy /iLlamp exch def
+
+%%ERROR?
+  /iloop1 0 def  %% comptador per detectar almenys 1 error de camí sense sortida
+  /MAXloop fctrD 100 mul def  %% limit per detectar l'error
+
+ {  %% loop 1 del recorregut del llamp des d' iFill fins a pAre
+
+  %% cal fer el camí de iFill a ipAre sumant una seqüència que sempre creixi (dos valors repetits no valen)
+  %% procurant que el salt numèric prioritzi el més curt possible i s'acosti en posició x,y cap a pAre
+
+  %% sempre hem d'aconseguir un valor més gran de la casella anterior i al mínim de distància dels 4 que analitzem
+  %% en acostar-s'hi (x,y) els mateixos valors numèrics ens marcaran el camí cap al pAre
+  %% només haurem de saber gestionar els camins que, no arribant al pAre, es trobin en un punt de /NOretorn
+
+%%Potser hauria d'estar fora del loop1?
+  %% a partir d'iFill haurà de desar els recorreguts successius del llamp fins que coincideixi amb ipAre
+%  iFill 2 array copy /iLlamp exch def
+
+%%Tria per índex
+  %% eliminarem les arrays que, pel seu índex, segur que ja no són vàlides
+
+  [  %% generem les 4 arrays possibles
+   iLlamp aload pop exch 1 sub exch 2 array astore  %% N
+   iLlamp aload pop 1 sub 2 array astore  %% O
+   iLlamp aload pop exch 1 add exch 2 array astore  %% S
+   iLlamp aload pop 1 add 2 array astore  %% E
+  ] /4possibles exch def
+
+%%TEST
+%4possibles iFill pstack quit
+
+  [
+   4possibles
+   {  %% forall per eliminar elements si algun dels seus índex és negatiu
+    dup dup aload pop 0 lt
+    {  %% poleix les posicions amb X negativa (ha de créixer per l'oest)
+     /XcreixO true def
+     /araL_creix true def
+     pop pop pop
+     %%
+    }
+    {
+     0 lt
+     {  %% poleix les posicions amb y negativa (ha de créixer per nord)
+      /YcreixN true def
+      /araL_creix true def
+      pop
+     }if
+     pop
+    }ifelse 
+   }forall
+  ] /4possibles exch def
+
+%%TEST
+%4possibles ==
+
+  [
+   4possibles
+   {  %% forall per eliminar elements si algun dels seus índex y,x és superior a iY o iX
+    %% iX
+    dup dup aload pop iX gt
+    {  %% poleix les posicions on les x superin l'index iX
+     /XcreixE true def
+     /araL_creix true def
+     pop pop pop
+    }
+    {
+     iY gt
+     {  %% poleix les posicions on les y superin l'index iY
+      /YcreixS true def
+      /araL_creix true def
+      pop
+     }if
+     pop
+    }ifelse
+   }forall
+  ] /4possibles exch def
+
+%%TEST
+%4possibles ==
+
+%%Tria per valors
+  %% eliminem les arrays que, pel valor on apunta el seu índex, segur que ja no són vàlides
+  [
+   4possibles
+   {  %% forall per eliminar elements si algun dels seus valors és null
+    dup dup 0 get araLichtenberg exch get exch 1 get get null eq
+    {
+     pop
+    }if
+   }forall
+  ] /4possibles exch def
+
+%%TEST
+%4possibles ==
+
+  [
+   4possibles
+   {  %% forall per eliminar quin dels seus elements no té un valor més gran que nLlamp
+    dup aload pop araLichtenberg 3 -1 roll get exch get nLlamp sub 0 lt
+    {
+     pop
+    }if
+   }forall
+  ] /4possibles exch def
+
+
+%%PENDENT forall per saber si hi ha més d'1 valor resultant, i si és així quin dels seus valors més grans és al mínim de distància
+%% encara que la distància sigui més gran, té preferència si apunta/tendeix directament a pAre
+%% en cas d'empat de distància, té preferència la tendència dY? (i dX?)
+%% hauríem de poder enregistrar (seqüències númèriques d' iLlamp/nLlamp) del 0 exterior (iFill) fins a ipAre
+%% doncs ens cal saber si trobarem camins barrats que haurem de refer
+
+  4possibles
+
+%dup == (<4> possibles)==
+
+%dX dY
+
+%iFill dX dY
+
+%  dup length 2 ge
+%  {  %% té més d'1 resultat
+%   true exch
+%  }
+%  {
+%   false exch
+%  }ifelse
+
+  /arai 0 def  %% comptador d'índex dels 4possibles que ens ha de dir quin és el triat
+
+  {  %% forall que ha d'avaluar la millor casella possible cap a ipAre
+%%Ens cal trobar la manera d'avaluar la distància hi hagi 1 2 3 o 4 punts possibles!
+   dup aload pop
+   %% primer ens cal avaluar la distància a ipAre per saber si ja hi som
+   ipAre 1 get exch sub 0 eq exch
+   ipAre 0 get exch sub 0 eq
+   and  %% tots dos han de ser true
+
+   {  %% ja som a ipAre
+    %% a /llamps hauríem de desar els valors dX,dY de distància en relació a ipAre, així serà vàlid per qualsevol /araLichtenberg
+
+%% a l'stack ara hi tenim iLlamp
+pop
+
+%%TEST
+%  pAre iLlamp nLlamp
+%iLlamp ==
+%(JA SOM A ipAre0!) == 
+%pstack quit
+    /foraforall true def
+
+    %% actualitzem els valors dX dy
+    %% valorem la distància x (si és negativa va cap a l'esquerra i positiva cap a la dreta)
+    %ipAre 1 get 1 index 1 get sub /dX exch def
+    %% valorem la distància y (si és negativa va cap amunt i positiva cap avall)
+    %ipAre 0 get exch 0 get sub /dY exch def
+
+    /dX 0 def /dY 0 def  %% ens fan sortir del loop1
+   }
+   {  %% si no hi som, ens cal saber:
+    4possibles length 1 eq
+    {  %% si a /4possibles només hi ha 1 sola possibilitat, és la bona i la triem i sortim del forall
+     /iLlamp exch def  %% actualitzem el nou valor
+     /foraforall true def
+     %*% hem d'actualitzar araLichtenberg sumant 1 al valor d' /iLlamp i serà el nou valor d' /nLlamp
+     iLlamp aload pop araLichtenberg 3 -1 roll get dup /aRefer exch def exch get 1 add /nLlamp exch def
+     araLichtenberg aRefer iLlamp 1 get nLlamp put iLlamp 0 get aRefer put  %% desem a /araLichtenberg
+    }
+    {  %% triarem el que dels /4possibles tingui un valor més acostat al de iLlamp (el valor de iLlamp és nLlamp)
+     pop  %% posició possible sobrera (la tornem a avaluar al forall de 4possibles)
+     /n+acostat MAXitera def  %% mai la resta del valor d'una posició possible amb el valor d' iLlamp serà més gran
+     /i+acostat null def  %% valor inicial que, si es manté, ens podria arribar a indicar una incongruència
+     mark  %% ens ha de servir per detectar quan una posició possible ha estat eliminada perquè s'allunya d' x o y d' ipAre
+     4possibles
+     {  %% forall
+
+%%EP! dues arrays no es poden comparar directament!
+%%      dup ipAre eq
+
+   dup aload pop
+   %% avaluem la distància a ipAre per saber si ja hi som
+   ipAre 1 get exch sub 0 eq exch
+   ipAre 0 get exch sub 0 eq
+   and  %% tots dos han de ser true
+
+      {  %% tret que estiguem a ipAre!
+       /i+acostat exch def  %% actualitzarà el nou valor d'iLlamp
+%(JA SOM A ipAre1!) ==
+       /dX 0 def /dY 0 def  %% ens fan sortir del loop1
+       /foraforall true def
+       exit
+      }
+      {  %% tret que s'allunyi d' x o y d' ipAre des de la posició actual d' iLlamp
+       /sallunya false def  %% alguna de les posicions possibles s'allunya?
+       dup
+       iLlamp 0 get ipAre 0 get sub
+
+       dup 0 eq
+       {  %% si la distància Y és exactament zero, una de les /4possibles pot coincidir amb ipAre
+        /perillaipAre true def
+       }
+       {
+        /perillaipAre false def
+       }ifelse
+%       {
+       0 lt  %% restant la Y d' iLlamp de la Y d' ipAre
+       {  %% Y negativa
+        0 get iLlamp 0 get lt
+        {  %% la Y de la posició possible s'allunya si és més petita que la Y de iLlamp
+         pop  %% eliminem la nova posició possible d'iLlamp
+         /sallunya true def  %% alguna de les posicions possibles s'allunya?
+        }if
+       }
+       {  %% Y positiva o zero
+        0 get iLlamp 0 get gt
+        {  %% la Y de la posició possible s'allunya si és més gran que la Y de de iLlamp
+         pop  %% eliminem la nova posició possible d'iLlamp
+         /sallunya true def  %% alguna de les posicions possibles s'allunya?
+        }if
+       }ifelse
+%       }ifelse
+
+       sallunya not
+       {  %% si s'allunya per la y, no cal avaluar la x
+        perillaipAre
+        {   %% cal detectar si ja som a ipAre
+
+         dup aload pop
+         %% avaluem la distància a ipAre per saber si ja hi som
+         ipAre 1 get exch sub 0 eq exch
+         ipAre 0 get exch sub 0 eq
+         and  %% tots dos han de ser true
+
+%%EP dues arrays no es poden comparar directament!
+%%         dup ipAre eq
+         {
+          /i+acostat exch def  %% actualitzarà el nou valor d'iLlamp
+%(JA SOM A ipAre2!) ==
+          /dX 0 def /dY 0 def  %% ens fan sortir del loop1
+          /foraforall true def
+          exit
+         }if
+        }if
+
+        dup
+        iLlamp 1 get ipAre 1 get sub 0 lt  %% restant la X d'iLlamp de la X d' ipAre
+        {  %% X negativa
+         1 get iLlamp 1 get lt
+         {  %% la X de la posició possible s'allunya si és més petita que la X d' iLlamp
+          pop  %% eliminem la nova posició possible d'iLlamp
+         }if
+        }
+        {  %% X positiva o zero
+         1 get iLlamp 1 get gt
+         {  %% la X de la posició possible s'allunya si és més gran que la X d' iLlamp
+          pop  %% eliminem la nova posició possible d'iLlamp
+         }if
+        }ifelse
+
+       }if
+
+       counttomark 0 ne  %% si és zero, és que la posició possible ha estat eliminada
+       {  %% si no és zero, cal avaluar si el valor és el més acostat al de iLlamp (el valor de iLlamp és nLlamp)
+        dup aload pop araLichtenberg 3 -1 roll get exch get nLlamp sub abs dup n+acostat le
+        {  %% actualitzem els nous valors
+         /n+acostat exch def
+         /i+acostat exch def
+        }
+        {
+         pop pop
+        }ifelse
+        
+       }if
+
+      }ifelse
+     }forall
+
+     pop  %% ens carreguem la mark
+
+     %% abans ens cal descartar que /i+acostat encara sigui null (passa quan hi ha 2 possibilitats i totes dues s'allunyen)
+     i+acostat null eq
+     {  %% llavors agafem la de posició zero a /4possibles
+      4possibles 0 get /iLlamp exch def
+     }
+     {
+      i+acostat /iLlamp exch def
+     }ifelse
+
+     %*% hem d'actualitzar araLichtenberg sumant 1 al valor d' /iLlamp i serà el nou valor d' /nLlamp
+     iLlamp aload pop araLichtenberg 3 -1 roll get dup /aRefer exch def exch get 1 add /nLlamp exch def
+     araLichtenberg aRefer iLlamp 1 get nLlamp put iLlamp 0 get aRefer put  %% desem a /araLichtenberg
+
+     /foraforall true def
+    }ifelse
+
+%    araLichtenberg
+%iLlamp nLlamp
+
+    %% primer per la dY
+%    dup aload pop exch
+%    ipAre 0 get exch sub abs  %% cal ABS?
+
+%    dY abs le iLlamp(ens acostem o ens quedem igual?)pstack quit
+
+   }ifelse
+
+   foraforall
+   {
+    exit
+   }
+   {
+    araLichtenberg 3 -1 roll get exch get
+    %dX dY
+    %iFill
+
+    arai 1 add /arai exch def
+   }ifelse
+
+  }forall  %% per la propera casella possible cap a ipAre
+
+%%TEST
+%4possibles ipAre (fi)pstack quit
+
+%ipAre
+%iLlamp
+
+%%Aquí cal un control de qualitat per saber que els 14 primers casos de l'exemple són vàlids
+
+%%  0  1  2  3  4  5  6  7
+%0% ## ## ## ## ## ## ·· ##
+%1% ## ## ## ·· 00 ·· 01 00
+%2% ## ## ·· 01 01 03 02 ··
+%3% ## ·· 01 03 09 04 ·· ##
+%4% ·· 01 02 04 14 ·· ## ##
+%5% ## ·· ·· 01 00 ## ## ##
+%6% ## ## ## ·· ## ## ## ##
+
+  %% la sortida només pot ser possible si hem arribat a pAre
+  dX 0 eq dY 0 eq and  %% aquesta és una de les equivalències
+
+  {exit}if
+
+%%ERROR?
+  iloop1 MAXloop ge
+  {
+   araLichtenberg 4possibles ipAre iFill iLlamp n+acostat i+acostat (<<<PETA?)pstack quit
+  }
+  {
+   iloop1 1 add /iloop1 exch def
+  }ifelse
+
+ }loop  %% 1 del recorregut del llamp des d' iFill fins a pAre
+
+ clear  %% netegem la merda que hi ha que encara no sabem d'on vé (són posicions)
+
+%%EP!
+%% només podem sumar 1 a pAre fins que el recorregut del loop anterior hagi tingut èxit
+%% o sigui: només sortim del loop1 si hem arribat a ipAre
+
+  %% li sumem 1 a pAre (què passarà si fem un recorregut en fals?)
+  araLichtenberg ipAre aload pop 3 -1 roll 3 -1 roll get dup 3 -1 roll dup 3 -1 roll exch get
+	  1 add dup /pAre exch def  %% nou valor de pAre
+  put  %% i es desa automàticament a /araLichtenberg
+
+%%TEST
+%araLichtenberg (Fi)pstack quit
+
+ %% actualitzem els valors (suma i farciment de zeros i nous elements) a ipAre pAre iX iY peuS caP araLichtenberg
+
+
+ araL_creix  %% fem créixer la matriu araLichtenberg?
+ {  %% als 4 xamfrans sempre hi haurà null i mai un 0 (possibilitat d'iFill) que obligaria a créixer en x + y
+  XcreixO
+  {
+   %% redefinició +1 de l'índex x d'iFill
+   iFill aload pop 1 add 2 array astore /iFill exch def
+
+   %% redefinició +1 de l'índex x d'ipAre
+   ipAre aload pop 1 add 2 array astore /ipAre exch def
+
+   %% fem créixer 1 element per l'esquerra a totes les arrays
+   [
+    araLichtenberg
+    {
+     dup length 1 add array dup 3 -1 roll 1 exch putinterval
+    }forall
+   ] /araLichtenberg exch def
+% (XcreixO)==
+  }
+  {
+   XcreixE
+   {
+    %% fem créixer 1 element per la dreta a totes les arrays
+    [
+     araLichtenberg
+     {
+      dup length 1 add array dup 3 -1 roll 0 exch putinterval
+     }forall
+    ] /araLichtenberg exch def
+%(XcreixE)==
+   }if
+  }ifelse
+
+  YcreixN
+  {
+   %% redefinició +1 de l'índex y d'iFill
+   iFill aload pop exch 1 add exch 2 array astore /iFill exch def
+
+   %% redefinició +1 de l'índex y d'ipAre
+   ipAre aload pop exch 1 add exch 2 array astore /ipAre exch def
+
+   %% fem créixer 1 array per dalt
+   [
+    araLichtenberg dup 0 get length array exch aload pop
+   ] /araLichtenberg exch def
+%(YcreixN)==
+  }
+  {
+   YcreixS
+   {
+    %% fem créixer 1 array per baix
+    [
+     araLichtenberg aload pop dup length array
+    ] /araLichtenberg exch def
+%(YcreixS)==
+   }if
+  }ifelse
+ }if  %% fem créixer la matriu araLichtenberg?
+
+%%TEST
+%araLichtenberg ==
+
+ %% ara cal fer una revisió de null per iFill (a 1) doncs no en pot tenir cap als 4 costats (tot han de ser zeros o +)
+ %% repassant la ruta per arribar a iFill n'hi ha prou?
+
+ %% si en trobem un li posem un zero
+ iFill aload pop exch 1 sub dup /aY exch def araLichtenberg exch get exch dup /aX exch def get null eq  %% N
+ {  %% corregim el N
+  araLichtenberg dup aY get dup aX 0 put aY exch put
+%(corregim el N)==
+ }if
+
+ iFill aload pop exch 1 add dup /aY exch def araLichtenberg exch get exch dup /aX exch def get null eq  %% S
+ {  %% corregim el S
+  araLichtenberg dup aY get dup aX 0 put aY exch put
+%(corregim el S)==
+ }if
+
+ iFill aload pop 1 sub exch dup /aY exch def araLichtenberg exch get exch dup /aX exch def get null eq  %% O
+ {  %% corregim el O
+  araLichtenberg dup aY get dup aX 0 put aY exch put
+%(corregim el O)==
+ }if
+
+ iFill aload pop 1 add exch dup /aY exch def araLichtenberg exch get exch dup /aX exch def get null eq  %% E
+ {  %% corregim el E
+  araLichtenberg dup aY get dup aX 0 put aY exch put
+%(corregim el E)==
+ }if
+
+
+%%TEST
+%araLichtenberg ==
+
+ %% a quantes iteracions decidim sortir?
+ ARAitera 1 add dup MAXitera eq
+ {
+  pop exit
+ }if
+ /ARAitera exch def
+ 
+
+%%Fa una imatge a cadaquant iteració
+false{
+ aRa ARAitera eq
+ {
+  aRa 2 mul dup fctrD ge
+  {
+   pop
+   /cadaquant fctrD 2 mul def
+  }
+  {
+   /cadaquant exch def
+  }ifelse
+
+  aRa cadaquant add /aRa exch def
+  (rawLichtenberg.raw) (w) file /fLichtenberg exch def
+
+  araLichtenberg   %% (Fi)pstack quit
+  dup dup length /alt exch def 0 get length /ample exch def
+  {  %% forall alt
+   {  %% forall ample
+    dup null eq
+    {
+     pop fLichtenberg 0 write
+    }
+    {
+     fLichtenberg exch ARAitera div 255 mul round cvi write
+    }ifelse
+   }forall
+  }forall
+
+  fLichtenberg dup flushfile closefile
+
+  <</PageSize[ample alt]>>setpagedevice
+
+  0 0 translate
+  ample alt scale
+
+  /DeviceGray setcolorspace
+  <<
+    /ImageType 1
+    /Width ample
+    /Height alt
+    /BitsPerComponent 8
+    /Decode [0 1]
+    /ImageMatrix [ample 0 0  alt neg 0  alt]
+    /DataSource (rawLichtenberg.raw) (r) file ample alt mul string readstring pop
+  >> image
+  showpage
+ }if
+}if
+%%Fi
+
+}loop  %% 0 generador de la Lichtenberg
+
+%% quan decidim sortir, establirem els rangs i/o categories numèriques per pintar els elements, com un tou de dades d'imatge
+%% ens caldria treballar amb múltiples de 256 (-2) per fer imatges a 8 bits
+(rawLichtenberg.raw) (w) file /fLichtenberg exch def
+
+araLichtenberg   %% (Fi)pstack quit
+dup dup length /alt exch def 0 get length /ample exch def
+{
+ {
+  dup null eq
+  {
+   pop fLichtenberg 0 write
+  }
+  {
+   fLichtenberg exch ARAitera div 255 mul round cvi write
+  }ifelse
+ }forall
+}forall
+
+fLichtenberg dup flushfile closefile
+
+%%SNRD quan fem l'nUp anirà fora
+false
+{
+ <<
+   /PageSize
+   [
+    297.5  %ample
+    421.0  %alt
+   ]
+ >>setpagedevice
+}if
+
+0 0 translate
+
+%%SNRD adaptem l'escala al format de la pàgina del llançat
+297.5  %% xPagina multiplicador d'escala per quadrar l'ample de la pàgina del llançat
+421.0  %% yPagina multiplicador d'escala per quadrar l'alt de la pàgina del llançat
+
+scale
+
+false
+{
+ ample alt
+ 8  %% bits per canal
+ [ample 0 0 alt 0 0]
+ {(rawLichtenberg.raw) (r) file ample alt mul string readstring pop}
+ image
+}
+{
+ /DeviceGray setcolorspace
+ <<
+ /ImageType 1
+ /Width ample
+ /Height alt
+ /BitsPerComponent 8
+ /Decode [0 1]  %% negativem?
+ /ImageMatrix [ample 0 0 alt neg 0  alt]
+ /DataSource (rawLichtenberg.raw) (r) file ample alt mul string readstring pop
+ >> image
+}ifelse
+
+%%SNRD desactivat per l'nUp
+%showpage
+%(\n\n >>> )print flush MAXitera 64 string cvs print flush  ( ...iteracions fetes!\n\n\n)print flush
+%(...brossa?)pstack
+

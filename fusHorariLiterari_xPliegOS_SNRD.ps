@@ -1,0 +1,1422 @@
+%% generem un descriptor horari parlat
+%% https://ca.wikipedia.org/wiki/Sistema_horari_catal%C3%A0
+%% gs -q -dNOSAFER -o out.pdf -sDEVICE=pdfwrite -dAutoRotatePages=/None -dPDFSETTINGS=/prepress -c .setpdfwrite -f fusHorariLiterari_xPliegOS.ps
+
+noNULL  %% pinta el contingut de pàgina?
+{ %% anellem el codi sencer perquè no és aleatori
+
+ %% pel que fa a incrustar la Courier d'IBM és equivalent a -dPDFSETTINGS=/prepress (estalviant efectes secundaris)
+ <<  %% caldria saber si tots tres paràmetres són crítics
+   /AlwaysEmbed [/Courier]
+   /NeverEmbed []
+   /EmbedAllFonts true
+   /AutoRotatePages /None
+ >>setdistillerparams
+ %% llavors només cal
+ %% gs -q -dNOSAFER -o out.pdf -sDEVICE=pdfwrite -c .setpdfwrite -f fusHorariLiterari.ps
+
+ [  %% cronos literari
+
+  [  %% 0 descriurem el nom de les hores del fus de 24h
+   %% 0
+   [
+    (dotze)  %% hora
+    (de la nit)  %% període del dia
+    1  %% plural
+   ]
+
+   %% 1
+   [
+    (una)  %% hora
+    (de la matinada)  %% període del dia
+    0  %% singular
+   ]
+
+   %% 2
+   [
+    (dues)  %% hora
+    (de la matinada)  %% període del dia
+    1  %% plural
+   ]
+
+   %% 3
+   [
+    (tres)  %% hora
+    (de la matinada)  %% període del dia
+    1  %% plural
+   ]
+
+   %% 4
+   [
+    (quatre)  %% hora
+    (de la matinada)  %% període del dia
+    1  %% plural
+   ]
+
+   %% 5
+   [
+    (cinc)  %% hora
+    (de la matinada)  %% període del dia
+    1  %% plural
+   ]
+
+   %% 6
+   [
+    (sis)  %% hora
+    (del matí)  %% període del dia
+    1  %% plural
+   ]
+
+   %% 7
+   [
+    (set)  %% hora
+    (del matí)  %% període del dia
+    1  %% plural
+   ]
+
+   %% 8
+   [
+    (vuit)  %% hora
+    (del matí)  %% període del dia
+    1  %% plural
+   ]
+
+   %% 9
+   [
+    (nou)  %% hora
+    (del matí)  %% període del dia
+    1  %% plural
+   ]
+
+   %% 10
+   [
+    (deu)  %% hora
+    (del matí)  %% període del dia
+    1  %% plural
+   ]
+
+   %% 11
+   [
+    (onze)  %% hora
+    (del matí)  %% període del dia
+    1  %% plural
+   ]
+
+   %% 12
+   [
+    (dotze)  %% hora
+    (del migdia)  %% període del dia
+    1  %% plural
+   ]
+
+   %% 13
+   [
+    (una)  %% hora
+    (del migdia)  %% període del dia
+    0  %% singular
+   ]
+
+   %% 14
+   [
+    (dues)  %% hora
+    (del migdia)  %% període del dia
+    1  %% plural
+   ]
+
+   %% 15
+   [
+    (tres)  %% hora
+    (de la tarda)  %% període del dia
+    1  %% plural
+   ]
+
+   %% 16
+   [
+    (quatre)  %% hora
+    (de la tarda)  %% període del dia
+    1  %% plural
+   ]
+
+   %% 17
+   [
+    (cinc)  %% hora
+    (de la tarda)  %% període del dia
+    1  %% plural
+   ]
+
+   %% 18
+   [
+    (sis)  %% hora
+    (de la tarda)  %% període del dia
+    1  %% plural
+   ]
+
+   %% 19
+   [
+    (set)  %% hora
+    (de la tarda)  %% període del dia
+    1  %% plural
+   ]
+
+   %% 20
+   [
+    (vuit)  %% hora
+    (del vespre)  %% període del dia
+    1  %% plural
+   ]
+
+   %% 21
+   [
+    (nou)  %% hora
+    (del vespre)  %% període del dia
+    1  %% plural
+   ]
+
+   %% 22
+   [
+    (deu)  %% hora
+    (de la nit)  %% període del dia
+    1  %% plural
+   ]
+
+   %% 23
+   [
+    (onze)  %% hora
+    (de la nit)  %% període del dia
+    1  %% plural
+   ]
+  ]  %% 0 descriurem el nom de les hores del fus de 24h
+
+  [  %% 1 descriurem els quarts
+   (mig quart)
+   (un quart)
+   (dos quarts)
+   (tres quarts)
+  ]
+ 
+  [  %% 2 descriurem els minuts
+   [  %% 0
+    (en punt)
+   ]
+   [  %% 1
+    [  %% exacte
+     (un minut)
+    ]
+    [  %% aproximat
+     (gairebé)  %% manca
+     (tocades)  %% passades
+    ]
+   ]
+
+   [  %% 2
+    [
+     (dos minuts)
+    ]
+    [
+     (gairebé)  %% manca
+     (tocades)  %% passades
+    ]
+   ]
+
+   [  %% 3
+    [
+     (tres minuts)
+    ]
+    [
+     (gairebé)  %% manca
+     (tocades)  %% passades
+    ]
+   ]
+
+   [  %% 4
+    [
+     (quatre minuts)
+    ]
+    [
+     (quatre minuts)
+     (quatre minuts)
+    ]
+   ]
+
+   [  %% 5
+    [
+     (cinc minuts)
+    ]
+    [
+     (cinc minuts)
+     (cinc minuts)
+    ]
+   ]
+
+   [  %% 6
+    [
+     (sis minuts)
+    ]
+    [
+     (mig quart)
+     (i mig)
+    ]
+   ]
+
+   [  %% 7
+    [
+     (set minuts)
+    ]
+    [
+     (mig quart)
+     (i mig)
+    ]
+   ]
+
+   [  %% 8
+    [
+     (vuit minuts)
+    ]
+    [
+     (mig quart)
+     (i mig)
+    ]
+   ]
+
+   [  %% 9
+    [
+     (nou minuts)
+    ]
+    [
+     (mig quart)
+     (i mig)
+    ]
+   ]
+
+   [  %% 10
+    [
+     (deu minuts)
+    ]
+    [
+     (deu minuts)
+     (deu minuts)
+    ]
+   ]
+
+   [  %% 11
+    [
+     (onze minuts)
+    ]
+    [
+     (onze minuts)
+     (onze minuts)
+    ]
+   ]
+
+   [  %% 12
+    [
+     (dotze minuts)
+    ]
+    [
+     (gairebé)
+     (gairebé)
+    ]
+   ]
+
+   [  %% 13
+    [
+     (tretze minuts)
+    ]
+    [
+     (gairebé)
+     (gairebé)
+    ]
+   ]
+
+   [  %% 14
+    [
+     (catorze minuts)
+    ]
+    [
+     (gairebé)
+     (gairebé)
+    ]
+   ]
+  ]  %% 2 descriurem els minuts
+
+  [  %% 3 lectura endavant o endarrera, singular, plural
+   [(manca) (manquen)]
+   [(passa) (passen)]
+  ]
+
+  [  %% 4 articles
+   (la)  %% singular
+   (les)  %% plural
+  ]
+
+  [  %% 5 preposicions, conjuncions
+   (d')  %% d'una i d'onze
+   (de)
+   (per)
+   (i)
+  ]
+
+  [  %% 6 mesos
+   (dos mil vint-i-un)
+   (gener)
+   (febrer)
+   (març)
+   (abril)
+   (maig)
+   (juny)
+   (juliol)
+   (agost)
+   (setembre)
+   (octubre)
+   (novembre)
+   (desembre)
+  ]
+
+ ] /cronos exch def
+
+ %% Detecta si l'interpret PS duu el recurs %Calendar% (p.e. GS)
+ %% si el duu llavors farceix una cadena segons la sintaxi del Creation Date d'AcrobatPDF
+ %% /araCDstring (D:) def  %% cadena d'inici per la Creation Date
+ (%Calendar%) /IODevice resourcestatus  %% existeix el recurs del calendari+rellotge?
+ {  %% existeix! (probablement siguem dins GS)
+  pop pop  %% ens carreguem les altres dues respostes del query
+  %% /araCDstring (D:) def  %% cadena d'inici per la Creation Date
+  (%Calendar%) currentdevparams  %%{== ==}forall quit
+  dup /Running get
+  {  %% suposem que per refiar-nos del calendari aquesta entrada ha d'estar a true
+   dup /Year get
+   /any exch def  %% dup ==
+   %%   4 string cvs dup length araCDstring length dup /afegit exch def add string dup
+   %%   0 araCDstring putinterval dup afegit 4 -1 roll putinterval /araCDstring exch def
+   dup /Month get
+   /mes exch def  %% dup ==
+   %%   2 string cvs dup length dup 2 ne {1 add exch (00) dup 3 -1 roll 1 exch putinterval exch}if
+   %%   araCDstring length dup /afegit exch def add string dup 0 araCDstring putinterval
+   %%   dup afegit 4 -1 roll putinterval /araCDstring exch def
+   dup /Day get
+   /dia exch def  %% dup ==
+   %%   2 string cvs dup length dup 2 ne {1 add exch (00) dup 3 -1 roll 1 exch putinterval exch}if
+   %%   araCDstring length dup /afegit exch def add string dup 0 araCDstring putinterval
+   %%   dup afegit 4 -1 roll putinterval /araCDstring exch def
+   dup /Hour get
+   /hora exch def  %% dup ==
+   %%   2 string cvs dup length dup 2 ne {1 add exch (00) dup 3 -1 roll 1 exch putinterval exch}if
+   %%   araCDstring length dup /afegit exch def add string dup 0 araCDstring putinterval
+   %%   dup afegit 4 -1 roll putinterval /araCDstring exch def
+   dup /Minute get
+   /minut exch def  %% dup ==
+   %%   2 string cvs dup length dup 2 ne {1 add exch (00) dup 3 -1 roll 1 exch putinterval exch}if
+   %%   araCDstring length dup /afegit exch def add string dup 0 araCDstring putinterval
+   %%   dup afegit 4 -1 roll putinterval /araCDstring exch def
+   /Second get
+   /segon exch def
+   %%   2 string cvs dup length dup 2 ne {1 add exch (00) dup 3 -1 roll 1 exch putinterval exch}if
+   %%   araCDstring length dup /afegit exch def add string dup 0 araCDstring putinterval
+   %%   dup afegit 4 -1 roll putinterval /araCDstring exch def
+  }
+  {  %% si Running es a false deixem un missatge d'avis, pero no fem res ...
+   pop
+   (\n ... >>> Hi ha %Calendar% pero Running es a false :\( \n) print flush
+  }ifelse
+  %% dup /CreationDate araCDstring put  %% afegim CreationDate
+  %% dup /ModDate araCDstring put  %% afegim ModDate
+ }
+ {
+  (\n ... >>> NO hi ha %Calendar% PLEGUEM! :\( \n) print flush quit
+ }ifelse
+
+ %% aquí posarem per ordre la descripció horària, de manera que per composar la frase només haurem de llistar els mots ordenats
+ %% afegint els corresponents espais en blanc entremig
+ /sintagma 6 array def
+
+
+%%TEST aixafa l'hora presa de la màquina
+%/hora 18 def  %% hores que donen baix contrast (ho detectem a escala de gris per sota de 0.015): 3/0-7/30 
+%/minut 34 def
+%/segon 30 def  %% acostar-se a zero és un valor crític pel baix contrast
+
+ cronos 0 get  %% array de les hores
+ hora get dup dup 0 get /_hora exch def 1 get /_periode exch def 2 get cronos 4 get exch get /_article exch def
+
+ %% deducció horària i trasllat al llenguatge
+ minut dup 30 sub 0 le
+ {  %% la primera mitja hora, l'hora en punt o dos quarts en punt
+  30 sub dup 0 eq
+  {  %% dos quarts en punt
+   pop
+   %% array circular: saltem a l'índex següent doncs a partir d'un quart ja diem l'hora següent
+   hora 23 exch sub dup 0 eq
+   {
+    /hora exch def
+   }
+   {
+    23 exch sub 1 add /hora exch def
+   }ifelse
+   cronos 0 get hora get 1 get /_periode exch def
+   cronos 5 get
+   hora 1 eq hora 13 eq or
+   {  %% d'
+    0 get
+   }
+   {
+    hora 11 eq hora 23 eq or
+    {  %% d'
+     0 get
+    }
+    {  %% de
+     1 get
+    }ifelse
+   }ifelse
+   /_prep exch def  %% desem la preposició
+   sintagma dup cronos 1 get 2 get 0 exch put  %% dos quarts
+   dup 1 _prep put  %% preposició
+   dup 2 cronos 0 get hora get 0 get put  %% hora
+   3 _periode put  %% perídode
+  }
+  {
+   abs dup 30 eq
+   {  %% l'hora en punt
+    pop cronos 2 get 0 get 0 get /_minut exch def 
+    %% on s'acaba l'anàlisi es munta la seqüència
+    sintagma dup dup dup 0 _article put 1 _hora put 2 _minut put 3 _periode put
+   }
+   {
+    dup 15 le
+    {
+     %% array circular: saltem a l'índex següent doncs a partir d'un quart ja diem l'hora següent
+     hora 23 exch sub dup 0 eq
+     {
+      /hora exch def
+     }
+     {
+      23 exch sub 1 add /hora exch def
+     }ifelse
+     cronos 0 get hora get 1 get /_periode exch def
+     cronos 5 get
+     hora 1 eq hora 13 eq or
+     {  %% d'
+      0 get
+     }
+     {
+      hora 11 eq hora 23 eq or
+      {  %% d'
+       0 get
+      }
+      {  %% de
+       1 get
+      }ifelse
+     }ifelse
+     /_prep exch def  %% desem la preposició
+     dup 15 eq
+     {  %% un quart en punt
+      pop sintagma dup dup dup cronos 1 get 1 get 0 exch put  %% un quart
+      1 _prep put  %% preposició
+      2 cronos 0 get hora get 0 get put  %% hora
+      3 _periode put  %% període
+     }
+     {  %% un quart i
+      15 exch sub dup 3 le
+      {  %% passen 1, 2 o 3 minuts
+       cronos 2 get exch get 1 get 1 get  %% tocades
+       sintagma dup cronos 1 get 1 get 0 exch put  %% un quart
+       dup 1 _prep put  %% preposició
+       dup 2 cronos 0 get hora get 0 get put  %% hora
+       dup 3 _periode put  %% període
+       exch 4 exch put  %% fiquem tocades
+      }
+      {
+       dup 5 le
+       {  %% passen 4 o 5 minuts d'un quart
+        sintagma dup cronos 1 get 1 get 0 exch put  %% un quart
+        dup cronos 5 get 3 get 1 exch put  %% conjunció i
+        dup cronos 2 get 4 -1 roll get 0 get 0 get 2 exch put  %% minuts      
+        dup 3 _prep put  %% preposició
+        dup 4 cronos 0 get hora get 0 get put  %% hora
+        5 _periode put  %% període
+       }
+       {
+        dup 9 le
+        {  %% un quart i mig
+         sintagma dup cronos 1 get 1 get 0 exch put  %% un quart
+         dup cronos 2 get 4 -1 roll get 1 get 1 get 1 exch put  %% minuts      
+         dup 2 _prep put  %% preposició
+         dup 3 cronos 0 get hora get 0 get put  %% hora
+         4 _periode put  %% període
+        }
+        {
+         dup 11 le
+         {  %% 5 i 4 minuts per
+         15 exch sub sintagma dup cronos 2 get 4 -1 roll get 0 get 0 get 0 exch put  %% minuts
+         dup cronos 5 get 2 get 1 exch put  %% preposició
+         dup cronos 1 get 2 get 2 exch put  %% dos quarts
+         dup 3 _prep put  %% preposició
+         dup 4 cronos 0 get hora get 0 get put  %% hora
+         5 _periode put  %% període
+         }
+         {  %% gairebe dos quarts
+          pop sintagma dup cronos 2 get 1 get 1 get 0 get 0 exch put  %% minuts gairebé
+          dup cronos 1 get 2 get 1 exch put  %% dos quarts
+          dup 2 _prep put  %% preposició
+          dup 3 cronos 0 get hora get 0 get put  %% hora
+          4 _periode put  %% període
+         }ifelse
+        }ifelse     
+       }ifelse
+      }ifelse
+     }ifelse
+    }
+    {  %% tocades, mig quart, gairebé
+     30 exch sub dup 3 le
+     {  %% seran tocades si passen fins a 1, 2 o 3 minuts de l'hora
+      %% on s'acaba l'anàlisi es munta la seqüència
+      sintagma dup dup dup 0 _article put 1 _hora put 2 _periode put 3 cronos 2 get 4 -1 roll get 1 get 1 get put
+     }
+     {
+      %% array circular: saltem a l'índex següent doncs a gairebé un quart ja diem l'hora següent
+      hora 23 exch sub dup 0 eq
+      {
+       /hora exch def
+      }
+      {
+       23 exch sub 1 add /hora exch def
+      }ifelse
+      dup 12 ge
+      {  %% gairebé un quart (12, 13 i 14 minuts)
+       sintagma dup dup dup dup
+       cronos 2 get 1 get 1 get 0 get 0 exch put  %% minuts gairebé
+       cronos 1 get 1 get 1 exch put  %% quarts
+       cronos 5 get
+       hora 1 eq hora 13 eq or
+       {  %% d'
+        0 get
+       }
+       {
+        hora 11 eq hora 23 eq or
+        {  %% d'
+         0 get
+        }
+        {  %% de
+         1 get
+        }ifelse
+       }ifelse
+       2 exch put  %% preposició
+       3 cronos 0 get hora get 0 get put  %% hora
+       4 _periode put  %% període
+      }
+      {
+       dup 10 ge
+       {  %% passen 10 i 11 minuts
+        sintagma dup dup dup dup dup
+        cronos 3 get 1 get 1 get 0 exch put  %% passen
+        cronos 2 get 7 -1 roll get 0 get 0 get 1 exch put  %% minuts
+        cronos 5 get 1 get 2 exch put  %% preposició
+        3 _article put  %% article
+        4 _hora put  %% hora
+        5 _periode put  %% període
+       }
+       {
+        dup 6 ge
+        {  %% passa mig quart (6, 7, 8 i 9 minuts)
+         sintagma dup dup dup dup dup
+         cronos 3 get 1 get 0 get 0 exch put  %% passa
+         cronos 2 get 7 -1 roll get 1 get 0 get 1 exch put  %% mig quart
+         cronos 5 get 1 get 2 exch put  %% preposició
+         3 _article put  %% article
+         4 _hora put  %% hora
+         5 _periode put  %% període
+        }
+        {  %% passen 4 i 5 minuts
+         sintagma dup dup dup dup dup
+         cronos 3 get 1 get 1 get 0 exch put  %% passen
+         cronos 2 get 7 -1 roll get 0 get 0 get 1 exch put  %% minuts
+         cronos 5 get 1 get 2 exch put  %% preposició
+         3 _article put  %% article
+         4 _hora put  %% hora
+         5 _periode put  %% període
+        }ifelse
+       }ifelse 
+      }ifelse
+     }ifelse
+    }ifelse
+   }ifelse
+  }ifelse
+ }
+ {  %% dins la segona mitja hora, tres quarts i tots els entremitjos fins gairebé l'hora
+  %% array circular: saltem a l'índex següent doncs a partir d'un quart ja diem l'hora següent
+  hora 23 exch sub dup 0 eq
+  {
+   /hora exch def
+  }
+  {
+   23 exch sub 1 add /hora exch def
+  }ifelse
+  cronos 0 get hora get 1 get /_periode exch def
+  cronos 5 get
+  hora 1 eq hora 13 eq or
+  {  %% d'
+   0 get
+  }
+  {
+   hora 11 eq hora 23 eq or
+   {  %% d'
+    0 get
+   }
+   {  %% de
+    1 get
+   }ifelse
+  }ifelse
+  /_prep exch def  %% desem la preposició
+  30 sub dup 15 le
+  {  %% fins a tres quarts
+   dup 15 eq
+   {  %% tres quarts en punt
+    pop sintagma dup 0 cronos 1 get 3 get put
+    dup 1 _prep put  %% preposició
+    dup 2 cronos 0 get hora get 0 get put  %% hora
+    3 _periode put  %% període
+   }
+   {
+    dup 3 le
+    {  %% tocades: passen 1, 2 o 3 minuts de dos quarts
+     cronos 2 get exch get 1 get 1 get  %% tocades
+     sintagma dup cronos 1 get 2 get 0 exch put  %% dos quarts
+     dup 1 _prep put  %% preposició
+     dup 2 cronos 0 get hora get 0 get put  %% hora
+     dup 3 _periode put  %% període
+     exch 4 exch put  %% fiquem tocades
+    }
+    {  %% i mig o gairebé
+     dup 5 le
+     {  %% passen 4 o 5 minuts de dos quarts
+      sintagma dup cronos 1 get 2 get 0 exch put  %% dos quarts
+      dup cronos 5 get 3 get 1 exch put  %% conjunció i
+      dup cronos 2 get 4 -1 roll get 0 get 0 get 2 exch put  %% minuts      
+      dup 3 _prep put  %% preposició
+      dup 4 cronos 0 get hora get 0 get put  %% hora
+      5 _periode put  %% període
+     }
+     {
+      dup 9 le
+      {  %% mig quart per tres quarts (6, 7, 8 i 9 minuts)
+       sintagma dup
+       cronos 2 get 4 -1 roll get 1 get 0 get 0 exch put  %% mig quart
+       dup cronos 5 get 2 get 1 exch put  %% preposició
+       dup cronos 1 get 3 get 2 exch put  %% tres quarts      
+       dup 3 _prep put  %% article
+       dup 4 cronos 0 get hora get 0 get put  %% hora
+       5 _periode put  %% període
+      }
+      {
+       dup 11 le
+       {  %% 5 i 4 minuts per
+        dup 10 eq
+        {  %% vint minuts per l'hora (ens saltem els protocols per reduir codi)
+         pop sintagma dup
+         hora 1 eq hora 13 eq or
+         {  %% article la
+          0 (vint minuts per la) put
+         }
+         {  %% article les
+          0 (vint minuts per les) put
+         }ifelse
+         dup 1 cronos 0 get hora get 0 get put  %% hora
+         2 _periode put  %% període
+        }
+        {  %% quatre minuts per tres quarts
+         15 exch sub sintagma dup cronos 2 get 4 -1 roll get 0 get 0 get 0 exch put  %% minuts
+         dup cronos 5 get 2 get 1 exch put  %% preposició
+         dup cronos 1 get 3 get 2 exch put  %% tres quarts
+         dup 3 _prep put  %% preposició
+         dup 4 cronos 0 get hora get 0 get put  %% hora
+         5 _periode put  %% període
+        }ifelse
+       }
+       {  %% gairebe tres quarts
+        pop sintagma dup cronos 2 get 1 get 1 get 0 get 0 exch put  %% minuts gairebé
+        dup cronos 1 get 3 get 1 exch put  %% tres quarts
+        dup 2 _prep put  %% preposició
+        dup 3 cronos 0 get hora get 0 get put  %% hora
+        4 _periode put  %% període
+       }ifelse
+      }ifelse
+     }ifelse
+    }ifelse
+   }ifelse
+  }
+  {
+   15 sub dup 3 le
+   {  %% tocades: passen 1, 2 o 3 minuts de tres quarts
+    cronos 2 get exch get 1 get 1 get  %% tocades
+    sintagma dup cronos 1 get 3 get 0 exch put  %% tres quarts
+    dup 1 _prep put  %% preposició
+    dup 2 cronos 0 get hora get 0 get put  %% hora
+    dup 3 _periode put  %% període
+    exch 4 exch put  %% fiquem tocades
+   }
+   {  %% i mig o gairebé
+    dup 5 le
+    {  %% passen 4 o 5 minuts de tres quarts
+     dup 5 eq
+     {  %% deu minuts per l'hora (ens saltem els protocols per reduir codi)
+      pop sintagma dup
+      hora 1 eq hora 13 eq or
+      {  %% article la
+       0 (deu minuts per la) put
+      }
+      {  %% article les
+       0 (deu minuts per les) put
+      }ifelse
+      dup 1 cronos 0 get hora get 0 get put  %% hora
+      2 _periode put  %% període
+     }
+     {  %% tres quarts i quatre minuts
+      sintagma dup cronos 1 get 3 get 0 exch put  %% tres quarts
+      dup cronos 5 get 3 get 1 exch put  %% conjunció i
+      dup cronos 2 get 4 -1 roll get 0 get 0 get 2 exch put  %% minuts      
+      dup 3 _prep put  %% preposició
+      dup 4 cronos 0 get hora get 0 get put  %% hora
+      5 _periode put  %% període
+     }ifelse
+    }
+    {
+     dup 9 le
+     {  %% mig quart per l'hora (6, 7, 8 i 9 minuts)
+      sintagma dup
+      cronos 2 get 4 -1 roll get 1 get 0 get 0 exch put  %% mig quart
+      dup cronos 5 get 2 get 1 exch put  %% preposició
+      dup hora 1 eq hora 13 eq or
+      {  %% article la
+       cronos 4 get 0 get 2 exch put
+      }
+      {  %% article les
+       cronos 4 get 1 get 2 exch put
+      }ifelse
+      dup 3 cronos 0 get hora get 0 get put  %% hora
+      4 _periode put  %% període
+     }
+     {
+      dup 11 le
+      {  %% 5 i 4 minuts per l'hora
+       15 exch sub sintagma dup cronos 2 get 4 -1 roll get 0 get 0 get 0 exch put  %% minuts
+       dup cronos 5 get 2 get 1 exch put  %% preposició
+       dup hora 1 eq hora 13 eq or
+       {  %% article la
+        cronos 4 get 0 get 2 exch put
+       }
+       {  %% article les
+        cronos 4 get 1 get 2 exch put
+       }ifelse
+       dup 3 cronos 0 get hora get 0 get put  %% hora
+       4 _periode put  %% període
+      }
+      {  %% gairebe l'hora
+       pop sintagma dup cronos 2 get 1 get 1 get 0 get 0 exch put  %% minuts gairebé
+       dup hora 1 eq hora 13 eq or
+       {  %% article la
+        cronos 4 get 0 get 1 exch put
+       }
+       {  %% article les
+        cronos 4 get 1 get 1 exch put
+       }ifelse
+       dup 2 cronos 0 get hora get 0 get put  %% hora
+       3 _periode put  %% període
+      }ifelse
+     }ifelse
+    }ifelse
+   }ifelse
+  }ifelse
+ }ifelse
+
+ %% un test de parell/imparell 0/1 als segons pot donar joc per triar un llenguatge més de quarts o més de minuts
+ %% segon 2 mod ==
+ %% la idea seria muntar una array del cronos literari on es podés triar, segons el test anterior, entre 2 maneres de dir
+ %% maneres de dir:
+ %% parlar de quarts citant l'hora cap on anem
+ %% citar el passen ## minuts de l'hora, fins a un límit, o manquen ## per l'hora des d'un límit
+ %% fer servir un llenguatge més col·loquial on l'hora aproximada té el seu valor lingüístic: gairebé són les dotze, les nou
+ %% tocades, passen una mica de dos quarts, un quart i mig, etc
+
+%%SNRD valor 10 pel 4+4 i ## pel 8+8
+iSeq 10 eq  %% només 1 cop
+{
+
+ %% muntem la descripció horària en una sola string
+ /Sintagma () def
+ sintagma
+ {  %% forall
+  dup null eq
+  {  %% i sortim
+   pop exit
+  }
+  {
+   dup length Sintagma length dup /araVa exch def add string dup 0 Sintagma putinterval  %% desem el primer tram existent
+   dup 3 -1 roll araVa exch dup /moT exch def putinterval  %% desem el mot següent
+   %% l'espai en blanc (o el que sigui) de separació
+   moT (d') ne
+   {  %% si tenim tenim excepcions a l'espai en blanc
+    dup length dup /araVa exch def 1 add string dup 3 -1 roll 0 exch putinterval dup araVa ( ) putinterval
+   }if
+   /Sintagma exch def
+  }ifelse
+ }forall
+
+ %% esquilem el darrer espai en blanc
+ Sintagma dup length 1 sub 0 exch getinterval /Sintagma exch def
+
+}if  %% només 1 cop
+
+%%SNRD definim de forma fixa una instància de la MM per descriure la data i l'hora
+(/Users/femfum/MultipleMaster/AdobeSans_AdobeSerif/ZX______.PFB)  %% Adobe Sans MM
+findfont
+%%MÈTODE0 d'anàlisi dels eixos mestres d'una MM
+%% extraiem els valors mínims, intermitjos (si n'hi han) i màxims, de cadascun dels eixos dinàmics de la MM
+%% fem un diccionari amb tots els eixos de variabilitat i els seus valors mestres dins una array
+/AsansMMeixosDinamics 0 dict def
+dup /FontInfo get dup /FIMM exch def
+/BlendAxisTypes get length 1 sub 0 exch 1 exch
+{
+ /araEix exch def
+ AsansMMeixosDinamics 
+ FIMM /BlendAxisTypes get araEix get
+ [  %% potser que l'eix de mescla sigui linial entre més de dos valors (p.e. l'eix de correcció òptica segueix aquesta lògica)
+  FIMM /BlendDesignMap get araEix get
+  {aload pop pop}forall
+ ] put
+}for
+dup length dict begin
+{
+ 1 index /FID ne
+ {def}{pop pop}ifelse
+}forall
+%% atenció que aquesta crida només és vàlida a Ghostscript!
+/Encoding systemdict /EncodingDirectory get /WinAnsiEncoding get def  %% xifrat WinAnsi
+currentdict end /Camaleonica_WA exch definefont pop
+%% mooolt important: carreguem una (1) sola vegada el diccionari genèric ben xifrat de la MM
+/Camaleonica_WA findfont /AsansMMionari exch def
+%%MÈTODE1 per generar una instància MM via array del vector, a partir dels valors possibles fixats pel /BlendDesignMap
+%% Paul Haahr dóna aquest mètode com més estable...
+/unaInstanciaDelAsansMM  %% literal per definir la instància concreta que generem
+%% /MinionMM findfont  %% aquí substituïm la crida original pel seu diccionari ja normalitzat a WinAnsi...
+AsansMMionari
+dup begin  %% entrem dins el diccionari de la MM per poder cridar els procediments NormalizeDesignVector i ConvertDesignVector
+[  %% array del vector que treballarà makeblendedfont
+ %% el seu ordre (fixat per /BlendAxisTypes) i els seus valors possibles (fixats per /BlendDesignMap)
+ %% necessitem obligatòriament tantes dades vàlides com eixos dinàmics de la MM
+%%AdobeSansMM
+ %% pes i ample
+  50 50  %% mínim pes (prima) i mínim ample (estreta)
+ % 50 1450  %% prima i màxim ample (ample)
+ % 1450 50  %% màxim pes (grassa) i estreta
+ % 1450 1450  %% grassa i ample
+ % 750 750  %% rodona
+ %% aquests dos procediments, i per aquest ordre, generen les dades necesàries del vector dins l'array
+ NormalizeDesignVector  %% normalitza les dades de cada eix mestre en valors entre 0 i 1
+ ConvertDesignVector  %% genera les dades finals pel seu ús dins la matriu de l'array per a makeblendedfont
+] end
+makeblendedfont
+definefont  %% fixem la font en memòria
+%% càcul de posicionat de la línia de base per la nova instància
+dup /Fdataihora exch def
+10 dup /cosAreglaD3 exch def  %% qualsevol cos va bé per saber l'ample del text a compondre
+scalefont setfont 0 0 moveto  %% qualsevol posició va bé per saber l'ample del text a compondre
+Sintagma stringwidth pop
+xPagina dup 10 div dup /mH exch def  %% càlcul dels marges
+2 mul sub cosAreglaD3 mul exch div dup /cosAreglaD3 exch def  %% càcul del cos perquè faci just l'ample d' xPagina
+Fdataihora exch scalefont setfont mH mH moveto
+0 0 0 0 setcmykcolor  %% l'hora literària en blanc
+Sintagma show
+%% hora
+Fdataihora cosAreglaD3 2 div scalefont setfont
+(00) dup dia 2 string cvs dup length 2 exch sub exch putinterval dup stringwidth pop
+(00) dup mes 2 string cvs dup length 2 exch sub exch putinterval dup stringwidth pop
+any 4 string cvs dup stringwidth pop
+(~) stringwidth pop
+%% càcul de l'ample de la data per centrar-la
+2 mul add 3 -1 roll add 4 -1 roll add xPagina exch sub 2 div yPagina mH sub moveto
+3 -1 roll show (~)show exch show (~)show show
+%(<<<<)pstack quit
+
+%%SNRD l'omet
+false
+{
+
+%gsave
+
+ %% dimo que inverteix a través de la transfer function els fons de l'espai de color actual
+ /omid
+ {
+%%EP! pel contrast podem decidir quin tipus MM fem servir
+  %% tan si treballem o no amb escala de gris, posem un filtre de baix contrast per sota d'un llindar (0.015)
+  currentgray dup 1 exch sub sub
+dup ==
+  abs 0.015 lt
+  {
+   (\n\n ...EP! baix contrast\n)print flush
+   eG  %% treballem en escala de gris?
+   {  %% rectifiquem al mínim contrast tolerable en grisos
+    currentgray 0.02 add setgray
+   }
+   {  %% rectifiquem al mínim contrast tolerable en color
+    currenthsbcolor exch 0.02 add exch sethsbcolor 
+   }ifelse
+  }
+  {
+   eG  %% treballem en escala de gris?
+   {
+    currentgray setgray
+   }if
+  }ifelse
+
+%%Cal que quadri el fons amb xTripa/yTripa
+
+  gsave
+  0 0 xTripa yTripa
+
+%% passa en tipografies cal·ligràfiques com la Despeinada d'en Rousselot
+%% podria donar-se el cas que la Y cos (via bbox) fos més gran que yTripa?
+%/exces false def
+%4 index true charpath  %% activem el path del que escrivim
+%pathbbox  %% posem el bbox a la pila
+%3 -1 roll abs add 3 index 2 copy gt
+%{
+% (\n ...el cos és més alt que la pàgina!\n\n)print flush
+% coS mul exch div /coS exch def
+% pop pop
+% /exces true def
+%}if
+
+% 4 copy 3 -2 roll 4 -1 roll  %% posem bé per calcular l'alple i l'alt
+% sub /_amp exch def sub /_alt exch def pop pop
+  {1 exch sub} settransfer  %% negativem el color vigent pel fons
+% _amp _alt 4 copy
+% marGe
+% setlinewidth  %% el filet del marge el fem proporcional al cos
+% rectstroke
+  rectfill  %% pintem el bbox en negatiu
+  grestore
+
+%% passa en tipografies com la Despeinada d'en Rousselot
+% exces
+% {
+%  /laLlatina findfont coS scalefont setfont
+% }if
+
+  show  %% pintem el text del color vigent (positiu)
+ }bind def
+
+ /omid2
+ {
+  %%Cal que quadri el fons amb xTripa/yTripa
+true setglobal
+globaldict /aHSB get %dup ==
+ aload pop sethsbcolor
+false setglobal
+  gsave
+  0 0 xTripa yTripa
+%(mmmmmmmmm)pstack quit
+%%Aquí podríem fer una tria de mètodes: per transfer (més harmònic) o per complementari (més estrident)
+%%TEST
+  {1 exch sub} {1 exch sub} {1 exch sub} {1 exch sub} setcolortransfer  %% invertim el valor de transferència pel fons
+%  currenthsbcolor 3 -1 roll 1 exch sub 3 1 roll sethsbcolor  %% això seria el complementari?
+  rectfill  %% pintem el bbox en negatiu
+  grestore
+
+%%TEST
+%dup true charpath pathbbox 4 array astore == xTripa ==
+
+  show  %% pintem el text del color vigent (positiu)
+ }bind def
+
+ /dimo
+ {
+  gsave
+  dup true charpath  %% activem el path del que escrivim
+  pathbbox  %% posem el bbox a la pila
+  4 copy 3 -2 roll 4 -1 roll  %% posem bé per calcular l'alple i l'alt
+  sub /_amp exch def sub /_alt exch def pop pop
+  0 setgray
+  _amp _alt 4 copy
+  coS 5 div setlinewidth  %% el filet del marge el fem proporcional al cos
+  rectstroke rectfill  %% pintem el bbox negre
+  grestore 1 setgray show  %% pintem el text blanc
+ }bind def
+
+%%Dinàmic o estàtic?
+ false
+ {  %% tipografies estàtiques
+  %% Courier Medium d'IBM
+  %(/Users/femfum/elageminada/Courier_Cat/COM_____.PFB)
+  %(/Users/femfum/calaixDtipus/Rousselot/Despeinada.otf)
+  (/Users/femfum/ArtistesDeLaRepublica/Tipografies_JordiEmbodas/Order-0000000226/Bulo-Black.otf)
+  findfont dup length dict begin
+  {
+   1 index /FID ne {def}{pop pop}ifelse
+  }forall
+  /Encoding
+  %% exclusiu de GS
+  systemdict /EncodingDirectory get /WinAnsiEncoding get
+  %% ISOLatin1Encoding
+  %% per personalitzar el xifrat a d'altres caràcters
+  dup length array copy dup 0 /ll put  %% l·l / només per a la Courier d'IBM
+  dup 1 /LL put  %% L·L / només per a la Courier d'IBM
+  dup 2 /tab put  %% triangle a la dreta / només per a la Courier d'IBM
+  dup 3 /center put  %% romb / només per a la Courier d'IBM
+  def
+  currentdict end
+  /laLlatina exch definefont pop
+
+  /coS yTripa def
+  /laLlatina findfont coS scalefont setfont
+
+  /eG false def  %% treballem en escala de gris? (variable a 2 llocs!)
+
+  %coS 5 div /marGe exch def
+  0 0 moveto
+
+  Sintagma true charpath pathbbox  %% posem el pathBBox a l'stack
+  %% definim el format de pàgina que inscriu el text
+  %% caldria saber el perquè -dPDFSETTINGS=/prepress ignora aquesta crida al format de pàgina a la meitat de codi
+  exch 4 -1 roll dup
+
+  /Xmoveto exch def sub
+  % marGe add
+  3 1 roll exch dup /Ytrans exch def sub
+  % marGe add
+  2 array astore
+  mark exch
+
+  %% calculem el multiplicador del cos perquè quadri?
+  0 get
+  xTripa yTripa mul exch div dup /coS exch def
+  /laLlatina findfont
+
+  %% calculem el % del descendent del FontBBox per tal de centrar bé la línia de base en relació al cos
+  dup /FontBBox get dup 1 get abs dup 3 -1 roll 3 get add exch 100 mul exch div /x100LiniaDbase exch def
+
+  exch scalefont setfont
+  yTripa
+  %(:::::pathbbox)pstack quit
+
+  pop pop
+
+  %% com pintem el text?
+  %% una idea per jugar amb el pas del temps/color en relació al comportament de l'algorisme omid, seria fer correspondre
+  %% les 24 hores (0/23) en colors descrits dins la roda de l'espai HSB (paral·lel a RGB), on les hores fossin els valor H
+  %% els minuts fossin el valor S i els segons fossin el valor B
+  hora 23 div  %% to
+  minut 60 div  %% saturació
+  segon 60 div  %% brillantor
+  sethsbcolor
+
+%%EP important per les polítiques de diagramat
+  %% correm cap a la dreta la finestra de composició
+  iPln 1 sub xPagina mul neg 0 translate
+
+  0
+  x100LiniaDbase coS mul 100 div  %% ajustem la posició y a la línia de base pel % del cos, per tal no talli els descendents
+  moveto
+
+  Sintagma
+  dup ==  %% la cadena de l'hora l prompt?
+  omid
+
+ }
+ {  %% tipografies dinàmiques (Variable Fonts MM, i OTF18 més endavant)
+
+  %% l'AdobeSansMM d'AdobeSystems...
+  %% path de la font ha de ser absolut
+  %% adreces locals al MacBook Air
+  %% (/Applications/Adobe Acrobat Reader DC.app/Contents/Resources/Resource/Font/ZX______.PFB)
+  %% (/Users/femfum/empremt/empremt1/ZX______.PFB)
+  (/Users/femfum/MultipleMaster/AdobeSans_AdobeSerif/ZX______.PFB)  %% AdobeSansMM
+%   (/Users/femfum/MultipleMaster/AdobeSans_AdobeSerif/ZY______.PFB)  %% AdobeSerifMM
+  %% del servidor www.pliegos.net...
+  %% (/home/marcantoni/pliegos.net/maker/ZX______.PFB)
+
+
+  findfont
+
+  %% no fos que no fos MM
+  dup /FontName get ==
+  dup /NormalizeDesignVector known
+  {
+   (...MultipleMaster amb els eixos mestres...\n)print flush
+  }
+  {
+   (<<< NO es una font MultipleMaster ...pleguem!\n\n)print flush
+   quit
+  }ifelse
+
+  /eG false def  %% treballem en escala de gris? (variable a 2 llocs!)
+
+%%MÈTODE0 d'anàlisi dels eixos mestres d'una MM
+  %% extraiem els valors mínims, intermitjos (si n'hi han) i màxims, de cadascun dels eixos dinàmics de la MM
+  %% fem un diccionari amb tots els eixos de variabilitat i els seus valors mestres dins una array
+  /MMeixosDinamics 0 dict def
+  dup /FontInfo get dup /FIMM exch def
+  /BlendAxisTypes get length 1 sub 0 exch 1 exch
+  {
+   /araEix exch def
+   MMeixosDinamics
+   FIMM /BlendAxisTypes get araEix get
+   [  %% potser que l'eix de mescla sigui linial entre més de dos valors (p.e. l'eix de correcció òptica segueix aquesta lògica)
+    FIMM /BlendDesignMap get araEix get
+    {aload pop pop}forall
+   ] put
+  }for
+  %% comportament ajustat a l'AdobeSansMM d'AdobeSystems...
+  %% establirem que el pes de la lletra (/Weight) el determinarà el valor de contrast establert a /omid
+  %% l'ample de la lletra (/Width) el fixarem quan el text faci caixa amb el valor /xTripa
+  %% si tot i amb el valor més estret el text excedís /xTripa, abaixaríem el pes progressivament
+  %% si malgrat els valors estrets i fins al mínim, el text excedís /xTripa, abaixaríem el cos
+  MMeixosDinamics dup dup {== ==}forall  %% llistem els eixos mestres
+  /Weight get aload pop exch dup /iniWeight exch def sub /pesArepartir exch def
+  /Width get dup 0 get /iniWidth exch def /rangDample exch def
+
+  %% codifiquem la font
+  dup length dict begin
+  {
+   1 index /FID ne
+   {def}{pop pop}ifelse
+  }forall
+  %% atenció que aquesta crida només és vàlida a Ghostscript!
+  /Encoding systemdict /EncodingDirectory get /WinAnsiEncoding get def  %% xifrat WinAnsi
+  currentdict end /Camaleonica_WA exch definefont pop
+  %% mooolt important: carreguem una (1) sola vegada el diccionari genèric ben xifrat de la MM
+  /Camaleonica_WA findfont /MMionari exch def
+
+%%EP aquest loop sempre considera que s'ha de reduir l'ample, el pes, o el cos, però I SI L'HAGUÉSSIM D'AUGMENTAR?
+%% hi hauria d'haver un filtre per saber si la diferència és més grans que l'ample d'una pàgina
+
+iSeq 1 eq  %% només 1 cop
+{
+  %% fem aquí l'avaluació de contrast
+  %% com pintem el text?
+  %% una idea per jugar amb el pas del temps/color en relació al comportament de l'algorisme omid, seria fer correspondre
+  %% les 24 hores (0/23) en colors descrits dins la roda de l'espai HSB (paral·lel a RGB), on les hores fossin els valor H
+  %% els minuts fossin el valor S i els segons fossin el valor B
+  hora 23 div  %% to
+  minut 60 div  %% saturació
+  segon 60 div  %% brillantor
+
+%% primer control per la brillantor, és crítica pel contrast, i sota aquest valor és massa poc
+dup 0.05 lt
+{
+ pop 0.05
+ (\n\n ...EP! baix contrast 0\n)print flush
+}if
+ %% segon control del contrast per grisos
+ 3 copy sethsbcolor currentgray 1 exch sub 0.5 sub abs  %% la resta dels contraris ha d'estar per sobre de 0.2?
+%(<<<<<<)pstack quit
+ 0.2 lt
+ {
+ (\n\n ...EP! baix contrast 1\n)print flush
+  pop pop 0.5 0.3
+ }if
+
+%%Els segons (brillantor) és el valor a fer jugar amb el Weight
+dup /dedueixWeight exch def
+
+true setglobal
+3 copy 3 array astore
+globaldict exch /aHSB exch put
+false setglobal
+
+  sethsbcolor
+
+%%Farem una deducció directa del cos amb +1% de marge per després baixar punt a punt
+%% amb aquest plantejament reduirem dràsticament el nombre de crides al tipus MM?
+
+gsave
+%% deduïm el cos a partir d'una primera tria
+yPagina xPagina gt {xPagina}{yPagina}ifelse /coS exch def
+realtime srand
+/number {rand exch mod} bind def
+
+    /unaInstanciaDeLaMM  %% literal per definir la instància concreta que generem
+    %% aquí substituïm la crida original pel seu diccionari ja normalitzat a WinAnsi...
+    MMionari
+    dup begin  %% entrem dins el diccionari de la MM per poder cridar els procediments NormalizeDesignVector i ConvertDesignVector
+    [  %% array del vector que treballarà makeblendedfont
+     %% el seu ordre (fixat per /BlendAxisTypes) i els seus valors possibles (fixats per /BlendDesignMap)
+     %% necessitem obligatòriament tantes dades vàlides com eixos dinàmics de la MM
+
+     dedueixWeight pesArepartir mul round cvi iniWeight add abs  %% /Weight pes entre 50 a 1450 a l'AdobeSansMM
+
+     %% confiem a triar aleatòriament d'inici un valor d'ample /Width entre 1450 i 50 a l'AdobeSansMM
+     rangDample aload pop exch sub number
+%(-------)pstack quit
+     iniWidth add
+
+     %% aquests dos procediments, i per aquest ordre, generen les dades necesàries del vector dins l'array
+     NormalizeDesignVector  %% normalitza les dades de cada eix mestre en valors entre 0 i 1
+     ConvertDesignVector  %% genera les dades finals pel seu ús dins la matriu de l'array per a makeblendedfont
+    ] end
+    makeblendedfont
+    definefont  %% fixem la font en memòria
+
+coS scalefont setfont
+0 0 moveto
+Sintagma stringwidth pop
+
+%% regla de tres per acostar-nos al cos necessari fins a +1
+xTripa coS mul exch div floor 1 add
+/rd3+1 exch def
+
+  %% inicialment treballem amb un valor de cos igual a l'altura de la pàgina (que no vol dir que toqui vores)
+  true setglobal
+  globaldict /COS 1 dict dup /coS rd3+1 put put
+  false setglobal
+
+grestore
+
+
+  {  %% loop
+   rangDample aload pop exch -10 exch
+   {  %% for
+
+    dup iniWidth eq pesArepartir 0 eq and
+    {
+     pop
+     true setglobal
+globaldict dup /COS get dup dup /coS get 1  %% amb un salt d'1 punt
+sub /coS exch put /COS exch put
+     false setglobal
+     exit
+    }if
+
+    gsave
+    /araWidth exch def
+    /unaInstanciaDeLaMM  %% literal per definir la instància concreta que generem
+    %% aquí substituïm la crida original pel seu diccionari ja normalitzat a WinAnsi...
+    MMionari
+    dup begin  %% entrem dins el diccionari de la MM per poder cridar els procediments NormalizeDesignVector i ConvertDesignVector
+    [  %% array del vector que treballarà makeblendedfont
+     %% el seu ordre (fixat per /BlendAxisTypes) i els seus valors possibles (fixats per /BlendDesignMap)
+     %% necessitem obligatòriament tantes dades vàlides com eixos dinàmics de la MM
+ 
+     dedueixWeight pesArepartir mul round cvi iniWeight add abs  %% /Weight pes entre 50 a 1450 a l'AdobeSansMM
+     araWidth  %% /Width ample de 1450 a 50
+
+     %% aquests dos procediments, i per aquest ordre, generen les dades necesàries del vector dins l'array
+     NormalizeDesignVector  %% normalitza les dades de cada eix mestre en valors entre 0 i 1
+     ConvertDesignVector  %% genera les dades finals pel seu ús dins la matriu de l'array per a makeblendedfont
+    ] end
+dup
+true setglobal
+dup length array copy
+globaldict exch /araMKBLNDFNT exch put
+false setglobal
+    makeblendedfont
+    definefont  %% fixem la font en memòria
+
+true setglobal
+globaldict /COS get /coS get
+false setglobal
+
+ scalefont setfont
+
+    0 0 moveto
+
+%%Ens patina un pathbbox amb el salt de 10 punts (n'agafa un de més gran que no toca?)
+%gsave
+%    Sintagma false charpath flattenpath pathbbox  %% posem el pathBBox a l'stack
+%grestore
+Sintagma stringwidth pop
+
+    %% només mirem si l'ample del text és més gran que xTripa i cal anar reduïnt amb el for
+%    exch 4 -1 roll abs add
+    xTripa
+
+%    dup 100 div dup /margE exch def
+%    sub  %% un 1% de marge de seguretat?
+
+%2 copy
+    le
+    {
+%     pop pop pop pop
+
+%araWidth (si!)pstack quit
+     /sortiMM true def
+%true setglobal
+%globaldict /araMKBLNDFNT get ==
+%false setglobal
+    grestore
+     exit
+    }if
+
+    grestore
+
+%pop pop pop pop
+
+    araWidth iniWidth eq
+    {
+     %% araWidth
+%     dedueixWeight pesArepartir mul round cvi iniWeight add abs
+%     (!!NO!!) pstack quit
+     /pesArepartir 0 def
+     /sortiMM false def
+     exit
+    }if
+   }for
+   sortiMM {exit}if
+  }loop
+
+}if  %% només 1 cop
+
+    /unaInstanciaDeLaMM  %% literal per definir la instància concreta que generem
+    %% aquí substituïm la crida original pel seu diccionari ja normalitzat a WinAnsi...
+    MMionari
+    %% NO entrem dins el diccionari de la MM per poder cridar els procediments NormalizeDesignVector i ConvertDesignVector
+true setglobal
+globaldict /araMKBLNDFNT get
+false setglobal
+%dup ==
+    makeblendedfont
+    definefont  %% fixem la font en memòria
+
+  %% calculem el % del descendent del FontBBox per tal de centrar bé la línia de base en relació al cos
+  dup /FontBBox get 1 get abs 100 mul 1000 div /x100LiniaDbase exch def
+
+true setglobal
+globaldict /COS get /coS get
+false setglobal
+
+ scalefont setfont
+
+%%EP important per les polítiques de diagramat
+  %% correm cap a la dreta la finestra de composició
+  iPln 1 sub xPagina mul neg 0 translate
+
+  0 %margE add
+  x100LiniaDbase
+
+true setglobal
+globaldict /COS get /coS get
+false setglobal
+
+  mul 100 div  %% ajustem la posició y a la línia de base pel % del cos, per tal no talli els descendents
+%0
+%margE add
+
+  moveto
+
+  Sintagma
+
+%gsave
+%true charpath pathbbox pop pop exch pop
+%grestore
+%0 exch abs moveto Sintagma
+
+  dup ==  %% la cadena de l'hora al prompt?
+%araWidth (fet!)pstack quit
+  omid2
+
+ }ifelse
+
+}if  %% SNRD l'omet
+
+
+% grestore
+}if  %% noNULL anellem el codi sencer perquè no és aleatori per pàgina
+

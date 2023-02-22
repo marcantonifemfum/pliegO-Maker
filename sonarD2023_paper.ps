@@ -52,6 +52,27 @@ noNULL  %% pinta el contingut de pàgina?
 
  }if
 
+%%Guardes de portada
+ %% pàgina 2
+ Npgn cvx exec 2 eq
+ {
+  gsave
+  (/Users/femfum/PliegOS/sonarD2023_paper/faLichtenberg_SNRD.ps) (r) file cvx exec
+  grestore
+  gsave
+  (/Users/femfum/PliegOS/sonarD2023_paper/fusHorariLiterari_xPliegOS_SNRD.ps) (r) file cvx exec
+  grestore
+ }if
+
+%%Guardes de contraportada
+ %% pàgina 2
+ Npgn cvx exec M2 2 mul 1 sub eq
+ {
+  gsave
+  (/Users/femfum/PliegOS/sonarD2023_paper/faLichtenberg_SNRD.ps) (r) file cvx exec
+  grestore
+ }if
+
 %%Contra
  %% pàgina M2 2 mul
  Npgn cvx exec M2 2 mul eq
