@@ -6,13 +6,28 @@ noNULL  %% pinta el contingut de pàgina?
 {  %% comportament null: el componedor ha de tenir anellat el codi que pinta contingut de pàgina
  gsave
 
- %% posicionem els 2 logos del sonar2023
- %% a la portada (pàgina 1)
+%xPagina yPagina (<<<<)pstack quit
+
+%%Portada
+ %% pàgina 1
  Npgn cvx exec 1 eq
  {
+%%Fa la part dreta del calligrama-garigot
+  gsave
+  gsave
+  xPagina neg 0 translate
+  (/Users/femfum/PliegOS/sonarD2023_paper/ESCRiBA_garigot_SNRD.ps) (r) file cvx exec
+  grestore
+
+%araMM =
+%   cosTipus 3 mul selectfont
+%  0 0 0 0 setcmykcolor xPagina cosTipus 3 mul sub cosTipus moveto (A) show
+  grestore
+
+%%Pinta el logo de sonar 2023
   %% Npgn ==  %% test ídem buit.ps
   %% mesurem a una quarta part de l'ample de la pàgina del llançat i posicionem la imatge del logo al xamfrà ur
-  xPagina dup 4 div dup /XYlogo exch def  %% el logo del Sònar les quadrat
+  xPagina dup 3 div dup /XYlogo exch def  %% el logo del Sònar les quadrat
   sub /oiX exch def  %% origen x
   yPagina XYlogo sub /oiY exch def %% origen y
 
@@ -34,11 +49,19 @@ noNULL  %% pinta el contingut de pàgina?
   (/Users/femfum/PliegOS/sonarD2023_paper/NouLectorDeJPEGs10.ps) (r) file cvx exec
   cleartomark  %% aquest algorisme deixa brossa
   grestore
+
  }if
 
- %% a la contra (pàgina M2 2 mul)
+%%Contra
+ %% pàgina M2 2 mul
  Npgn cvx exec M2 2 mul eq
  {
+%%Fa la part esquerra del calligrama-garigot
+  gsave
+  (/Users/femfum/PliegOS/sonarD2023_paper/ESCRiBA_garigot_SNRD.ps) (r) file cvx exec
+  grestore
+
+%%Pinta el logo de sonar 30 anys
   %% Npgn ==  %% test ídem buit.ps
   gsave
   % 0 0 0 setrgbcolor 0 0 XYlogo dup rectfill  %% per simular hi pintem un uqadrat negre
@@ -52,6 +75,7 @@ noNULL  %% pinta el contingut de pàgina?
   cleartomark  %% aquest algorisme deixa brossa
 %(<<< random?)pstack quit
   grestore
+
  }if
 
  grestore

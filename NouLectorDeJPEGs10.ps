@@ -66,10 +66,16 @@ dup status
 %% mirem el cap i els peus (marcadors d'inici i final) del fitxer aviam si son normatius...
 
  tesela FiFtxr 2 sub setfileposition
- tesela 2 string readstring pop <FFD9> eq {(PEUS OK) ==
+ tesela 2 string readstring pop <FFD9> eq {
+
+%%SNRD matem els missatges
+%(PEUS OK) ==
 
  tesela dup 0 setfileposition
- 2 string readstring pop <FFD8> eq {(CAP OK) ==
+ 2 string readstring pop <FFD8> eq {
+
+%%SNRD matem els missatges
+%(CAP OK) ==
 
  /SoRTiM false def  % pestell de sortida
 
@@ -84,23 +90,42 @@ dup status
       [<FFC0> <FFC1> <FFC2> <FFC3> <FFC5> <FFC6> <FFC7>]  %% marcadors significatius
       exch get SeGMeNT eq
       {
-       (JA EL TINC !!!) ==
+
+%%SNRD matem els missatges
+%       (JA EL TINC !!!) ==
+
        tesela 10 string readstring pop
 
        %% captura del valor de files (y)
-       dup dup 3 get 256 mul exch 4 get add (\n >>>> Files (Y) ... ) print flush dup ==
+       dup dup 3 get 256 mul exch 4 get add
+
+%%SNRD matem els missatges
+% (\n >>>> Files (Y) ... ) print flush dup ==
+
        /_B exch def  % (Y) FILES D'IMATGE
 
        %% captura del valor de columnes (x)
-       dup dup 5 get 256 mul exch 6 get add (\n >>>> Columnes (X) ... ) print flush dup ==
+       dup dup 5 get 256 mul exch 6 get add
+
+%%SNRD matem els missatges
+% (\n >>>> Columnes (X) ... ) print flush dup ==
+
        /_A exch def  % (X) COLUMNES D'IMATGE
 
        %% captura dels components de color (1, 3 o 4 canals)
-       dup dup 7 get (\n >>>> Components de Color ... ) print flush dup ==
+       dup dup 7 get
+
+%%SNRD matem els missatges
+% (\n >>>> Components de Color ... ) print flush dup ==
+
        /CNL exch def
 
        %% bits per component de color (o per pixel)
-       dup dup 2 get (\n >>>> Bits x Comp ... ) print flush dup == (\n\n) print flush
+       dup dup 2 get
+
+%%SNRD matem els missatges
+% (\n >>>> Bits x Comp ... ) print flush dup == (\n\n) print flush
+
        /bXp exch def
 
        /SoRTiM true def

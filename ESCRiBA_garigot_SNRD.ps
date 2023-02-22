@@ -1,0 +1,944 @@
+%!
+%#  `GNU GPL FemFum ESCRiBA v.#1.2´ el formen un conjunt d'algorismes per fer cal·ligrames: imatges generades tipogràficament
+%#
+%#  Aquesta versió d'ESCRiBA_garigot_lacarrega.ps és una nova implementació de l'algorisme d'ESCRiBA_cargol_lacarrega.ps
+%#  on qui descriu la imatge és un gargot aleatori. Una proposta gràfica que ha estat escollida per l'Assemblea d'Artistes
+%#  de la Garrotxa per bastir l'acció «Sobrecàrregues», això és, una reproducció mural de 5x3,25m del cal·ligrama que s'exposarà
+%#  durant tot el mes d'agost de 2018 a la façana de l'Ajuntament d'Olot (Garrotxa) com una de les interpretacions del quadre
+%#  «La Càrrega» d'en Ramon Casas i Carbó, en contra la repressió política dels presos i exiliats catalans per l'1-O.
+%#
+%#  L'obra generada duu per títol «Apollinaire no somniava amb Guàrdia Civils» i ha estat induïda per l'activisme que,
+%#  poc després del referèndum d'autodeterminació de l'1 d'octubre de 2017, s'organitza a través d'#ArtistesDelaRepública
+%#
+%#  Treballarem a partir d'una imatge cedida pel Museu Comarcal de la Garrotxa, que és on es troba exposada l'obra original
+%#  N'hem generat dos resultats gràfics pel mateix projecte:
+%#
+%#  160718_ApollinaireNOsomniavaAmbGuardiaCivils.pdf
+%#
+%#  Cal·ligrama mural a 5000 x 3250 mm
+%#
+%#  Els textos, a cos 44, que fan la funció dels píxels d'imatge, s'endrecen en una trajectòria vectorial aleatòria
+%#  de corbes Bézier. El formen, repetits diverses vegades, els recursos següents:
+%#  Llistat d'ens i persones represaliades per l'Estat Espanyol, entre 2015 i 2018 a Catalunya, per convocar i participar del
+%#  dret democràtic de votar en el referèndum d'autodeterminació i creació de la República, l'1 d'octubre de 2017
+%#  s'ha fet un buidat manual dels més de 800 noms d'ens i persones de les fonts:
+%#  L'informe «El Minotaure del 78» http://cup.cat/sites/default/files/el_minotaure_del_78_revisat_alta_mod.pdf
+%#  Inventari de d'anys dels Servidors Públics de Catalunya https://www.servidorscat.cat/persones-afectades
+%#  Informe «1-O. Llibertat d'informació a la corda fluixa» https://www.media.cat/wp-content/uploads/2017/12/Informe_1-O_CAT.pdf
+%#  712 alcaldies investigades
+%#  http://www.municipisindependencia.cat/wp-content/uploads/2017/09/Llistat_ajuntaments_decret6setembre_1209AMI.16.00.pdf
+%#  En seguiment de l'actualitat, hi hem anat afegint a la cua els casos més recents d'exili i repressió judicial.
+%#
+%#  Degut a l'alta densitat de text, les funcions de cerca de paraules, en eines com l'AdobeReader, poden deixar de funcionar.
+%#
+%#  ##d50_ApollinaireNOsomniavaAmbGuardiaCivils.pdf
+%#
+%#  Sèrie de 50 làmines del cal·ligrama anterior, impreses sobre paper, signades i que apunten a l'original en una URL única.
+%# 
+%#  Tipografia utilitzada: Cinta-Heavy Italic del tipògraf de Les Borges Blanques, Josep Patau Bellart http://www.tipopepel.com
+%#
+%#  Ús:
+%#  Per a intèrprets PostScript `GNU AGPL Ghostscript´ multiplataforma, però amb ben pocs retocs, també pot córrer
+%#  amb l'Adobe Acrobat Distiller o amb el MacOSX PSNormalizer Framework / Apple pstopdf
+%#
+%#  Llicència:
+%#  `Copyleft 2018 :: l'Ametlla de Merola :: Marc Antoni Malagarriga i Picas´
+%#  `<http://www.femfum.com> | <marcantoni@femfum.com>´
+%#  `https://github.com/marcantonifemfum/ESCRiBA´
+%#
+%#  Aquest programa és programari lliure: podeu redistribuir-lo i/o modificar-lo
+%#  sota els termes de la Llicència Pública General de GNU publicada per la Free
+%#  Software Foundation, ja sigui la versió 3 de la Llicència, o (a la seva elecció)
+%#  qualsevol versió posterior.
+%#
+%#  Aquest programa es distribueix amb l'esperança que sigui útil, però SENSE CAP GARANTIA;
+%#  ni tan sols la garantia implícita MERCANTIL o d'APTITUD PER A UN OBJECTIU PARTICULAR.
+%#  Consulteu els detalls de la Llicència Pública General de GNU per a més informació.
+%#
+%#  Haurieu de rebre una còpia de la Llicència Pública General de GNU junt amb aquest
+%#  programa. En cas contrari, consulteu <http://www.gnu.org/licenses/>
+
+%%AaG indica el codi específic, en base al garigot aleatori, per l'obra «Apollinaire no somniava amb Guàrdia Civils»
+%%LaCàrrega indica el codi orientat a l'obra de reinterpretació d'#ArtistesDelaRepública
+%%UCarrion és una de les variants de codi de l'ESCRiBA aplicada a la gramàtica generativa
+
+%%% implementem a l'ESCRiBA la generació de cal·ligrames amb el text cargolat
+%%% de com treballa:
+%%% reprodueix tipogràficament imatges quadrades en format JPEG i en espai de color RGB
+%%% ens cal entrar manualment l'ample i alt dels píxels d'imatge
+%%% juga amb la correspondència: carrer = cos = píxel
+%%% pot treballar directament amb fonts tipogràfiques en format OTF, MM, PFB, TTF i també CID
+%%% duu un pestell que avisa si s'ha esgotat el text (tornant a començar indefinidament)
+%%% podem treballar en doble o + espirals concèntriques i tractar textos compostos en paral·lel
+%%% el text es compon en la mateixa direcció de com s'ha generat el cursus, per la part de dins, caixat a la tibetana
+%%UCarrion
+%%% podem reduir progressivament el cos del text a l'acostar-nos al centre de l'espiral per millorar-ne la composició
+%%+ marcarem així les variables claus de configuració
+
+%%% millores a fer:
+%1% aplegar totes les variables en un menú de capçalera
+%2% enllaçar-hi NouLectorDeJPEGs#.ps per validar la imatge i capturar-ne les dades necessaries (píxels, canals, etc)
+%3% poder decidir el radi de la espiral en funcio de l'ample o l'alt de la pagina (tallant o no el cargol)
+%4% poder adaptar el cargol (deformant en 2D la matriu) al format de la imatge
+%5% poder decidir si volem escriure de dins a fora o de fora a dins (sentit de generacio del cargol)
+%6% poder decidir si el text va per l'interior o l'exterior del perimetre del cargol
+%7% millorar la rapidesa d'execució amb una nova estratègia de composició (mocatipus2.ps i mocadora_tipografica.ps)
+
+%% línia de comanda a Ghostscript (Unix/Linux)
+%% on és clau d'invocar -dAutoRotatePages=/None perquè no ens giri la pàgina segons l'orientació del text
+%%ATENCIÓ a partir del GS 9.54.0 el paràmetre .setpdfwriter ja no es pot fer servir i és obsolet
+%% gs -q -dNOSAFER -o out.pdf -sDEVICE=pdfwrite -dAutoRotatePages=/None -c -f  ESCRiBA_garigot_lacarrega.ps
+%% aquesta seria la línia de comanda per rasteritzar de forma bàsica un PDF amb només imatge
+%% gs -q -dNOSAFER -o pix.jpg -sDEVICE=jpeg -dAutoRotatePages=/None -r300 -dJPEGQ=100 ESCRiBA_garigot_lacarrega.ps
+
+%%JardinsDeLlum
+%% si en volem fer un eps podem saltar-nos la limitació màxima de format de pàgina 14400x14400
+%% gs -sDEVICE=eps2write -q -dNOPAUSE -dBATCH -sOutputFile=out.eps ESCRiBA_garigot_lacarrega.ps
+
+%%+ píxels x d'imatge
+%953
+%100
+%1347
+%%AaG calculat per les mides finals del mural 500x325 cm () i la taca de la làmina 40x25,25 cm (1134x715.8375 p)
+
+%%SNRD píxels d'ample de S2023_Artistas_RichieHawtin_FitxaWeb_57x50.jpeg
+57
+
+%320  %%AaG
+/imatge_X exch def
+
+%%+ píxels y d'imatge
+%953
+%100
+%1347
+%%AaG calculat per les mides finals del mural 500x325 cm () i la taca de la làmina 40x25,25 cm (1134x715.8375 p)
+
+%%SNRD píxels d'alt de S2023_Artistas_RichieHawtin_FitxaWeb_57x50.jpeg
+50
+
+%202  %%AaG
+/imatge_Y exch def
+
+%%+ cos del tipus
+%80.4
+%42.103  %%AaG
+%%AaG calculat per les mides finals del mural 500x325 cm
+%44
+
+%%SNRD
+imatge_X imatge_Y gt  %% la imatge és més ample que alta?
+{  %% llavors mana l'alt per decidir el cos
+ yPagina  %% alt de la pàgina del llançat
+ imatge_Y  %% alt de la imatge
+ div /snrdCos exch def
+}
+{  %% llavors mana l'ample per decidir el cos
+ xPagina  %% ample de la pàgina del llançat
+ 2 mul
+ imatge_X  %% ample de la imatge
+ div /snrdCos exch def
+}ifelse
+snrdCos
+
+%%AaG calculat per les mides finals de la taca de la làmina 40x25,25 cm (1134x715.8375 p)
+%3.54375
+%%EX_ 680.4 x 425.25 punts (24x15cm)
+%2
+dup /cosTipus exch def /cosFinal exch def
+
+%% marges de la vora de la pàgina (es multipliquen per dos)
+%% cosTipus 3 mul
+%%AaG calculat per les mides finals del mural 500x325 cm (per la làmina no s'utilitzen)
+
+%%SNRD
+0
+
+%47.5  %% mural
+%20.2  %% EX_
+/mArgesX exch def
+
+%%SNRD
+0
+
+%162.875  %% mural
+%10.63  %% EX_
+/mArgesY exch def
+
+%%SNRD matem els missatges
+%% prompt de sortida
+%(\n\n >>> silenci, l'ESCRiBA treballa...\n\n)print flush
+
+%%+ path al JPEG a RGB
+%% Atenció: hi ha JPEGs no compatibles amb el filtre DCTDecode doncs s'han de desar sense miniatures ni opcions progressiva
+%%LaCàrrega imatge
+%(/Users/femfum/Republica/laCarrega/XeviRoura_wetransfer-9195b4_laCarrega/LaCarrega_ALTA_953x953_groc.jpg)
+%(/Users/femfum/Republica/laCarrega/XeviRoura_wetransfer-9195b4_laCarrega/LaCarrega_piolin_100x100.jpg)
+%(/Users/femfum/Republica/laCarrega/XeviRoura_wetransfer-9195b4_laCarrega/LaCarrega_ALTA_1347x1347_groc.jpg)
+
+%%SNRD
+(/Users/femfum/PliegOS/sonarD2023_paper/S2023_Artistas_RichieHawtin_FitxaWeb_57x50.jpeg)
+
+%(/Users/femfum/Republica/laCarrega/lespiraldelacarrega/LaCarrega_araVaDeBo4_320x202.jpg)  %%AaG
+%(/Users/femfum/Republica/laCarrega/lespiraldelacarrega/La\ Carrega_araVaDeBo3_.jpg)  %%AaG
+%(/Users/femfum/Republica/laCarrega/lespiraldelacarrega/La\ Carrega_araVaDeBo3_color1.jpg)  %%AaG
+%(/Users/femfum/Republica/laCarrega/lespiraldelacarrega/La\ Carrega_araVaDeBo3_color2.jpg)  %%AaG
+
+(r) file /aLLeGiR exch def
+
+%%+ fitxer o string de text a llegir
+%%LaCàrrega text de les víctimes (generat via faTextLaCarrega.ps)
+%% treballem llegint un arxiu al disc
+%(/Users/femfum/Republica/laCarrega/lespiraldelacarrega/TextLaCarrega_eVictimes.txt)
+%(/Users/femfum/Republica/laCarrega/lespiraldelacarrega/victimes_2015_2018_soles.txt)  %% alerta amb el xifrat de /Lgeminada
+%(/Users/femfum/Republica/laCarrega/lespiraldelacarrega/arengada.txt)  %%AaG
+
+%%SNRD
+(/Users/femfum/PliegOS/sonarD2023_paper/snrd.txt)
+
+(r) file  %% convertim a fitxer des del path sense decodificar
+
+%% si treballem amb string, el fitxer ha d'estar comentat
+%(ª º \205 < > \253 \273 mal rebrot establert pels elements que intervingueren a l'èxtasi dels mesells )
+%()  %% ep! una string buida provoca un loop infinit
+
+<< >> /ReusableStreamDecode filter dup /fitxerLC exch def bytesavailable /LCbytes exch def
+
+
+%%AaG no actua si fem la làmina
+%% format x de pàgina
+%imatge_X cosTipus mul dup mArgesX 2 mul add 
+
+%%SNRD format X del llançat 4+4
+imatge_X cosTipus mul xPagina 2 mul 2 copy eq  %% si és igual que el doble de l'ample de la pàgina del llançat
+{  %% es queda igual
+ /mArgesX 0 def
+}
+{  %% en calculem el marge x que manca
+ exch sub 2 div /mArgesX exch def
+ xPagina 2 mul dup
+}ifelse
+
+%%LaCàrrega màxim de pàgina permès a pdf
+14400 ge
+{
+ (\n\n >>>> heu exhaurit el màxim format de pàgina permès per les X >> )print flush == quit
+}
+{
+ /gina_X exch def
+}ifelse
+
+%% format y de pàgina
+%imatge_Y cosTipus mul dup mArgesY 2 mul add
+
+%%SNRD format Y del llançat 4+4
+imatge_Y cosTipus mul yPagina 2 copy eq  %% si és igual que l'alçada de la pàgina del llançat
+{  %% es queda igual
+ /mArgesY 0 def
+}
+{
+ exch sub 2 div /mArgesY exch def
+ yPagina dup
+}ifelse
+
+%%LaCàrrega màxim de pàgina permès a pdf
+14400 ge
+{
+ (\n\n >>>> heu exhaurit el màxim format de pàgina permès per les Y >> )print flush == quit
+}
+{
+ /gina_Y exch def
+}ifelse
+
+%(xxxxxxx)pstack quit
+
+%%Test AaG
+%500 28.35 mul gina_X sub 2 div ==
+%325 28.35 mul gina_Y sub 2 div ==
+%quit
+
+aLLeGiR 0 setfileposition
+aLLeGiR
+<<
+  /Filter /DCTDecode
+  /DecodeParms <</ColorTransform 1>>
+  /Intent 3
+>> /ReusableStreamDecode filter
+
+%%Test amb dada fonamental per plegar un cop hem exhaurit les dades d'imatge
+%% però hem vist que l'algorisme pot donar dades més enlla del darrer byte abans de acabar la feina o fins i tot molt al principi
+%% això pot ser degut a que el garigot de béziers pinti més enllà dels marges de la imatge?
+%%dup bytesavailable (!!)pstack quit
+%% seria equivalent a /LCbytes?
+
+/AllEgIr exch def  %% ens quedem el fitxer decodificat
+%%  així ens estalviem d'escriure res a disc
+
+%%LaCàrrega
+%% per sumar tots els octets dels caràcters (ara 1 octet = 1 glif) que ens ocupa l'espiral
+/espiraloctets 0 def
+
+%% codi reutilitzat:
+%!PS-Adobe-2.0
+%%Title: Blue Book Program 11, on page 171
+%%Creator: Adobe Systems Incorporated 
+%%CreationDate: Thu Dec 28 17:41:49 PST 1989
+%%EndComments
+/pathtextdict 26 dict def
+/pathtext
+{
+ pathtextdict begin
+ /offset exch def
+ %% /str exch def
+%%LaCàrrega
+ /fAllegir exch def
+ /pathdist 0 def
+ /setdist offset def
+ /charcount 0 def
+ gsave
+ flattenpath
+ {
+  movetoproc
+ }
+ {
+  linetoproc
+ }
+ {
+  curvetoproc
+ }
+ {
+  closepathproc
+ }
+ pathforall
+ grestore
+ newpath
+ end
+}def
+pathtextdict begin
+/movetoproc
+{
+ /newy exch def
+ /newx exch def
+ /firstx newx def
+ /firsty newy def
+ /ovr 0 def
+ newx newy transform
+ /cpy exch def /cpx exch def
+}def	
+/linetoproc
+{
+ /oldx newx def
+ /oldy newy def
+ /newy exch def
+ /newx exch def
+ /dx newx oldx sub def
+ /dy newy oldy sub def
+ /dist dx dup mul dy dup mul add sqrt def
+ dist 0 ne
+ {
+  /dsx dx dist div ovr mul def
+  /dsy dy dist div ovr mul def	    
+  oldx dsx add oldy dsy add transform
+  /cpy exch def
+  /cpx exch def
+  /pathdist pathdist dist add def
+  {  %% loop
+   setdist pathdist le
+   {
+    charcount
+    %% str length
+%%LaCarrega
+    LCbytes lt
+    {
+     setchar
+    }
+    {
+%%LaCàrrega
+
+%%SNRD matem els missatges
+%     (\n ...hem exhaurit el text\n)print flush
+
+     %% anem sumant per avaluar els glifs totals compostos
+     userdict dup /espiraloctets get charcount add /espiraloctets exch put
+     /charcount 0 def  %% inicialitzem el comptador de caràcters compostos
+     fitxerLC 0 setfileposition  %% anem altra cop a l'inici del text
+     %% ara fem que si exhaurim el text, tornem a repetir-lo fins que omplim tota l'espiral
+     %% exit
+    }ifelse
+   }
+   {
+%%LaCàrrega
+    %% aquí hem exhaurit el segment de línia que voreja la corba, fruit del flattenpath
+    /ovr setdist pathdist sub def
+    exit
+   }ifelse
+  }loop
+ }if
+}def  
+/curvetoproc
+{
+ (ERROR: No curveto's after flattenpath!) print
+} def
+/closepathproc
+{
+ firstx firsty linetoproc
+ firstx firsty movetoproc
+}def
+/setchar
+{
+ /char
+%%LaCàrrega
+ %% str charcount 1 getinterval
+ fitxerLC read pop 1 string dup 3 -1 roll 0 exch put
+ def
+ /charcount charcount 1 add def
+ /charwidth char stringwidth pop def
+ gsave
+ cpx cpy
+%%Aquí és on transformem les coordenades matriu a coordenades de l'eix normal
+ itransform
+
+ %% aquí les posicions dels caràcters estan preses des del centre mateix de l'espiral
+ %% (path actual) que és on hi ha el punt 0,0. Llavors, només cal sumar-hi la meitat
+ %% de l'ample de pàgina (doncs l'ample de pàgina té les mateixes mides que l'espiral)
+ %% i ja tindrem la posició des del punt 0,0 mestre. Si a demés ho dividim pel valor
+ %% del carrer de l'espiral, que ha de coincidir amb l'ample del píxel, i arrodonim el resultat,
+ %% trindrem la coordenada el píxel que correspon a cada glif o lletra
+ 2 copy
+
+ cosTipus div round cvi  %% les y
+ exch
+ cosTipus div round cvi  %% les x
+
+ %% anem a llegir el píxel corresponent, segons aquesta posició x,y
+ dup imatge_X eq
+ {  %% si és igual al màxim dels píxels d'x, en restem 1
+  pop imatge_X 1 sub
+ }if
+ exch
+ imatge_Y exch sub  %% restem l'Heigth de la imatge a la posició y
+ imatge_X mul  %% li multipliquem el Width de la imatge
+ add  %% ho sumem a la posició x i obtenim el byteOffset del fitxer on llegir el valor del píxel a pintar
+ 3 mul  %% ho multipliquem pel nombre de components de color
+ AllEgIr dup 3 -1 roll
+ {  %% quan ens acostem al centre de l'espiral es podria generar un: /ioerror in --setfileposition--
+  setfileposition 3 string readstring pop
+ }stopped
+ {  %% quan fem l'ajustat manual de la frenada del text al centre de l'espiral es poden generar errors
+%% un altre error a filtrar és quan cridem un byte més enllà de la mida raw de la imatge
+
+%%SNRD matem els missatges
+%  (\n\n...per què peta?\n\n)print flush
+
+%%SNRD dissimulem un error que encara no sabem perquè passa
+% pstack quit
+pop pop pop ()
+
+%%SNRD
+/suaraPix (\000\000\000) def
+
+ }if
+
+%%AaG
+%%Garigot evitem una lectura buida a les dades del píxel d'imatge
+ dup length 0 eq
+ {
+  pop suaraPix
+ }
+ {
+  dup /suaraPix exch def
+ }ifelse
+
+ {  %% stopped
+  dup 0 get 1 255 div mul /R exch def
+  dup 1 get 1 255 div mul /G exch def
+  2 get 1 255 div mul /B exch def
+ }stopped
+ {
+  (aquí és on plora la criatura?)pstack quit
+ }if
+
+ translate
+ dy dx atan rotate
+
+ %% espai de color: aquí pintem el glif del color que toca
+ true  %% true = RGB / false = CMYK
+ {
+  /DeviceRGB setcolorspace R G B setcolor
+ }
+ {
+  true
+  {  %% planteig canònic de l'algorisme de conversió RGB a CMYK
+   %% K = el valor més petit de C, M, Y
+   %% quin dels tres és el més petit?
+   1 R sub 1 G sub 1 B sub lt
+   {
+    1 G sub lt
+    {
+     1 R sub /_K exch def
+    }
+    {
+     1 G sub /_K exch def
+    }ifelse
+   }
+   {
+    1 B sub lt
+    {
+     1 R sub /_K exch def
+    }
+    {
+     1 B sub /_K exch def
+    }ifelse
+   }ifelse
+   %% EP! si no li restem el _K el color surt més pujat
+   %% C = (1-R) - K
+   1 R sub % _K sub
+   /_C exch def
+   %% M = (1-G) - K
+   1 G sub % _K sub
+   /_M exch def
+   %% Y = (1-B) - K
+   1 B sub % _K sub
+   /_Y exch def
+   /DeviceCMYK setcolorspace _C _M _Y _K setcolor
+  }
+  { %% mètode directe de conversió a CMYK via intèrpret
+   R G B setrgbcolor currentcmykcolor setcmykcolor
+  }ifelse
+ }ifelse
+
+ 0 0 moveto
+ char show
+ currentpoint
+ transform
+ /cpy exch def
+ /cpx exch def
+ grestore
+ /setdist setdist charwidth add def
+
+%%AaG aturant aquí, podem veure on i com es posiciona el primer glif del cal·ligrama
+%(ZZZZZZ)pstack quit
+%%UCarrion frenada de l'espiral de les víctimes
+ false  %% fem la frenada?
+ {
+  setdist puntsDlespiral
+  Vfrenada  %% el valor de frenada també depèn de cada cos de lletra i cursus espiral triat
+  sub gt
+  {  %% si treballem amb la variable cosTipus per reduïr l'arribada al centre
+     %% provoquem un error el càlcul per localitzar el píxel d'imatge
+   userdict dup /cosFinal get .060 sub dup 3 1 roll /cosFinal exch put
+   /laLlatina findfont exch scalefont setfont
+  }if
+ }if
+}def
+
+%%LaCàrrega (aquests valors poden generar errors d'execució)
+%%+ setdist es compara amb el resultat final del prompt ( <<< punts recorreguts fins al centre de l'espiral)
+/puntsDlespiral %7136942  %% A COS 10 / la doble espiral de La Càrrega
+%79338  %% A COS 10 / l'espiral de La Càrrega víctimes 2015-2018
+637882  %% A COS 80.4 / l'espiral de La Càrrega víctimes 2015-2018
+%% l'espiral de La Càrrega víctimes 1936-2018
+%7141407  %% A COS 10
+def  %% modifiquem els punts recorreguts pel text de l'espiral de les víctimes
+%%+ valor de frenada de l'espiral de víctimes
+/Vfrenada %% 322  %% A COS 10 / la doble espiral de La Càrrega
+%330  %%  A COS 10 / l'espiral de La Càrrega víctimes 1936-2018
+%350  %% A COS 10 / l'espiral de La Càrrega víctimes 2015-2018
+20000  %% A COS 80.4 / l'espiral de La Càrrega víctimes 2015-2018
+ def 
+
+end
+%% fi del codi del BlueBook
+
+%% format de pàgina i precisió de treball
+%%LaCàrrega
+
+%%SNRD quan fem anar nUp l'haurem de desactivar
+false
+{
+ <<
+%%EX_
+   %  /PageSize [gina_X mArgesX 2 mul add gina_Y mArgesY 2 mul add]  %% pel mural
+   /PageSize [gina_X gina_Y]  %% pel mural
+   %% el format de pàgina per la làmina és de 45x32 cm (1275.75x907.2 p)
+   %%  /PageSize [ 1275.75 907.2 ]  %% per la làmina
+   /HWResolution [4000 4000]  %% activem al màxim la resolució del dispositiu (veure ghostpdf.ppd)
+ >>setpagedevice
+}if
+
+%%ATENCIÓ: en cal·ligrames d'espirals molt grans, el paràmetre setflat, posat a màxim de qualitat, provoca distorsions i errors
+%% és molt important que el posicionament del text sigui acurat i si tenim setflat al màxim .2 i la resolució del dispositiu
+%% al maxim també, 4000, podem aconseguir molt bons resultats treballant en imatges per sota dels 1000x1000 píxels
+%% però amb l'algorisme del BlueBook això és molt teòric, doncs es dóna la contradicció que a quan baixem d'1 el nombre de
+%% caràcters totals que es componen seguint l'espiral baixa dràsticament, p.e: a 1: 1561432, a .6: 1561255, a .2: 1558782
+%% setflat pot anar de .2 a 100, i el valor per defecte, 1, dóna bons resultats en cal·ligrames molt grans
+1 setflat
+
+%% color de fons
+gsave
+%%LaCàrrega
+%1 1 1 1  %% negre, negre per al màxim contrast en CMYK
+
+%%SNRD color aleatori pel fons de la portada + contra
+realtime srand  %% perquè les 4 crides rand variïn, plantem la llavor de l'aleatori només 1 vegada
+rand 256 mod 255 div rand 256 mod 255 div rand 256 mod 255 div rand 256 mod 255 div
+
+setcmykcolor
+%0 0 gina_X mArgesX 2 mul add gina_Y mArgesY 2 mul add rectfill  %% pel mural
+
+%%SNRD fons de la portada + contra
+0 0 gina_X gina_Y rectfill  %% pel mural
+
+%%AaG calculat per la taca final de la làmina 40x## cm
+%% 70.875 907.2 70.875 715.8375 add sub 1134 715.8375 rectfill  %% per la làmina
+grestore
+
+%% posem el peu de la làmina
+%% l'EPS
+/BeginEPSF {
+/b4_Inc_state save def
+/dict_count countdictstack def
+/op_count count 1 sub def
+userdict begin
+/showpage {} def
+/setpagedevice {pop} def  % NOU ! servira per .ps amb pagina configurada ?
+/erasepage {} def  % NOU! (06.98) test de .PS de Quark
+%/statusdict {5 dict} def  % NOU! PageMaker 5.0 (hem de trobar una altra solucio)
+0 setgray 0 setlinecap
+1 setlinewidth 0 setlinejoin
+10 setmiterlimit [] 0 setdash newpath
+/languagelevel where
+{pop languagelevel
+1 ne
+{false setstrokeadjust false setoverprint} if
+} if
+} bind def
+/EndEPSF {
+count op_count sub {pop} repeat
+countdictstack dict_count sub {end} repeat
+b4_Inc_state restore
+} bind def
+%% làmina
+%%BeginEPSF
+%%0 0 translate 
+%%(/Users/femfum/Republica/laCarrega/lespiraldelacarrega/50lamines/SRA3peu.eps) (r) file cvx exec
+%%EndEPSF
+
+%%SNRD
+false
+{
+ %% URL a github per la làmina
+ gsave
+ %%0 0 0 1 setcmykcolor
+ %(/Users/femfum/JBC/empremt_JBC/tipusDlletra/HelveticaNeueLTStd-Th.otf)
+ %/Helvetica-Light
+ (/Users/femfum/Republica/laCarrega/lespiraldelacarrega/50lamines/Olnova-LightCond.ttf) findfont 9 scalefont setfont
+ 1 1 1 setrgbcolor
+ 1275.75 (https://github.com/marcantonifemfum/ESCRiBA/raw/olot/50d50_ApollinaireNOsomniavaAmbGuardiaCivils.pdf)
+ %dup stringwidth pop 28.35 2.5 mul add 3 -1 roll exch sub 28.35 moveto show
+ dup stringwidth pop 3 -1 roll exch sub 2 div 28.35 moveto show
+ %%EX_
+ %%1 1 1 setrgbcolor
+ %%680.4 (https://github.com/marcantonifemfum/ESCRiBA/blob/master/EXposicioEXpressioEXili_ApollinaireNOsomniavaAmbGuardiaCivils.pdf)
+ %%dup stringwidth pop 3 -1 roll exch sub 2 div 3 moveto show
+ grestore
+}if
+
+%% posem els marges
+%%EX_
+ mArgesX mArgesY translate  %% pel mural
+%%70.875 907.2 70.875 715.8375 add sub translate  %% per la làmina
+
+save
+%% fem el cal·ligrama amb l'espiral de les víctimes
+%%+ tipografia de treball per les víctimes
+%% recodificat llati a 1 octet
+%(/Users/femfum/visuals2014/Trajana_Sans_Family_OTF/ambElaGem/TrajanaSans-Bold.otf)
+
+%(/Users/femfum/calaixDtipus/PepelPatau/FarreronsSerif-Light.otf)
+%(/Users/femfum/Sites/www.ub.edu/cursusductus/femfum/pangramesMoritz/Farrerons/FarreronsSerif-Italic.otf)
+%(/Users/femfum/calaixDtipus/PepelPatau/Cinta\ Beta/Cinta-Heavy\ Italic.otf)  %% alerta amb el xifrat de /Lgeminada
+%(/Users/femfum/calaixDtipus/Balius/TR00032-2020/Patufet/otf/Patufet-Mono-Mig.otf)
+%(/Users/femfum/calaixDtipus/Balius/TR00032-2020/Patufet/otf/Patufet-Mono-Mig-Italic.otf)
+
+%%SNRD
+(/Users/femfum/MultipleMaster/AdobeSans_AdobeSerif/ZX______.PFB)  %% Adobe Sans MM
+
+%%SNRD
+true
+{  %% treballem amb la MM
+ findfont
+ %%MÈTODE0 d'anàlisi dels eixos mestres d'una MM
+ %% extraiem els valors mínims, intermitjos (si n'hi han) i màxims, de cadascun dels eixos dinàmics de la MM
+ %% fem un diccionari amb tots els eixos de variabilitat i els seus valors mestres dins una array
+ /AsansMMeixosDinamics 0 dict def
+ dup /FontInfo get dup /FIMM exch def
+ /BlendAxisTypes get length 1 sub 0 exch 1 exch
+ {
+  /araEix exch def
+  AsansMMeixosDinamics 
+  FIMM /BlendAxisTypes get araEix get
+  [  %% potser que l'eix de mescla sigui linial entre més de dos valors (p.e. l'eix de correcció òptica segueix aquesta lògica)
+   FIMM /BlendDesignMap get araEix get
+   {aload pop pop}forall
+  ] put
+ }for
+ dup length dict begin
+ {
+  1 index /FID ne
+  {def}{pop pop}ifelse
+ }forall
+ %% atenció que aquesta crida només és vàlida a Ghostscript!
+ /Encoding systemdict /EncodingDirectory get /WinAnsiEncoding get def  %% xifrat WinAnsi
+ currentdict end /Camaleonica_WA exch definefont pop
+ %% mooolt important: carreguem una (1) sola vegada el diccionari genèric ben xifrat de la MM
+ /Camaleonica_WA findfont dup /AsansMMionari exch def
+ %% calculem el % del descendent del FontBBox (instància estàndard) per tal de centrar bé la línia de base en relació al cos
+ /FontBBox get dup 1 get abs dup 3 -1 roll 3 get add exch 100 mul exch div /AsansMMx100LiniaDbase exch def
+ %%MÈTODE1 per generar una instància MM via array del vector, a partir dels valors possibles fixats pel /BlendDesignMap
+ %% Paul Haahr dóna aquest mètode com més estable...
+ /unaInstanciaDelAsansMM  %% literal per definir la instància concreta que generem
+ %% /MinionMM findfont  %% aquí substituïm la crida original pel seu diccionari ja normalitzat a WinAnsi...
+ AsansMMionari
+ dup begin  %% entrem dins el diccionari de la MM per poder cridar els procediments NormalizeDesignVector i ConvertDesignVector
+ [  %% array del vector que treballarà makeblendedfont
+  %% el seu ordre (fixat per /BlendAxisTypes) i els seus valors possibles (fixats per /BlendDesignMap)
+  %% necessitem obligatòriament tantes dades vàlides com eixos dinàmics de la MM
+  %%AdobeSansMM
+  realtime srand  %% perquè les 2 crides rand variïn, plantem la llavor de l'aleatori només 1 vegada
+  50 rand 1401 mod add  %% pes: entre 0 i 1400
+  50 rand 1401 mod add  %% ample: entre 0 i 1400
+  %% aquests dos procediments, i per aquest ordre, generen les dades necesàries del vector dins l'array
+  NormalizeDesignVector  %% normalitza les dades de cada eix mestre en valors entre 0 i 1
+  ConvertDesignVector  %% genera les dades finals pel seu ús dins la matriu de l'array per a makeblendedfont
+ ] end
+ makeblendedfont
+ definefont  %% fixem la font en memòria
+
+ dup
+
+%true setglobal
+% 1 dict copy
+ /araMM exch def
+%false setglobal
+
+ cosTipus scalefont setfont
+}
+{
+ %(/Users/femfum/calaixDtipus/PepelPatau/WerdetScript/Werdet_Script_regular/Werdet\ Script\ regular.otf)
+ findfont dup length dict begin
+ {
+  1 index /FID ne {def}{pop pop}ifelse
+ }forall
+ /Encoding
+ %% exclusiu de GS
+ systemdict /EncodingDirectory get /WinAnsiEncoding get
+ %% ISOLatin1Encoding
+ %% per personalitzar el xifrat a d'altres caràcters
+ dup length array copy dup dup 0 /lgeminada put
+ 1 /Lgeminada put
+ def
+ currentdict end
+ /laLlatina exch definefont pop
+ %% fi de recodificat
+
+ /laLlatina findfont cosTipus scalefont setfont
+}ifelse
+
+newpath
+
+%%AaG
+%%Garigot
+%% format de pàgina en funció dels paràmetres amplE i alT (sempre enters!)
+%% també condicionaran el marc gràfic de l'aleatori de Beziers
+% gina_X cvi /amplE exch def  %%AaG pel mural
+%%1134 /amplE exch def  %%AaG per la làmina
+
+%%SNRD el ratio d'ample i alt del garigot ha de ser el de la imatge adaptat a la mida del llançat: portada + contra x l'alt
+imatge_X cosTipus mul cvi /amplE exch def
+imatge_Y cosTipus mul cvi /alT exch def
+
+%%SNRD nom de l'artista (portada) i la peça (contra)
+Npgn cvx exec 1 eq  %% portada?
+{
+ gsave
+ araMM cosTipus 2.8 mul scalefont setfont
+ 0 0 0 0 setcmykcolor cosTipus dup 4 mul amplE add exch
+ translate 90 rotate 0 0 moveto
+ (Richie Hawtin) show
+ grestore
+}if
+Npgn cvx exec M2 2 mul eq  %% contra?
+{
+ gsave
+ araMM cosTipus 1.8 mul scalefont setfont
+ 0 0 0 0 setcmykcolor cosTipus 3 mul neg yPagina 3 div
+ translate 90 rotate 0 0 moveto
+ (Lodgikal Nonsense) show
+ grestore
+}if
+
+% gina_Y cvi /alT exch def  %%AaG pel mural
+%%715.8375 cvi /alT exch def  %%AaG per la làmina
+%<</PageSize[amplE alT]>>setpagedevice     
+
+%% aquesta és l'única manera de ser realment aleatoris
+%% Detecta si l'interpret PS duu el recurs %Calendar% (p.e. GS)
+%% si el duu llavors prodem ser realment aleatoris
+(%Calendar%) /IODevice resourcestatus  % existeix el recurs del calendari+rellotge?
+{  % existeix! (probablement siguem dins GS)
+ pop pop  % ens carreguem les altres dues respostes del query
+ /araCDstring () def  % cadena d'inici per la cadena numèrica que ha de servir per inocular la llavor de l'aleatori
+ (%Calendar%) currentdevparams %{== ==}forall quit
+ dup /Running get
+ {  % suposem q per refiar-nos del calendari aquesta entrada ha d'estar a true
+% desactivem la generacio de l'any, doncs l'enter que es genera es massa llarg per srand
+%  dup /Year get
+%  4 string cvs
+%  %2 2 getinterval  % agafem les dues darreres xifres de l'any per fer + curt l'enter?
+%  dup length araCDstring length dup /afegit exch def add string dup
+%  0 araCDstring putinterval dup afegit 4 -1 roll putinterval /araCDstring exch def
+  dup /Month get
+  2 string cvs dup length dup 2 ne {1 add exch (00) dup 3 -1 roll 1 exch putinterval exch}if
+  araCDstring length dup /afegit exch def add string dup 0 araCDstring putinterval
+  dup afegit 4 -1 roll putinterval /araCDstring exch def
+  dup /Day get
+  2 string cvs dup length dup 2 ne {1 add exch (00) dup 3 -1 roll 1 exch putinterval exch}if
+  araCDstring length dup /afegit exch def add string dup 0 araCDstring putinterval
+  dup afegit 4 -1 roll putinterval /araCDstring exch def
+  dup /Hour get
+  2 string cvs dup length dup 2 ne {1 add exch (00) dup 3 -1 roll 1 exch putinterval exch}if
+  araCDstring length dup /afegit exch def add string dup 0 araCDstring putinterval
+  dup afegit 4 -1 roll putinterval /araCDstring exch def
+  dup /Minute get
+  2 string cvs dup length dup 2 ne {1 add exch (00) dup 3 -1 roll 1 exch putinterval exch}if
+  araCDstring length dup /afegit exch def add string dup 0 araCDstring putinterval
+  dup afegit 4 -1 roll putinterval /araCDstring exch def
+  /Second get
+  2 string cvs dup length dup 2 ne {1 add exch (00) dup 3 -1 roll 1 exch putinterval exch}if
+  araCDstring length dup /afegit exch def add string dup 0 araCDstring putinterval
+  dup afegit 4 -1 roll putinterval /araCDstring exch def
+
+  araCDstring cvx exec srand  % posem la llavor de l'aleatori amb la cadena única de data i temps
+ }
+ {  % si Running es a false deixem un missatge d'avís ...i llavors no podrem ser gaire aleatoris
+  pop
+  (\n...>>> Hi ha %Calendar% pero Running es a false :-\( ...i llavors no podrem ser gaire aleatoris\n\n) print flush
+  usertime srand  % posem la llavor de l'aleatori amb usertime
+ }ifelse
+}
+{  % si NO existeix... probablement siguem a Distiller ...i llavors no podrem ser gaire aleatoris
+ (\n...>>> NO hi ha %Calendar% :-\( ...i llavors no podrem ser gaire aleatoris\n\n) print flush
+ usertime srand  % posem la llavor de l'aleatori amb usertime
+}ifelse
+
+%%AaG
+%%Garigot a l'atzar
+%save
+
+%/DeviceRGB setcolorspace
+%0 setlinewidth
+
+%290 100 translate
+%% format en funció dels paràmetres ample i alt (sempre enters!) q condicionaran el marc gràfic de l'aleatori de Beziers
+%60 /amplE exch def
+%60 /alT exch def
+%realtime srand  % posem la llavor de l'aleatori amb usertime
+
+/rc {rand amplE mod rand alT mod} bind def  %% punt aleatori
+/mb { rc rc rc curveto } bind def  %%  corba Bezier atzarosa
+/bezes
+{
+ rrand
+% newpath
+ rc 2 copy moveto rand 10 mod
+ {mb} repeat 
+ rc rc 6 -2 roll curveto
+ closepath cleartomark
+} bind def
+/B
+{
+ mark bezes
+ % stroke
+} bind def
+/iRGB 0 def
+/repeatB
+{
+ 60
+ {
+%  gsave
+  % és curiós que malgrat aïllem l'estat gràfic, si activem les transparències
+  % deixa de funcionar l'efecte de tac sòlid de l'overprint... i no sé q passaria imprimint...
+  %[ /ca .5 /CA .5 /BM /Normal /SetTransparency pdfmark
+%  [
+%   (1 0 0 setcolor)
+   %(1 0 1 setcolor)
+   %(0 0 1 setcolor)
+   %(0 0 0 setcolor)
+%  ]
+%  iRGB get cvx exec
+%  iRGB 0 eq {/iRGB 0 def}{iRGB 1 add /iRGB exch def}ifelse
+  B  % la corba aleatòria
+%  grestore
+ }repeat
+} def
+repeatB
+%%AaG
+%%Garigot
+
+
+%% si volem veure el cursus segmentat per flattenpath...
+%%gsave
+%%1 0 0 setrgbcolor
+%%0 setlinewidth
+%%stroke
+%%grestore
+
+%showpage quit
+
+%%LaCàrrega
+fitxerLC
+
+0 pathtext  %% si és zero, componem des del principi del path i llavors cridem l'algorisme del BlueBook
+
+%%SNRD
+false
+{
+%%LaCàrrega
+ (\n ...hem exhaurit l'espiral de les víctimes\n\n)print flush  %% fi del cursus constructor
+ %% ens diu el byte on ha acabat de llegir el text (com que treballem a 1 octet coincideix amb el caràcter llegit a fitxerLC)
+ %% al cal·ligrama correspon exactament al darrer tram de text que acaba al centre de l'espiral
+ pathtextdict /charcount get dup 128 string cvs print flush ( <<< cua de text de les víctimes\n)print flush
+ espiraloctets add 128 string cvs print flush ( <<< octets totals de l'espiral de les víctimes\n)print flush
+ pathtextdict /setdist get cvi 128 string cvs print flush ( <<< punts recorreguts fins al centre de l'espiral de les víctimes\n\n)print flush
+}if
+
+restore
+%% fi del cal·ligrama amb l'espiral de les víctimes
+
+%%SNRD
+false
+{
+%%+ metadades
+ [
+%%UCarrion
+%%AaG
+ /Title (Apollinaire no somniava amb Guàrdia Civils)  %% (els garigots de La Càrrega / la doble espiral de La Càrrega)
+ /Keywords (EX_exposició, expressió, exili, #capmalapracticasenseresposta, #freevaltonyc, #nocallarem, Assemblea d'Artistes de la Garrotxa, Barcelona 1902/La càrrega, Ramon Casas i Carbó, Museu Comarcal de La Garrotxa, #ArtistesDeLaRepública, #FreeCatalanPoliticalPrisoners, #LlibertatPresosPolítics, #SOSDemocracy, #DemàPOtsSerTU #TOTSsomCDR)
+ /Author (Marc Antoni Malagarriga-Picas #ArtistesDeLaRepública 2018)
+ /Subject (República Catalana)  %% (Bot cal·ligrama)
+ /Creator (¸.·´¯`·.¸.·´¨«~ https://github.com/marcantonifemfum/ESCRiBA by FemFum.com)
+ /DOCINFO
+ pdfmark
+
+ %% obrirem el PDF amb
+ [
+ %% /PageMode /FullScreen
+ %% /View [/XYZ 900 900 1.25]
+ /View [/FitV ]
+ /DOCVIEW pdfmark
+}if
+
+%%SNRD matem els missatges i showpage!
+%(\n ...l'ESCRiBA ha enllestit la feina\n\n)print flush
+%showpage
+
