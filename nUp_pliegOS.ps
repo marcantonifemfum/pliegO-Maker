@@ -128,18 +128,18 @@
 %%M0 capturar quina és la llengua del navegador per tal d'activar determinades informacions en català o anglès
 
 %%M1 donar la possibilitat de fer visible la vora de la pàgina d'imposició, sigui o no dins una capa i com?
-%% capturem la variable d'entorn generada amb PHP des de PHP2PS2PHPgeneracioicapturadunavariabledentorn.php
-(MRCT_vp) getenv
+%% capturem la variable d'entorn generada amb PHP com a PHP2PS2PHPgeneracioicapturadunavariabledentorn.php
+(MRCT_vp) getenv  %% la variable d'entorn existeix?
 {
- dup length 0 eq
- {  %% si la variable existeix però arriba buida...
-  pop false
+ dup length 0 eq 
+ {  %% arriba buida perquè executem via URL amb pliegOmaker.php sense paràmetres (mètode $_GET)
+  pop true
  }
- {
+ {  %% té dades perquè executem via URL amb index_##.php (mètode $_POST) o amb pliegOmaker.php amb paràmetres (mètode $_GET)
   cvx exec  %% és una string!
  }ifelse
 }
-{
+{  %% la variable d'entorn NO existeix perquè executem l'applet en local via Terminal per línia de comanda
  true  %% fem visible la vora de la pàgina del llançat? (imposició) més endavant podrem posar-ho en una capa
 %% (\n Ghostscript no pot capturar aquesta variable d'entorn!\n\n)print flush
 }ifelse
@@ -151,17 +151,17 @@
 %% 4 4vUpHV 4 pàgines verticals (en dúplex) imposades de costat, 2+2, en un full horitzontal o vertical (8 imposicions totals)
 %% 8 8vUpH 8 pàgines verticals (en dúplex) imposades de costat, 4+4, en un full horitzontal (16 imposicions totals)
 %% capturem la variable d'entorn generada amb PHP des de PHP2PS2PHPgeneracioicapturadunavariabledentorn.php
-(MRCT_nup) getenv
+(MRCT_nup) getenv %% la variable d'entorn existeix?
 {
  dup length 0 eq
- {  %% si la variable existeix però arriba buida...
+ {  %% arriba buida perquè executem via URL amb pliegOmaker.php sense paràmetres (mètode $_GET)
   pop 4
  }
- {
+ {  %% té dades perquè executem via URL amb index_##.php (mètode $_POST) o amb pliegOmaker.php amb paràmetres (mètode $_GET)
   cvx exec  %% és una string!
  }ifelse
 }
-{
+{  %% la variable d'entorn NO existeix perquè executem l'applet en local via Terminal per línia de comanda
  4
 %% (\n Ghostscript no pot capturar aquesta variable d'entorn!\n\n)print flush
 }ifelse
@@ -169,17 +169,17 @@
 %%M3 orientació del full
 %% false vertical
 %% true horitzontal
-(MRCT_hv) getenv
+(MRCT_hv) getenv  %% la variable d'entorn existeix?
 {
  dup length 0 eq
- {  %% si la variable existeix però arriba buida...
+ {  %% arriba buida perquè executem via URL amb pliegOmaker.php sense paràmetres (mètode $_GET)
   pop false
  }
- {
+ {  %% té dades perquè executem via URL amb index_##.php (mètode $_POST) o amb pliegOmaker.php amb paràmetres (mètode $_GET)
   cvx exec  %% és una string!
  }ifelse
 }
-{
+{  %% la variable d'entorn NO existeix perquè executem l'applet en local via Terminal per línia de comanda
  false  %% pel plegaVeu 19.12.21 forcem el 4+4 sempre en vertical (el 8+8 ja ho fa per defecte)
 %%EP! el 2Up en vertical talla els originals (cal revisar també en H perquè es veu menys però també passa!)
 %% (\n Ghostscript no pot capturar aquesta variable d'entorn!\n\n)print flush
@@ -187,17 +187,17 @@
 
 %%M4 format estàndard del full (d'impressora)
 %% els DiNS conserven l´índex
-(MRCT_full) getenv
+(MRCT_full) getenv  %% la variable d'entorn existeix?
 {
  dup length 0 eq
- {  %% si la variable existeix però arriba buida...
+ {  %% arriba buida perquè executem via URL amb pliegOmaker.php sense paràmetres (mètode $_GET)
   pop 4
  }
- {
+ {  %% té dades perquè executem via URL amb index_##.php (mètode $_POST) o amb pliegOmaker.php amb paràmetres (mètode $_GET)
   cvx exec  %% és una string!
  }ifelse
 }
-{
+{  %% la variable d'entorn NO existeix perquè executem l'applet en local via Terminal per línia de comanda
  4
 %% (\n Ghostscript no pot capturar aquesta variable d'entorn!\n\n)print flush
 }ifelse
@@ -205,34 +205,34 @@
 %%M5 en cas que el plec no sigui proporcional (ràtio full/pàgina diferent), forcem mantenir la ràtio?
 %% false NO forcem mantenir la ràtio (en cas que el plec no sigui proporcional!)
 %% true FORCEM mantenir la ràtio (en cas que el plec no sigui proporcional!)
-(MRCT_r) getenv
+(MRCT_r) getenv  %% la variable d'entorn existeix?
 {
  dup length 0 eq
- {  %% si la variable existeix però arriba buida...
+ {  %% arriba buida perquè executem via URL amb pliegOmaker.php sense paràmetres (mètode $_GET)
   pop false
  }
- {
+ {  %% té dades perquè executem via URL amb index_##.php (mètode $_POST) o amb pliegOmaker.php amb paràmetres (mètode $_GET)
   cvx exec  %% és una string!
  }ifelse
 }
-{
+{  %% la variable d'entorn NO existeix perquè executem l'applet en local via Terminal per línia de comanda
 %%EP! true falla a 8auricsHVgranFormat.pdf quan treballa en 4Up i l'orientació de pàgina és V
  false
 %% (\n Ghostscript no pot capturar aquesta variable d'entorn!\n\n)print flush
 }ifelse
 
 %%M6 índex a l'algorisme de composició independent del nUp triat
-(MRCT_labal) getenv
+(MRCT_labal) getenv  %% la variable d'entorn existeix?
 {
  dup length 0 eq
- {  %% si la variable existeix però arriba buida (ve de la interfície però per algun motiu arriba sense dades)
-  pop 0  %% activem l'algorisme de reglatge
+ {  %% arriba buida perquè executem via URL amb pliegOmaker.php sense paràmetres (mètode $_GET)
+  pop 10  %% per defecte activem l'algorisme de?
  }
- {  %% ve de la interfície correctament
+ {  %% té dades perquè executem via URL amb index_##.php (mètode $_POST) o amb pliegOmaker.php amb paràmetres (mètode $_GET)
   cvx exec  %% és una string!
  }ifelse
 }
-{  %% la variable d'entorn NO existeix perquè l'executem via Terminal, en local, per línia de comanda
+{  %% la variable d'entorn NO existeix perquè executem l'applet en local via Terminal per línia de comanda
  10  %% 0 algorisme de reglatge
     %% 1 fus horari
     %% 2 interrogador de variables
@@ -256,22 +256,23 @@
 }ifelse
 
 %%M7 text a compondre
-(MRCT_tlab) getenv
-{  %% la variable d'entorn existeix perquè ve de la <textarea> via interfície
+(MRCT_tlab) getenv  %% la variable d'entorn existeix?
+{
  dup length 0 eq
- {  %% si la variable existeix però arriba buida...
+ {  %% arriba buida perquè executem via URL amb pliegOmaker.php sense paràmetres (mètode $_GET)
   pop (Aquest plegaVeu no duu cap text!)  %% text de farcit que ens indica que la variable ha arribat buida
   %% després de l'string hi hauria d'haver un dígit per redefinir el valor de la variable d'entorn MRCT_lab?
   %(/////)pstack exit
  }
- {  %% ve de la interfície correctament 
+ {  %% té dades perquè executem via URL amb index_##.php (mètode $_POST) o amb pliegOmaker.php amb paràmetres (mètode $_GET)
+  %% pot venir de la <textarea> via interfície
   %pop (aquí arriba el text que hem escrit o capturat)
   %(!!!!)pstack exit
   %% és una string a polir i decodificar via plegaVeu_mestre_ple.ps 
   %% després de l'string hi hauria d'haver un dígit per redefinir el valor de la variable d'entorn MRCT_lab?
  }ifelse
 }
-{  %% la variable d'entorn NO existeix perquè executem l'applet en local pel Terminal via línia de comanda
+{  %% la variable d'entorn NO existeix perquè executem l'applet en local via Terminal per línia de comanda
 %%RELLEVANT: si volem reflectir un error PS al prompt de la interfície necessitem sortir amb exit
 %% llavors surt del GS, doncs sinó sempre fa un pdf buit
 %(nnnn)pstack exit  
@@ -351,6 +352,7 @@
 %%/M? exch def  %% donar la possibilitat de triar pàgines en blanc? (false) sobre l'esquema del desplegat de planes
 
 /compOnedors
+%%URLsnr és absolutament necessari posar el path sencer als algorismes executats via php al localhost i a servidors
 [
  (reglatge.ps)  %% 0 algorisme de reglatge
  (fusHorariLiterari_xPliegOS.ps)  %% 1 el rellotge necessita ajustar el cos automàticament pel bbox de la suma de pàginess 
