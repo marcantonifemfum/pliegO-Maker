@@ -705,7 +705,12 @@ false{
   }ifelse
 
   aRa cadaquant add /aRa exch def
-  (rawLichtenberg.raw) (w) file /fLichtenberg exch def
+
+%%URLsnr
+  (/Users/femfum/PliegOS/sonarD2023_paper/rawLichtenberg.raw)  %% Terminal
+% ()  %% localhost
+% ()  %% Teixidora
+  (w) file /fLichtenberg exch def
 
   araLichtenberg   %% (Fi)pstack quit
   dup dup length /alt exch def 0 get length /ample exch def
@@ -736,7 +741,8 @@ false{
     /BitsPerComponent 8
     /Decode [0 1]
     /ImageMatrix [ample 0 0  alt neg 0  alt]
-    /DataSource (rawLichtenberg.raw) (r) file ample alt mul string readstring pop
+%%URLsnr
+    /DataSource (/Users/femfum/PliegOS/sonarD2023_paper/rawLichtenberg.raw) (r) file ample alt mul string readstring pop
   >> image
   showpage
  }if
@@ -747,7 +753,12 @@ false{
 
 %% quan decidim sortir, establirem els rangs i/o categories numèriques per pintar els elements, com un tou de dades d'imatge
 %% ens caldria treballar amb múltiples de 256 (-2) per fer imatges a 8 bits
-(rawLichtenberg.raw) (w) file /fLichtenberg exch def
+
+%%URLsnr
+%(/Users/femfum/PliegOS/sonarD2023_paper/rawLichtenberg.raw)  %% Terminal
+(/Library/WebServer/Documents/www.pliegos.net/maker/sonarD2023/rawLichtenberg.raw)  %% localhost
+% ()  %% Teixidora
+(w) file /fLichtenberg exch def
 
 araLichtenberg   %% (Fi)pstack quit
 dup dup length /alt exch def 0 get length /ample exch def
@@ -780,8 +791,14 @@ false
 0 0 translate
 
 %%SNRD adaptem l'escala al format de la pàgina del llançat
-297.5  %% xPagina multiplicador d'escala per quadrar l'ample de la pàgina del llançat
-421.0  %% yPagina multiplicador d'escala per quadrar l'alt de la pàgina del llançat
+M2 4 eq
+{ %% nUp 4+4
+ 297.5  %% xPagina multiplicador d'escala per quadrar l'ample de la pàgina del llançat
+ 421.0  %% yPagina multiplicador d'escala per quadrar l'alt de la pàgina del llançat
+}
+{ %% hauria de ser 8+8
+ 210.5 297.5
+}ifelse
 
 scale
 
@@ -802,7 +819,14 @@ false
  /BitsPerComponent 8
  /Decode [0 1]  %% negativem?
  /ImageMatrix [ample 0 0 alt neg 0  alt]
- /DataSource (rawLichtenberg.raw) (r) file ample alt mul string readstring pop
+
+%%URLsnr
+ /DataSource
+% (/Users/femfum/PliegOS/sonarD2023_paper/rawLichtenberg.raw)  %% Terminal
+(/Library/WebServer/Documents/www.pliegos.net/maker/sonarD2023/rawLichtenberg.raw)  %% localhost
+%()  %% Teixidora
+ (r) file ample alt mul string readstring pop
+
  >> image
 }ifelse
 

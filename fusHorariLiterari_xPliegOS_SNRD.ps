@@ -836,8 +836,21 @@ noNULL  %% pinta el contingut de pàgina?
  %% fer servir un llenguatge més col·loquial on l'hora aproximada té el seu valor lingüístic: gairebé són les dotze, les nou
  %% tocades, passen una mica de dos quarts, un quart i mig, etc
 
-%%SNRD valor 10 pel 4+4 i ## pel 8+8
-iSeq 10 eq  %% només 1 cop
+%%SNRD valor 10 pel 4+4 i 18 pel 8+8
+iSeq M2
+4 eq
+{
+ 10 eq  %% només 1 cop
+}
+{
+ M2 8 eq
+ {
+  18 eq
+ }
+ {
+  false
+ }ifelse
+}ifelse
 {
 
  %% muntem la descripció horària en una sola string
@@ -865,8 +878,13 @@ iSeq 10 eq  %% només 1 cop
 
 }if  %% només 1 cop
 
+%% Adobe Sans MM
 %%SNRD definim de forma fixa una instància de la MM per descriure la data i l'hora
-(/Users/femfum/MultipleMaster/AdobeSans_AdobeSerif/ZX______.PFB)  %% Adobe Sans MM
+%%URLsnr
+%(/Users/femfum/MultipleMaster/AdobeSans_AdobeSerif/ZX______.PFB)  %% Terminal
+(/Library/WebServer/Documents/www.pliegos.net/maker/sonarD2023/ZX______.PFB)  %% localhost
+%()  %% Teixidora
+
 findfont
 %%MÈTODE0 d'anàlisi dels eixos mestres d'una MM
 %% extraiem els valors mínims, intermitjos (si n'hi han) i màxims, de cadascun dels eixos dinàmics de la MM
@@ -1128,7 +1146,13 @@ false setglobal
   %% adreces locals al MacBook Air
   %% (/Applications/Adobe Acrobat Reader DC.app/Contents/Resources/Resource/Font/ZX______.PFB)
   %% (/Users/femfum/empremt/empremt1/ZX______.PFB)
-  (/Users/femfum/MultipleMaster/AdobeSans_AdobeSerif/ZX______.PFB)  %% AdobeSansMM
+
+  %% AdobeSansMM
+%%URLsnr
+%  (/Users/femfum/MultipleMaster/AdobeSans_AdobeSerif/ZX______.PFB)  %% Terminal
+(/Library/WebServer/Documents/www.pliegos.net/maker/sonarD2023/ZX______.PFB)  %% localhost
+%()  %% Teixidora
+
 %   (/Users/femfum/MultipleMaster/AdobeSans_AdobeSerif/ZY______.PFB)  %% AdobeSerifMM
   %% del servidor www.pliegos.net...
   %% (/home/marcantoni/pliegos.net/maker/ZX______.PFB)
