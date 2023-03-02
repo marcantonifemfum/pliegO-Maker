@@ -1,0 +1,266 @@
+
+	SòNAR+D2023
+	sonar+PAPER
+
+
+Pad de treball… https://pad.femprocomuns.cat/p/sonar%2Bpaper
+
+- - - - - - - - - - - - 
+
+Sónar+D es suma a la celebració del 30è aniversari de Sónar amb una convocatòria extraordinària de projectes artístics i tecnològics dirigida a artistes, estudis, col·lectius i organitzacions que treballen en la intersecció entre l’art, la tecnologia, la ciència i la societat.
+
+· disseny i fabricació digital
+
+· i altres projectes que desafiïn disciplines preestablertes i estereotips i que plantegin noves realitats
+
+En funció de les característiques del teu projecte o idea, Sónar+D l’acollirà en un dels següents espais:
+
+	· Project Area:
+la nova àrea que connecta Sónar+D amb la resta del festival, conformada per diversos espais expositius on presentar projectes finalitzats o en desenvolupament a càrrec de creadors, empreses, start-ups o institucions. Aquesta àrea estarà oberta a tot el públic de Sónar de Dia, així que et permetrà exposar al llarg de tres dies i davant tot tipus d’audiències -generalistes i especialitzades- els teus treballs visuals, peces sonores, projectes que treballin amb VR o AR i noves eines de treball, podent fins i tot >>> establir el teu propi workshop <<< i interactuar així amb audiències reals de milers d’assistents.
+
+	· Room+D:
+el nou espai per a públic especialitzat, en el qual es duran a terme demos, workshops a porta tancada, trobades privades específiques de cada sector, actes de marca i més. És l’espai ideal per a què la teva empresa presenti la seva pròpia activitat.
+
+	· Lounge+D:
+l’àrea social i de treball per a Acreditats que compta amb un petit escenari per presentar continguts davant la comunitat de Sónar+D en un format íntim, que afavoreix la interacció. Hi haurà sessions open mic i altres meet the team, en les quals podràs explicar les teves idees, presentar els teus projectes i establir noves connexions per avançar cap als teus objectius.
+
+
+
+- - - - - - - - - - formulari
+
+https://form.jotform.com/sonarfestival/open-call-sonarplusd-2023
+
+	A qué vols aplicar?
+(per exhibició / per presentar)
+
+		INFORMACIÓ DE CONTACTE
+
+	Nom i cognom del contacte
+
+	Email
+
+	Número telèfon
+
+
+		INFORMACIÓ DEL PROJECTE
+
+	Entitat o estudi
+Equip pliegOS
+
+	Títol del projecte
+		sònar+paper
+
+	Breu descripció de l'entitat/estudi (mínim 20 paraules!)
+L'equip
+
+	Breu descripció del projecte (mínim 20 paraules!)
+tornar al paper
+Féu que un sol full de paper esdevingui un llibret excepcional
+únic
+sense interfície
+ minimalista
+singularitat
+Únic a posseir
+diferent
+random
+aleatori
+generatiu
+
+	Adjunta un PDF (Informació detallada - Dossier del projecte/Portfolio de l'entitat)
+
+		Dropbox o web (optatiu)
+
+		Website del projecte (optatiu)
+https://pliegos.net/ … / …
+
+	Afegeix alguns tags descriptius del teu projecte
+#nointerface
+
+	Tipus de projecte (Instrument, instació, joc, VR, aplicació, servei, NFT, Visual art, software...)
+
+		Vídeo d'alta resolució (optatiu)
+
+		Imatge d'alta resolució (optatiu)
+un cal·ligrana d'espiral concentric de text (#NOinterface )del QR que genera el plec aleatori?
+			Aspect ratio 16:9 - LANDSCAPE - MINIMUM 500px ample
+
+	Ciutat
+
+	País
+
+
+
+
+- - - - - - - - - - cal fer fins el dia 26f
+
+FET
+	0> primer plec de 4 i 8 amb els 2 logos repartits a portada i contra (podem jugar amb aleatorietat? transfers?)
+
+xFER
+	>> de com forçar a GS que les transfers s'apliquin? (Distiller parameters?) …llista de viewers que no les accepten?
+
+FET
+	1> tria de la imatge de l'artista a resolució adaptada al cal·ligramador
+
+Sónar+D 2023 // 30è Aniversari // Music Creativity & Technology // 15.16.17 juny 2023 Barcelona // Sónar+D 2023 // 30è Aniversari // Music Creativity & Technology // 15.16.17 juny 2023 Barcelona //
+
+FET
+	2> incloure al pMaker el cal·ligramador del cap d'arengada per a la imatge de l'artista
+
+xOPCIÓ
+	3> incloure el cal·ligramador de la màquina d'escriure per a la imatge de l'artista
+
+xOPCIÓ
+	4> incloure al pMaker el cal·ligramador del cap d'arengada modificat per fer els píxels en vectorial amb possibles jocs geomètrics amb el garigot ídem que 3 a filet blanc
+
+FET
+	#> crida en local del plec recursiu del sonar
+	http://localhost/www.pliegos.net/maker/sonarD2023/pliegOmaker.php
+
+FET
+	>> fer que rutlli via localhost ídem que via Terminal
+
+FET
+	>> el directori /pdf on s'allotgen els resultats ha de tenir tots els permisos! (si no peta el GS sense que ens digui perquè)
+
+FET
+	>> marcar totes les modificacions adaptades del Sonar amb %%URLsnr o //URLsnr
+
+xFER
+	>> incloure també la generació de la galeta horària que tenim a index_##.php cap a pliegOmaker.php (es crida via $_COOKIE['quinHoraEs'])
+		(el servidor va 1 hora enrere?)
+
+FET
+	>> fer que rutlli via servidor Teixidora ídem que a localhost i Terminal
+		aquest és el directori al servidor… /var/www/wordpress/maker/sonarD2023
+	a partir d'ara assenyalarem tots les adreces dels projectes a www per %% Terminal  %% loccalhost i %% Texidora
+
+FET
+	>> a… https://pliegos.net/maker/sonarD2023 …hi ha un index.html que apunta a pliegOmaker.php
+
+FET
+	>> adreça curta https://ja.cat/sonarDpaper
+		NOMÉS FUNCIONA SI APUNTEM AL PHP…  https://pliegos.net/maker/sonarD2023/pliegOmaker.php
+
+FET
+	>> QR …de… https://pliegos.net/maker/sonarD2023/pliegOmaker.php (perquè s'activi la decàrrega ha d'apuntar al php!)
+		QR_SNRD2023.jpg
+
+xOPCIÓ
+	>> incloure un Dimo aleatori per a 1 sola paraula al text compost de la cançó
+
+xFER
+	>> breu del projecte (50 paraules màxim)
+
+Barcelona ha sigut tradicionalment literària, llibrera i
+lletraferida, cruïlla d'històries de vida i de cultures,
+de l'oralitat més efímera fins als laberints digitals.
+Sónar+PAPER aspira a la reconnexió d'un plec random, com
+el que llegiu ara, amb allò intangible dels sons arriscats.
+
+
+xFER
+	>> componedora (sense trencar paraules) amb enflataglifs
+
+
+
+- - - - - - - - - - Artistes amb letres:
+
+Amelie Lens
+	https://open.spotify.com/artist/5Ho1vKl1Uz8bJlk4vbmvmf
+	In silence
+		In silence
+		In silence
+		In silence
+		In silence
+		♪
+		In silence
+		In silence
+		♪
+		In silence
+		In silence
+		In silence
+		In silence
+		♪
+		In silence
+		♪
+		In silence
+		In silence
+		Silence
+		♪
+		In silence
+		♪
+		And trembling
+		In silence
+		♪
+		And trembling
+		♪
+		In silence
+		♪
+		And trembling
+		In silence
+		♪
+		In silence
+		♪
+		And trembling
+		In silence
+		♪
+		And trembling
+		♪
+		In silence
+		♪
+		And trembling
+		In silence
+		♪
+		And trembling
+			(Lletra proporcionada per Musixmatch)
+
+Bad Gyal
+	https://open.spotify.com/artist/4F4pp8NUW08JuXwnoxglpN
+
+Black Coffee
+	https://open.spotify.com/artist/6wMr4zKPrrR0UVz08WtUWc
+
+Peggy Gou
+	https://open.spotify.com/artist/2mLA48B366zkELXYx7hcDN
+
+	(Starry Night)
+푸른 바다 보다 더 푸른 바다 같은
+별이 빛나는 밤, 별,별이 빛나는 밤
+지금 이 노래 보다 더 노래 같은 우리
+지금 이 순간 보다 더 순간 같은 우리들
+Ocean, night, stars, song, moment
+Ocean, starlight, moment, now, us
+♪
+이제 알 것 같아 다 알 필요 없단 걸
+이미 알고 있어 여기 있는 우리
+이 세상의 끝에서 이젠 들을 수 있어
+당신의 예술을요 이젠 들을 수있나요
+World, fearless, pleasure, edge, listen
+World, freedom, listen, now, us
+
+Richie Hawtin
+	I Don't Know https://open.spotify.com/track/5IPPaJRhnv2my2npT3znSG?si=1edcb46babf94525
+	(àlbum Closer)
+	Lodgikal Nonsense https://open.spotify.com/track/1QDG17HSTcr1VpeBWdg0Kw?si=2d705e7b56d44b57
+	Ethnik https://open.spotify.com/track/0tg6brpFSp1sbiNq9Go1O4?si=4bac1defd63641f9
+
+Logic1000
+	https://open.spotify.com/artist/2EFsfh1zewsSWhDINv7j1I
+
+Black Coffee
+	https://open.spotify.com/artist/6wMr4zKPrrR0UVz08WtUWc
+
+Solomun
+
+Shygirl
+	https://open.spotify.com/artist/3M3wTTCDwicRubwMyHyEDy
+
+The Blessed Madona
+	https://open.spotify.com/artist/4TvhRzxIL1le2PWCeUqxQw
+
+Eric Prydz
+	https://open.spotify.com/playlist/37i9dQZF1DWYacvJEtDkU8
+You / Shadows / We Are Mirage
+
+

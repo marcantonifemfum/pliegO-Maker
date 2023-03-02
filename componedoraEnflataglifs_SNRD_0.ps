@@ -1,0 +1,1140 @@
+%!
+%% crida l'algorisme /engalzaGlifs fent una avaluació prèvia d'ocupació per decidir el /cos_proposta_sonar+PAPER de la tipografia
+%% que ja ve definida de... guardesContra_SNRD.ps ...seguint els criteris:
+
+%%A> des de la línia de base d'inici del breu de la proposta sonar+PAPER (índex 0 /ldeBase) fins la meitat de la pàgina del llançat yPagina/2, deduïm el valor /interlineat_cos_proposta_sonar+PAPER per a un /MAXliniesDbase que decidim ha d'ocupar aquest text com a valor fix inicial (només el moficaríem a la baixa pel cas exposat a B). El criteri per deduir /MAXliniesDbase serà el valor que ens doni dividir el nombre total de paraules del text a composar pel nombre de paraules per línia (set paraules per línia com a valor inicial de /motsMestreXlinia), i dividit pel nombre de pàgines on es desplega (/ginesAginar val en aquest cas 1)
+
+%%B> comparem el valor del /cos_proposta_sonar+PAPER amb el del /interlineat_cos_proposta_sonar+PAPER per valorar el % que creix, i establirem que no pot anar més enllà del triple del cos (aquí hi podríem aplicar criteris àurics), si el sobrepassa, l'ajustarem al triple (300%). De mínims, no permetrem quedar per sota del 120% del cos, si això passa l'ajustarem al 120% i comprovarem si les línies de base trepitgen el marge establert de yPagina/2, si fos així les hauríem d'eliminar havent de reduir el cos (criteri D)
+
+%%C> valorarem si el text a compondre hi cap dins les n /ldeBase establertes, si hi cap, mirarem a quina línia de base acaba la darrera paraula, si és dins la darrera línia de base, no farem res. Si ho fa 1 o 2 abans, podríem decidir si augmentem el cos. Si no hi cap (el text sobrepassa), aplicarem el criteri D per reduir el cos fins que hi càpiga
+
+%%D> el criteri de modificar el cos del text de la proposta sonar+PAPER, establert a /cos_proposta_sonar+PAPER, l'apliquem decidint el valor de /motsMestreXlinia, o sigui, quantes paraules volem que ocupi la primera línia de text. Si augmentem el nombre de mots, el cos s'abaixa i, si decidim apujar el cos, hem de reduir el valor de /motsMestreXlinia (mai hauria d'estar per sota de 4?)
+
+%%E> la singularitat d'aquesta componedora és que, tret de certs valors extremsi des pes/ample del glif, la primera línia de text sempre farà exactament l'ample de la primera línia de base (seria un caixa a dues bandes fix per la 1a línia), per la resta de línies, compondrem fent caixa a l'esquerra, sempre sense tallar paraules (i encara menys guionar)
+
+%%F> la componedora treballarà en dos temps: un per avaluar interlineat i cos, endreçant a /motsDefinitius cadascuna de les línies de text que es compondran a cada línia de base i, l'altre, component els glifs de forma fixa amb els valors anteriorment deduits
+
+%%SNRD aquest paràmetre serà valuós
+%% el nombre de mots per línia agafa les n primeres paraules de l'inici del text /totselsmotS (motS)
+%% per tal d'establir el valor del cos de treball, llavors, la 1a línia sempre farà exactament caixa a dues bandes
+7  %% nombre de mots per línia ideals, establert per aquesta compaginació
+/motsMestreXlinia exch def
+
+1  %% nombre de pàgines a compaginar
+/ginesAginar exch def
+
+[  %% té sentit matenir l'array si més endavant podem enllaçar diversos paràgrafs a la componedora
+
+ %% un text a compondre que, amb la filosofia plantejada, podria teniu una unitat com a paràgraf
+ (Barcelona ha sigut tradicionalment literària, llibrera i lletraferida, cruïlla d'històries de vida i de cultures, de l'oralitat més efímera fins als laberints digitals. Sónar+PAPER aspira a la reconnexió d'un plec random, com el que llegiu ara, amb allò intangible dels sons arriscats.)
+
+] /motS exch def
+
+%% endreça les cadenes de text, per línia, a compondre per quan entrem al loop componedor definitiu
+[] /motsDefinitius exch def
+
+%%NO hauria d'anar a fora?
+%%SNRD cridem la MM ídem del títol de cap de pàgina i cos proporcional al que ocupin els /motsMestreXlinia de la primera línia
+FxArtBox 9 scalefont setfont  %% cos qualsevol per la regla de 3
+0 0 moveto  %% una posició qualsevol
+/xliniaTipus 0 def  %% ample de línia acumulat
+[
+ motS 0 get
+ %% venta totes les paraules i les deixa dins el paquet
+ {  %% loop
+  ( ) search
+  {
+   exch pop exch
+  }
+  {
+   exit
+  }ifelse
+ }loop
+] dup
+/totselsmotS exch def
+
+length motsMestreXlinia div ginesAginar div ceiling cvi
+%dup ==
+/MAXliniesDbase exch def  %% màxim nombre de línies de base que proposem inicialment
+
+
+0 1 motsMestreXlinia 1 sub
+{
+ totselsmotS  %% avaluem l'ample dels /motsMestreXlinia primers mots en base a un cos qualsevol (9) per la regla de 3
+ exch get stringwidth pop xliniaTipus add /xliniaTipus exch def
+}for
+
+%% li afegim l'ample de /motsMestreXlinia -1 espais en blanc de separació de les paraules
+xliniaTipus ( ) stringwidth pop motsMestreXlinia 1 sub mul add
+
+%%SNRD cridem la MM ídem del títol de cap de pàgina però amb el cos calculat pel breu de la proposta sonar+PAPER 
+%% cos proporcional pel què ocupin els /motsMestreXlinia primers mots dins una línia
+9 xArtBox mul exch div  %% el cos
+dup /cos_proposta_sonar+PAPER exch def
+%%TEST
+%dup ==
+FxArtBox exch scalefont setfont  %% font definida a guardesContra_SNRD.ps
+
+%%COM deduïm l'interiniat?
+yTsnrd  %% línia de base del titular Sónar+PAPER
+cos_proposta_sonar+PAPER 2 mul sub  %% li restem 2 vegades el /cos_proposta_sonar+PAPER
+yPagina 2 div sub MAXliniesDbase 1 sub div  %% un interlíniat per fer MAXliniesDbase línies fins a la meitat pàgina
+/interlineat_cos_proposta_sonar+PAPER exch def
+
+%%Criteri B: avaluem el % del cos vs interlineat:
+100 interlineat_cos_proposta_sonar+PAPER mul cos_proposta_sonar+PAPER div  %dup ==
+dup 300 gt
+{  %% si l'interlineat va més enllà del 300% del cos
+ pop /interlineat_cos_proposta_sonar+PAPER 3 cos_proposta_sonar+PAPER mul def
+ (\n\n ...reduim l'interlineat al 300%\n\n)print flush
+}
+{
+ 120 lt
+ {   %% si l'interlineat és per sota de 120% del cos
+%%TEST
+%interlineat_cos_proposta_sonar+PAPER == cos_proposta_sonar+PAPER ==
+
+%  /interlineat_cos_proposta_sonar+PAPER 1.2 cos_proposta_sonar+PAPER mul def
+  (\n\n ...augmentem l'interlineat al 120%\n\n)print flush
+
+%%TEST
+%interlineat_cos_proposta_sonar+PAPER == quit
+
+%%ENS cal augmentar el nombre de motsMestreXlinia????
+motsMestreXlinia 1 add /motsMestreXlinia exch def
+(OOOOOOOO)==
+FxArtBox 9 scalefont setfont  %% cos qualsevol per la regla de 3
+0 0 moveto  %% una posició qualsevol
+totselsmotS length motsMestreXlinia div ginesAginar div ceiling cvi
+%dup ==
+/MAXliniesDbase exch def  %% màxim nombre de línies de base que proposem inicialment
+
+
+0 1 motsMestreXlinia 1 sub
+{
+ totselsmotS  %% avaluem l'ample dels /motsMestreXlinia primers mots en base a un cos qualsevol (9) per la regla de 3
+ exch get stringwidth pop xliniaTipus add /xliniaTipus exch def
+}for
+
+%% li afegim l'ample de /motsMestreXlinia -1 espais en blanc de separació de les paraules
+xliniaTipus ( ) stringwidth pop motsMestreXlinia 1 sub mul add
+
+%%SNRD cridem la MM ídem del títol de cap de pàgina però amb el cos calculat pel breu de la proposta sonar+PAPER 
+%% cos proporcional pel què ocupin els /motsMestreXlinia primers mots dins una línia
+9 xArtBox mul exch div  %% el cos
+dup /cos_proposta_sonar+PAPER exch def
+%%TEST
+%dup ==
+FxArtBox exch scalefont setfont  %% font definida a guardesContra_SNRD.ps
+
+%%COM deduïm l'interiniat?
+yTsnrd  %% línia de base del titular Sónar+PAPER
+cos_proposta_sonar+PAPER 2 mul sub  %% li restem 2 vegades el /cos_proposta_sonar+PAPER
+yPagina 2 div sub MAXliniesDbase 1 sub div  %% un interlíniat per fer MAXliniesDbase línies fins a la meitat pàgina
+
+%% forcem al 120% si no hi arriba!
+1.2 cos_proposta_sonar+PAPER mul
+2 copy gt
+{  %% donem per bo el que és més gran que el 120%
+ pop
+}
+{  %% el forcem apujant-lo al 120%
+ exch pop
+}ifelse
+
+/interlineat_cos_proposta_sonar+PAPER exch def
+
+%%
+
+(OOOOOOOO)==
+ }if
+%%EP! cal comprovar si un augment de l'interliniat pot fer que les línies del text trepitgin el llindar de yPagina/2, i si fos així hauríem d'eliminar n línies de base de /ldeBase fins que no trepitgés, llavors, una reducció del cos s'imposaria
+}ifelse
+
+%% generem les /MAXliniesDbase (o menys) en funció del valor final de /interlineat_cos_proposta_sonar+PAPER
+[  %% les línies de base com a paths actius ordenades de dalt a baix
+ %% y1 y2
+ yTsnrd  %% línia de base del titular Sónar+PAPER
+ cos_proposta_sonar+PAPER 2 mul sub  %% li restem 2 vegades el /cos_proposta_sonar+PAPER
+ /yLbase exch def
+ 256 string /procDinamic exch def  %% una string com a buffer d'escriptura per construir un packedarray amb variables dinàmiques
+ procDinamic /NullEncode filter /packEscriu exch def
+ %% en fem fins a /MAXliniesDbase ?
+ MAXliniesDbase
+ {  %% repeat
+  yLbase yPagina 2 div gt
+  {  %% construïm el procediment per fer la línia de base
+   packEscriu ({) writestring
+   packEscriu xmargeArtBox 64 string cvs writestring  %% x1
+   packEscriu ( ) writestring
+   packEscriu  yLbase 64 string cvs writestring  %% y1
+   packEscriu ( moveto ) writestring
+   packEscriu xArtBox xmargeArtBox add 64 string cvs writestring  %% x2
+   packEscriu ( ) writestring
+   packEscriu  yLbase 64 string cvs writestring  %% y2
+   packEscriu ( lineto}) writestring
+  }if
+  packEscriu closefile
+  procDinamic cvx exec  %% executem a l'stack l'string amb la proc a dins
+  256 string /procDinamic exch def  %% inicialitzem el buffer d'escriptura
+  procDinamic /NullEncode filter /packEscriu exch def
+  %% actualitzem l'interlineat
+  yLbase interlineat_cos_proposta_sonar+PAPER sub /yLbase exch def
+ }repeat
+
+] /ldeBase exch def
+
+%ldeBase dup length (yyyyy)pstack quit
+
+/engalzaGlifs
+{  %% algorisme componedor, glif a glif, seguint qualsevol línia de base vectorial
+
+{  %% stopped
+
+ gsave
+ %% una segona evolució de enflataGlifs2_plegaVeu_metrica_contraguardaSNRD.ps 
+ %% una evolució per al plegaVeu d'enflataGlifs2.ps
+ %% marcarem canvis i afegits amb el prefix
+%%PV#.# numeracions descrites a feinaFetaPlegaVeuCultura_desembre2021.txt
+%%PVcec evitem de pintar res que no sigui el mateix text (o ni això si només mesurem la mètrica)
+%%PVmut matem missatges del prompt 
+%%PVsense pintar! (no componem re)
+%%SNRD comentem tot el que ens convé
+ %% disseccionem la mecànica de posicionat de glifs dins un path actiu
+ %% de manera que serveixi per compondre text per segmentació en rectes, arcs i béziers
+ %% mirem d'implementar un control més ben ponderat del posicionament dels glifs
+%%MENÚ#: marcarà les variables clau de gestió de l'algorisme
+%%PV20.1
+%%MENÚ0: format i nivells de qualitat per la fragmentació del cursus
+ %% el flatness i la resolució dl dispostiu ja venen donades
+%%MENÚ1: text a escriure (compondre)
+%%PV20.1 textos plegaVeu
+ /tae exch def
+
+%%Unicode
+%%EP no perdem de vista l'algorisme repicaHTMLentities.ps com a eina lectora de cadenes Unicode
+ /ctts 1 def  %% octets de treball (byte senzill o doble o més)
+
+%%PV20.1
+%%MENÚ2: sentit d'escriptura per alfabets diferents al llatí o altres efectes
+ %% per escriure d'esquerra a dreta: true (occidental)
+ %% per escriure de dreta a esquerra: false (oriental)
+ /eAd true def
+
+ eAd
+ {  %% d'esquerra a dreta dels octets dins la cadena de text a escriure
+  /iGac 0 def  %% índex inicial pel glif a composar
+  %% la divisió fa sentit quan treballem a doble octet o més
+  /MAXglif tae length ctts idiv def  %% límit de glifs a compondre
+ }
+ {  %% de dreta a esquerra dels octets dins la cadena de text a escriure
+  /iGac tae length ctts idiv 1 sub def  %% índex inicial pel glif a composar
+  %% la divisió fa sentit quan treballem a doble octet o més
+  /MAXglif -1 def  %% límit de glifs a compondre
+ }ifelse
+
+%%PV20.1
+%%MENÚ3: tipografia i cos de treball (hi hauria cap relació ideal entre cos i nombre de segments que inclouen un glif?)
+ %(/Users/femfum/calaixDtipus/Balius/TR00032-2020/Patufet/otf/Patufet-Mono-Mig-Italic.otf)
+ %(/Users/femfum/calaixDtipus/Balius/TR00032-2020/Patufet/otf/Patufet-Mono-Mig.otf)
+ %% mètrica fixa per la Patufet-Mono-Mig-Italic.otf i Patufet-Mono-Mig.otf
+ %(A) stringwidth (<<<< 1/1000 = 600 )pstack quit
+ %(/Users/femfum/calaixDtipus/PepelPatau/furafont/tipus/Chupada-Bold\ italic.otf)
+ %(/Users/femfum/calaixDtipus/Gentium/GentiumPlus-5.000-developer/GentiumPlus-I.ttf)
+
+
+%%Unicode
+ %% així seria l'array bidimensional d'Encoding basada en Unicode per poder treballar en doble octet
+ %% caldria classificar-les pel primer octet i que el contingut correspongués al segon, exemple:
+ %% [
+ %%  [
+ %%   #00 segon octet
+ %%   ...
+ %%   #ff
+ %%  ]  %% 00 primer octet
+ %%  ...
+ %%  [
+ %%   #00 segon octet
+ %%   ...
+ %%   #ff
+ %%  ]  %% ff primer octet
+ %% ]
+ %% crida de GS al codificat que fem servir
+ /Encoding systemdict /EncodingDirectory get /WinAnsiEncoding get def
+%%EP no perdem de vista l'algorisme repicaHTMLentities.ps com a eina lectora de cadenes Unicode
+%%SNRD ara actua només per l'estratègia de compondre en cec, mesurant la mètrica del glif sense pintar-lo 
+
+%%PV20.1
+%%MENÚ4: ductus (traç) componedor i sentit (esquerra/dreta o viceversa) de la línia de base
+ %% el path actiu pot, en la direcció en que el dibuixem, condicionar el sentit del componedor
+ %% també ens ajuda a construir una componedora universal per tota mena d'alfabets i escriptura creativa
+
+%%SNRD activem el path capturat de /ldeBase
+ cvx exec
+
+ %% l'enflatador de path, fent latent el traçat segmentat
+ flattenpath
+ [
+  {  %% proc moveto, deixa 2 coordenades x,y a l'stack
+   % == == (m)==
+  }
+  {  %% proc lineto, deixa 2 coordenades x,y a l'stack
+   % == == (l)==
+  }
+  {  %% aquí hem de donar un error (quan pot passar això?)
+   ( ...hi ha curveto ...sortim!)pstack quit
+  }
+  {  %% proc closepath, inicialment sense efectes
+  }
+  pathforall
+ ] /apfa exch def
+
+%%PVcec
+%%Pintem el path segmentat? (blau)
+ false
+ {
+  gsave 0 setlinewidth 0 0 1 setrgbcolor stroke grestore
+ }if
+
+%%EP! ens cal netejar tant el traçat latent del path com el dels glifs
+ newpath
+
+ apfa length dup /MAXxy exch def 2 idiv
+ %% dup 12 string cvs (\n)print flush  ( ...nombre de nodes del path: ) print flush print flush
+ 1 sub dup /nS exch def  %% nombre de segments
+ dup /nSi exch def  %% nombre de segments inicial (a voltes una recta aparentment contínua té diversos trams de planxat)
+
+%%PVmut
+ false
+ {
+  12 string cvs (\n)print flush  ( ...nombre de trams planxats: ) print flush print flush (\n\n)print flush
+ }
+ {
+  pop
+ }ifelse
+
+%%De què ens hauria de servir mesurar si el tram de segmentació més petit és més gran o no que l'ample del Bbox pel cos triat?
+ %% per exemple: seria útil per recalcular la línia de base del glif, quan el seu ample inclogui diversos segments
+
+%%PV20.1
+%%MENÚ5: sentit d'escriptura del componedor en relació al sentit de dibuix del cursus
+ %% true: en el mateix sentit que s'ha dibuixat el cursus (path) componedor (part interior) i false en el contrari (part exterior)
+ %% això sempre que respectem la línia de base natural del glif, doncs podem moure-la modificant el valor zero de %%MENÚ6:
+ %% pot ser útil també per alfabets diferents al llatí o altres efectes
+ /seC true def
+
+ %% decidim el sentit de lectura x,y dels segments
+ seC
+ {  %% en el mateix sentit que s'ha dibuixat el path componedor
+  /iil 0 def  %% índex d'inici de lectura
+  /ifl MAXxy 1 sub def  %% índex del final de lectura
+  /sentit {add} def  %% endavant
+ }
+ {  %% en el sentit contrari que s'ha dibuixat el path componedor
+  /iil MAXxy 1 sub def  %% índex d'inici de lectura
+  /ifl 0 def  %% índex del final de lectura
+  /sentit {neg add} def  %% endarrera
+ }ifelse
+
+ %% l'algorisme enflatador que teniem dins els procs de pathforall de moveto/lineto
+ %% computem segments i nodes
+ /segmentsARAglif 0 def  %% hauria de comptar els segments que abracen l'ample de cada glif
+ /txtEsgotat false def  %% gatell per saber si hem esgotat el text a compondre
+%%SNRD
+ /ldbEsgotada false def  %% hem esgotat els segments? (línia de base)
+
+ %% dins el pathforall apuntaria dins del proc moveto
+ /XtramEscriu 0 def  %% acumulat x, dins un mateix segment, del cursor que compon els glifs sobre el path
+ /dS 0 def  %% mida (distància) del segments acumulada
+
+ %% x,y del node inicial del segment (aquest només es crida el primer cop)
+ %% l'hem de pescar o del cap o la cua d'/apfa
+ seC
+ {
+  /suaraX apfa iil get def
+  /suaraY apfa iil 1 sentit get def
+ }
+ {
+  /suaraY apfa iil get def
+  /suaraX apfa iil 1 sentit get def
+ }ifelse
+
+ suaraX suaraY moveto  %% punt d'inici del primer glif
+
+%%Test pel loop de dins el for
+ /ES 0 def
+ /NOes 0 def
+
+%%PV2.1.1 acumulat d'amples dels glifs compostos
+ /TxGlifs 0 def
+
+ %% dins el pathforall apunta al proc de lineto
+ %% sentit de lectura dels segments (sentit d'escriptura en la direcció de com s'han dibuixat)
+ %% comencem enretirant els dos índex x,y inicials (doncs ja els hem desat a suaraX i suaraY) recorrent tot el segmentat /apfa
+ iil  %% índex d'inici de lectura
+ 0 2 sentit exch 1 index add exch  %% salt, endavant o endarrera
+ ifl  %% índex final de lectura
+ % suaraX suaraY(vvvvv)pstack quit
+ {  %% for que compon per la línia de base (o cap/peus del FontBBox), indistintament per la part interior o exterior del path
+
+  seC
+  {  %% x,y del node final del segment
+   apfa exch dup 2 index exch get /araX exch def 1 add get /araY exch def
+  }
+  {  %% x,y del node final del segment
+   apfa exch dup 2 index exch get /araY exch def 1 sub get /araX exch def
+  }ifelse
+
+%%PVmut
+  false
+  {
+   araX == araY ==  %% x,y del node final del segment
+   (- - - - - - - - -)==
+   suaraX == suaraY ==  %% x,y del node d'inici del segment componedor
+  }if
+
+  %% distància del segment (teorema de Pitàgores)
+  araX suaraX sub abs dup mul  %% el quadrat del valor x
+  araY suaraY sub abs dup mul  %% el quadrat del valor y
+  add sqrt
+
+%%Nou
+  dS add  %% hi sumem la distàcia del segment acmulada
+
+  /dS exch def  %% l'arrel quadrada de la suma ens dóna la distància del segment
+
+  segmentsARAglif 1 add /segmentsARAglif exch def
+
+  %% situem l'eix de coordenades en el pla del segment o per pintar el node o per pintar el glif (o totes dues coses)
+  gsave
+
+%%Test
+%%PVcec
+  false
+  {  %% pintem el node de la cua del segment amb una perpendicular verda
+   gsave
+   araX araY 2 copy translate
+   suaraY sub exch suaraX sub
+   %% filtre per evitar 0 0 atan = indefineresult
+   2 copy eq
+   {
+    dup 0 eq
+    {
+     pop
+    }
+    {
+     atan
+    }ifelse
+   }
+   {
+    atan  %% angle del segment en relació al node anterior
+   }ifelse
+   rotate  %% pot ser la rotació per pintar la perpendicular del node o la línia de base per pintar el glif
+   0 1 0 setrgbcolor 0 setlinewidth
+   0 -50 moveto 0 50 lineto stroke  %% amb una perpendicular al segment del flattenpath
+   grestore
+  }if
+
+%%Netegem?
+mark
+
+  %% aquí hauríem d'activar un avaluador que ens digués si el glif que ara toca encara hi cap
+  {  %% loop per recórrer el segment, fins que s'esgoti, amb els glifs a compondre
+
+   {  %% el proc componedor per cshow deixa a l'stack el codi i l'ample x,y de composició del glif
+
+%%Sentit d'escriptura per alfabets diferents al llatí o altres efectes
+    %% ens caldria actuar aquí per alfabets, com el japonès, que componen en vertical)
+    pop  %% valor Y per fonts amb composició vertical (en composició horitzontal s'elimina)
+
+%%PV20.1
+%%PVmut
+    false
+    {
+     dup == (^ pitch)==
+    }if
+
+%%EP!
+    %% tenint aquí l'ample del glif, el primer que hauríem d'avaluar és quants trams l'inclouen i si l'actual s'esgota
+    %dS XtramEscriu add gt(||||)pstack quit
+    dup /xGlif exch def  %% pesquem l'ample per pintar en vermell la línia de base glif a glif
+
+%%PV20.1.1
+    xGlif TxGlifs add /TxGlifs exch def
+
+%%Nou
+    %   dS xGlif lt  %% els segments acumulats NO superen l'ample del glif?
+    dup XtramEscriu add dS gt  %% el posicionat x del glif, esgota el segment?
+
+    {  %% si l'esgota el segment, pot ser per dues raons:
+     %% perquè l'ample de composició del glif abraça 2 o més segments (cal calcular quants segments hi caben en un ample?)
+     %% perquè ja no hi han més segments però sí que hi ha més text (cal saber quan de text queda per compondre)
+     %% llavors:
+     %% ni pintem el glif, ni fem córrer l'index iGac
+
+%%Nou
+     /dS 0 def
+
+     pop pop  %% ens carreguem l'ample i codi del glif
+     %% com que hem de canviar de segment, també el deixem a zero!
+     /XtramEscriu 0 def
+     %  /XtramEscriu XtramEscriu dS sub def  %% però inicialitzem XtramEscriu amb l'ample que sobra
+
+     /cmpnm false def  %% componem? (de moment no actua)
+
+%%Test
+     %ES 1 add dup == /ES exch def
+     %/NOes 0 def
+
+%%PV20.1.1 desfem la suma acumulada d'amples de glif
+     TxGlifs xGlif sub /TxGlifs exch def
+
+%%NO sempre hauríem de sortir?
+%%PVmut
+     false
+     {
+      (<<< sortim)==
+     }if
+
+     exit  %% si no hi ha més segments, sortim del loop de forma fixa
+
+%%SNRD
+     /ldbEsgotada true def
+    }
+    {  %% com que no s'esgota, componem el glif i fem córrer l'índex iGac
+
+%%Test
+     %NOes 1 add dup == /NOes exch def
+%%Test pel loop de dins el for
+     %/ES 0 def
+
+     exch  %% el codi del glif a cercar
+
+     %1 string dup 3 -1 roll 0 exch put stringwidth
+
+     Encoding exch get  %% nom del glif a compondre
+
+%%Test
+%%PVmut
+     false
+     {
+      dup ==  (^ nom del glif) == %% nom del glif que componem
+     }if
+
+     gsave  %% preservem l'estat gràfic del glif que componem
+     newpath
+
+     suaraX suaraY 2 copy translate
+     araY sub exch araX sub atan  %% angle del segment en relació al node anterior
+
+     %% cal entendre que fa realment aquesta rotació i les seves possibilitats
+     -180 sub  %% en quina direcció de lectura ens convé?
+     %% pop 0  %% si rotem a zero ens ho escriu en línia recta passant del path establert
+     rotate  %% pot ser la rotació per pintar la perpendicular del node o la línia de base per pintar el glif
+
+%%EP!
+     %% no hi ha diferències entre l'ample de la línia de base que ens dóna cshow o amb la que obtenim amb stringwidth
+%%PV20.1
+%%PVcec
+     false
+     {
+%%TEST
+      0 setlinewidth
+      1 0 0 setrgbcolor
+      %currentpoint pop xGlif sub 0 lineto stroke  %% pintem la línia de base del glif amb ample corresponent a cadascun
+      0 0 moveto xGlif 0 lineto stroke  %% pintem la línia de base del glif amb ample corresponent a cadascun
+     }if
+
+%%PV20.1
+%%NouNou
+%%Prosa
+     %6  %% si en passem de cert valor (aprox 60% del cos?) es col·lapsen els glifs?
+     0  %% desplaçament horitzontal del glif, de manera que suma a la distància X entre glifs (podríem activar aquí el kerning!)
+     %  XtramEscriu dS sub  %% 0 gt  %% si la distància x és més gran que zero, és que ja ens hem menjat el segment
+
+%%PV20.1
+%%MENÚ6: línia de base: aquí podem decidir on situem la línia de base del glif en relació al cursus (path) componedor
+     %% part superior del FontBBox (caldria calcular-la)
+     0  %% desplaçament vertical Y des de la línia de base natural en punts
+     %% part inferior del FontBBox (caldria calcular-la i aplicar-hi el multiplicador de la mètrica 1/1000)
+     moveto
+
+%%PVsense pintar!
+%%SNRD aquí hi ha d'anar el gatell /assaig?
+%     true
+     assaig
+     {  %% NO pintem el glif però mesurem la seva mètrica
+false{
+gsave
+/glifCEC exch def
+0 1 255
+{  %% mesurem l'ample del glif sense necessitat de pintar-lo
+%% aquest mètode és una mica un contrasentit pel fet que som a mans d'un /Encoding (ara a WinAnsi)
+%% però que haurem de treballar per adaptar-lo a Unicode, segurament via a l'AdobeGlyphList
+ dup Encoding exch get
+ glifCEC eq
+ {
+  1 string dup 3 -1 roll 0 exch put
+  stringwidth pop currentpoint exch 3 -1 roll add exch
+%(<<CURRENTPOINT1)pstack quit
+ }
+ {
+  pop
+ }ifelse
+}for
+grestore
+}if
+     }
+     {  %% pintem de debò
+      glyphshow  %% componem el glif
+%%Nou
+     currentpoint  %% el final del glif és el del nou origen del següent
+%(<<CURRENTPOINT2)pstack quit
+     }ifelse
+
+assaig
+{
+ currentpoint
+}if
+
+%%NouNou
+     pop 0  %%  rectifiquem cada vegada la posició Y sobre la línia de base natural (l'X no s'ha de rectificar)
+
+%%PVsense pintar! (comentar si volem que pinti)
+assaig
+{
+     pop exch pop 1 index 3  1 roll
+}if
+
+     transform  % dóna les coordenades del punt x,y (eix normal) en unitats del dispositiu de sortida (device pixels)
+     grestore
+     itransform  % dóna les coordenades del punt x,y (eix normal) en punts tipogràfics
+     %% noves coordenades d'inici (amb l'eix sense rotar)
+     /suaraY exch def
+     /suaraX exch def
+
+%%PV20.1
+     %% ens diu els segments que s'inclouen dins un mateix glif
+%%Test
+%%PVmut
+     false
+     {
+      segmentsARAglif == (^ segments)==
+      %(passo)==
+     }if
+
+     /segmentsARAglif 0 def
+
+%%PV20.1
+%%Sentit d'escriptura per alfabets diferents al llatí o altres efectes
+     XtramEscriu add /XtramEscriu exch def  %% x del glif següent
+
+%%Unicode
+%%EP no perdem de vista l'algorisme repicaHTMLentities.ps com a eina lectora de cadenes Unicode
+     iGac ctts  %% aquí és on podríem treballar amb strings a doble octet o més
+%%Sentit d'escriptura per alfabets diferents al llatí o altres efectes
+     %% eAd decideix si llegim la cadena de text de dreta a esquerra (sub) o d'esquerra a dreta (add)
+     eAd {add}{sub}ifelse
+
+%%TEST
+     %dup 2 eq{(....)pstack quit}if
+
+     /iGac exch def
+
+     %% exhaurim els glifs?
+     %% quan s'esgota el text (el repetim o ens aturem?) i no s'esgoten els segments
+     iGac MAXglif eq
+     {
+%%PVmut
+      false
+      {
+       (\n ...hem esgotat els )print flush MAXglif 12 string cvs print flush ( glifs que tenia el text\n)print flush
+       ( ...encara ens queden )print flush nS 12 string cvs print flush ( segments per compondre\n)print flush
+       %% en el cas de les rectes llargues aquest % no és acurat doncs hauria de computar el % que ha fet del darrer per ser exactes
+       ( ...queda per compondre el )print flush nS 100 mul nSi div round cvi 12 string cvs print flush (% del recorregut\n)print flush
+      }if
+
+      %% si tenim una mitjana de segments/glif hauríem de poder deduir el nombre de caràcters que faltarien per esgotar el text
+%%TEST
+      /txtEsgotat true def
+      exit
+     }if
+     /cmpnm true def  %% componem? (de moment no actua)
+    }ifelse  %% s'esgota o no s'esgota el segment?
+
+%%TEST
+    %exit
+   }  %% proc componedor de cshow
+%%Unicode
+%%EP no perdem de vista l'algorisme repicaHTMLentities.ps com a eina lectora de cadenes Unicode
+   tae iGac ctts  %% aquí és on podríem treballar amb strings a doble octet o més
+   getinterval
+   %% aquest operador, per sí sol, no compon ni pinta cap glif, tal com diu el PLRM3:
+   %% «cshow does not paint the glyph and does not change the current point, although proc may do so»
+   cshow  %% sense necessitat de posicionar-nos, dins el proc, ens dóna el codi i l'ample x,y de composició del glif
+
+  }loop  %% per recórrer el segment, fins que s'esgoti, amb els glifs a compondre
+
+%%EP! no sabem perquè aqui queda un paràmetre a l'stack, que segurament és l'ample d'un segment(32?), n vegades ...netegem?
+%%Netegem?
+cleartomark
+
+  grestore  %% desactivem la rotació de la línia de base de composició
+
+  %% aquí hauríem de decidir si aturem l'algorisme o tornem a començar el text fins a esgotar els segments
+  txtEsgotat
+  {  %% si hem esgotat el text sortim del for dels segments
+   exit
+  }if
+
+%%Nou%%!!
+  %% activant de nou aquestes variables fa que l'inici dels glifs quadrin amb l'inici dels nodes d'enllaç del cursus segmentat
+  %% sempre que l'ample del glif sigui menor que l'ample del tram segmentat del cursus, doncs sinó mai no el compon
+  %% component sobre una corba, a molta resolució, no ens compondrà res (tots els segments seran més petits que l'ample dels glif)
+  %% pot tenir sentit en segons quins casos, però ho desaconsellem per a les corbes (és per treballar exclusivament amb rectes)
+  %% lògica? un cop hem mesurat la distància del segment ja podem actualitzar x,y node inicial pel següent?
+  %% l'exemple d'ús més evident és quan volem recórrer un quadrat: activant aquestes variables el recorrem fidelment
+  %% i si no ho fem, en funció de com s'acosta el glif al canvi de sentit, es compensa amb un pendent al vèrtex següent
+%%MENÚ7: l'inici dels glifs quadra amb l'inici dels nodes d'enllaç del cursus segmentat?
+  false
+  {
+   araX /suaraX exch def
+   araY /suaraY exch def
+  }if
+
+%%PVmut
+  false
+  {
+   (...segment...)==
+  }if
+
+  %% quan s'esgoten els segments i no s'esgota el text?
+  nS 1 sub 0 eq
+  {
+
+%%PVmut?
+   true
+   {
+    (\n ...hem esgotat els segments i queden encara... ) print flush
+    MAXglif iGac sub ctts idiv abs 12 string cvs print flush  %% glifs que encara queden per compondre
+    ( ...glifs per compondre\n\n)print flush
+
+%%PVclau resta de text dins l'string /tae que encara queda per compondre
+    tae iGac MAXglif iGac sub getinterval ==
+   }if
+
+%%SNRD
+   /ldbEsgotada true def
+
+   exit
+
+  }
+  {
+   nS 1 sub /nS exch def
+  }ifelse
+
+%%TEST
+  %exit
+
+ }for  %% que compon per la línia de base (o cap/peus del FontBBox), indistintament per la part interior o exterior del path
+
+%%PVclau
+%%PVmut
+ false
+ {
+  dS == (^ /dS ample de la linia de base del darrer glif compost\n\n)print flush
+  TxGlifs == (^ /TxGlif longitud d'amples dels glifs compostos\n\n)print flush
+  suaraX == suaraY == (^ suaraX | suaraY\n\n)print flush
+ }if
+
+ %apfa araX araY suaraX suaraY
+ %suaraX ==
+ %(b r o s s a)pstack
+
+ grestore
+
+}stopped
+{
+ ( << tenim un problema a l'engalzaGlifs)pstack quit
+}if
+
+}bind def
+
+
+/exhaurit false def  %% hem exhaurit tot el text a compondre?
+/assaig true def  %% assagem els glifs o els componem definitvament
+/iparagraf 0 def  %% índex dels paràgrafs a compondre
+/ildeBase 0 def  %% índex de les línies de base a compondre
+ldeBase length /MAXldeBaseFinals exch def
+motS length /MAXparagrafS exch def  %% nombre màxim de paràgrafs a compondre
+
+{  %% loop componedor
+
+ assaig
+ {  %% assagem la composició dels glifs
+
+  {  %% loop d'assaig de la componedora
+
+%%TEST
+0 /intents exch def
+
+   {  %% loop dels paràgrafs (de les línies de base)
+
+    motS iparagraf get dup length string copy
+    /ARAprgrf exch def  %% còpia de seguretat del paràgraf sencer per quan cal recalcular i començar de nou
+
+    {  %% loop dels mots
+
+     ldeBase ildeBase get  %% agafa una línia de base
+
+gsave
+%%TEST
+%/assaig false def
+     motS iparagraf get  %% agafa el primer paràgraf
+     engalzaGlifs  %% activem la componedora
+grestore
+
+     %% omple de glifs una (1) línia de base component per paraules senceres
+%(<<<<<)pstack quit
+%%TEST per visualitzar al prompt cada vegada que executem engalzaGlifs
+(<< + + + + engalzaGlifs treballa)==
+%motS ==
+
+     %% llavors avaluem:
+
+      %%2 si s'han esgotat o no les paraules del text a compondre
+      txtEsgotat
+      {  %% hem compost el mot sencer
+%%Cal refer
+       %% desem el mot a l'índex coincident de la línia de base d'ús pel loop componedor definitiu
+%       motsDefinitius dup length 1 sub dup /araVa exch def get
+%       dup length 1 add array dup 3 -1 roll 0 exch putinterval  %% ampliem l'array pel mot a incloure
+       %% i el desem a l'índex coincident de la línia de base
+%       dup dup length 1 sub motS imots get put motsDefinitius exch araVa exch put
+
+       %% fem córrer l'índex dels paràgrafs compostos
+       iparagraf 1 add /iparagraf exch def
+(s'ha EXHAURIT tot el text a compondre!)==  %quit
+/exhaurit true def
+      }
+      {  %% no hem pogut compondre el text sencer
+
+(ENCARA ens queda text per compondre) ==  %pstack quit
+%ldbEsgotada ==  %% com juga aquest gatell?
+
+
+      }ifelse
+
+      exhaurit
+      {  %% s'ha exhaurit tot el text a composar
+       %% on som?
+       MAXldeBaseFinals
+%MAXliniesDbase
+       ildeBase 1 add eq
+       {  %% si som a la darrera línia de base
+(ja podem sortir dels loops!) ==
+%quit
+        /sortimDmots true def
+        /sortimDparagrafs true def
+        /sortimDassaig true def
+       }
+       {
+(HEM EXHAURIT el text a compondre sense arribar a la darrera línia de base ...distem?) ==
+%% ens caldrà comptar a quantes línies de base de distància som del final per decidir si ampliem el cos o no
+MAXldeBaseFinals
+%MAXliniesDbase
+ildeBase 1 add sub
+dup ==
+2 gt
+{
+ (som a mes de 2 linies de /MAXliniesDbase ...ARA NO ENS ATUREM)==
+        /sortimDmots true def
+        /sortimDparagrafs true def
+        /sortimDassaig true def
+}
+{
+(pero sortim igualment dels loops!) ==
+        /sortimDmots true def
+        /sortimDparagrafs true def
+        /sortimDassaig true def
+}ifelse
+       }ifelse
+
+%%TEST ens cal desar la darrera línia de text que hem compost
+       motS iparagraf 1 sub get 0 iGac getinterval  %% la darrera línia de text que hem compost?
+       motsDefinitius length dup /araVa exch def 1 add array dup 0 motsDefinitius putinterval dup araVa 4 -1 roll put
+       /motsDefinitius exch def  %% el desem
+      }
+      {  %% ENCARA NO s'ha exhaurit tot el text a composar
+       %% on som?
+       MAXldeBaseFinals
+%MAXliniesDbase
+       ildeBase 1 add eq
+       {  %% si som a la darrera línia de base
+
+(estem obligats a RECALCULAR o l'interlineat o el cos, a la baixa, i tornar a compondre des del principi) ==
+
+%%Mètode interlínea
+%% hem de saber quantes línies de base haurem d'afegir, sense tocar el cos, per tal que el % dels glifs a compondre hi entrin
+%% si hem compost n glifs amb m linies de base, pel total de N glifs quantes línies de base necessitarem?
+%% multipliquem el total de N glifs per les m línies de base i ho dividim pels n glifs que hem compost
+%% llavors aquest nou nombre de línies de base cal saber quin % del cos suposa per validar-lo (p.e. si està per sota del 100%)
+%% si està per sota del 100% haurem d'activa el Mètode cos:
+ARAprgrf length  %% total N de glifs a compondre
+ldeBase length dup ==  %% línies de base fetes servir ara
+mul 
+%% restem els glifs que ens han quedat per compondre, fins al final del text, dels totals, per saber els que hem compost
+ARAprgrf length  %% total N de glifs a compondre
+motS 0 get length iGac sub  %% glifs que ens han quedat per compondre
+sub  %% glifs que hem compost
+div ceiling cvi  %% nou nombre de línies de base que necessitem, amb el mateix cos, perquè hi càpiga tot el text
+dup dup == (^^^^ nou nombre de línies de base que necessitem)==  %quit
+/MAXliniesDbase exch def
+%% aquest NOU nombre de línies de base quin % suposa del cos?
+yTsnrd  %% línia de base del titular Sónar+PAPER
+cos_proposta_sonar+PAPER 2 mul sub  %% li restem 2 vegades el /cos_proposta_sonar+PAPER
+yPagina 2 div sub  %% espai y que tenim per compondre
+exch div  %% NOU valor de l'interlineat
+dup dup == (^^^^ NOU valor de l'interlineat)==
+/interlineat_cos_proposta_sonar+PAPER exch def
+%% està per sota del 100%?
+cos_proposta_sonar+PAPER dup ==
+exch gt  %% és més gran el cos que l'interlineat?
+{
+%%Mètode cos
+ %% cal repassar els valors que ara dóna perquè la sensació és que hi tenim encara un forat que rebaixa excessivament el cos!
+(CAGADA PASTORET!)== quit
+ %% en base al valor de l'interlineat donem un nou valor al cos?
+}
+{
+ (NO!)== %quit
+ %% inicialitzem variables
+ % /motsMestreXlinia exch def  %% actualitzem el valor apujant el nombre de mots per línia
+ [] /motsDefinitius exch def  %% netegem la col·lecció de línies a punt de compondre
+ motS 0 ARAprgrf put  %% regenerem tot el text
+ 0 /ildeBase exch def  %% comencem de de zero
+
+        /sortimDmots true def
+        /sortimDparagrafs false def
+        /sortimDassaig false def
+
+%%REgenerem les /MAXliniesDbase (o menys) en funció del valor final de /interlineat_cos_proposta_sonar+PAPER
+[  %% les línies de base com a paths actius ordenades de dalt a baix
+ %% y1 y2
+ yTsnrd  %% línia de base del titular Sónar+PAPER
+ cos_proposta_sonar+PAPER 2 mul sub  %% li restem 2 vegades el /cos_proposta_sonar+PAPER
+ /yLbase exch def
+ 256 string /procDinamic exch def  %% una string com a buffer d'escriptura per construir un packedarray amb variables dinàmiques
+ procDinamic /NullEncode filter /packEscriu exch def
+ %% en fem fins a /MAXliniesDbase ?
+ MAXliniesDbase
+ {  %% repeat
+  yLbase yPagina 2 div gt
+  {  %% construïm el procediment per fer la línia de base
+   packEscriu ({) writestring
+   packEscriu xmargeArtBox 64 string cvs writestring  %% x1
+   packEscriu ( ) writestring
+   packEscriu  yLbase 64 string cvs writestring  %% y1
+   packEscriu ( moveto ) writestring
+   packEscriu xArtBox xmargeArtBox add 64 string cvs writestring  %% x2
+   packEscriu ( ) writestring
+   packEscriu  yLbase 64 string cvs writestring  %% y2
+   packEscriu ( lineto}) writestring
+  }if
+  packEscriu closefile
+  procDinamic cvx exec  %% executem a l'stack l'string amb la proc a dins
+  256 string /procDinamic exch def  %% inicialitzem el buffer d'escriptura
+  procDinamic /NullEncode filter /packEscriu exch def
+  %% actualitzem l'interlineat
+  yLbase interlineat_cos_proposta_sonar+PAPER sub /yLbase exch def
+ }repeat
+
+] /ldeBase exch def
+
+%% variable clau pel control del text
+ldeBase length /MAXldeBaseFinals exch def
+
+%%TEST
+%% si són idèntiques perquè n'hi ha dues?
+%MAXliniesDbase MAXldeBaseFinals eq ==
+
+ (- - - - - - - - -)==
+}ifelse
+
+
+%%TEST
+intents 1 add /intents exch def
+
+       }
+       {  %% NO som a la darrera línia de base
+(encara no som a la darrera línia de base, i seguim COMPONENT) ==
+
+%% gràcies a /iGac que és l'índex del darrer glif que NO s'ha compost
+%% podrem desar el tram de text que ja s'ha compost bé a /motsDefinitius
+%% però abans haurem d'esquilar el mot que hagi quedat trencat o no (si acabem amb un espai en blanc)
+
+motS iparagraf get iGac get 32 eq  %% el darrer glif compost és un espai en blanc?
+{  %% si HO ÉS, traiem el tram net de text compost per desar a /motsDefinitius
+ %% i purguem el 32 per actualitzar el tram de text que encara queda per compondre a /motS
+ motS iparagraf get dup 0 iGac getinterval  %% el text que ja hem compost
+
+%%TEST per visualitzar al prompt cada vegada el text que ja hem compost
+%dup == (<<- - - - text compost/darrer glif 32)==
+%iGac ==
+
+ motsDefinitius length dup /araVa exch def 1 add array dup 0 motsDefinitius putinterval dup araVa 4 -1 roll put
+ /motsDefinitius exch def  %% el desem
+ dup length iGac 1 add sub iGac 1 add exch getinterval  %% el text que encara ens queda per compondre
+
+%%TEST per visualitzar al prompt cada vegada el text pendent de compondre
+%dup == (<<- - - - x compondre/darrer glif 32)==
+
+ %% el desem novament a motS a l'índex del paràgraf que toca
+ motS exch iparagraf exch put
+%motS(cal purgar el 32!)pstack quit
+ /sortimDmots false def
+
+%%AQUEST es el calcul bo dels glifs que encara queden per compondre però per alguna raó no AQUÍ no dóna el resultat esperat!
+%MAXglif iGac sub ctts idiv abs
+%== %% llavors
+%tae % dup length 3 -1 roll sub 0 exch getinterval
+%== (/ / fins on ha compost ara?) ==
+
+}
+{  %% si NO ho és, esquilem cap enrera el tram esquerre del mot que ha quedat trencat
+ %% per desar el tram net de text compost (sense el mot trencat) a /motsDefinitius
+ %% i actualitzem (incloent-hi el mot trencat) el tram de text que encara queda per compondre a /motS
+ motS iparagraf get dup 0 iGac getinterval  %% el text que ja hem compost
+
+%%TEST per visualitzar al prompt cada vegada el text que ja hem compost
+%dup == (<<- - - - text compost/darrer glif mot trencat)==
+%iGac ==
+
+ %% aïllem el tros del mot que ha quedat tallat després del darrer espai en blanc
+ dup
+ %% deixa a l'stack el tros de mot que ha quedat tallat 
+ {  %% loop
+  ( ) search
+  {
+   pop pop
+  }
+  {
+   exit
+  }ifelse
+ }loop
+
+%%TEST
+%dup ==
+
+ length 1 add dup /trosMot exch def  %% a la mida del tros li afegim l'espai en blanc que el separava
+ 1 index length exch sub 0 exch getinterval  %% línia de neta de text a compondre
+
+%%TEST per visualitzar al prompt cada vegada la línia neta del text pendent de compondre
+%dup == (<<- - - - linia neta a compondre/darrer glif mot trencat)==
+
+ motsDefinitius length dup /araVa exch def 1 add array dup 0 motsDefinitius putinterval dup araVa 4 -1 roll put
+ /motsDefinitius exch def  %% el desem
+ dup length iGac trosMot 1 sub sub sub iGac trosMot 1 sub sub exch getinterval  %% el text que encara ens queda per compondre
+
+%%TEST per visualitzar al prompt cada vegada la línia neta del text pendent de compondre
+%dup == (<<- - - - text x compondre/darrer glif mot trencat)==
+
+ %% el desem novament a motS a l'índex del paràgraf que toca
+ motS exch iparagraf exch put
+%(cal esquilar el mot!)pstack quit
+ /sortimDmots false def
+
+%%AQUEST es el calcul bo dels glifs que encara queden per compondre però per alguna raó no AQUÍ no dóna el resultat esperat!
+%MAXglif iGac sub ctts idiv abs
+%== %% llavors
+%tae
+% dup length 3 -1 roll sub 0 exch getinterval
+%== (%%%% fins on ha compost ara?)==
+
+}ifelse
+
+
+%stop  % quit
+       }ifelse
+      }ifelse
+
+%suaraX == suaraY ==
+%araX == araY ==
+
+%interlineat_cos_proposta_sonar+PAPER ==
+%cos_proposta_sonar+PAPER ==
+
+     sortimDmots
+     {
+      exit
+     }if
+
+%% acualitzem l'índex de línies de base
+ildeBase 1 add /ildeBase exch def
+
+    }loop  %% dels mots
+
+%%TEST
+    sortimDparagrafs
+    {
+     exit
+    }if
+
+   }loop  %% dels paràgrafs (de les línies de base)
+%6 en funció de si abans s'ha esgotat el text o les línies de base decidirem o no sortir del loop
+%7 si no sortim del loop serà per fer una variació en la tipografia per tal d'adaptar-la millor:
+%% augmentant/reduïnt el cos (si l'interlineat ho permet) (o jugant amb el pes/ample in extremis doncs ens convé matenir l'estil)
+%% de moment deixem per una altra versió el jugar amb els espais entre paraules i lletres
+
+   sortimDassaig
+   {
+%%TEST
+    exit
+   }if
+
+  }loop  %% d'assaig de la componedora
+
+ }
+ {  %% componem definitivament els glifs
+
+%%TEST
+(\n\n!!!! componem definitivament els glifs i CORREGIM? !!!!\n\n)print flush
+
+  %% triem la caixa?
+%  {  %% loop componedor definitiu
+  %8 hauria de compondre els /motsDefinitius segons els valors de cos, pes/ample, desats pel loop d'assaig de la componedora
+
+%%Caldria comprovar que si fem un nou assaig sense pintar ens poleix els glifs que han quedat mal situats
+%/assaig true def
+%%No ens deixem el cas que queda la darrera línia penjada?
+
+0 1 motsDefinitius length 1 sub
+{
+ dup ldeBase exch get
+ motsDefinitius 3 -1 roll get
+dup ==
+ engalzaGlifs  %% activem la componedora
+ 
+%(COMPONEM!)pstack quit
+}for
+
+%   exit
+%  }loop  %% componedor definitiu
+
+  /assaig false def
+ }ifelse
+
+%%TEST
+%exit
+
+ assaig
+ {
+  /assaig false def
+ }
+ {  %% sortim del componedor perquè ja hem compost definitivament els glifs?
+  exit
+ }ifelse
+
+}loop  %% componedor
+
+

@@ -1,0 +1,300 @@
+%%Adaptat com algorisme de mostra a pliegO'Maker
+%% generador de la taca de la pàgina (ArtBox) amb els 4 marges definits segons un topalls
+%% Van de Graaf, Gutenberg, Shöffer, Tschichold http://en.wikipedia.org/wiki/Canons_of_page_construction
+
+%% consells de l'Enric Tormo:
+%% el valor modular base escollit (a 3 a 6 a 13) ha de configurar, per anar bé, totes les variables que se'n deriven
+%% mòdul 3: cos + interliniat múltiple de 3, 3 columnes, 3 ???
+%% mòdul 12: condiciona com a dalt però també els seus submúltiples (6 i 3)
+
+%% gs -q -dNOSAFER -o VanDeGraaf2.pdf -sDEVICE=pdfwrite -c .setpdfwrite -f VanDeGraaf2.ps
+
+noNULL  %% pinta el contingut de pàgina?
+{  %% comportament null: el componedor ha de tenir anellat el codi que pinta contingut de pàgina
+
+%% definim o capturem d'empremt.ps els valors inicials d'ample i alt de la plana (àrea a diagramar)
+%%1440 /iAmple exch def  %% mai no voldrà dir que sigui el costat +ample!
+%xTbox
+xPagina /iAmple exch def  %% mai no voldrà dir que sigui el costat +ample!
+
+%%900 /iAlt exch def
+%yTbox
+yPagina /iAlt exch def
+
+%% valors inicials d'orígen de l'eix de coordenades de l'àrea a diagramar
+0 /oX exch def
+0 /oY exch def
+
+%% ARA NO VA ENCARA algorítmicament del valor del topall condicionarà el marge mínim (entre els quatre)
+12 /modulTopall exch def
+
+%0% ara el format de pàgina coincideix amb l'àrea de diagramació (pot no fer-ho!)
+%<<
+%  /PageSize[iAmple iAlt]
+%  /HWResolution [4000 4000]  %% activem al màxim la resolució (veure ghostpdf.ppd)
+%>>setpagedevice
+
+%%SNRD
+false
+{
+ %% fons de pàgina
+ %0% es veu millor si fem el fons negre?
+ /DeviceCMYK setcolorspace
+ false setoverprint
+ 1 1 0 0 setcmykcolor
+ 0 0 iAmple iAlt rectfill
+}if
+
+%% diccionari on desarem tot el sistema de coordenades absolutes del traçat Van de Graaf (o el que sigui)
+/graella <<>> def
+
+%% fiquem l'ample i l'alt de pàgina o àrea a la graella
+graella /AA [iAmple iAlt] put
+
+%% deduïm els quatre focus o xamfrans
+/ll [oX oY] def  %% sempre serà a l'índex 0 de 4x, 4F o les arrays on calgui
+/ul [oX iAlt] def  %% sempre serà a l'índex 1 de 4x, 4F o les arrays on calgui
+/ur [iAmple iAlt] def  %% sempre serà a l'índex 2 de 4x, 4F o les arrays on calgui
+/lr [iAmple oY] def  %% sempre serà a l'índex 3 de 4x, 4F o les arrays on calgui
+%% els fiquem dins la graella
+graella /4x [ll ul ur lr] put
+
+%% paquet amb els 4 eixos principals / _ \ |
+/4eixos
+[
+ [
+  ll ur  %% 0 /
+ ]
+ [
+  [oX iAlt 2 div] [iAmple iAlt 2 div]  %% 1 _
+ ]
+ [
+  ul lr  %% 2 \
+ ]
+ [
+  [iAmple 2 div oY] [iAmple 2 div iAlt]  %% 3 |
+ ]
+]def
+
+%0% avaluem si els 4 eixos es pinten bé
+%%SNRD
+.1 setlinewidth 0 1 1 0 setcmykcolor
+4eixos
+{
+ newpath aload pop aload pop moveto aload pop lineto stroke  %% / _ \ |
+}forall
+
+%% sintetitzem en un procediment la detecció del creuament de dues línies
+/cruilla
+{
+ %% Necessitem dos punts de la recta del vector que li creuen, i dos punts de la recta del potencial creuador
+
+ %% dos punts de la recta del vector que li creuen 
+ /y2 exch def /x2 exch def /y1 exch def /x1 exch def
+ %% dos punts de la recta del potencial creuador
+ /_y2 exch def /_x2 exch def /_y1 exch def /_x1 exch def
+
+ %% càlcul dels elements de la funció de la recta del vector que li creuen
+ %1% segons y = m * x + n busquem l'equivalència de n pel primer punt
+ %2% busquem l'equivalència de n pel segon punt
+ %3% substituïm el valor de n del segon punt dins l'equivalència de n del primer (o a l'inrevés) i així deduïm m
+ y2 x2 neg y1 x1 neg
+ %% o indistintament y1 x1 neg y2 x2 neg
+ %% i treballem les operacions de deducció del valor de m (associat a x):
+ 3 -1 roll neg add 3 1 roll neg add exch
+ %% si val zero ho passem a .000001 per evitar l'indefinedresult
+ dup 0 eq {pop .000001}if
+ div /m exch def
+ %4% un cop tenim el valor de m el substituïm a qualsevol de les dues equivalències per trobar n
+ %% algorítmicament treballem les operacions de deducció del valor de n:
+ y2 x2 neg m mul add /n exch def
+ %% Àrea de treball i detecció
+ %% currentpagedevice /PageSize get aload pop
+ %% 0 0 moveto 0 1 index lineto 2 copy lineto pop 0 lineto closepath  %% path del MediaBox
+ 0 0 moveto 0 iAlt lineto iAmple iAlt lineto iAmple 0 lineto closepath  %% path actiu de l'àrea a diagramar
+ true upath cvlit /cAmi exch def  %% com a user path per comprovar l'insideness
+   
+ %% càlcul dels elements de la funció de la recta del vector creuador
+ %% algorisme de càlcul d'm i n de la funció de la recta dels raig creuador
+ _y2 _x2 neg _y1 _x1 neg
+ 3 -1 roll neg add 3 1 roll neg add exch
+ %% si val zero ho passem a .000001 per evitar l'indefinedresult
+ dup 0 eq {pop .000001}if
+ div /m2 exch def
+ _y2 _x2 neg m2 mul add /n2 exch def
+
+ %% calculem el valor x del punt de creuament (associat a m) computant les dues funcions
+ m n m2 n2
+ %% si les rectes són paral·leles i no es creuen, aquí donarà un indefinedresult (divisió per zero)
+ {
+  3 -1 roll neg add 3 1 roll neg add div
+ }stopped
+ {
+%0%  (\n\n>>> les dues linies son paral·leles! <<<\n\n) print flush
+ }
+ {
+  /Cx exch def
+  %% calculem el valor y del punt de creuament, indistintament amb m n o m2 o n2
+  m Cx mul n add /Cy exch def
+  %% m2 Cx mul 0 add /Cy exch def
+  %% el punt de creuament és dins la pàgina?
+  gsave
+  Cx gsave Cy cAmi %% avaluador de si el punt és dins el MediaBox
+  inufill % interroga el píxel d'un Userpath en positiu (+ false charpath)
+  %% inueofill %% interroga el píxel d'un Userpath i perfila (+ true charpath)
+  %% not % negativa !!!
+  grestore grestore
+  {  %% visualitzem el creuament sempre que sigui dins del format de pàgina!
+   %% aquí cal avaluar si els paths pintats (stroke) es toquen o no, llavors caldrà, per fer-ho bé, una doble comprovació:
+   %% cadascuna de les dues línies caldrà fer-ne un upath per comprovar si el punt x,y de creuament, el toca, doncs només si
+   %% totes dues compleixen la condició, podrem estar segurs que realment els paths pintats es creuen!
+   gsave
+   x1 y1 moveto x2 y2 lineto  %% Primer recta
+   true upath cvlit /cAmi exch def  %% com a user path per comprovar l'insideness
+   Cx gsave Cy cAmi inustroke  %% interroga el píxel d'un userpath, com a path obert que només es pot traçar
+   grestore grestore
+   gsave
+   _x1 _y1 moveto _x2 _y2 lineto  %% Segona recta
+   true upath cvlit /cAmi exch def  %% com a user path per comprovar l'insideness
+   Cx gsave Cy cAmi inustroke  %% interroga el píxel d'un userpath, com a path obert que només es pot traçar
+   grestore grestore
+   and  %% només si tots dos són vertaders
+   {  %% aquest és l'únic cas on ara ens interessa desar les dades
+%0%    0 1 0 0 setcmykcolor Cx Cy 3 3 rectfill  %% quadrat de comprovació del punt de creuament
+%0&    Cy Cx (\n\n >>> les línies es toquen i creuen a: ) print flush
+%0%    32 string cvs print flush (, ) print flush 32 string cvs print flush (\n\n) print flush
+   }
+   {  %% si el píxel de l'insideness ens la juga i no troba el punt de coincidència (cal treballar amb +gruix?)
+    %% o un error de l'insideness pot ser provocat pel sentit com es tracen les línies?
+%0%    0 1 0 0 setcmykcolor Cx Cy 3 3 rectfill  %% quadrat de comprovació del punt de creuament
+%0%    (\n\n >>> els paths NO ES TOQUEN!) print flush
+%0%    Cy Cx (\n >>> pero les línies es creuen a: ) print flush
+%0%    32 string cvs print flush (, ) print flush 32 string cvs print flush (\n\n) print flush
+   }ifelse
+  }
+  {
+%0%   (\n\n >>> el punt de creuament es FORA la pagina!) print flush
+%0%   Cy Cx (\n >>> pero les línies es creuen a: ) print flush
+%0%   32 string cvs print flush (, ) print flush 32 string cvs print flush (\n\n) print flush
+  }ifelse
+ }ifelse
+}bind def
+
+%% on desarem les coordenades dels 4 punts de la taca de la pàgina
+%% cal saber si en cerquem +d'1 o el decidim en funció d'un topall
+/4ArtBox 4 array def
+
+%% les dues diagonals menors amb la punxa al centre cap a dalt inicien el procés de recerca de punts per establir els marges
+%% 1. hem de trobar el punt de creuament amb l'índex 2 de 4eixos
+newpath
+ll aload pop
+
+%0%
+2 copy moveto 
+
+iAmple 2 div iAlt
+
+%0%
+2 copy lineto stroke %% /
+
+4eixos 2 get aload pop aload pop 3 -1 roll aload pop cruilla
+/pX1 Cx def /pY1 Cy def
+
+%% 2. hem de trobar el punt de creuament amb l'índex 0 de 4eixos
+newpath
+lr aload pop
+
+%0%
+2 copy moveto
+
+ iAmple 2 div iAlt
+
+%0%
+2 copy lineto stroke  %% \
+
+4eixos 0 get aload pop aload pop 3 -1 roll aload pop cruilla
+/pX2 Cx def /pY2 Cy def
+
+%% 3. amb el valor X del punt trobat a 2. i iAlt com  Y, tracem una línia fins el punt de creuament de 1.
+newpath  %0% 1 0 1 0 setcmykcolor
+pX2 iAlt
+
+%0%
+2 copy moveto
+
+ pX1 pY1
+
+%0%
+2 copy lineto stroke
+
+%% 4. hem de trobar el punt de creuament entre la línia 3. i la diagonal menor traçada a 2.
+lr aload pop
+
+%0%
+2 copy moveto 
+
+iAmple 2 div iAlt
+
+%0%
+2 copy lineto stroke  %% \
+
+cruilla 
+
+%% 5. el punt de creuament trobat a 4 ens dóna el valor del marge N (valor Y)
+/pY5 Cy def
+
+%% 6. amb el valor Y de 5. tracem una línia horitzontal amb l'X d'iAmple de forma que trobem els dos punts de creuament amb
+%% les dues diagonals majors: índex 0 i 2 de 4eixos, aquests seran els punts ur i ul, que desem a l'índex 2 i 1 de 4ArtBox
+%% primer creuament amb la diagonal major \ per trobar el punt ur de la taca
+0 pY5 iAmple pY5 4eixos 0 get aload pop aload pop 3 -1 roll aload pop cruilla
+/pX6.1 Cx def /pY6.1 Cy def 4ArtBox 2 [pX6.1 pY6.1] put
+%% segon creuament amb la diagonal major / per trobar el punt ul de la taca
+0 pY5 iAmple pY5 4eixos 2 get aload pop aload pop 3 -1 roll aload pop cruilla
+/pX6.2 Cx def /pY6.2 Cy def 4ArtBox 1 [pX6.2 pY6.2] put
+
+%% 7. des dels dos punts trobats a 6. tracem dues verticals que es creuin amb les dues diagonals menors corresponents,
+%% de 1. i 2. per tal de localitzar els dos punts restants de la taca: ll i lr, que desem a l'índex 0 i 3 de 4ArtBox
+%% primer creuament de la vertical oest amb la diagonal menor de 1. per trobar el punt ll de la taca
+pX6.2 pY6.2 pX6.2 0 ll aload pop iAmple 2 div iAlt cruilla
+4ArtBox 0 [Cx Cy] put
+%% segon creuament de la vertical est amb la diagonal menor de 2. per trobar el punt lr de la taca
+pX6.1 pY6.1 pX6.1 0 lr aload pop iAmple 2 div iAlt cruilla
+4ArtBox 3 [Cx Cy] put
+
+%% 8. per tal de trobar altres possibles taques harmòniques, canviaríem les primeres diagonals menors per les segones, o
+%% terceres, de fet valdria la pena implementar el loop on detectem tots els punts de creuament àuric de caminsQjaSonNous2.ps
+%% ...això ja ho farem!
+
+%0% pintem l'ArtBox
+%%SNRD
+ 0 1 1 0 setcmykcolor
+ 4ArtBox aload pop 4 -1 roll aload pop 2 copy /restemY exch def /restemX exch def
+ 4 -1 roll aload pop restemY sub exch restemX sub exch
+
+%%SNRD
+2 copy /yArtBox exch def /xArtBox exch def 3 index /xmargeArtBox exch def 2 index /ymargeArtBox exch def
+
+ rectstroke pop pop
+
+%% treiem per la pantalleta els 4 valors per configurar el menú de l'Scribus:
+%% Pàgina > Gestiona propietats de pàgina > Guia de Marges > Esquerra: Dreta: Dalt: Baix:
+%0% 4ArtBox 0 get 0 get 64 string cvs (\n\nEsquerra: ) print flush print flush
+%0% 4ArtBox 2 get 0 get iAmple exch sub 64 string cvs (\n\nDreta: ) print flush print flush
+%0% 4ArtBox 2 get 1 get iAlt exch sub 64 string cvs (\n\nDalt: ) print flush print flush
+%0% 4ArtBox 0 get 1 get 64 string cvs (\n\nBaix: ) print flush print flush
+
+%% definim l'ArtBox
+%%[ /ArtBox
+%% [
+%%  4ArtBox 0 get aload pop
+%%  4ArtBox 2 get aload pop
+%% ]
+%%/PAGE pdfmark  %% rectangle amb una línia vermella per defecte als Reader/Acrobat
+
+%%(--------) 4ArtBox pstack quit
+
+%0% showpage
+
+}if  %% comportament null: anellat del codi que pinta contingut de pàgina
+%% prohibit fer servir showpage!
+

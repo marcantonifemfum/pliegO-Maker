@@ -1,0 +1,205 @@
+%!
+%% pàgina del llançat corresponent a les guardes de la contraportada del nUp triat
+
+
+%% traçat harmònic
+gsave
+(/Users/femfum/PliegOS/sonarD2023_paper/VanDeGraaf3_SNRD.ps)  %% Terminal
+%()  %% localhost
+%()  %% Teixidora
+(r) file cvx exec
+
+
+%%SNRD definim de forma fixa una instància de la MM per encapçalar el títol del projecte sonar+PAPER
+%% Adobe Sans MM
+%%URLsnr
+(/Users/femfum/MultipleMaster/AdobeSans_AdobeSerif/ZX______.PFB)  %% Terminal
+%()  %% localhost
+%()  %% Teixidora
+
+findfont
+%%MÈTODE0 d'anàlisi dels eixos mestres d'una MM
+%% extraiem els valors mínims, intermitjos (si n'hi han) i màxims, de cadascun dels eixos dinàmics de la MM
+%% fem un diccionari amb tots els eixos de variabilitat i els seus valors mestres dins una array
+/AsansMMeixosDinamics 0 dict def
+dup /FontInfo get dup /FIMM exch def
+/BlendAxisTypes get length 1 sub 0 exch 1 exch
+{
+ /araEix exch def
+ AsansMMeixosDinamics 
+ FIMM /BlendAxisTypes get araEix get
+ [  %% potser que l'eix de mescla sigui linial entre més de dos valors (p.e. l'eix de correcció òptica segueix aquesta lògica)
+  FIMM /BlendDesignMap get araEix get
+  {aload pop pop}forall
+ ] put
+}for
+dup length dict begin
+{
+ 1 index /FID ne
+ {def}{pop pop}ifelse
+}forall
+%% atenció que aquesta crida només és vàlida a Ghostscript!
+/Encoding systemdict /EncodingDirectory get /WinAnsiEncoding get def  %% xifrat WinAnsi
+currentdict end /Camaleonica_WA exch definefont pop
+%% mooolt important: carreguem una (1) sola vegada el diccionari genèric ben xifrat de la MM
+/Camaleonica_WA findfont /AsansMMionari exch def
+%%MÈTODE1 per generar una instància MM via array del vector, a partir dels valors possibles fixats pel /BlendDesignMap
+%% Paul Haahr dóna aquest mètode com més estable...
+/unaInstanciaDelAsansMM  %% literal per definir la instància concreta que generem
+%% /MinionMM findfont  %% aquí substituïm la crida original pel seu diccionari ja normalitzat a WinAnsi...
+AsansMMionari
+dup begin  %% entrem dins el diccionari de la MM per poder cridar els procediments NormalizeDesignVector i ConvertDesignVector
+[  %% array del vector que treballarà makeblendedfont
+ %% el seu ordre (fixat per /BlendAxisTypes) i els seus valors possibles (fixats per /BlendDesignMap)
+ %% necessitem obligatòriament tantes dades vàlides com eixos dinàmics de la MM
+%%AdobeSansMM
+ %% pesquem el pes i l'ample aleatori d'una de les execucions de la MM al garigot
+ true setglobal
+ globaldict /pesiampleRandom get
+
+%%SNRD aquí és on podem fer treballar els pesos/amples problemàtics intencionadament per polir componedoraEnflataglifs_SNRD_0.ps 
+%pop
+dup ==  %% ho traiem per la pantalleta per després cridar-los intencionadament
+%%PESiAMPLE problemàtics que estressen l'algorisme
+
+%%En aquest cas a /motsDefinitius s'endrecen malament les cadenes finals a compondre!
+% [148 666] %% FET!
+
+%%En aquest cas a /motsDefinitius s'endrecen malament les cadenes finals a compondre!
+% [814 667] %% FET!
+
+%%En aquest cas a /motsDefinitius s'endrecen malament les cadenes finals a compondre!
+% [175 107] %% FET!
+
+%%En aquest cas a /motsDefinitius s'endrecen malament les cadenes finals a compondre!
+% [533 392] %% FET! 
+
+%%En aquest cas a /motsDefinitius s'endrecen malament les cadenes finals a compondre!
+% [50 50]  %% FET!
+
+%%En aquest cas a /motsDefinitius s'endrecen malament les cadenes finals a compondre!
+% [1450 50]  %% FET!
+
+%%En aquest cas a /motsDefinitius s'endrecen malament les cadenes finals a compondre!
+% [750 750]  %% FET!
+
+%%Sense missatges extres
+% [923 118]
+
+%%Amb ...reduim l'interlineat al 300% ...i... (s'ha EXHAURIT tot el text a compondre!) 
+% [1217 1149]
+
+%%Amb ...reduim l'interlineat al 300% ...i... (HEM EXHAURIT el text a compondre sense arribar a la darrera l\355nia de base ...distem?)
+% [522 1372]
+
+%%Amb (s'ha EXHAURIT tot el text a compondre!)
+% [546 379]
+
+%%Amb (estem obligats a RECALCULAR o l'interlineat o el cos, a la baixa, i tornar a compondre des del principi)
+% [727 472]
+
+%%Amb  ...augmentem l'interlineat al 120% (OOOOOOOO) (OOOOOOOO) (HEM EXHAURIT el text a compondre sense arribar a la darrera l\355nia de base ...distem?)
+% [162 120]
+%[588 167]
+
+ aload pop
+
+ false setglobal
+
+ %! 50 50  %% mínim pes (prima) i mínim ample (estreta)
+ % 50 1450  %% prima i màxim ample (ample)
+ %! 1450 50  %% màxim pes (grassa) i estreta
+ % 1450 1450  %% grassa i ample
+ %! 750 750  %% rodona
+ %% aquests dos procediments, i per aquest ordre, generen les dades necesàries del vector dins l'array
+ NormalizeDesignVector  %% normalitza les dades de cada eix mestre en valors entre 0 i 1
+ ConvertDesignVector  %% genera les dades finals pel seu ús dins la matriu de l'array per a makeblendedfont
+] end
+makeblendedfont
+definefont  %% fixem la font en memòria
+%% càcul de posicionat de la línia de base per la nova instància
+dup /FxArtBox exch def
+%% calculem el % de l'ascendent/descendent d'aquesta instància per tal de situar bé la línia de base en relació a l'ArtBox
+/FontBBox get dup 1 get abs dup 3 -1 roll 3 get add exch 100 mul exch div dup /AsansMMx100descendent exch def
+100 exch sub /AsansMMx100asdescendent exch def
+10 dup /cosAreglaD3 exch def  %% qualsevol cos va bé per saber l'ample del text a compondre
+FxArtBox exch scalefont setfont 0 0 moveto  %% qualsevol posició va bé per saber l'ample del text a compondre
+(Sónar+PAPER) stringwidth pop
+xArtBox cosAreglaD3 mul exch div /cosAreglaD3 exch def  %% càcul del cos perquè faci just l'ample d' xPagina
+1 1 1 1 setcmykcolor
+xmargeArtBox yArtBox AsansMMx100asdescendent cosAreglaD3 mul 100 div sub ymargeArtBox add
+dup /yTsnrd exch def
+moveto
+FxArtBox cosAreglaD3 scalefont setfont 
+(Sónar+PAPER)show
+grestore
+
+
+%% logo pliegO'Maker
+gsave
+%xPagina yPagina
+/DeviceRGB setcolorspace
+242 yArtBox 8 div mul 281 div dup 2 div
+xArtBox 2 div xmargeArtBox add exch sub ymargeArtBox 4 div  %% just perquè no es trenqui el filet de l'ArtBox
+translate
+yArtBox 8 div scale
+<<
+  /ImageType 1
+  /Width 242
+  /Height 281
+  /BitsPerComponent 8
+  /Decode [0 1 0 1 0 1]
+  /ImageMatrix [242 0 0 281 neg 0 281]
+  /DataSource
+%%URLsnr
+  (/Users/femfum/PliegOS/sonarD2023_paper/logoPliegOS_242x281.jpg)  %% Terminal
+%()  %% localhost
+%()  %% Teixidora
+  (r) file <</ColorTransform 1>> /DCTDecode filter
+>> image
+grestore
+
+
+%% breu de la proposta sonar+PAPER
+gsave
+(/Users/femfum/PliegOS/sonarD2023_paper/componedoraEnflataglifs_SNRD_0.ps)  %% Terminal
+%()  %% localhost
+%()  %% Teixidora
+(r) file cvx exec
+grestore
+
+
+%% QR recursiu
+gsave
+/DeviceRGB setcolorspace
+xArtBox 2 div xmargeArtBox add .06 add ymargeArtBox .06 add translate
+%xArtBox 2 div .1 sub dup scale
+xPagina 2 div xmargeArtBox sub .1 sub
+yPagina 2 div ymargeArtBox sub .12 sub
+scale
+<<
+  /ImageType 1
+  /Width 300
+  /Height 300
+  /BitsPerComponent 8
+  /Decode [0 1 0 1 0 1]
+  /ImageMatrix [300 0 0 300 neg 0 300]
+  /DataSource
+%%URLsnr
+  (/Users/femfum/PliegOS/sonarD2023_paper/QR_SNRD2023_300x300.jpg)  %% Terminal
+%()  %% localhost
+%()  %% Teixidora
+  (r) file <</ColorTransform 1>> /DCTDecode filter
+>> image
+grestore
+
+
+%% #nointerface
+gsave
+(/Users/femfum/PliegOS/sonarD2023_paper/enflataGlifs2_plegaVeu_metrica_contraguardaSNRD.ps)  %% Terminal
+%()  %% localhost
+%()  %% Teixidora
+(r) file cvx exec
+grestore
+
+%% personalització via useragent?

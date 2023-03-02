@@ -878,11 +878,11 @@ iSeq M2
 
 }if  %% només 1 cop
 
-%% Adobe Sans MM
 %%SNRD definim de forma fixa una instància de la MM per descriure la data i l'hora
+%% Adobe Sans MM
 %%URLsnr
-%(/Users/femfum/MultipleMaster/AdobeSans_AdobeSerif/ZX______.PFB)  %% Terminal
-(/Library/WebServer/Documents/www.pliegos.net/maker/sonarD2023/ZX______.PFB)  %% localhost
+(/Users/femfum/MultipleMaster/AdobeSans_AdobeSerif/ZX______.PFB)  %% Terminal
+%()  %% localhost
 %()  %% Teixidora
 
 findfont
@@ -942,7 +942,23 @@ xPagina dup 10 div dup /mH exch def  %% càlcul dels marges
 2 mul sub cosAreglaD3 mul exch div dup /cosAreglaD3 exch def  %% càcul del cos perquè faci just l'ample d' xPagina
 Fdataihora exch scalefont setfont mH mH moveto
 0 0 0 0 setcmykcolor  %% l'hora literària en blanc
-Sintagma show
+Sintagma
+{
+ ( ) search
+ {
+  pop pop
+ }
+ {
+  exit
+ }ifelse
+}loop
+%% en blanc fins la penúlima paraula tret que tingui el tocades al final?
+dup length Sintagma length exch sub Sintagma exch
+%(////)pstack quit
+ 0 exch getinterval show
+gsave  %% en vermell la darrera
+0 1 1 0 setcmykcolor show
+grestore
 %% hora
 Fdataihora cosAreglaD3 2 div scalefont setfont
 (00) dup dia 2 string cvs dup length 2 exch sub exch putinterval dup stringwidth pop
@@ -1149,8 +1165,8 @@ false setglobal
 
   %% AdobeSansMM
 %%URLsnr
-%  (/Users/femfum/MultipleMaster/AdobeSans_AdobeSerif/ZX______.PFB)  %% Terminal
-(/Library/WebServer/Documents/www.pliegos.net/maker/sonarD2023/ZX______.PFB)  %% localhost
+  (/Users/femfum/MultipleMaster/AdobeSans_AdobeSerif/ZX______.PFB)  %% Terminal
+%()  %% localhost
 %()  %% Teixidora
 
 %   (/Users/femfum/MultipleMaster/AdobeSans_AdobeSerif/ZY______.PFB)  %% AdobeSerifMM
