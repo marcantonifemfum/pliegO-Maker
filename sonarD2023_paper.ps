@@ -16,7 +16,12 @@ noNULL  %% pinta el contingut de pàgina?
   gsave
   gsave
   xPagina neg 0 translate
-  (/Users/femfum/PliegOS/sonarD2023_paper/ESCRiBA_garigot_SNRD.ps) (r) file cvx exec
+%%SNRD
+%%URLsnr
+  (/Users/femfum/PliegOS/sonarD2023_paper/ESCRiBA_garigot_SNRD.ps)  %% Terminal
+% (/Library/WebServer/Documents/www.pliegos.net/maker/sonarD2023/ESCRiBA_garigot_SNRD.ps)  %% localhost
+% (/var/www/wordpress/maker/sonarD2023/ESCRiBA_garigot_SNRD.ps)  %% Teixidora
+  (r) file cvx exec
   grestore
 
 %araMM =
@@ -45,8 +50,17 @@ noNULL  %% pinta el contingut de pàgina?
   oiX oiY translate
   mark
   %(/Users/femfum/PliegOS/sonarD2023_paper/sonar2023_logo_113x113.jpg)
-  (/Users/femfum/PliegOS/sonarD2023_paper/sonar2023_logoAR.jpeg)
-  (/Users/femfum/PliegOS/sonarD2023_paper/NouLectorDeJPEGs10.ps) (r) file cvx exec
+%%SNRD
+%%URLsnr
+  (/Users/femfum/PliegOS/sonarD2023_paper/sonar2023_logoAR.jpeg)  %% Terminal
+% (/Library/WebServer/Documents/www.pliegos.net/maker/sonarD2023/sonar2023_logoAR.jpeg)  %% localhost
+% (/var/www/wordpress/maker/sonarD2023/sonar2023_logoAR.jpeg)  %% Teixidora
+%%SNRD
+%%URLsnr
+  (/Users/femfum/PliegOS/sonarD2023_paper/NouLectorDeJPEGs10.ps)  %% Terminal
+% (/Library/WebServer/Documents/www.pliegos.net/maker/sonarD2023/NouLectorDeJPEGs10.ps)  %% localhost
+% (/var/www/wordpress/maker/sonarD2023/NouLectorDeJPEGs10.ps)  %% Teixidora
+  (r) file cvx exec
   cleartomark  %% aquest algorisme deixa brossa
   grestore
 
@@ -57,19 +71,51 @@ noNULL  %% pinta el contingut de pàgina?
  Npgn cvx exec 2 eq
  {
   gsave
-  (/Users/femfum/PliegOS/sonarD2023_paper/faLichtenberg_SNRD.ps) (r) file cvx exec
+%%SNRD
+%%URLsnr
+  (/Users/femfum/PliegOS/sonarD2023_paper/faLichtenberg_SNRD.ps)  %% Terminal
+% (/Library/WebServer/Documents/www.pliegos.net/maker/sonarD2023/faLichtenberg_SNRD.ps)  %% localhost
+% (/var/www/wordpress/maker/sonarD2023/faLichtenberg_SNRD.ps)  %% Teixidora
+  (r) file cvx exec
   grestore
   gsave
-  (/Users/femfum/PliegOS/sonarD2023_paper/fusHorariLiterari_xPliegOS_SNRD.ps) (r) file cvx exec
+%%SNRD
+%%URLsnr
+  (/Users/femfum/PliegOS/sonarD2023_paper/fusHorariLiterari_xPliegOS_SNRD.ps)  %% Terminal
+% (/Library/WebServer/Documents/www.pliegos.net/maker/sonarD2023/fusHorariLiterari_xPliegOS_SNRD.ps)  %% localhost
+% (/var/www/wordpress/maker/sonarD2023/fusHorariLiterari_xPliegOS_SNRD.ps)  %% Teixidora
+  (r) file cvx exec
   grestore
  }if
 
+%%Pàgines centrals a compondre text en quasevol nUp
+Npgn cvx exec 3 ge  %% entre la pàgina 3
+Npgn cvx exec M2 2 mul 2 sub le  %% i l'avantpenúltima pàgina
+and
+{
+ gsave
+%%SNRD
+%%URLsnr
+ % (\n - - - text central... )print flush Npgn print flush ( ...a compondre!\n)print flush
+ (/Users/femfum/PliegOS/sonarD2023_paper/componunaoduespagines_SNRD.ps)  %% Terminal
+% (/Library/WebServer/Documents/www.pliegos.net/maker/sonarD2023/componunaoduespagines_SNRD.ps)  %% localhost
+% (/var/www/wordpress/maker/sonarD2023/componunaoduespagines_SNRD.ps)  %% Teixidora
+ (r) file cvx exec
+ grestore
+}if
+
+
 %%Guardes de contraportada
- %% pàgina 2
+ %% pàgina nUp -1
  Npgn cvx exec M2 2 mul 1 sub eq
  {
   gsave
-  (/Users/femfum/PliegOS/sonarD2023_paper/faLichtenberg_SNRD.ps) (r) file cvx exec
+%%SNRD
+%%URLsnr
+  (/Users/femfum/PliegOS/sonarD2023_paper/guardesContra_SNRD.ps)  %% Terminal
+% (/Library/WebServer/Documents/www.pliegos.net/maker/sonarD2023/guardesContra_SNRD.ps)  %% localhost
+% (/var/www/wordpress/maker/sonarD2023/guardesContra_SNRD.ps)  %% Teixidora
+  (r) file cvx exec
   grestore
  }if
 
@@ -79,7 +125,12 @@ noNULL  %% pinta el contingut de pàgina?
  {
 %%Fa la part esquerra del calligrama-garigot
   gsave
-  (/Users/femfum/PliegOS/sonarD2023_paper/ESCRiBA_garigot_SNRD.ps) (r) file cvx exec
+%%SNRD
+%%URLsnr
+  (/Users/femfum/PliegOS/sonarD2023_paper/ESCRiBA_garigot_SNRD.ps)  %% Terminal
+% (/Library/WebServer/Documents/www.pliegos.net/maker/sonarD2023/ESCRiBA_garigot_SNRD.ps)  %% localhost
+% (/var/www/wordpress/maker/sonarD2023/ESCRiBA_garigot_SNRD.ps)  %% Teixidora
+  (r) file cvx exec
   grestore
 
 %%Pinta el logo de sonar 30 anys
@@ -91,8 +142,17 @@ noNULL  %% pinta el contingut de pàgina?
   0 0 translate
   mark
   %(/Users/femfum/PliegOS/sonarD2023_paper/sonar_30aniversari_logo_113x113.jpg)
-  (/Users/femfum/PliegOS/sonarD2023_paper/sonar_30aniversari_logoAR.jpeg)
-  (/Users/femfum/PliegOS/sonarD2023_paper/NouLectorDeJPEGs10.ps) (r) file cvx exec
+%%SNRD
+%%URLsnr
+  (/Users/femfum/PliegOS/sonarD2023_paper/sonar_30aniversari_logoAR.jpeg)  %%Terminal
+% (/Library/WebServer/Documents/www.pliegos.net/maker/sonarD2023/sonar_30aniversari_logoAR.jpeg)  %% localhost
+% (/var/www/wordpress/maker/sonarD2023/sonar_30aniversari_logoAR.jpeg)  %% Teixidora
+%%SNRD
+%%URLsnr
+  (/Users/femfum/PliegOS/sonarD2023_paper/NouLectorDeJPEGs10.ps)  %% Terminal
+% (/Library/WebServer/Documents/www.pliegos.net/maker/sonarD2023/NouLectorDeJPEGs10.ps)  %% localhost
+% (/var/www/wordpress/maker/sonarD2023/NouLectorDeJPEGs10.ps)  %% Teixidora
+  (r) file cvx exec
   cleartomark  %% aquest algorisme deixa brossa
 %(<<< random?)pstack quit
   grestore

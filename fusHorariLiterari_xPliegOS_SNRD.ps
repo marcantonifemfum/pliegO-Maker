@@ -434,6 +434,27 @@ noNULL  %% pinta el contingut de pàgina?
 %/hora 18 def  %% hores que donen baix contrast (ho detectem a escala de gris per sota de 0.015): 3/0-7/30 
 %/minut 34 def
 %/segon 30 def  %% acostar-se a zero és un valor crític pel baix contrast
+%%SNRD
+%% via galeta
+%% capturem la variable d'entorn generada amb PHP des de pliegOmaker.php
+(MRCT_qhe) getenv
+{
+ dup length 0 eq
+ {  %% si la variable existeix però arriba buida...
+  pop 
+  (\n\n com que la variable arriba buida farem servir l'hora del servidor)print flush exit
+ }
+ {
+  %% és una string en format (hh:mm:ss)
+  (:) search pop cvx exec /hora exch def pop
+  (:) search pop cvx exec /minut exch def pop
+  cvx exec /segon exch def
+% hora minut segon araHOpenjarem  %% posant intencionadament una instrucció errònia podem veure què passa al prompt
+ }ifelse
+}
+{  %% com que la variable NO existeix farem servir l'hora del servidor
+% (\n Ghostscript no pot capturar aquesta variable d'entorn!\n\n)print flush quit
+}ifelse
 
  cronos 0 get  %% array de les hores
  hora get dup dup 0 get /_hora exch def 1 get /_periode exch def 2 get cronos 4 get exch get /_article exch def
@@ -882,8 +903,8 @@ iSeq M2
 %% Adobe Sans MM
 %%URLsnr
 (/Users/femfum/MultipleMaster/AdobeSans_AdobeSerif/ZX______.PFB)  %% Terminal
-%()  %% localhost
-%()  %% Teixidora
+%(/Library/WebServer/Documents/www.pliegos.net/maker/sonarD2023/ZX______.PFB)  %% localhost
+%(/var/www/wordpress/maker/sonarD2023/ZX______.PFB)  %% Teixidora
 
 findfont
 %%MÈTODE0 d'anàlisi dels eixos mestres d'una MM
@@ -922,6 +943,7 @@ dup begin  %% entrem dins el diccionari de la MM per poder cridar els procedimen
  %% necessitem obligatòriament tantes dades vàlides com eixos dinàmics de la MM
 %%AdobeSansMM
  %% pes i ample
+%%SNRD
   50 50  %% mínim pes (prima) i mínim ample (estreta)
  % 50 1450  %% prima i màxim ample (ample)
  % 1450 50  %% màxim pes (grassa) i estreta
@@ -1164,10 +1186,11 @@ false setglobal
   %% (/Users/femfum/empremt/empremt1/ZX______.PFB)
 
   %% AdobeSansMM
+%%SNRD
 %%URLsnr
   (/Users/femfum/MultipleMaster/AdobeSans_AdobeSerif/ZX______.PFB)  %% Terminal
-%()  %% localhost
-%()  %% Teixidora
+%(/Library/WebServer/Documents/www.pliegos.net/maker/sonarD2023/ZX______.PFB)  %% localhost
+%(/var/www/wordpress/maker/sonarD2023/ZX______.PFB)  %% Teixidora
 
 %   (/Users/femfum/MultipleMaster/AdobeSans_AdobeSerif/ZY______.PFB)  %% AdobeSerifMM
   %% del servidor www.pliegos.net...
@@ -1454,7 +1477,8 @@ false setglobal
 
  }ifelse
 
-}if  %% SNRD l'omet
+%%SNRD l'omet
+}if
 
 
 % grestore

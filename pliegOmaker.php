@@ -1,7 +1,45 @@
 <?php
 
+echo "
+<!DOCTYPE html>
+<html lang='ca'>
+<head>
+<title> S&oacute;nar+PAPER </title>
+<link rel='icon' href='http://www.pliegos.net/maker/logoPliegOS_96x96.png' type='image/x-icon' />
+<meta http-equiv='content-language' content='ca' />
+<meta http-equiv='content-type'     content='text/html;charset=ISO-8859-1' />
+<meta name='author'                 content='Marcantoni Malagarriga-Picas' />
+<meta name='Description'            content='F&eacute;u que un sol full de paper esdevingui un llibret excepcional' />
+<meta name='keywords'               content='Sonar+D, microbooks, print, fold, cut, read, nUps, pliego, PliegOS, Patufet, literatura de canya i cordill, Barcelona, tipografia, typography, PostScript, PDF, Open Source, Free Software, GNU GPL, Programari Lliure, Software Libre, algorismes, algorismes, algorithms, algoritmos' />
+<meta name='robots'                 content='follow' />
+<meta name='title'                  content='S&oacute;nar+PAPER' />
+<!-- Facebook Open Graph -->
+<meta property='og:type'            content='website' />
+<meta property='og:title'           content='S&oacute;nar+PAPER' />
+<meta property='og:url'             content='https://pliegos.net/maker/sonarD2023/pliegOmaker.php' />
+<meta property='og:site_name'       content='pliegos' />
+<meta property='og:description'     content='F&eacute;u que un sol full de paper esdevingui un llibret excepcional. La reconnexi&oacute; d&#39;un plec random amb all&ograve; intangible dels sons arriscats.' />
+<meta property='og:image'           content='https://pliegos.net/maker/sonarD2023/QR_SNRD2023_300x300.jpg' />
+<meta property='og:image:type'      content='image/jpg' />
+<meta property='og:image:width'     content='300' />
+<meta property='og:image:height'    content='300' />
+<meta property='og:image:alt'       content='S&oacute;nar+PAPER' />
+<meta name='twitter:card'           content='summary_large_image' />
+<meta name='twitter:url'            content='https://pliegos.net/maker/sonarD2023/pliegOmaker.php' />
+<meta name='twitter:site' content='http://twitter.com/@gopliegOS' />
+<!-- màxim 60 caràcters pel títol -->
+<meta name='twitter:title'          content='S&oacute;nar+PAPER' />
+<!-- màxim 126 caràcters per la descripció -->
+<meta name='twitter:description'    content='F&eacute;u que un sol full de paper esdevingui un llibret excepcional. Plecs random amb l&#39;intangible dels sons arriscats.' />
+<meta name='twitter:image:src'      content='https://pliegos.net/maker/sonarD2023/QR_SNRD2023_300x300.jpg' />
+</head>
+<body>
+";
+
 if ($_SERVER['REQUEST_METHOD'] === 'GET')
 {  // Si fem GET: passem el valor de les variables dins la mateixa URL
+
+//exit('GET!');
 
  // esborrem les anteriors per si les mosques?
  putenv('vp=');
@@ -11,6 +49,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET')
  putenv('r=');
  putenv('labal=');
  putenv('tlab=');
+//SNRD inicialitzem la galeta/variable de l'hora del client
+ putenv('MRCT_qhe=');
 
  // crida sense paràmetres per l'execució única del prototip de pliegOS pel projecte sonar+D 2023
  // http://localhost/www.pliegos.net/maker/sonarD2023/pliegOmaker.php
@@ -31,6 +71,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET')
 }
 else
 {  // Si fem POST: les variables vindran triades des d'index_##.php
+
+//exit('POST!');
 
  $vp=$_POST['vp'];
  //echo $vp;  // ensenyem vores de les pàgines?
@@ -68,12 +110,49 @@ putenv("MRCT_labal=$labal");  // desem l'algorisme de composició a la variable d
 putenv("MRCT_tlab=$tlab");  // desem el text a compondre a la variable d'entorn 
 
 // treballem amb l'hora del client i no pas amb la del servidor
-// cridem via PHP una galeta desada via JS a index_##.php
+// cridem via PHP una galeta desada via JS més amunt
+//SNRD
+// NO SABEM EL PERQUÈ AQUESTA GALETA NO ES CAPTA AL SERVIDOR DE TEIXIDORA, POT SER DEGUT A NO TREBALLAR EN COMETES DOBLES?
 // exit($_COOKIE['quinHoraEs'].' ...en podem extraure l\'hora del client?');
 // i la tornem a desar en una nova variabe d'entorn
-//URLsnr (hauríem de generar aquí la galeta horària --com fem a index_##.php-- i seguidament cridar-la com ja fem)
-$ficali = $_COOKIE['quinHoraEs'];
-putenv("MRCT_qhe=$ficali");  // el valor de la galeta que duu l'hora del client en format (hh:mm:ss)
+//SNRD
+//URLsnr repesquem aquí la galeta horària --com fem a index_##.php-- i seguidament la cridem a
+//$ficali = $_COOKIE['quinHoraEs'];
+// exit($ficali);
+//SNRD
+//URLsnr NOU MÈTODE sense galetes... https://gist.github.com/earvinpiamonte/4bfbc3adc0992e7e07fd9773d3a06dbc
+// date time from client side
+/*
+echo '<script type="text/javascript">
+var d = new Date();
+document.write(d.getFullYear()+"-"+("0"+(d.getMonth() + 1)).slice(-2)+"-"+("0"+d.getDate()).slice(-2)+" "+("0"+d.getHours()).slice(-2)+":"+("0"+d.getMinutes()).slice(-2)+":"+("0"+d.getSeconds()).slice(-2));
+</script>';
+echo '<script type="text/javascript">
+var d = new Date();
+document.write
+(
+ d.getFullYear() + "-" + ("0"+(d.getMonth() + 1)) . slice(-2) + "-" + ("0"+d.getDate()) . slice(-2) + " " + ("0"+d.getHours()) . slice(-2) + ":" + ("0"+d.getMinutes()) . slice(-2) + ":" + ("0"+d.getSeconds()) . slice(-2));
+</script>';
+*/
+//SNRD
+// L'ÚNIC MÈTODE fiable per passar l'hora del client serà via variable GET/POST si apuntem a un index.html que
+// activi el PHP de manera que si excitem els algorismes via QR funcioni (perquè via URL segur que ho fa)
+/*
+echo '<script type="text/javascript">
+var horaminutsegon = new Date();
+document.write
+(
+ ("0" + horaminutsegon.getHours()) . slice(-2) + ":" + ( "0 " + horaminutsegon.getMinutes()) . slice(-2) + ":" + ( "0" + horaminutsegon.getSeconds()) . slice(-2)
+);
+<!-- document.cookie="horaminutsegon"; -->
+</script>';
+*/
+// exit($_COOKIE['horaminutsegon'].' ...en podem extraure l\'hora del client?');
+//$ficali = $_COOKIE['horaminutsegon'];
+//$ficali = 'aeiou';
+//exit($ficali);
+//exit('a veure...' . horaminutsegon );
+//putenv('MRCT_qhe = $ficali');  // el valor de la galeta que duu l'hora del client en format (hh:mm:ss)
 
 //en tenim prou com a nom únic?
 $PDFunic = date("d"."B"."H"."i"."s");
@@ -82,19 +161,23 @@ $PDFunic = date("d"."B"."H"."i"."s");
 //$somaPS = "/var/www/wordpress/maker/plegaVeu/";  // path al ps al nou servidor www.pliegos.net de Teixidora
 //$somaPS = "/Library/WebServer/Documents/www.pliegos.net/maker/plegaVeu/";  // path al ps al localhost del Macbook Air
 
+//SNRD
 //URLsnr
 $somaPS = "/Library/WebServer/Documents/www.pliegos.net/maker/sonarD2023/";  // path al ps cap al localhost del MacbookAir
+//$somaPS = "/var/www/wordpress/maker/sonarD2023/";  // path al ps cap al servidor de Teixidora
 
 
 //$somaPDF = "/home/marcantoni/pliegos.net/maker/pdf/";  // path al pdf al servidor www.pliegos.net del DreamHost
 //$somaPDF = "/var/www/wordpress/maker/plegaVeu/pdf/";  // path al pdf al nou servidor www.pliegos.net de Teixidora
 //$somaPDF = "/Library/WebServer/Documents/www.pliegos.net/maker/plegaVeu/pdf/";  // path al pdf al localhost del Macbook Air
 
+//SNRD
 //URLsnr
 //@EP el directori /pdf on s'allotgen els resultats ha de tenir tots els permisos! (si no peta el GS sense que ens digui perquè)
 $somaPDF = "/Library/WebServer/Documents/www.pliegos.net/maker/sonarD2023/pdf/";  // path al pdf cap al localhost del MacbookAir
+//$somaPDF = "/var/www/wordpress/maker/sonarD2023/pdf/";  // path al pdf cap al servidor de Teixidora
 
-
+//SNRD
 //URLsnr
 //$somaGS = "/usr/bin/";  // path a l'executable de Ghostscript al nou servidor www.pliegos.net de Teixidora
 $somaGS = "/usr/local/bin/";  // path a l'executable de Ghostscript al localhost del Macbook Air
@@ -104,15 +187,21 @@ $somaGS = "/usr/local/bin/";  // path a l'executable de Ghostscript al localhost
 //$baseurlPDF = "http://pliegos.net/maker/plegaVeu/pdf/";  // base url al pdf al nou servidor www.pliegos.net de Teixidora
 //$baseurlPDF = "http://localhost/www.pliegos.net/maker/plegaVeu/pdf/";  // base url al pdf al localhost del Macbook Air
 
+//SNRD
 //URLsnr
 $baseurlPDF = "http://localhost/www.pliegos.net/maker/sonarD2023/pdf/";  // base url al pdf al localhost del MacbookAir
+//EP! al servidor de Teixidora és clau NO posar-hi les 3 www al davant, doncs si les duu dóna problemes al descarregar el PDF!
+//$baseurlPDF = "http://pliegos.net/maker/sonarD2023/pdf/";  // base url al pdf al servidor de Teixidora
 
 
 //$baseURL = "http://www.pliegos.net/maker";  // base url a la interfície del nou servidor www.pliegos.net de Teixidora
 //$baseURL = "http://localhost/www.pliegos.net/maker";  // base url a la interfície del localhost del Macbook Air
 
+//SNRD
 //URLsnr
 $baseURL = "http://localhost/www.pliegos.net/maker/sonarD2023/pliegOmaker.php";  // execució recursiva al localhost del MacbookAir
+// EP! aquí podem posar-hi o no les 3 www al davant
+//$baseURL = "http://www.pliegos.net/maker/sonarD2023/pliegOmaker.php";  // execució recursiva al servidor de Teixidora
 
 
 $PSapplet = $somaPS . "nUp_pliegOS.ps";
@@ -128,12 +217,15 @@ $pdfFile = $somaPDF . $pdfnomes;
 // $command = "/usr/local/bin/gs -q -dBATCH -dNOPAUSE -dNOSAFER -sDEVICE=pdfwrite -sOutputFile=".$pdfFile." -c .setpdfwrite -f ".$PSapplet;  // servidor www2 de la UB
 // GPL Ghostscript 8.62 (2008-02-29) al servidor www de la UB
 // $command = "gs -q -dNOSAFER -o ".$pdfFile." -sDEVICE=pdfwrite -c .setpdfwrite -f ".$PSapplet;
-// GPL Ghostscript 9.## del DreamHost de pliegos.net + localhost del MacBokk Air
+// GPL Ghostscript 9.## del DreamHost de pliegos.net + localhost del MacBook Air
 
 // EP és fonamenal que la crida a l'executable (almenys al localhost del Macbook Air) hi hagi el path sencer!
-// aquesta crida encara és valida pel GS 9.27 del nou servidor de Teixidors
+
+//SNRD
+// aquesta crida encara és valida pel GS 9.27 del nou servidor de Teixidora
 //$command = $somaGS . "gs -q -dNOSAFER -o '" . $pdfFile . "' -sDEVICE=pdfwrite -dAutoRotatePages=/None -c .setpdfwrite -f '" . $PSapplet . "'";
 
+//SNRD
 // EP crida a partir de la versió GS 9.55 al localhost del MacBookAir
 $command = $somaGS . "gs -q -dNOSAFER -o '" . $pdfFile . "' -sDEVICE=pdfwrite -dAutoRotatePages=/None -f '" . $PSapplet . "'";
 
@@ -171,14 +263,22 @@ ob_end_clean();
 
 // exit("...que ha fet?");
 
+//echo "<!-- TEST de si la galeta es capta aquí? -->
+//<script>
+//alert('_quinHoraEs');
+//</script>
+//";
+
 // com avaluem si s'ha generat el pdf correctament?
 if ($ElQtorna == 127)
 {  // el gs NO s'ha executat
  // exit("...sembla que el GS no s'ha executat");
  echo "<center><span style='color:#ff0000;font-family:monospace;font-size:24px'><br><br>&gt;&gt;&gt; l'int&egrave;rpret Ghostscript no s'ha executat &lt;&lt;&lt;</span>";
+//SNRD
 //URLsnr
  exit("<br><p><br><p><span style='color:#ff0000;font-family:monospace;font-size:24px'><a style='color:#ff0000;font-family:monospace;font-size:24px' href='mailto:marcantoni@femfum.com'>documenta'ns l'error via email, gr&agrave;cies!</a><br><br><a style='color:#ff0000;font-family:monospace;font-size:18px' href='$baseURL'>random sonar+PAPER</a></center>");
 
+echo "</body></html>";
 }
 {
  //      if (file_exists($pdfFile))
@@ -226,9 +326,12 @@ if ($ElQtorna == 127)
   // aquí llistem l'ERROR del prompt i demanem que s'enviï
   echo "<center><span style='color:#ff0000;font-family:monospace;font-size:24px'><br><br>&gt;&gt;&gt; ERROR d'execuci&oacute; de l'algorisme &lt;&lt;&lt;</span>";
   echo "<br><br><span style='color:#999999;font-family:monospace;font-size:24px'>".$prompt."</font><br></span>";
+//SNRD
 //URLsnr
   exit("<br><p><br><p><span style='color:#ff0000;font-family:monospace;font-size:24px'><a style='color:#ff0000;font-family:monospace;font-size:24px' href='mailto:marcantoni@femfum.com'>documenta'ns l'error via email, gr&agrave;cies!</a><br><br><a style='color:#ff0000;font-family:monospace;font-size:18px' href='$baseURL'>random sonar+PAPER</a></center>");
  }
+
+ echo "</body></html>";
 }
 
 ?>

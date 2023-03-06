@@ -177,9 +177,9 @@ dup /cosTipus exch def /cosFinal exch def
 
 %%SNRD
 %%URLsnr
-% (/Users/femfum/PliegOS/sonarD2023_paper/S2023_Artistas_RichieHawtin_FitxaWeb_57x50.jpeg)  %% Terminal
-(/Library/WebServer/Documents/www.pliegos.net/maker/sonarD2023/S2023_Artistas_RichieHawtin_FitxaWeb_57x50.jpeg)  %% localhost
-%()  %% Teixidora
+(/Users/femfum/PliegOS/sonarD2023_paper/S2023_Artistas_RichieHawtin_FitxaWeb_57x50.jpeg)  %% Terminal
+%(/Library/WebServer/Documents/www.pliegos.net/maker/sonarD2023/S2023_Artistas_RichieHawtin_FitxaWeb_57x50.jpeg)  %% localhost
+%(/var/www/wordpress/maker/sonarD2023/S2023_Artistas_RichieHawtin_FitxaWeb_57x50.jpeg)  %% Teixidora
 
 %(/Users/femfum/Republica/laCarrega/lespiraldelacarrega/LaCarrega_araVaDeBo4_320x202.jpg)  %%AaG
 %(/Users/femfum/Republica/laCarrega/lespiraldelacarrega/La\ Carrega_araVaDeBo3_.jpg)  %%AaG
@@ -197,9 +197,9 @@ dup /cosTipus exch def /cosFinal exch def
 
 %%SNRD
 %%URLsnr
-%(/Users/femfum/PliegOS/sonarD2023_paper/snrd.txt)  %% Terminal
-(/Library/WebServer/Documents/www.pliegos.net/maker/sonarD2023/snrd.txt)  %% localhost
-%()  %% Teixidora
+(/Users/femfum/PliegOS/sonarD2023_paper/snrd.txt)  %% Terminal
+%(/Library/WebServer/Documents/www.pliegos.net/maker/sonarD2023/snrd.txt)  %% localhost
+%(/var/www/wordpress/maker/sonarD2023/snrd.txt)  %% Teixidora
 
 (r) file  %% convertim a fitxer des del path sense decodificar
 
@@ -669,9 +669,9 @@ save
 %%SNRD
 %%URLsnr
 %% Adobe Sans MM
-%(/Users/femfum/MultipleMaster/AdobeSans_AdobeSerif/ZX______.PFB)  %% Terminal
- (/Library/WebServer/Documents/www.pliegos.net/maker/sonarD2023/ZX______.PFB)  %% localhost
-% ()  %% Teixidora
+(/Users/femfum/MultipleMaster/AdobeSans_AdobeSerif/ZX______.PFB)  %% Terminal
+% (/Library/WebServer/Documents/www.pliegos.net/maker/sonarD2023/ZX______.PFB)  %% localhost
+% (/var/www/wordpress/maker/sonarD2023/ZX______.PFB)  %% Teixidora
 
 %%SNRD
 true
@@ -717,6 +717,13 @@ true
   realtime srand  %% perquè les 2 crides rand variïn, plantem la llavor de l'aleatori només 1 vegada
   50 rand 1401 mod add  %% pes: entre 0 i 1400
   50 rand 1401 mod add  %% ample: entre 0 i 1400
+
+%%SNRD pes i ample random per a ús global en d'altres pàgines
+true setglobal
+2 copy 2 array astore
+globaldict exch /pesiampleRandom exch put
+false setglobal
+
   %% aquests dos procediments, i per aquest ordre, generen les dades necesàries del vector dins l'array
   NormalizeDesignVector  %% normalitza les dades de cada eix mestre en valors entre 0 i 1
   ConvertDesignVector  %% genera les dades finals pel seu ús dins la matriu de l'array per a makeblendedfont
@@ -726,10 +733,10 @@ true
 
  dup
 
-%true setglobal
+% true setglobal
 % 1 dict copy
  /araMM exch def
-%false setglobal
+% false setglobal
 
  cosTipus scalefont setfont
 }
