@@ -335,7 +335,7 @@
 %Ramasse-moi
 %Quand tu voudras)
 
-}ifelse 
+}ifelse
 
 %% (a veure?)pstack quit
 
@@ -380,7 +380,11 @@
  (/Users/femfum/PliegOS/codi_pliegOS/PDFscripting/farceixPDFs_pseudoPDFX5_ReferenceXObjects_EnricSenabre.ps)
 
  %% 10 sonar+PAPER
- (/Users/femfum/PliegOS/sonarD2023_paper/sonarD2023_paper.ps)
+ (/Users/femfum/PliegOS/sonarD2023_paper/sonarD2023_paper.ps)  %% Terminal
+%%SNRD
+%%URLsnr
+% (/Library/WebServer/Documents/www.pliegos.net/maker/sonarD2023/sonarD2023_paper.ps)  %% localhost
+% (/var/www/wordpress/maker/sonarD2023/sonarD2023_paper.ps) %% Teixidora
 
 ] def
 
@@ -1625,11 +1629,14 @@ mark
 %% camps públics del Docinfo
 /Subject %(Turn one simple sheet of paper into a little awesome book)
 (Féu que un sol full de paper esdevingui un llibret excepcional)
-/Title NpliegOS
-/Author (copyleft 2017-2022: Marcantoni Malagarriga-Picas <marcantoni@femfum.com>)
+/Title
+% NpliegOS
+%%SNRD
+(sonar+PAPER)
+/Author (copyleft 2017-2023: Marcantoni Malagarriga-Picas <marcantoni@femfum.com>)
 /Keywords %(poesia, literatura, canya i cordill, fil i canya, plegaVeu, en Patufet,)
-(chapbooks, microbooks, print, fold, cut, read, nUps, PliegOS, en Patufet, Catalonia, Barcelona)
-/Creator (PliegO'Maker {FemFum PostScript Applet} | http://pliegos.net/maker)
+(pliegOS, sonar+D, chapbooks, microbooks, print, fold, cut, read, nUps, canya i cordill, en Patufet, Catalonia, Barcelona)
+/Creator (PliegO'Maker {FemFum PostScript Applet} | https://ja.cat/sonarDpaper)
 /DOCINFO pdfmark
 %% podríem generar un camp privat per desar-hi tots els paràmetres clau de les variables aleatòries que han fet el PDF
 
