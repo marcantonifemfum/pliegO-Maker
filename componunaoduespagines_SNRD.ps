@@ -1,5 +1,6 @@
 %!
 %% compon via engalzaGlifs les línies de base d'una pàgina o dues que es compaginen seguides dins del llançat
+%%POSTsnr són les millores fetes després del submit del 6 de març
 
 noNULL  %% pinta el contingut de pàgina?
 {  %% comportament null: el componedor ha de tenir anellat el codi que pinta contingut de pàgina
@@ -8,8 +9,10 @@ noNULL  %% pinta el contingut de pàgina?
  {  %% aquí dins és crític què i com ho posem
 %%Valors del traçat harmònic sense pintar
   gsave
-  (/Users/femfum/PliegOS/sonarD2023_paper/VanDeGraaf3_sensepintar_SNRD.ps)  %% Terminal
-% (/Library/WebServer/Documents/www.pliegos.net/maker/sonarD2023/VanDeGraaf3_sensepintar_SNRD.ps)  %% localhost
+%%SNRD
+%%URLsnr
+%  (/Users/femfum/PliegOS/sonarD2023_paper/VanDeGraaf3_sensepintar_SNRD.ps)  %% Terminal
+ (/Library/WebServer/Documents/www.pliegos.net/maker/sonarD2023/VanDeGraaf3_sensepintar_SNRD.ps)  %% localhost
 % (/var/www/wordpress/maker/sonarD2023/VanDeGraaf3_sensepintar_SNRD.ps)  %% Teixidora
   (r) file cvx exec
   grestore
@@ -39,8 +42,8 @@ noNULL  %% pinta el contingut de pàgina?
 %%SNRD
 %%URLsnr
 %% Adobe Sans MM
-(/Users/femfum/MultipleMaster/AdobeSans_AdobeSerif/ZX______.PFB)  %% Terminal
-% (/Library/WebServer/Documents/www.pliegos.net/maker/sonarD2023/ZX______.PFB)  %% localhost
+%(/Users/femfum/MultipleMaster/AdobeSans_AdobeSerif/ZX______.PFB)  %% Terminal
+ (/Library/WebServer/Documents/www.pliegos.net/maker/sonarD2023/ZX______.PFB)  %% localhost
 % (/var/www/wordpress/maker/sonarD2023/ZX______.PFB)  %% Teixidora
 
 %%SNRD
@@ -94,6 +97,7 @@ noNULL  %% pinta el contingut de pàgina?
 %pop pop [92 445] aload pop
 %pop pop [261 228] aload pop
 
+%pop pop [50 50] aload pop  %% PETA?
 
 %%SNRD pes i ample random per aquí mateix de moment (a ús global en d'altres pàgines)
 true setglobal
@@ -1340,8 +1344,21 @@ FtextTripa cos_proposta_sonar+PAPER scalefont setfont  %% font definida a
 /iparagraf 0 def  %% índex dels paràgrafs a compondre
 /ildeBase 0 def  %% índex de les línies de base a compondre
 ldeBaseDefinitivesXpagina length /MAXldeBaseFinals exch def
-motsDefinitiusXpagina iPln get length /MAXparagrafS exch def  %% nombre màxim de paràgrafs a compondre
-motsDefinitiusXpagina iPln get /motS exch def
+
+%%POSTsnr aquí podem determinar que no s'han omplert totes les pàgines disponibles i decidir si reduïm el nombre de mots x línia
+%% de moment evitem l'error que genera el pes/ample extrem de la MM quan els dos valors s'acosten a 50
+%% assignem 1 sol valor màxim de paràgraf i una string buida a compondre a veure si salpassen l'error
+%% aquí el problema  el tenim amb el valor /motsMestreXlinia que hauria de disminuir en comptes d'augmentar com fa!
+motsDefinitiusXpagina iPln get dup null eq
+{  %% si la pàgina no té mots a compondre, doncs no els componem i llestos
+ pop
+ /MAXparagrafS 1 def
+ () /motS exch def
+}
+{
+ length /MAXparagrafS exch def  %% nombre màxim de paràgrafs a compondre
+ motsDefinitiusXpagina iPln get /motS exch def
+}ifelse
 
 {  %% loop componedor
 
@@ -1718,15 +1735,26 @@ ildeBase 1 add /ildeBase exch def
 %/assaig true def
 %%No ens deixem el cas que queda la darrera línia penjada?
 
- 0 1 motsDefinitiusXpagina iPln get length 1 sub
+%%POSTsnr detectem pàgines en blanc per salpassar l'error de length provocat quan la MM s'acosta als valors de 50
+%% aquí el problema  el tenim amb el valor /motsMestreXlinia que hauria de disminuir en comptes d'augmentar com fa!
+ 0 1 motsDefinitiusXpagina iPln get
+ dup null eq
+ {  %% si la pàgina no té mots a compondre, doncs no els componem i llestos
+  pop
+ }
  {
-  dup ldeBaseDefinitivesXpagina exch get
-  motsDefinitiusXpagina iPln get 3 -1 roll get
+
+  length 1 sub
+  {  %% for
+   dup ldeBaseDefinitivesXpagina exch get
+   motsDefinitiusXpagina iPln get 3 -1 roll get
 
 %(////)pstack quit
 
-  engalzaGlifs  %% activem la componedora
- }for 
+   engalzaGlifs  %% activem la componedora
+  }for
+
+ }ifelse
 
 %(COMPONEM!)==
 
