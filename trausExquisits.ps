@@ -1,0 +1,387 @@
+%!
+%% fa n retalls aleatoris d'un /original_ (raw, jpeg, eps, pdf) mantenint per cada retall una ràtio X:Y d'una determinada mida
+%% gs -q -dNOSAFER -o re.pdf -sDEVICE=pdfwrite -dALLOWPSTRANSPARENCY -f trausExquisits.ps
+
+%% el relat actual del comportament per a una imatge d'1 bit és, per ordre seqüencial d'execució:
+%1 en base al valor d'/Ya triem aleatòriament l'índex Y del píxel a partir del qual decidirem cap a on fem el trau
+%2 seguint l'índex dels valors raw d'imatge, la primera línia d'aquest índex Y és al xamfrà UL
+%3 un cop tenim l'índex Y, triem aleatòriament si orientarem el trau cap al nord o cap al sud
+%4 triada l'orientació vertical, comptem el nombre de píxels que hi ha fins al límit de la imatge S/N (inclòs el triat)
+%5 en aquest punt, podríem decidir si treballem amb el valor sencer de nombre de píxels o li apliquem un aleatori
+%6 un cop en ferm el valor mètric d'Y, li apliquem la ràtio per deduir el valor mètric d'X 
+%7 triem aleatòriament si orientarem el trau cap a l'oest o cap a l'est 
+%8 avaluem si, per la mètrica i orientació horitzontal, el trau ens hi cap
+%9 si no ens hi cap, invertim l'orientació horitzontal i tornem a avaluar si hi cap, en cas contrari tornem a %1
+%10 un cop definit el píxel d'inici (índex X/Y) i el valor/orientació del trau, extraiem les dades de l'/original
+
+%% podríem treballar de manera que els retalls successius es trepitgin o no 
+
+%% construïm un primer exemple amb una imatge 8x8 raw a 1 bit
+%% el raw va d'esquerra a dreta i de dalt a baix
+
+%% ninot femfum
+%% ordre 1 0
+%[  %% per ser operativa, l'array s'hauria de transformar a string
+% 1 1 1 0 1 1 1 1  %% 0
+% 0 1 1 1 1 1 0 1  %% 1
+% 0 0 0 0 0 0 0 1  %% 2
+% 1 1 1 0 0 1 1 1  %% 3
+% 1 1 1 0 0 1 1 1  %% 4
+% 1 0 0 0 0 0 0 0  %% 5
+% 1 0 1 1 1 1 1 0  %% 6
+% 1 0 1 1 1 1 1 0  %% 7
+%]
+
+%% ordre 0 1
+%% string operativa
+(0001000010000010111111100001100000011000011111110100000101000001)
+
+/original_ninot8x8 exch def
+
+%% triarem la naturalesa de l'original (imatge o vector, i dins d'aquest parell hauríem de triar les varietats que toquin)
+%% ara només n'hi ha 1 (raw a 1 bit) i no és operatiu
+0 /nO exch def
+
+%% deduirem l'ample i alt de l'original amb les unitats que toquin (píxels, punts)
+8 /Xa exch def  %% X ample
+8 /Ya exch def  %% Y alt
+
+%% té sentit precalcular la ràtio màxim permesa?
+
+%% ràtio a multiplicar al valor d'X per tal de deduir el valor d'Y (s'hauria de deduir de la pàgina de l'nUp triat)
+%% amb una ràtio quadrada si agafem un valor d'1 píxel p.e. a UR en orientació NO o NE, el trau retallaria 1 sol píxel 
+%% quan la ràtio vertical supera un màxim permès, p.e. 9 per a una imatge de 8x8 píxels, entrem en un loop infinit
+%% per ràtios horitzontals: de .9 a .5 (per sota entrem en un loop infinit) ...cal filtrar aquests valors extrems en cada cas
+1
+/ratioXvsY exch def
+
+false /FAT exch def  %% juguem encara més amb el valor mètric de Y?
+
+%% matriu que registrarà tots els retalls de l'original que s'extrauen
+%% només té sentit quan el fem treballar sense que cap trau es cavalqui?
+%[
+% Ya  %% files
+% {
+%  [
+%   Xa 1 add  %% columnes +1, doncs l'índex 0 és un gatell per saber si la fila té alguna columna ocupada
+%   {
+%    false
+%   }repeat
+%  ]
+% }repeat
+%]
+
+realtime srand  %% perquè les crides rand successives variïn de debò, plantem la llavor de l'aleatori només 1 vegada
+true /19trau exch def  %% fem un nou trau?
+7 /nTraus exch def  %% sempre faríem el nombre total de pàgines de l'nUp -1 per tal de poder il·lustrar d'on hem tret els retalls
+0 /iTraus exch def  %% índex comptador de traus fets
+
+nTraus array /desaTraus exch def  %% desem els paràmetres de cada trau per reproduir sobre l'original sencer
+
+%% raonament pel comportament de l'aleatori dels traus
+%% en aquest primer comportament estem donant preferència a l'X a l'hora de definir la dimensió del trau
+%% i si no fem un random a %%* els traus sempre tocaran vores i no tindrem mai retalls amb només àrees interiors de la imatge
+%% primer, triem el punt d'inici entre el total d'unitats de l'àrea: anirà de 0 a XxY
+%% segon, triem l'orientació (X) horitzontal O/E
+%% tercer, comptem quantes unitats (X) ens separen de la vora per l'orientació triada
+%% quart, apliquem la ràtio a X per saber quantes unitats ens corresponen per l'orientació vertical Y
+%% cinquè, triem l'orientació vertical Y N/S
+%% sisè, comprovem si les unitats Y hi caben per l'orientació triada
+%% setè, si hi caben, fixem definitivament X/Y
+%% vuitè, si les unitats Y no hi caben tornem a punt primer
+%% una altra possibilitat seria invertir l'orientació Y i tornar a punt sisè (però hauríem d'invertir l'orientació X!)
+%% i si les unitats Y no hi cabessin, tornaríem al punt tercer invertint l'orientació triada a X, i si fallés tornaríem a 1
+
+{  %% loop fins que haguem fet tots els /nTraus
+% 19trau
+% {
+
+  %% triem l'índex X,Y del punt d'inici
+  %rand Xa mod  %% els valors van entre 0 i /Xa -1
+  %rand Ya mod  %% els valors van entre 0 i /Ya -1
+
+%%Primer, triem l'índex d'inici entre el total d'unitats de l'àrea
+rand Xa Ya mul mod  %% els valors són d'índex i van entre 0 i XaxYa -1
+%pop 0  %% test
+dup /ullDelTrau exch def  %% desem aquí on pivota el trau als 4vents doncs es reposiciona en el punt setè
+
+%%Segon, triem l'orientació (X) horitzontal O/E
+[  %% funcions aleatòries en sentit X
+%%Tercer, comptem quantes unitats (X) ens separen de la vora per l'orientació triada
+ {
+  dup /iXY exch def  %% punt d'inici del raw amb valor d'índex total des del 0 (UL) fins al final n-1
+  Xa mod 1 add  %% posició d'unitats dins la seva línia, del punt d'inici cap a l'esquerra (comptant el punt d'inici!)
+%(oest) ==
+ }  %% 0 cap a l'oest
+ {
+  dup /iXY exch def  %% punt d'inici del raw en valor d'índex total des del 0 (UL) fins al final n
+  Xa mod Xa exch sub  %% posició d'unitats dins la seva línia, del punt d'inici cap a la dreta (comptant el punt d'inici!)
+%(est) ==
+ }  %% 1 cap a l'est
+]
+
+rand 2 mod
+%pop 1  %% test
+
+dup /iOEvents exch def  %% desem l'índex O/E
+
+get cvx exec  %% ens donarà un valor mètric provisional d'X
+
+%%EP: activar aquest random equival a revisar l'algorisme d'extracció del RAW doncs si no balla
+%%Tercer.1 juguem amb les unitats X fins al marge oest/est per tal de retallar àrees internes de la imatge
+%1 add rand exch mod 1 add  %%* si abans de desar fem un random ens permetrà tenir àrees interiors que no toquin vores
+
+dup /uX exch def
+
+%%Quart, apliquem la ràtio a X per saber quantes unitats ens corresponen per l'orientació vertical Y
+ratioXvsY mul  %% ens donarà el valor mètric provisional d'Y
+round cvi  %% EP, arrodonim i convertim a enter!
+/uY exch def  %% el desem
+
+
+[  %% funcions aleatòries en sentit Y on hem de comprovar que les unitats resultants de la ràtio, efectivament, hi caben
+ {  %% ens diu quantes línies hi ha per sobre la posició d'índex iXY i li sumem la pròpia
+  iXY Xa idiv 1 add
+%(nord) ==
+ }  %% 0 cap al nord
+ { %% ens diu quantes línies hi ha per sota la posició d'índex iXY comptant-hi la pròpia
+  Ya iXY Xa idiv sub
+%(sud) ==
+ }  %% 1 cap al sud
+]
+%%Cinquè, triem l'orientació vertical Y N/S
+rand 2 mod
+%pop 1  %% test
+
+dup /iNSvents exch def  %% desem l'índex N/S
+
+get cvx exec  %% l'orientació triada aleatòriament, 0 (N) o 1 (S), ens donarà el valor mètric possible d'Y (no és cap índex!)
+
+%%Sisè, comprovem si les unitats uY hi caben dins el valor mètric possible per l'orientació triada
+uY lt  %% només si és més petit del valor mètric possible
+%not  %% test
+{
+ (\n\n >>> uY fa... )print flush uY 32 string cvs print flush
+ ( ...i per les unitats Y triades NO hi caben!\n\n)print flush
+%%Vuitè, si les unitats Y no hi caben: invertim l'orientació Y i tornem a punt sisè (però haurem d'invertir l'orientació X!)
+%%Novè, si les unitats Y no hi caben: tornem al punt tercer invertint l'orientació triada a X
+
+% quit  %% test
+}
+{
+%%Setè, si hi caben, X/Y ja han quedat fixades
+%% NO hi haurà random per la tria dels /4vents doncs ja ens la donarà el random O/E i N/S
+[  %% cadascun dels 4 procediments extrau el raw/crop de dades que li correspon a cada trau
+ [  %% 0 N
+  %% 0  %% NO
+  {  %% 0 NOstral NOrç NOrè
+%(NO)==
+   %% raonem de com procedim:
+   uY  %% s'executa tantes vegades com unitats Y tingui el trau (això només té sentit quan treballem amb imatges)
+   {
+    original_ninot8x8  %% tou de dades bit a bit dins una string
+    iXY  %% valor d'índex del píxel on iniciarem el trau cap al NO (xamfrà LR)
+    uX sub 1 add  %% li restem el nombre d'unitats X de l'ample del trau i li afegim 1 perquè s'ajusti a l'índex d'inici
+    uX getinterval  %% extraiem la línia X de dades de píxels d'ample a partir de l'index d'inici
+    escriuRAWbufferTRAU exch writestring  %% escrivim desant la línia X de dades al buffer
+    iXY Xa sub /iXY exch def  %% al valor d'índex del píxel on iniciem el trau li restem les unitats d'ample del total d'imatge
+    %% per deduir el nou valor d'índex d'inici per la línia següent (anem de baix a dalt)
+   }repeat
+   0  %% NO
+   /4vents exch def  %% índex d'orientació dels 4 vents que ens servirà per triar la matriu de la imatge
+  }
+
+  %% 1  %% NE
+  {  %% 1 NEegal
+%(NE)==
+   uY
+   {
+    original_ninot8x8  %% tou de dades bit a bit dins una string
+    iXY  %% valor d'índex del píxel on iniciarem el trau cap al NE (xamfrà LL)
+    uX getinterval  %% extraiem la línia X de dades de píxels d'ample a partir de l'index d'inici
+    escriuRAWbufferTRAU exch writestring  %% escrivim desant la línia X de dades al buffer
+    iXY Xa sub /iXY exch def  %% al valor d'índex del píxel on iniciem el trau li restem les unitats d'ample del total d'imatge
+    %% per deduir el nou valor d'índex d'inici per la línia següent (anem de baix a dalt)
+   }repeat
+   1  %% NE
+   /4vents exch def  %% índex d'orientació dels 4 vents que ens servirà per triar la matriu de la imatge
+  }
+ ]
+ [  %% 1 S
+  %% 2  %% SO
+  {  %% 0 SOrbí SOebeig
+%(SO)==
+   uY
+   {
+    original_ninot8x8  %% tou de dades bit a bit dins una string
+    iXY  %% valor d'índex del píxel on iniciarem el trau cap al SO (xamfrà UR)
+    uX sub 1 add uX getinterval  %% extraiem la línia X de dades de píxels d'ample a partir de l'index d'inici
+    escriuRAWbufferTRAU exch writestring  %% escrivim desant la línia X de dades al buffer
+    iXY Xa add /iXY exch def  %% al valor d'índex del píxel on iniciem el trau li sumem les unitats d'ample del total d'imatge
+    %% per deduir el nou valor d'índex d'inici per la línia següent (anem de dalt a baix)
+   }repeat
+   2  %% SO
+   /4vents exch def  %% índex d'orientació dels 4 vents que ens servirà per triar la matriu de la imatge
+  }
+
+  %% 3  %% SE
+  {  %% 1 SEloc
+%(SE)==
+   uY
+   {
+    original_ninot8x8  %% tou de dades bit a bit dins una string
+    iXY  %% valor d'índex del píxel on iniciarem el trau cap al SE (xamfrà UL)
+    uX getinterval  %% extraiem la línia X de dades de píxels d'ample a partir de l'index d'inici
+    escriuRAWbufferTRAU exch writestring  %% escrivim desant la línia X de dades al buffer
+    iXY Xa add /iXY exch def  %% al valor d'índex del píxel on iniciem el trau li sumem les unitats d'ample del total d'imatge
+    %% per deduir el nou valor d'índex d'inici per la línia següent (anem de dalt a baix)
+   }repeat
+   3  %% SE
+   /4vents exch def  %% índex d'orientació dels 4 vents que ens servirà per triar la matriu de la imatge
+  }
+ ]
+]
+
+uX uY mul string dup /RAWbufferTRAU exch def
+/NullEncode filter /escriuRAWbufferTRAU exch def
+%% aquí juguem amb /iSNvents i /iOEvents per fer l'extracció del raw del trau retallat
+iNSvents get iOEvents get cvx exec
+escriuRAWbufferTRAU dup flushfile closefile
+RAWbufferTRAU
+
+%% pinta el retall del trau que hem extret del raw de /original_ninot8x8
+(ensenyaEltrau.ps) (r) file cvx exec
+showpage  %% cridem la pàgina aquí (l'hem eliminat del .ps anterior)
+
+%% política de desat dels traus exquisists per tal de reproduir la imatge original amb els retalls sobreposats en transparència
+%desaTraus  %% aquí desaríem píxel a píxel (només tindria sentit si féssim un detector d'àrees ja retallades per no repetir-ne)
+%% però en tindrem prou desant l'índex inicial d' /iXY (/ullDelTrau) els píxels d'ample i alt /uX i /uY i l'orientació
+desaTraus iTraus [ ullDelTrau uX uY 4vents ] dup length array copy put
+
+(- - trau - - )==
+
+ iTraus 1 add /iTraus exch def
+ iTraus nTraus eq
+ {
+  exit
+ }if
+
+}ifelse
+
+% }
+% {  %% marxem
+%  exit
+% }ifelse
+}loop  %% fins que haguem fet tots els /nTraus
+
+%% reproduïm la imatge sencera per visualitzar els traus amb transparència que hem extret
+%% redefinim les dades clau
+/4vents 3 def
+/uX Xa def
+/uY Ya def
+
+
+
+original_ninot8x8 (ensenyaElTrau.ps) (r) file cvx exec
+
+%/DeviceGray
+/DeviceCMYK setcolorspace
+%%NOUgs9.55 obliga a incloure -dALLOWPSTRANSPARENCY a la línia d'execució (però i al 10?)
+%% veure https://ghostscript.readthedocs.io/en/gs10.01.1/Language.html#transparency
+%% mesclant imatge i vectorials, és el que funciona millor
+%% veure /Users/femfum/enfony/PDF_TN/PDF_Transparency2_AdobeTN5407.pdf#page=16
+/Normal .setblendmode true .setalphaisshape .3  %% % de transparència
+ .setfillconstantalpha
+
+
+false{
+%1 0 1 setrgbcolor  %% magenta? gris? vermell? blanc? negre?
+%.2 setgray
+2 2 10 10 rectfill
+0 1 0 0 setcmykcolor
+%.8 setgray
+5 5 20 20 rectfill
+}if
+
+%% test
+desaTraus
+{
+ dup 3 get
+
+ [
+  {  %% 0 NO
+   dup 0 get dup Xa idiv  %% en diu quantes linies Y té per sobre, sense incloure la seva
+   exch Xa mod  %% ens diu l'índex X on es situa dins la seva línia
+
+   1 0 0 0 setcmykcolor  %% omplim amb cyan
+   2 index 1 get exch sub 1 sub  %% posició X sense escalar del punt 0,0 del rectagle al NO (LR) del trau
+   exch Ya exch sub 1 sub  %% posició Y sense escalar del punt 0,0 del rectagle al NO (LR) del trau
+   3 -1 roll 1 2 getinterval aload pop  %% ample i alt del trau sense escalar
+   4 array astore dup  %% omplirem i perfilarem
+   {escalem? mul}forall rectfill  %% escalem i omplim
+   gsave
+   0 setlinewidth 1 0 0 setrgbcolor
+   {escalem? mul}forall rectstroke  %% escalem i perfilem en vermell solid
+   grestore
+(NO)==
+
+  }
+  {  %% 1 NE
+   dup 0 get dup Xa idiv  %% en diu quantes linies Y té per sobre, sense incloure la seva
+   exch Xa mod  %% ens diu l'índex X on es situa dins la seva línia
+
+   0 1 0 0 setcmykcolor  %% omplim amb magenta
+   %% i ja és la posició X sense escalar del punt 0,0 del rectagle al NE (LL) del trau
+   exch Ya exch sub 1 sub  %% posició Y sense escalar del punt 0,0 del rectagle al NE (LL) del trau
+   3 -1 roll 1 2 getinterval aload pop  %% ample i alt del trau sense escalar
+   4 array astore dup  %% omplirem i perfilarem
+   {escalem? mul}forall rectfill  %% escalem i omplim
+   gsave
+   0 setlinewidth 1 0 0 setrgbcolor
+   {escalem? mul}forall rectstroke  %% escalem i perfilem en vermell solid
+   grestore
+(NE)==
+  }
+  {  %% 2 SO
+   dup 0 get dup Xa idiv  %% en diu quantes linies Y té per sobre, sense incloure la seva
+   exch Xa mod  %% ens diu l'índex X on es situa dins la seva línia
+
+   0 0 1 0 setcmykcolor  %% omplim amb groc
+   2 index 1 get exch sub 1 sub  %% posició X sense escalar del punt 0,0 del rectagle al SO (UR) del trau
+   exch Ya exch sub
+   2 index 2 get sub  %% posició Y sense escalar del punt 0,0 del rectagle al SO (UR) del trau
+   3 -1 roll 1 2 getinterval aload pop  %% ample i alt del trau sense escalar
+   4 array astore dup  %% omplirem i perfilarem
+   {escalem? mul}forall rectfill  %% escalem i omplim
+   gsave
+   0 setlinewidth 1 0 0 setrgbcolor
+   {escalem? mul}forall rectstroke  %% escalem i perfilem en vermell solid
+   grestore
+(SO)==
+  }
+  {  %% 3 SE
+%pop [0 8 8 3]
+
+   dup 0 get dup Xa idiv  %% en diu quantes linies Y té per sobre, sense incloure la seva
+   exch Xa mod  %% ens diu l'índex X on es situa dins la seva línia
+
+   1 1 1 1 setcmykcolor  %% omplim amb gris
+   %% posició X sense escalar del punt 0,0 del rectagle al SE (UL) del trau
+   exch Ya exch sub 2 index 2 get sub  %% posició Y sense escalar del punt 0,0 del rectagle al SE (UL) del trau
+   3 -1 roll 1 2 getinterval aload pop  %% ample i alt del trau sense escalar
+   4 array astore dup  %% omplirem i perfilarem
+   {escalem? mul}forall rectfill  %% escalem i omplim
+   gsave
+   0 setlinewidth 1 0 0 setrgbcolor
+   {escalem? mul}forall rectstroke  %% escalem i perfilem en vermell solid
+   grestore
+
+(SE)==
+  }
+ ]
+
+ exch get cvx exec
+}forall
+
+showpage
+

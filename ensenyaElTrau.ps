@@ -1,0 +1,147 @@
+%!
+%% beu de les dades i del raw de trausExquisits.ps
+
+%% capturem per fer la conversió més avall a 8 bits
+dup /D1bitA8 exch def
+
+%% escalem?
+10 /escalem? exch def
+
+%% ens cal saber prèviament l'ample i l'alt dels píxels d'imatge
+uX /xPix exch def
+uY /yPix exch def
+
+%% configurem /ImageMatrix per cadascuna de les 4 orientacions
+[
+ [xPix 0 0 yPix 0 0]  %% 0 NO
+
+ [xPix 0 0 yPix 0 0]  %% 1 NE
+
+ [xPix 0 0 yPix neg 0 yPix]  %% 2 SO
+
+ [xPix 0 0 yPix neg 0 yPix]  %% 3 SE
+]
+/ImageMatrixA4vents exch def
+
+%% comptem quan octets haurem de muntar
+xPix 8 div ceiling cvi  %% octets per línia
+yPix mul array /QRbyteradix exch def  %% capacitat total del paquet on desarem els radix numbers de cada octet
+
+%% comptar els bits totals d'entrada, només ens servirà quan fem imatges de menys 1 octet?
+xPix yPix mul 2 add /maxBits exch def  %% hi sumem els 2 caràcters de la màscara 2#
+
+/iQRbyte 0 def  %% índex inicial de l'array dels radix numbers de cada octet
+/mOctet (2#00000000) def  %% màscara per octet (radix number)
+/ioctet 2 def  %% índex inicial per escriure dins l'string del radix number
+
+%(|||||)pstack quit
+{  %% forall per tota l'string binària
+ dup 10 eq ioctet 2 eq and
+ {  %% no fem res quan som al principi de la lectura o al final acabant amb 8 bits exactes
+  pop
+ }
+ {
+  dup 10 eq
+  {  %% si som al final de línia no fem re
+   pop
+   QRbyteradix iQRbyte mOctet dup length string copy put  %% desem els radix numbers de cada octet
+   iQRbyte 1 add /iQRbyte exch def
+   /mOctet (2#00000000) def  %% màscara per octet (radix number)
+   /ioctet 2 def  %% índex inicial per escriure dins l'string del radix number
+  }
+  {
+   mOctet exch ioctet exch put
+   ioctet 1 add dup 10 eq exch maxBits eq or  %% ara filtra i escriu bé les imatges de menys d'1 octet
+   {
+    QRbyteradix iQRbyte mOctet dup length string copy put  %% desem els radix numbers de cada octet
+    iQRbyte 1 add /iQRbyte exch def
+    /mOctet (2#00000000) def  %% màscara per octet (radix number)
+    /ioctet 2 def  %% índex inicial per escriure dins l'string del radix number
+   }
+   {
+    ioctet 1 add /ioctet exch def
+   }ifelse
+  }ifelse
+ }ifelse
+}forall  %% per tota l'string binària
+
+%% pintem la imatge
+<</PageSize[xPix escalem? mul yPix escalem? mul]>>setpagedevice
+gsave
+/DeviceGray setcolorspace
+0 0 translate xPix escalem? mul yPix escalem? mul scale
+
+false  %% a 1 bit o a 8 bits
+{  %% 1 bit
+ true  %% blancs plens o transparents
+ {  %% ploma amb els blancs que tapen
+  <<
+    /ImageType 1
+    /Width xPix  %% cada línia descarta (sense passar-los a la línia següent) els bits que no es fan servir a l'octet
+    /Height yPix
+    /BitsPerComponent 1
+    /Decode [1 0]  %% [1 0]=1 en color/0 blanc opac | [0 1]=0 en color/1 blanc opac
+    /ImageMatrix ImageMatrixA4vents 4vents get
+    /DataSource
+    QRbyteradix  %% estratègia per treballar directament en binari, tantes cadenes de radix numbers com octets
+    dup length string /Octets exch def
+    Octets /NullEncode filter /esCriu exch def
+    {esCriu exch cvx exec write}forall  %% escrivim els octets
+    esCriu closefile  %% !
+    Octets 0 () /SubFileDecode filter
+  >> image
+ }
+ {  %% ploma amb els blancs transparents
+  .1 setcolor 0 0 xPix yPix rectfill  %% acolorim un rectangle fosc pel fons i fem evident la transparència del blanc
+  .5 setcolor  %% acolorim la imatge amb un gris mig
+  xPix yPix
+  false  %% true=1 a color/0 transparents | false=0 a color/1 transparents
+  %[xPix 0 0 yPix neg 0 yPix]
+  ImageMatrixA4vents 4vents get
+  QRbyteradix  %% estratègia per treballar directament en binari, tantes cadenes de radix numbers com octets
+  dup length string /Octets exch def
+  Octets /NullEncode filter /esCriu exch def
+  {esCriu exch cvx exec write}forall  %% escrivim els octets
+  esCriu closefile  %% !
+  Octets 0 () /SubFileDecode filter
+  imagemask
+ }ifelse
+
+ grestore
+}
+{  %% passem cada bit a octet (8 bits)
+ xPix yPix mul string /Aoctets exch def
+ Aoctets /NullEncode filter /esCriu exch def
+ D1bitA8
+ {
+  dup 10 eq
+  {
+   pop
+  }
+  {
+   48 eq
+   {  %% és zero
+    esCriu 0 write
+   }
+   {  %% és u
+    esCriu 255 write
+   }ifelse
+  }ifelse
+ }forall
+ esCriu closefile  %% !
+ %% muntem la imatge a escala de grisos
+ <<
+   /ImageType 1
+   /Width xPix
+   /Height yPix
+   /BitsPerComponent 8
+   /Decode [1 0]
+   /ImageMatrix ImageMatrixA4vents 4vents get
+   /DataSource
+   Aoctets 0 () /SubFileDecode filter
+ >> image
+
+ grestore
+}ifelse
+
+%showpage
