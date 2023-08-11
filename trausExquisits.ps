@@ -102,7 +102,7 @@ nTraus array /desaTraus exch def  %% desem els paràmetres de cada trau per repro
 
 %%Primer, triem l'índex d'inici entre el total d'unitats de l'àrea
 rand Xa Ya mul mod  %% els valors són d'índex i van entre 0 i XaxYa -1
-%pop 0  %% test
+%pop 43  %% test
 dup /ullDelTrau exch def  %% desem aquí on pivota el trau als 4vents doncs es reposiciona en el punt setè
 
 %%Segon, triem l'orientació (X) horitzontal O/E
@@ -121,21 +121,23 @@ dup /ullDelTrau exch def  %% desem aquí on pivota el trau als 4vents doncs es re
 ]
 
 rand 2 mod
-%pop 1  %% test
+%pop 0  %% test
 
 dup /iOEvents exch def  %% desem l'índex O/E
 
 get cvx exec  %% ens donarà un valor mètric provisional d'X
 
-%%EP: activar aquest random equival a revisar l'algorisme d'extracció del RAW doncs si no balla
+
+%%EP: activar aquest random equival a revisar l'algorisme d'extracció/reproducció del RAW doncs si no balla
 %%Tercer.1 juguem amb les unitats X fins al marge oest/est per tal de retallar àrees internes de la imatge
-%1 add rand exch mod 1 add  %%* si abans de desar fem un random ens permetrà tenir àrees interiors que no toquin vores
+rand exch mod 1 add  %%* si abans de desar fem un random ens permetrà tenir àrees interiors que no toquin vores
+%pop 4  %% test
 
 dup /uX exch def
 
 %%Quart, apliquem la ràtio a X per saber quantes unitats ens corresponen per l'orientació vertical Y
 ratioXvsY mul  %% ens donarà el valor mètric provisional d'Y
-round cvi  %% EP, arrodonim i convertim a enter!
+round cvi  %% EP, arrodonim i convertim a enter (necessari per quan la ràtio duu decimals)
 /uY exch def  %% el desem
 
 
@@ -151,7 +153,7 @@ round cvi  %% EP, arrodonim i convertim a enter!
 ]
 %%Cinquè, triem l'orientació vertical Y N/S
 rand 2 mod
-%pop 1  %% test
+%pop 0  %% test
 
 dup /iNSvents exch def  %% desem l'índex N/S
 
@@ -183,6 +185,7 @@ uY lt  %% només si és més petit del valor mètric possible
     iXY  %% valor d'índex del píxel on iniciarem el trau cap al NO (xamfrà LR)
     uX sub 1 add  %% li restem el nombre d'unitats X de l'ample del trau i li afegim 1 perquè s'ajusti a l'índex d'inici
     uX getinterval  %% extraiem la línia X de dades de píxels d'ample a partir de l'index d'inici
+%(TRRAAUinterior)pstack quit
     escriuRAWbufferTRAU exch writestring  %% escrivim desant la línia X de dades al buffer
     iXY Xa sub /iXY exch def  %% al valor d'índex del píxel on iniciem el trau li restem les unitats d'ample del total d'imatge
     %% per deduir el nou valor d'índex d'inici per la línia següent (anem de baix a dalt)
@@ -250,7 +253,7 @@ escriuRAWbufferTRAU dup flushfile closefile
 RAWbufferTRAU
 
 %% pinta el retall del trau que hem extret del raw de /original_ninot8x8
-(ensenyaEltrau.ps) (r) file cvx exec
+(ensenyaElTrau.ps) (r) file cvx exec
 showpage  %% cridem la pàgina aquí (l'hem eliminat del .ps anterior)
 
 %% política de desat dels traus exquisists per tal de reproduir la imatge original amb els retalls sobreposats en transparència
@@ -274,12 +277,11 @@ desaTraus iTraus [ ullDelTrau uX uY 4vents ] dup length array copy put
 % }ifelse
 }loop  %% fins que haguem fet tots els /nTraus
 
-%% reproduïm la imatge sencera per visualitzar els traus amb transparència que hem extret
+%% reproduïm /original_ninot8x8 sencer per visualitzar els traus amb transparència que hem extret
 %% redefinim les dades clau
 /4vents 3 def
 /uX Xa def
 /uY Ya def
-
 
 
 original_ninot8x8 (ensenyaElTrau.ps) (r) file cvx exec
@@ -290,7 +292,7 @@ original_ninot8x8 (ensenyaElTrau.ps) (r) file cvx exec
 %% veure https://ghostscript.readthedocs.io/en/gs10.01.1/Language.html#transparency
 %% mesclant imatge i vectorials, és el que funciona millor
 %% veure /Users/femfum/enfony/PDF_TN/PDF_Transparency2_AdobeTN5407.pdf#page=16
-/Normal .setblendmode true .setalphaisshape .3  %% % de transparència
+/Normal .setblendmode true .setalphaisshape .2  %% % de transparència
  .setfillconstantalpha
 
 
@@ -303,9 +305,9 @@ false{
 5 5 20 20 rectfill
 }if
 
-%% test
-desaTraus
-{
+desaTraus  %% array d'arrays dels traus amb les dades mínimes per reproduir-los
+dup ==  %% test
+{  %% forall per assenyalar amb transparències i colors tots els traus sobre l' /original_ninot8x8 sencer
  dup 3 get
 
  [
@@ -314,7 +316,12 @@ desaTraus
    exch Xa mod  %% ens diu l'índex X on es situa dins la seva línia
 
    1 0 0 0 setcmykcolor  %% omplim amb cyan
-   2 index 1 get exch sub 1 sub  %% posició X sense escalar del punt 0,0 del rectagle al NO (LR) del trau
+   2 index 1 get
+% exch
+ sub
+ 1
+% sub  %% posició X sense escalar del punt 0,0 del rectagle al NO (LR) del trau
+add
    exch Ya exch sub 1 sub  %% posició Y sense escalar del punt 0,0 del rectagle al NO (LR) del trau
    3 -1 roll 1 2 getinterval aload pop  %% ample i alt del trau sense escalar
    4 array astore dup  %% omplirem i perfilarem
@@ -347,7 +354,13 @@ desaTraus
    exch Xa mod  %% ens diu l'índex X on es situa dins la seva línia
 
    0 0 1 0 setcmykcolor  %% omplim amb groc
-   2 index 1 get exch sub 1 sub  %% posició X sense escalar del punt 0,0 del rectagle al SO (UR) del trau
+   2 index 1 get
+% exch
+ sub
+% 1 sub  %% posició X sense escalar del punt 0,0 del rectagle al SO (UR) del trau
+
+1 add
+
    exch Ya exch sub
    2 index 2 get sub  %% posició Y sense escalar del punt 0,0 del rectagle al SO (UR) del trau
    3 -1 roll 1 2 getinterval aload pop  %% ample i alt del trau sense escalar
@@ -381,7 +394,7 @@ desaTraus
  ]
 
  exch get cvx exec
-}forall
+}forall  %% per assenyalar amb transparències i colors tots els traus sobre l' /original_ninot8x8 sencer
 
-showpage
+showpage  %% darrera pàgina
 
