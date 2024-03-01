@@ -1,0 +1,1016 @@
+%!
+%%FineArt24 marcarem les modificacions del codi arrel trausExquisits_pliegOS.ps
+%% el cridarà nUp_pliegOS.ps per generar un llibret únic amb traus per a cadascuna de les pàgines
+%% tret de les 2 centrals on hi reproduirem, a doble plana, l'original en JPEG amb els traus que hi hem extret
+
+
+noNULL  %% pinta el contingut de pàgina?
+{ %% anellem el codi sencer perquè no és aleatori
+
+gsave  %% profilàctic
+
+ iSeq 1 eq  %% només 1 cop
+ {  %% aquí dins és crític que hi posem, p.e. mai hi posarem la crida a la tipografia
+
+  %% raonament per planificar el contingut de les pàgines del llançat
+%%FineArt24
+  %% primer, ens cal saber quantes pàgines té el llançat triat (M2) via /_anversrevers
+  _anversrevers 0 get length 1 sub /iCONTRA exch def  %% índex de la contraportada
+  stopBP 2 idiv array  %% via stopBD també ho deduïm
+%%FineArt24 desem l'array de control de pàgines centrals i contraportada
+  dup /triparray exch def  %% tants elements com pàgines del llançat
+  %% segon, ens cal deduir i desar quines són les dues pàgines centrals del llançat
+%%FineArt24
+  stopBP 2 idiv 2 idiv dup 2 index exch 1 sub 0 put  %% la pàgina central esquerra tindrà valor zero i actuarà com un índex
+  1 add 1 index exch 1 sub 1 put  %% la pàgina central dreta tindrà un valor de u que actuarà com un índex
+  iCONTRA 2 put  %% i la contraportada tindrà un valor de dos que actuarà com un índex
+  %% /triparray ens definirà quines pàgines duen trau (null), quina la meitat esquerra de la imatge sencera (0)
+  %% quina la meitat dreta de la imatge sencera (1) i quina la contraportada (2)
+
+  mark  %% per netejar la brossa que encara hi hara hi ha quan llegim les dades del jpeg
+
+  (UN COP!)==
+
+%%JPEG
+%(/Users/femfum/PliegOS/test_Premia.jpg)
+%(/Users/femfum/PliegOS/FrancescCatalaRoca_venedorDlletres.jpeg)
+%(/Users/femfum/crstn112020.jpeg)
+%(/Users/femfum/PostScript.jpg)
+%(/Users/femfum/joBN4.jpg)
+%(/Users/femfum/jo_sfumatoATypI.jpeg)
+%(/Users/femfum/GorettiFinaTorra.jpg)
+%(/Users/femfum/JohnWarnock_Bezier.jpeg)
+%(/Users/femfum/jo/sessioJGC281223Manlleu/jo_jgc_retocIA_Manlleu281223_120x160.jpeg)
+
+%%URL30segons
+%%NOinterface
+%(/Users/femfum/PliegOS/codi_pliegOS/fotoAsierGogortza.jpeg)
+(/Library/WebServer/Documents/www.pliegos.net/maker/30segons/30segons000.jpeg)
+%(/var/www/wordpress/maker/30segons/30segons000.jpeg)
+
+%(/Users/femfum/Captura20.40.17.jpg)
+%(/Users/femfum/Captura20.39.55.jpg)
+%%EP amb una imatge de 13MB tenim un Error: /limitcheck in --string--
+%(/Users/femfum/_ATRIAR_JaumeBenet_PanoramaVia.jpeg)
+%(/Users/femfum/joBN3sharp.jpg)
+%(/Users/femfum/CEM/centenari/llibre/MAC/arxivers/IMG_20240228_133539.jpg)
+
+  dup (r) file
+  <<
+    /Filter /SubFileDecode
+    /DecodeParms <</EODCount 0 /EODString ()>>
+    %%/Intent 3
+  >> /ReusableStreamDecode filter
+
+  bytesavailable /FAjpeg exch def
+
+%%EP! aquí hi hauria d'haver l'anàlisi de la imatge per deduir l'espai de color i els píxels d'ample i alt
+  {  %d'stopped
+   %% captura de dades del JPEG i comprovacio de si existeix...
+   dup status
+   {
+    pop pop
+    % el fitxer fa...
+    /FiFtxr exch def pop
+    dup /elD'ara exch def  % path+Nom del fitxer que processem
+    (r) file /tesela exch def  % fitxer de lectura
+   }
+   {
+    (el jpeg NO HI ES!...) ==
+    tesela closefile quit
+   }ifelse
+
+   %% mirem el cap i els peus (marcadors d'inici i final) del fitxer aviam si son normatius...
+   tesela FiFtxr 2 sub setfileposition
+   tesela 2 string readstring pop <FFD9> eq
+   {
+    %% (PEUS OK) ==
+    tesela dup 0 setfileposition
+    2 string readstring pop <FFD8> eq
+    {
+     %%  (CAP OK) ==
+     /SoRTiM false def  % pestell de sortida
+     %% explorem el fitxer per localitzar els marcadors significatius que duen les dades d'imatge (qualsevol d'ells es valid)
+%%^^
+     {  % loop
+      tesela 2 string readstring  %% llegim el segment
+      {
+       /SeGMeNT exch def
+       0 1 6
+       {  %% for
+        [<FFC0> <FFC1> <FFC2> <FFC3> <FFC5> <FFC6> <FFC7>]  %% marcadors significatius
+        exch get SeGMeNT eq
+        {  %% for
+         %% (JA EL TINC !!!) ==
+         tesela 10 string readstring pop
+         %% captura del valor de files (y)
+         dup dup 3 get 256 mul exch 4 get add
+         (\n >>>> Files (Y) ... ) print flush dup ==
+         /_B exch def  % (Y) FILES D'IMATGE
+         %% captura del valor de columnes (x)
+         dup dup 5 get 256 mul exch 6 get add
+         (\n >>>> Columnes (X) ... ) print flush dup ==
+         /_A exch def  % (X) COLUMNES D'IMATGE
+         %% captura dels components de color (1, 3 o 4 canals)
+         dup dup 7 get
+         (\n >>>> Components de Color ... ) print flush dup ==
+         /CNLs exch def
+         %% bits per component de color (o per pixel)
+         dup dup 2 get
+         (\n >>>> Bits x Comp ... ) print flush dup == (\n\n) print flush
+         /BxC exch def
+         /SoRTiM true def
+        }if
+       }for
+       SoRTiM not
+       {
+        tesela 2 string readstring
+        {  % llegim la llargada del segment per saltar al seguent...
+         dup 0 get 256 mul exch 1 get add
+         2 sub string tesela exch readstring
+         {
+          pop
+         }
+         {
+          pop tesela closefile exit
+         }ifelse
+        }
+        {
+         pop tesela closefile exit
+        }ifelse
+       }if
+      }
+      {
+       pop tesela closefile exit
+      }ifelse
+      SoRTiM
+      {
+       tesela closefile exit
+      }if
+     }loop
+     SoRTiM not
+     {
+      (\n\n <<<< NO podem llegir correctament les dades d'aquest JPEG\n\n) print flush stop
+     }if
+     %% construim la imatge
+     {
+      [
+       0
+       % 1 canal (ploma, escala de grisos)
+       {/DCD [0 1] def /SCE {/DeviceGray setcolorspace} def}
+       0
+       % 3 canals (RGB, L*a*b*)
+       {/DCD [0 1 0 1 0 1] def /SCE {/DeviceRGB setcolorspace} def}
+       % 4 canals (CMYK)
+       {/DCD [1 0 1 0 1 0 1 0] def /SCE {/DeviceCMYK setcolorspace} def}
+      ]
+      CNLs get exec
+     }stopped
+     { % canals incorrectes
+      (\n\n <<<< Canals Incorrectes...\n\n) print flush
+     }if
+    }
+    {
+     %% (CAP KAPPUT)==
+    }ifelse
+   }
+   {
+    %% (PEUS KAPPUT)==
+   }ifelse
+   %%(quimquimquimquim)pstack quit
+  }stopped
+  {
+   (... PETADA al jpeg!\n\n) print flush
+  }if
+
+  %% [ _A Scl mul _B Scl mul ] /frmtPGN exch def
+  {  % stopped
+   elD'ara (r) file
+%   <</ColorTransform 1>> /DCTDecode filter
+
+  <<
+    /Filter /DCTDecode
+    /DecodeParms <</ColorTransform 1>>
+  >> /ReusableStreamDecode filter
+  }stopped
+  {
+   elD'ara print flush ( <<<< JPEG incompatible amb el filtre DCTDecode de PostScript...\n\n) print flush
+   stop
+  }if
+
+  /original_octets exch def  %% fitxer raw de lectura
+
+  cleartomark  %% per netejar la brossa que encara hi hara hi ha quan llegim les dades del jpeg
+ }if  %% només 1 cop
+
+%%FineArt24
+%%Tres procediments pel selfie-experiment de càmera fosca de l'Asier Gogortza
+[
+ {  %% part esquerra de la imatge sencera
+  (-- imatge sencera esquerra)==
+  gsave
+  SCE  % cridem l'espai de color
+  %% ens cal saber quin és el format de les dues pàgines centrals sumades en el sentit de lectura
+  xPagina 2 mul yPagina  %% obert el pliegOS pel mig sempre farà doble ample per alt
+  gt
+  {  %% les dues pàgines centrals sumades en el sentit de lectura són més amples que altes
+   %% ens cal saber si la imatge a reproduir a les dues pàgines centrals és horitzontal o vertical
+   _A _B gt
+   {  %% si /original_octets també és més ample que alt, no l'haurem de rotar
+   % xPagina 2 mul
+    yPagina _B div _B mul yPagina gt
+    {  %% però si l'altura de la imatge supera l'altura de la doble pàgina del llançat
+     %% l'ajustarem a l'altura centrant-la als marges laterals
+     yPagina _B div /factorE exch def  %% escala
+     xPagina 2 mul _A factorE mul sub 2 div /centratX exch def  %% calculem el valor per centrar-la
+     centratX 0 translate
+     _A factorE mul _B factorE mul scale 
+    }
+    {  %% l'ajustem als marges laterals centrant-la en altura
+     xPagina 2 mul _A div /factorE exch def  %% escala
+     yPagina _B factorE mul sub 2 div /centratY exch def  %% calculem el valor per centrar-la
+     0 centratY translate
+     _A factorE mul _B factorE mul scale 
+%(no hem de rotar la imatge)pstack quit
+    }ifelse
+   }
+   {  %% si /original_octets és vertical, l'haurem de rotar i l'escala vindrà marcada, primer:
+    xPagina 2 mul _B div dup  %% per adaptar l'altura de la imatge al doble ample de la pàgina del llançat
+    %% comprovant, en segon lloc, si adaptant la Y de la imatge l'ample resultant supera la Y de la pàgina
+     _A mul yPagina 2 copy gt
+    {  %% com que l'ample de la imatge supera la Y de la pàgina del llançat
+     pop pop pop  %% aquesta escala no ens val
+     yPagina _A div /factorE exch def  %% i la recalculem en funció de l'ample de la imatge i la Y de la pàgina
+     %% llavors, la Y de la imatge segur que serà més petita que l'ample de les dues pàgines centrals del llançat
+     xPagina 2 mul _B factorE mul sub 2 div /centratY exch def  %% calculem el valor per centrar-la
+     xPagina 2 mul centratY sub 0 translate 90 rotate
+     _A factorE mul _B factorE mul scale
+% (FineArt24)pstack quit
+    }
+    {  %% l'escala és vàlida
+     %% com que l'ample resultant de la imatge no supera la Y de la pàgina
+     exch sub 2 div /centratX exch def
+     /factorE exch def  %% escala
+     xPagina 2 mul centratX translate 90 rotate
+     _A factorE mul _B factorE mul scale
+%(l'escala es bona)pstack quit
+    }ifelse
+
+   }ifelse
+  }
+  {  %% les dues pàgines centrals sumades en el sentit de lectura són més altes que amples
+(pagines centrals més altes que amples)pstack quit
+  }ifelse
+  %0 0 translate
+  %uX escalem? mul uY escalem? mul scale
+  <<
+    /ImageType 1
+    /Width _A
+    /Height _B
+    /BitsPerComponent BxC
+    /Decode DCD
+    /ImageMatrix  [_A 0 0 _B neg 0 _B]
+    %ImageMatrixA4vents 4vents get
+    /DataSource  elD'ara (r) file <</ColorTransform 1>> /DCTDecode filter
+    %  touDdades
+    %(//////)pstack quit
+    % 0 () /SubFileDecode filter
+    %  original_octets % dup 0 setfileposition
+  >> image
+  grestore
+
+%%TRAUS
+false
+{
+  %/DeviceGray
+  /DeviceCMYK setcolorspace
+%%NOUgs9.55 obliga a incloure -dALLOWPSTRANSPARENCY a la línia d'execució (però i al 10?)
+  %% veure https://ghostscript.readthedocs.io/en/gs10.01.1/Language.html#transparency
+  %% mesclant imatge i vectorials, és el que funciona millor
+  %% veure /Users/femfum/enfony/PDF_TN/PDF_Transparency2_AdobeTN5407.pdf#page=16
+  /Normal .setblendmode true .setalphaisshape .5  %% % de transparència
+  .setfillconstantalpha
+
+  desaTraus  %% array d'arrays dels traus amb les dades mínimes per reproduir-los
+  %dup ==  %% test
+  {  %% forall per assenyalar amb transparències i colors tots els traus sobre l' /original_ninot8x8 sencer
+   dup 3 get
+
+   [
+    {  %% 0 NO
+     dup 0 get dup Xa idiv  %% en diu quantes linies Y té per sobre, sense incloure la seva
+     exch Xa mod  %% ens diu l'índex X on es situa dins la seva línia
+
+     1 0 0 0
+     %0 0 0 0
+     setcmykcolor  %% omplim amb cyan
+
+     2 index 1 get
+     % exch
+     sub
+     1
+     % sub  %% posició X sense escalar del punt 0,0 del rectagle al NO (LR) del trau
+     add
+     exch Ya exch sub 1 sub  %% posició Y sense escalar del punt 0,0 del rectagle al NO (LR) del trau
+     3 -1 roll 1 2 getinterval aload pop  %% ample i alt del trau sense escalar
+     4 array astore dup  %% omplirem i perfilarem
+     {escalem? mul}forall rectfill  %% escalem i omplim
+     gsave
+     0 setlinewidth 1 0 0 setrgbcolor
+     {escalem? mul}forall rectstroke  %% escalem i perfilem en vermell solid
+     grestore
+     (NO)==
+    }
+    {  %% 1 NE
+     dup 0 get dup Xa idiv  %% en diu quantes linies Y té per sobre, sense incloure la seva
+     exch Xa mod  %% ens diu l'índex X on es situa dins la seva línia
+
+     0 1 0 0
+     %0 0 0 0
+     setcmykcolor  %% omplim amb magenta
+
+     %% i ja és la posició X sense escalar del punt 0,0 del rectagle al NE (LL) del trau
+     exch Ya exch sub 1 sub  %% posició Y sense escalar del punt 0,0 del rectagle al NE (LL) del trau
+     3 -1 roll 1 2 getinterval aload pop  %% ample i alt del trau sense escalar
+     4 array astore dup  %% omplirem i perfilarem
+     {escalem? mul}forall rectfill  %% escalem i omplim
+     gsave
+     0 setlinewidth 1 0 0 setrgbcolor
+     {escalem? mul}forall rectstroke  %% escalem i perfilem en vermell solid
+     grestore
+     (NE)==
+    }
+    {  %% 2 SO
+     dup 0 get dup Xa idiv  %% en diu quantes linies Y té per sobre, sense incloure la seva
+     exch Xa mod  %% ens diu l'índex X on es situa dins la seva línia
+
+     0 0 1 0
+     %0 0 0 0
+     setcmykcolor  %% omplim amb groc
+
+     2 index 1 get
+     % exch
+     sub
+     % 1 sub  %% posició X sense escalar del punt 0,0 del rectagle al SO (UR) del trau
+
+     1 add
+
+     exch Ya exch sub
+     2 index 2 get sub  %% posició Y sense escalar del punt 0,0 del rectagle al SO (UR) del trau
+     3 -1 roll 1 2 getinterval aload pop  %% ample i alt del trau sense escalar
+     4 array astore dup  %% omplirem i perfilarem
+     {escalem? mul}forall rectfill  %% escalem i omplim
+     gsave
+     0 setlinewidth 1 0 0 setrgbcolor
+     {escalem? mul}forall rectstroke  %% escalem i perfilem en vermell solid
+     grestore
+     (SO)==
+    }
+    {  %% 3 SE
+     %pop [0 8 8 3]
+
+     dup 0 get dup Xa idiv  %% en diu quantes linies Y té per sobre, sense incloure la seva
+     exch Xa mod  %% ens diu l'índex X on es situa dins la seva línia
+
+     1 1 1 1
+     %0 0 0 0
+     setcmykcolor  %% omplim amb gris
+
+     %% posició X sense escalar del punt 0,0 del rectagle al SE (UL) del trau
+     exch Ya exch sub 2 index 2 get sub  %% posició Y sense escalar del punt 0,0 del rectagle al SE (UL) del trau
+     3 -1 roll 1 2 getinterval aload pop  %% ample i alt del trau sense escalar
+     4 array astore dup  %% omplirem i perfilarem
+     {escalem? mul}forall rectfill  %% escalem i omplim
+     gsave
+     0 setlinewidth 1 0 0 setrgbcolor
+     {escalem? mul}forall rectstroke  %% escalem i perfilem en vermell solid
+     grestore
+
+     (SE)==
+    }
+   ]
+
+   exch get cvx exec
+  }forall  %% per assenyalar amb transparències i colors tots els traus sobre l' /original_ninot8x8 sencer
+}if
+
+ }  %% 0
+ {  %% part dreta de la imatge sencera
+  (-- imatge sencera dreta)==
+  gsave
+  SCE  % cridem l'espai de color
+  %% ens cal saber quin és el format de les dues pàgines centrals sumades en el sentit de lectura
+  xPagina 2 mul yPagina  %% obert el pliegOS pel mig sempre farà doble ample per alt
+  gt
+  {  %% les dues pàgines centrals sumades en el sentit de lectura són més amples que altes
+   %% ens cal saber si la imatge a reproduir a les dues pàgines centrals és horitzontal o vertical
+   _A _B gt
+   {  %% si /original_octets també és més ample que alt, no l'haurem de rotar
+    yPagina _B div _B mul yPagina gt
+    {  %% però si l'altura de la imatge supera l'altura de la doble pàgina del llançat
+     %% l'ajustarem a l'altura centrant-la als marges laterals
+     yPagina _B div /factorE exch def  %% escala
+     xPagina 2 mul _A factorE mul sub 2 div /centratX exch def
+     xPagina neg centratX add 0 translate
+     _A factorE mul _B factorE mul scale 
+    }
+    {  %% l'ajustem als marges laterals centrant-la en altura
+     xPagina 2 mul _A div /factorE exch def  %% escala
+     yPagina _B factorE mul sub 2 div /centratY exch def  %% calculem el valor per centrar-la
+     xPagina neg centratY translate
+     _A factorE mul _B factorE mul scale 
+%(no hem de rotar la imatge)pstack quit
+    }ifelse
+   }
+   {  %% si /original_octets és vertical, l'haurem de rotar i l'escala vindrà marcada, primer:
+    xPagina 2 mul _B div dup  %% per adaptar l'altura de la imatge al doble ample de la pàgina del llançat
+    %% comprovant, en segon lloc, si adaptant la Y de la imatge l'ample resultant supera la Y de la pàgina
+     _A mul yPagina 2 copy gt
+    {  %% com que l'ample de la imatge supera la Y de la pàgina del llançat
+     pop pop pop  %% aquesta escala no ens val
+     yPagina _A div /factorE exch def  %% i la recalculem en funció de l'ample de la imatge i la Y de la pàgina
+     %% llavors, la Y de la imatge segur que serà més petita que l'ample de les dues pàgines centrals del llançat
+     xPagina 2 mul _B factorE mul sub 2 div /centratY exch def  %% calculem el valor per centrar-la
+     xPagina centratY sub 0 translate 90 rotate
+     _A factorE mul _B factorE mul scale
+% (FineArt24)pstack quit
+    }
+    {  %% l'escala és vàlida
+     %% com que l'ample resultant de la imatge no supera la Y de la pàgina
+     exch sub 2 div /centratX exch def
+     /factorE exch def
+     xPagina centratX translate 90 rotate
+     _A factorE mul _B factorE mul scale
+%(l'escala es bona)pstack quit
+    }ifelse
+
+   }ifelse
+  }
+  {  %% les dues pàgines centrals sumades en el sentit de lectura són més altes que amples
+(pagines centrals més altes que amples)pstack quit
+  }ifelse
+  %0 0 translate
+  %uX escalem? mul uY escalem? mul scale
+  <<
+    /ImageType 1
+    /Width _A
+    /Height _B
+    /BitsPerComponent BxC
+    /Decode DCD
+    /ImageMatrix  [_A 0 0 _B neg 0 _B]
+    %ImageMatrixA4vents 4vents get
+    /DataSource  elD'ara (r) file <</ColorTransform 1>> /DCTDecode filter
+    %  touDdades
+    %(//////)pstack quit
+    % 0 () /SubFileDecode filter
+    %  original_octets % dup 0 setfileposition
+  >> image
+  grestore
+ }  %% 1
+ {  %% contraportada seguint o no el mètode de farceixPDFs_pseudoPDFX5_ReferenceXObjects_EnricSenabre.ps 
+  false
+{  %% true: treballem amb GS v.10.## que duu PDFscripting i cridem la contraportada en PDF
+%%URL30segons
+%  (/Users/femfum/PliegOS/SenabreEspelt/Plantilla_plana_pliego_postal2.pdf)
+ (/Library/WebServer/Documents/www.pliegos.net/maker/30segons/Plantilla_plana_pliego_postal2.pdf)  %% localhost
+% (/var/www/wordpress/maker/30egons/Plantilla_plana_pliego_postal2.pdf) %% Teixidora
+  /pedeefa exch def
+  %1% deixa una instància oberta a memòria sense cap objecte a l'stack que permet anar interrogant
+  pedeefa (r) file dup /elF exch def runpdfbegin  %% cal tancar-la amb runpdfend al final
+  %3% inicialitzem per intervenir dins l'estructura del pdf, afegint noves branques de dades, com la dels formularis
+  /Context1 .PDFInit def
+  pedeefa Context1 .PDFFile
+  Context1 .PDFInfo /NumPages get /pAimposar exch def  %% nombre de pàgines a imposar del PDF a incrustar
+  %2% interroguem el MediaBox i el deixa a l'stack
+
+%%FineArt24 la contra és sempre un PDF d'1 sola pàgina
+  1  %  Npgn cvx exec
+
+%%Un truc per començar més enllà de la pàgina 1 del PDF
+  %4 add
+  pdfgetpage dup /Pdict exch def
+%%Hem detectat problemes amb PDFs amb la clau /CropBox, doncs sembla influenciar en la configuració del /MediaBox del full
+%% on fem el llançat, anul·lant-la i aplicant el valor de la darrera pàgina que es llança ...de fet el /CropBox sempre mana
+%% sobre el /MediaBox, el problema està que dins el context de la imposició no queda blindat i actua sobre el /MediaBox del
+%% full (podem fer una consulta a gs-devel), llavors, abans d'anul·lar-lo, l'hauríem d'interrogar per saber si és ídem al
+%% /MediaBox de la pàgina que llancem dins l'nUp doncs, en aquest cas, li hauríem de corregir el seu posicionat (la resta ja
+%% encaixaria dins el rectclip del llançat) ...com sigui, el que cal saber és si via PDF scripting podem anar més enllà de la
+%% interrogació per modificar el contingut (diccionaris o streams) del PDF que estem llançant, just abans de pintar-lo
+%% si NO fos així, prèviament hauríem d'executar CaLi2CoPi, per a cadascun dels PDFs a imposar, i filtra/modificar el necessari
+%% per exemple: hem de permetre imposar PDFs encriptats? signats? 
+  dup /CropBox undef  %% de moment no en fa cas
+
+  /MediaBox get  %% de la primera pàgina (no és un índex i per tant comença per 1!)
+  %{== ==}forall(<<<<?)== quit
+
+  %2 pdfgetpage /MediaBox get  %% de la segona, etc
+  /araMediaBox exch def
+
+%%TEST
+%/Rotate get 0 ne
+%{(<<< NOZERO)pstack quit}if
+
+  %% deducció de l'escala de treball per adaptar al màxim cada pàgina del PDF que llegim a la pàgina del llançat
+  %% es podria optar també per igualar els amples o alts de les pàgines que llegim al format de pàgina del llançat
+  %% vegeu: igualatPerLaXmesAmplePossible.pdf i igualatPerLaYmesAltaPossible.pdf llegint 8auricsH.pdf i 8auricsV.pdf
+  %% calculem el format de pàgina a partir del MediaBox de la pàgina que llegim
+  araMediaBox aload pop 3 -1 roll sub abs exch 3 -1 roll sub abs exch  %% cal treballar amb el valor absolut!
+  2 copy /YaImposar exch def /XaImposar exch def
+  2 copy ge  %% el costat més gran o igual (quadrat) de la pàgina que llegim
+  {  %% orientació horitzontal de la pàgina a imposar: l' X és el costat més gran
+   /Odivisor false def
+  }
+  {  %% orientació vertical de la pàgina a imposar: l' Y és el costat més gran
+   /Odivisor true def
+  }ifelse
+  %% el costat més gran de la pàgina del llançat
+  xPagina yPagina gt
+  {  %% l'orientació del llançat és horitzontal
+   (oH CAL afinar l'escala com %%+)pstack quit
+   Odivisor
+   {  %% però l'orientació de la pàgina a imposar és vertical
+    exch pop yPagina exch div  %% escala de treball
+   }
+   {  %% però l'orientació de la pàgina a imposar és horitzontal
+    pop xPagina exch div  %% escala de treball
+   }ifelse
+  }
+  {  %% l'orientació del llançat és vertical
+   Odivisor
+   {  %% i l'orientació de la pàgina a imposar també és vertical
+    exch pop yPagina exch div  %% escala de treball
+%%+ ens cal saber si aquesta escala no fa que l'ample de la pàgina imposada superi encara la que disposa el llançat
+    dup XaImposar mul xPagina 2 copy gt
+    {  %% corregim l'escala, doncs l'X encara NO encaixa dins la pàgina del llançat
+     XaImposar div  %% escala corregida
+     exch pop exch pop
+    }
+    {
+     (NO hem de corregir l'escala)==  %pstack quit
+     pop pop
+    }ifelse
+   }
+   {  %% però l'orientació de la pàgina a imposar és horitzontal
+    pop xPagina exch div  %% escala de treball
+    (oV CAL afinar l'escala com %%+)pstack quit
+   }ifelse
+  }ifelse
+
+  dup scale  %% adapta al màxim cada pàgina del PDF que llegim dins la pàgina del llançat
+  %% primer mètode de pintar la pàgina
+  %%Pàgina Npgn -1 com a índex
+  Context1  %Npgn cvx exec
+%%Un truc per començar més enllà de la pàgina 1 del PDF
+  %4 add
+  %1 sub
+%%FineArt24 la contra és sempre un PDF d'1 sola pàgina
+  0 .PDFDrawPage  %% repiquem la pàgina Npgn però cridada com a índex
+}
+{  %% false: treballem amb un GS v.9.## sense PDFscripting i llavors cridem la contraportada en EPS
+  /BeginEPSF
+  {
+   /b4_Inc_state save def
+   /dict_count countdictstack def
+   /op_count count 1 sub def
+   userdict begin
+   /showpage {} def
+   /setpagedevice {pop} def  % NOU ! servira per .ps amb pagina configurada ?
+   /erasepage {} def  % NOU! (06.98) test de .PS de Quark
+   %/statusdict {5 dict} def  % NOU! PageMaker 5.0 (hem de trobar una altra solucio)
+   0 setgray 0 setlinecap
+   1 setlinewidth 0 setlinejoin
+   10 setmiterlimit [] 0 setdash newpath
+   /languagelevel where
+   {
+    pop languagelevel 1 ne
+    {
+     false setstrokeadjust false setoverprint
+    }if
+   }if
+  }bind def
+
+  /EndEPSF
+  {
+   count op_count sub
+   {
+    pop
+   }repeat
+   countdictstack dict_count sub
+   {
+    end
+   }repeat
+   b4_Inc_state restore
+  }bind def
+BeginEPSF
+    0 0 translate
+%% calculem l'escala en funció del %%BoundingBox: 0 0 850 1190 i del format de pàgina del llançat xPagina/yPagina
+    xPagina 850 div yPagina 1190 div scale
+%%URL30segons
+%()
+(/Library/WebServer/Documents/www.pliegos.net/maker/30segons/Plantilla_plana_pliego_postal2.eps)
+%(/var/www/wordpress/maker/30segons/Plantilla_plana_pliego_postal2.eps)
+    (r) file cvx exec
+    gsave
+%    0 0 0 setrgbcolor
+%    12 /cosCrdts exch def
+%    /laLlatinaI cosCrdts selectfont
+%    (Plega-Cus-Talla) stringwidth pop cosCrdts 4 mul add neg cosCrdts moveto
+%    (Plega-Cus-Talla) show
+    grestore
+    EndEPSF
+}ifelse
+ }  %% 2
+] /centralsicontra exch def
+triparray iPln 1 sub get  %% el número de pàgina jugat com a índex
+dup null ne  %% cada plana de l'nUp que dugui un null
+{
+ centralsicontra exch get
+ cvx exec
+%(FineArt24)pstack quit
+}
+{
+ pop
+
+%2 /escalem? exch def  %% aquest paràmetre dins pliegOS hauria de ser dinàmic
+
+%% deduirem l'ample i alt de l'original amb les unitats que toquin (píxels, punts)
+%8
+_A
+/Xa exch def  %% X ample
+%8
+_B
+/Ya exch def  %% Y alt
+
+%% té sentit precalcular la ràtio màxim permesa?
+%% ràtio a multiplicar al valor d'X per tal de deduir el valor d'Y (s'hauria de deduir de la pàgina de l'nUp triat)
+%% amb una ràtio quadrada si agafem un valor d'1 píxel p.e. a UR en orientació NO o NE, el trau retallaria 1 sol píxel 
+%% quan la ràtio vertical supera un màxim permès, p.e. 9 per a una imatge de 8x8 píxels, entrem en un loop infinit
+%% per ràtios horitzontals: de .9 a .5 (per sota entrem en un loop infinit) ...cal filtrar aquests valors extrems en cada cas
+
+%% la ratio exacta
+yPagina xPagina div
+%1.41
+/ratioXvsY exch def
+
+realtime srand  %% perquè les crides rand successives variïn de debò, plantem la llavor de l'aleatori només 1 vegada
+
+true /19trau exch def  %% fem un nou trau?
+
+%%FineArt24
+iCONTRA 2 sub  %% nombre de traus exquisits en funció de l'nUp i del fet que reservem 3 pàgines
+%(UEP)pstack quit
+/nTraus exch def  %% sempre faríem el nombre total de pàgines de l'nUp -1 per tal de poder il·lustrar d'on hem tret els retalls
+
+0 /iTraus exch def  %% índex comptador de traus fets
+
+nTraus array /desaTraus exch def  %% desem els paràmetres de cada trau per reproduir sobre l'original sencer
+
+%%Raonament pel comportament de l'aleatori dels traus
+%% en aquest primer comportament estem donant preferència a l'X a l'hora de definir la dimensió del trau
+%% i si no fem un random a %%* els traus sempre tocaran vores i no tindrem mai retalls amb només àrees interiors de la imatge
+%% primer, triem el punt d'inici entre el total d'unitats de l'àrea: anirà de 0 a XxY
+%% segon, triem l'orientació (X) horitzontal O/E
+%% tercer, comptem quantes unitats (X) ens separen de la vora per l'orientació triada
+%% quart, apliquem la ràtio a X per saber quantes unitats ens corresponen per l'orientació vertical Y
+%% cinquè, triem l'orientació vertical Y N/S
+%% sisè, comprovem si les unitats Y hi caben per l'orientació triada
+%% setè, si hi caben, fixem definitivament X/Y
+%% vuitè, si les unitats Y no hi caben tornem a punt primer
+%% una altra possibilitat seria invertir l'orientació Y i tornar a punt sisè (però hauríem d'invertir l'orientació X!)
+%% i si les unitats Y no hi cabessin, tornaríem al punt tercer invertint l'orientació triada a X, i si fallés tornaríem a 1
+
+%%EP!
+{  %% loop fins que haguem fet totes les pàgines (/nTraus)
+
+  %% triem l'índex X,Y del punt d'inici
+  %rand Xa mod  %% els valors van entre 0 i /Xa -1
+  %rand Ya mod  %% els valors van entre 0 i /Ya -1
+
+%%Primer, triem l'índex d'inici entre el total d'unitats de l'àrea
+rand Xa Ya mul mod  %% els valors són d'índex i van entre 0 i XaxYa -1
+%pop %_A _B mul 1 sub 3 mul
+%0  %% test
+dup /ullDelTrau exch def  %% desem aquí on pivota el trau als 4vents doncs es reposiciona en el punt setè
+
+%%Segon, triem l'orientació (X) horitzontal O/E
+[  %% funcions aleatòries en sentit X
+%%Tercer, comptem quantes unitats (X) ens separen de la vora per l'orientació triada
+ {
+  dup /iXY exch def  %% punt d'inici del raw amb valor d'índex total des del 0 (UL) fins al final n-1
+  Xa mod 1 add  %% posició d'unitats dins la seva línia, del punt d'inici cap a l'esquerra (comptant el punt d'inici!)
+%(oest) ==
+ }  %% 0 cap a l'oest
+ {
+  dup /iXY exch def  %% punt d'inici del raw en valor d'índex total des del 0 (UL) fins al final n
+  Xa mod Xa exch sub  %% posició d'unitats dins la seva línia, del punt d'inici cap a la dreta (comptant el punt d'inici!)
+%(est) ==
+ }  %% 1 cap a l'est
+]
+
+rand 2 mod
+%pop 1  %% test
+
+dup /iOEvents exch def  %% desem l'índex O/E
+
+get cvx exec  %% ens donarà un valor mètric provisional d'X
+
+%%EP: activar aquest random equival a revisar l'algorisme d'extracció/reproducció del RAW doncs si no balla
+%%Tercer.1 juguem amb les unitats X fins al marge oest/est per tal de retallar àrees internes de la imatge
+rand exch mod 1 add  %%* si abans de desar fem un random ens permetrà tenir àrees interiors que no toquin vores
+%pop 8  %% test
+
+dup /uX exch def
+
+%%Quart, apliquem la ràtio a X per saber quantes unitats ens corresponen per l'orientació vertical Y
+ratioXvsY mul  %% ens donarà el valor mètric provisional d'Y
+%% round
+ceiling cvi  %% EP, arrodonim amunt! (a baixes resulucions la ràtio pot quedar curta) i convertim a enter
+/uY exch def  %% el desem
+
+%% ens cal saber prèviament l'ample i l'alt dels píxels d'imatge
+uX /xPix exch def
+uY /yPix exch def
+%% configurem /ImageMatrix per cadascuna de les 4 orientacions
+[
+ [xPix 0 0 yPix 0 0]  %% 0 NO
+
+ [xPix 0 0 yPix 0 0]  %% 1 NE
+
+ [xPix 0 0 yPix neg 0 yPix]  %% 2 SO
+
+ [xPix 0 0 yPix neg 0 yPix]  %% 3 SE
+]
+/ImageMatrixA4vents exch def
+
+[  %% funcions aleatòries en sentit Y on hem de comprovar que les unitats resultants de la ràtio, efectivament, hi caben
+ {  %% ens diu quantes línies hi ha per sobre la posició d'índex iXY i li sumem la pròpia
+  iXY Xa idiv 1 add
+%(nord) ==
+ }  %% 0 cap al nord
+ { %% ens diu quantes línies hi ha per sota la posició d'índex iXY comptant-hi la pròpia
+  Ya iXY Xa idiv sub
+%(sud) ==
+ }  %% 1 cap al sud
+]
+%%Cinquè, triem l'orientació vertical Y N/S
+rand 2 mod
+%pop 1  %% test
+
+dup /iNSvents exch def  %% desem l'índex N/S
+
+get cvx exec  %% l'orientació triada aleatòriament, 0 (N) o 1 (S), ens donarà el valor mètric possible d'Y (no és cap índex!)
+
+%%FineArt24 aquí és on hi podem posar un topall per tal de no treballar a una uX/uY de píxels inferior a ##%
+_A .15  %% aquest valor de % també podria ser aleatori entre .9? i .1?
+mul cvi /topallX exch def
+
+%%Sisè, comprovem si les unitats uY hi caben dins el valor mètric possible per l'orientació triada
+uY lt  %% només si és més petit del valor mètric possible
+
+%%FineArt24
+uX topallX lt
+or
+
+%not  %% test
+{
+ (\n\n >>> uY fa... )print flush uY 32 string cvs print flush
+ ( ...i per les unitats Y triades NO hi caben!\n\n)print flush
+%%Vuitè, si les unitats Y no hi caben: invertim l'orientació Y i tornem a punt sisè (però haurem d'invertir l'orientació X!)
+%%Novè, si les unitats Y no hi caben: tornem al punt tercer invertint l'orientació triada a X
+
+% quit  %% test
+}
+{
+%%Setè, si hi caben, X/Y ja han quedat fixades
+%% NO hi haurà random per la tria dels /4vents doncs ja ens la donarà el random O/E i N/S
+[  %% cadascun dels 4 procediments extrau el raw/crop de dades que li correspon a cada trau
+ [  %% 0 N
+  %% 0  %% NO
+  {  %% 0 NOstral NOrç NOrè
+%(NO)==
+   %% raonem de com procedim:
+   uY  %% s'executa tantes vegades com unitats Y tingui el trau (això només té sentit quan treballem amb imatges)
+   {
+    original_octets  %% tou de dades bit a bit dins una string
+
+dup
+
+    iXY  %% valor d'índex del píxel on iniciarem el trau cap al NO (xamfrà LR)
+    uX sub 1 add  %% li restem el nombre d'unitats X de l'ample del trau i li afegim 1 perquè s'ajusti a l'índex d'inici
+CNLs mul
+
+setfileposition
+
+    uX  %% nombre de píxels a extraure
+CNLs mul
+
+string readstring  %% extraiem la línia X de dades de píxels d'ample a partir de l'index d'inici
+
+not
+{
+ (\n\n >>> cagada pastoret?\n\n)print flush stop
+}if
+
+%    getinterval  %% extraiem la línia X de dades de píxels d'ample a partir de l'index d'inici
+
+    escriuRAWbufferTRAU exch writestring  %% escrivim desant la línia X de dades al buffer
+    iXY Xa sub /iXY exch def  %% al valor d'índex del píxel on iniciem el trau li restem les unitats d'ample del total d'imatge
+    %% per deduir el nou valor d'índex d'inici per la línia següent (anem de baix a dalt)
+   }repeat
+   0  %% NO
+   /4vents exch def  %% índex d'orientació dels 4 vents que ens servirà per triar la matriu de la imatge
+  }
+
+  %% 1  %% NE
+  {  %% 1 NEegal
+%(NE)==
+   uY
+   {
+    original_octets  %% tou de dades bit a bit dins una string
+
+dup
+
+    iXY  %% valor d'índex del píxel on iniciarem el trau cap al NE (xamfrà LL)
+CNLs mul
+
+setfileposition
+
+    uX  %% nombre de píxels a extraure
+CNLs mul
+
+string readstring  %% extraiem la línia X de dades de píxels d'ample a partir de l'index d'inici
+
+not
+{
+ (\n\n >>> cagada pastoret?\n\n)print flush stop
+}if
+
+%    getinterval
+
+    escriuRAWbufferTRAU exch writestring  %% escrivim desant la línia X de dades al buffer
+    iXY Xa sub /iXY exch def  %% al valor d'índex del píxel on iniciem el trau li restem les unitats d'ample del total d'imatge
+    %% per deduir el nou valor d'índex d'inici per la línia següent (anem de baix a dalt)
+   }repeat
+   1  %% NE
+   /4vents exch def  %% índex d'orientació dels 4 vents que ens servirà per triar la matriu de la imatge
+  }
+ ]
+ [  %% 1 S
+  %% 2  %% SO
+  {  %% 0 SOrbí SOebeig
+%(SO)==
+   uY
+   {
+    original_octets  %% tou de dades bit a bit dins una string
+
+dup
+
+    iXY  %% valor d'índex del píxel on iniciarem el trau cap al SO (xamfrà UR)
+    uX sub 1 add
+CNLs mul
+
+setfileposition
+
+    uX  %% nombre de píxels a extraure
+CNLs mul
+
+string readstring  %% extraiem la línia X de dades de píxels d'ample a partir de l'index d'inici
+
+not
+{
+ (\n\n >>> cagada pastoret?\n\n)print flush stop
+}if
+
+%    getinterval  %% extraiem la línia X de dades de píxels d'ample a partir de l'index d'inici
+
+    escriuRAWbufferTRAU exch writestring  %% escrivim desant la línia X de dades al buffer
+    iXY Xa add /iXY exch def  %% al valor d'índex del píxel on iniciem el trau li sumem les unitats d'ample del total d'imatge
+    %% per deduir el nou valor d'índex d'inici per la línia següent (anem de dalt a baix)
+   }repeat
+   2  %% SO
+   /4vents exch def  %% índex d'orientació dels 4 vents que ens servirà per triar la matriu de la imatge
+  }
+
+  %% 3  %% SE
+  {  %% 1 SEloc
+%(SE)==
+   uY
+   {
+    original_octets  %% tou de dades bit a bit dins una string
+
+dup
+
+    iXY  %% valor d'índex del píxel on iniciarem el trau cap al SE (xamfrà UL)
+CNLs mul
+
+setfileposition
+
+    uX  %% nombre de píxels a extraure
+CNLs mul
+
+string readstring  %% extraiem la línia X de dades de píxels d'ample a partir de l'index d'inici
+
+not
+{
+ (\n\n >>> cagada pastoret?\n\n)print flush stop
+}if
+
+%    getinterval  %% extraiem la línia X de dades de píxels d'ample a partir de l'index d'inici
+
+    escriuRAWbufferTRAU exch writestring  %% escrivim desant la línia X de dades al buffer
+    iXY Xa add /iXY exch def  %% al valor d'índex del píxel on iniciem el trau li sumem les unitats d'ample del total d'imatge
+    %% per deduir el nou valor d'índex d'inici per la línia següent (anem de dalt a baix)
+   }repeat
+   3  %% SE
+   /4vents exch def  %% índex d'orientació dels 4 vents que ens servirà per triar la matriu de la imatge
+  }
+ ]
+]
+
+uX uY mul
+CNLs mul
+string dup /RAWbufferTRAU exch def
+/NullEncode filter /escriuRAWbufferTRAU exch def
+%% aquí juguem amb /iSNvents i /iOEvents per fer l'extracció del raw del trau retallat
+iNSvents get iOEvents get cvx exec
+escriuRAWbufferTRAU dup flushfile closefile
+
+%%EPs reproduïm 1 cop el trau
+%[
+% 0
+ % 1 canal (ploma, escala de grisos)
+% {/DCD [0 1] def /SCE {/DeviceGray setcolorspace} def}
+% 0
+ % 3 canals (RGB, L*a*b*)
+% {/DCD [0 1 0 1 0 1] def /SCE {/DeviceRGB setcolorspace} def}
+ % 4 canals (CMYK)
+% {/DCD [1 0 1 0 1 0 1 0] def /SCE {/DeviceCMYK setcolorspace} def}
+%]
+%CNLs get exec
+
+%%EP!
+%[ uX escalem? mul uY escalem? mul ] /frmtPGN exch def
+%<</PageSize frmtPGN>> setpagedevice
+
+SCE  % cridem l'espai de color
+gsave
+%0 refemLaY
+
+%%Al pliegO'Maker no hi va perquè és implícit?
+%0 0 translate
+
+xPagina uX div /escalem? exch def
+
+%%TEST
+%== yPagina uY div ==
+uY uX div ==
+
+
+
+uX escalem? mul uY escalem? mul
+
+ scale
+
+<<
+  /ImageType 1
+  /Width uX
+  /Height uY
+  /BitsPerComponent BxC
+  /Decode DCD
+  /ImageMatrix  %[Xa 0 0 Ya neg 0 Ya]
+  ImageMatrixA4vents 4vents get
+  /DataSource  %elD'ara (r) file <</ColorTransform 1>> /DCTDecode filter
+  RAWbufferTRAU 0 () /SubFileDecode filter
+>> image
+grestore
+
+%%PER CADA PLANA DE l'nUp
+exit
+
+ }ifelse
+
+%%TRAUS
+false
+{
+  %% desat dels traus exquisists per tal de reproduir la imatge original amb els retalls sobreposats en transparència
+  %% també desaríem píxel a píxel (només tindria sentit si féssim un detector d'àrees ja retallades per no repetir-ne)
+  %% però en tindrem prou desant l'índex inicial d' /iXY (/ullDelTrau) els píxels d'ample i alt /uX i /uY i l'orientació
+  desaTraus iTraus [ ullDelTrau uX uY 4vents ] dup length array copy put
+  (- - trau - - )==
+  iTraus 1 add /iTraus exch def
+  iTraus nTraus eq
+  {
+   exit
+  }if
+}if
+
+%%EP!
+}loop
+
+%%FineArt24
+ }ifelse
+
+ grestore %% profilàctic
+
+}if  %% noNULL anellem el codi sencer perquè no és aleatori per pàgina
+
