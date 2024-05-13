@@ -6,7 +6,7 @@
 %%  Per a intèrprets `GNU GPL Ghostscript´ però també, amb ben pocs retocs, pot córrer
 %%  amb l'Adobe Acrobat Distiller o amb el PSNormalizer Framework/Apple pstopdf a MacOSX.
 %%
-%%  `Copyleft 2017-2023 :: l'Ametlla de Merola :: Marcantoni Malagarriga-Picas´
+%%  `Copyleft 2017-2024 :: l'Ametlla de Merola :: Marcantoni Malagarriga-Picas´
 %%  `<http://www.femfum.com> | <marcantoni@femfum.com>´
 %%  `https://github.com/marcantonifemfum/pliegO-Maker´
 %%  `http://pliegos.net/maker´
@@ -32,7 +32,7 @@
 %%
 %%  All the comments inside the code are in catalan [ca], we hope to add english annotations in future versions
 %%  
-%%  `Copyleft 2017-2023 :: l'Ametlla de Merola :: Marcantoni Malagarriga-Picas´
+%%  `Copyleft 2017-2024 :: l'Ametlla de Merola :: Marcantoni Malagarriga-Picas´
 %%  `<http://www.femfum.com> | <marcantoni@femfum.com>´
 %%  `https://github.com/marcantonifemfum/pliegO-Maker´
 %%  `http://pliegos.net/maker´
@@ -116,6 +116,14 @@
 %% si la ràtio no és ídem i no la forcem, treballarem amb el nou format adaptat
 %% l'algorisme componedor s'executarà dues vegades (una per plana) per tal sigui possible treballar amb l'aleatori
 
+%%Captura de dades via fitxer?
+false
+
+dup /CddVf exch def
+{
+ (/Users/femfum/PliegOS/codi_pliegOS/ESH_Canodrom.txt)
+ (r) file cvx exec
+}if
 
 %%MENÚ capçalera
 %% marca l'entrada de dades i tria d'opcions
@@ -140,7 +148,13 @@
  }ifelse
 }
 {  %% la variable d'entorn NO existeix perquè executem l'applet en local via Terminal per línia de comanda
- true  %% fem visible la vora de la pàgina del llançat? (imposició) més endavant podrem posar-ho en una capa
+ CddVf
+ {
+%  false  %% fem visible la vora de la pàgina del llançat? (imposició) més endavant podrem posar-ho en una capa
+ }
+ {
+  true
+ }ifelse
 %% (\n Ghostscript no pot capturar aquesta variable d'entorn!\n\n)print flush
 }ifelse
 
@@ -162,7 +176,12 @@
  }ifelse
 }
 {  %% la variable d'entorn NO existeix perquè executem l'applet en local via Terminal per línia de comanda
- 4
+ CddVf
+ {
+ }
+ {
+  8
+ }ifelse
 %% (\n Ghostscript no pot capturar aquesta variable d'entorn!\n\n)print flush
 }ifelse
 
@@ -180,7 +199,12 @@
  }ifelse
 }
 {  %% la variable d'entorn NO existeix perquè executem l'applet en local via Terminal per línia de comanda
- false  %% pel plegaVeu 19.12.21 forcem el 4+4 sempre en vertical (el 8+8 ja ho fa per defecte)
+ CddVf
+ {
+ }
+ {
+  false  %% pel plegaVeu 19.12.21 forcem el 4+4 sempre en vertical (el 8+8 ja ho fa per defecte)
+ }ifelse
 %%EP! el 2Up en vertical talla els originals (cal revisar també en H perquè es veu menys però també passa!)
 %% (\n Ghostscript no pot capturar aquesta variable d'entorn!\n\n)print flush
 }ifelse
@@ -198,7 +222,12 @@
  }ifelse
 }
 {  %% la variable d'entorn NO existeix perquè executem l'applet en local via Terminal per línia de comanda
- 4
+ CddVf
+ {
+ }
+ {
+  4
+ }ifelse
 %% (\n Ghostscript no pot capturar aquesta variable d'entorn!\n\n)print flush
 }ifelse
 
@@ -217,7 +246,12 @@
 }
 {  %% la variable d'entorn NO existeix perquè executem l'applet en local via Terminal per línia de comanda
 %%EP! true falla a 8auricsHVgranFormat.pdf quan treballa en 4Up i l'orientació de pàgina és V
- false
+ CddVf
+ {
+ }
+ {
+  false
+ }ifelse
 %% (\n Ghostscript no pot capturar aquesta variable d'entorn!\n\n)print flush
 }ifelse
 
@@ -226,19 +260,32 @@
 {
  dup length 0 eq
  {  %% arriba buida perquè executem via URL amb pliegOmaker.php sense paràmetres (mètode $_GET)
-  pop 10  %% per defecte activem l'algorisme de?
+  pop 15  %% per defecte activem l'algorisme de?
  }
  {  %% té dades perquè executem via URL amb index_##.php (mètode $_POST) o amb pliegOmaker.php amb paràmetres (mètode $_GET)
   cvx exec  %% és una string!
  }ifelse
 }
 {  %% la variable d'entorn NO existeix perquè executem l'applet en local via Terminal per línia de comanda
- 10  %% 0 algorisme de reglatge
+ CddVf
+ {
+ }
+ {
+
+  15
+
+    %% 0 algorisme de reglatge
+
     %% 1 fus horari
+
     %% 2 interrogador de variables
+
     %% 3 algorisme buit i només pintaria els marges de pàgina?
+
     %% 4 nadala amigots (ha d'anar amb 8vUpH!)
+
     %% 5 inocula codi pdf per farcir Reference XObjectes
+
     %% 6 traçat harmònic VanDeGraaf
 
     %% 7 plegaVeu mestre ple (restringit a les condicions del plegaVeu de l'Espai Òmnium 19.12.21)
@@ -251,6 +298,14 @@
 
     %% 10 sonar+PAPER
 
+    %% 11 Josep70
+
+    %% 12 palimpsest.ps compagina JPEGs (palimpsest d'imatges)
+
+    %% 13 traus exquisits
+    %% 14 traus exquisits FineArt24
+    %% 15 traus exquisits Re:publica'24
+ }ifelse
 
 %% (\n Ghostscript no pot capturar aquesta variable d'entorn!\n\n)print flush
 }ifelse
@@ -354,7 +409,7 @@
 /compOnedors
 %%URLsnr és absolutament necessari posar el path sencer als algorismes executats via php al localhost i a servidors
 [
- (reglatge.ps)  %% 0 algorisme de reglatge
+ (/Users/femfum/PliegOS/codi_pliegOS/reglatge.ps)  %% 0 algorisme de reglatge
  (fusHorariLiterari_xPliegOS.ps)  %% 1 el rellotge necessita ajustar el cos automàticament pel bbox de la suma de pàginess 
  (interroguem.ps)  %% 2 interrogador de variables de l'algorisme nUp_pliegOs.ps
  (buit.ps)  %% 3 només pintaria els marges de pàgina?
@@ -371,10 +426,10 @@
  
 % (plegaVeu_mestre_ple_StEsteve.ps)  %% 7 dinar familiar de Sant Esteve 2021 
 
-% (mesuraTripa.ps)  %% 8  pel vis sens fi?
-% (filosofiesDimposicio.ps)  %% 8 filosofies d'imposició
-% (filosofiesDimposicio_visSensFi_cosPendent.ps)  %% 8
- (visSensFi_senseEnflafaGlifs.ps)  %% 8
+% (/Users/femfum/PliegOS/codi_pliegOS/mesuraTripa.ps)  %% 8  pel vis sens fi?
+ (/Users/femfum/PliegOS/codi_pliegOS/filosofiesDimposicio.ps)  %% 8 filosofies d'imposició
+% (/Users/femfum/PliegOS/codi_pliegOS/filosofiesDimposicio_visSensFi_cosPendent.ps)  %% 8
+% (/Users/femfum/PliegOS/codi_pliegOS/visSensFi_senseEnflafaGlifs.ps)  %% 8
 
  %% 9 farcidor de PDFs
  (/Users/femfum/PliegOS/codi_pliegOS/PDFscripting/farceixPDFs_pseudoPDFX5_ReferenceXObjects_EnricSenabre.ps)
@@ -385,6 +440,31 @@
 %%URLsnr
 % (/Library/WebServer/Documents/www.pliegos.net/maker/sonarD2023/sonarD2023_paper.ps)  %% localhost
 % (/var/www/wordpress/maker/sonarD2023/sonarD2023_paper.ps) %% Teixidora
+
+ %% 11 engalzaglifs amb garigot
+%%Josep70
+ (/Users/femfum/PliegOS/faJosep70/faJosep70.ps)
+
+ %% 12 palimpsest d'imatges
+ (/Users/femfum/PliegOS/fulletsBosoms/palimpsest.ps)
+
+ %% 13 traus exquisits
+ (/Users/femfum/PliegOS/trausExquisits/trausExquisits_pliegOS.ps)
+
+ %% 14 traus exquisits FineArt24
+%%URL30segons
+%% activem fer visibles a la imatge sencera d'on surten els traus exquisits
+%(/Users/femfum/PliegOS/trausExquisits/trausExquisitsFineArt24_AsierGogortza000_pliegOS_mostraTraus.ps)
+
+ (/Users/femfum/PliegOS/trausExquisits/trausExquisitsFineArt24_AsierGogortza000_pliegOS.ps)
+% (/Library/WebServer/Documents/www.pliegos.net/maker/30segons/trausExquisitsFineArt24_AsierGogortza000_pliegOS.ps)  %% localhost
+% (/var/www/wordpress/maker/30egons/trausExquisitsFineArt24_AsierGogortza000_pliegOS.ps) %% Teixidora
+
+ %% 15 traus exquisits, desant els traus
+%%URLREpublica
+(/Users/femfum/PliegOS/trausExquisits/trausExquisitsDesaTraus_pliegOS.ps)
+% (/Library/WebServer/Documents/www.pliegos.net/maker/REpublica/trausExquisitsDesaTraus_pliegOS.ps)  %% localhost
+% (/var/www/wordpress/maker/REpublica/trausExquisitsDesaTraus_pliegOS.ps)  %% commonscloud.coop
 
 ] def
 
@@ -1620,7 +1700,7 @@ mark
    %% a la impressora HP Color LaserJet M553 i el driver d'impressió de l'AdobeAcrobatReader/MacOSX:
    %% encara que, per defecte, surti una altra configuració de dúplex al driver, mana el paràmetre que tinguem aquí actiu
    %% el que sí que, creiem, no podem manar des d'aquí, és imprimir al 100% (NO forçar mai el 'Fit' als marges d'impressió)
-   /Duplex /DuplexFlipLongEdge  %% el necessita el el 8Up i el 4Up
+   /Duplex /DuplexFlipLongEdge  %% el necessita 8Up i 4Up
    % /Duplex /DuplexFlipShortEdge
 >>  %% activem les opcions del dúplex d'impressió?
 /DOCVIEW pdfmark
@@ -1630,13 +1710,15 @@ mark
 /Subject %(Turn one simple sheet of paper into a little awesome book)
 (Féu que un sol full de paper esdevingui un llibret excepcional)
 /Title
-% NpliegOS
+NpliegOS
 %%SNRD
-(sonar+PAPER)
-/Author (copyleft 2017-2023: Marcantoni Malagarriga-Picas <marcantoni@femfum.com>)
+%(sonar+PAPER)
+/Author (copyleft 2017-2024: Marcantoni Malagarriga-Picas <marcantoni@femfum.com>)
 /Keywords %(poesia, literatura, canya i cordill, fil i canya, plegaVeu, en Patufet,)
-(pliegOS, sonar+D, chapbooks, microbooks, print, fold, cut, read, nUps, canya i cordill, en Patufet, Catalonia, Barcelona)
-/Creator (PliegO'Maker {FemFum PostScript Applet} | https://ja.cat/sonarDpaper)
+%(pliegOS, sonar+D, chapbooks, microbooks, print, fold, cut, read, nUps, canya i cordill, en Patufet, Catalonia, Barcelona)
+(pliegOS, nUps, poesia, literatura, canya i cordill, fil i canya, plegaVeu, en Patufet)
+/Creator %(PliegO'Maker {FemFum PostScript Applet} | https://ja.cat/sonarDpaper)
+(https://github.com/marcantonifemfum/pliegO-Maker)
 /DOCINFO pdfmark
 %% podríem generar un camp privat per desar-hi tots els paràmetres clau de les variables aleatòries que han fet el PDF
 
