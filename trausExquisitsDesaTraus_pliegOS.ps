@@ -2,8 +2,8 @@
 %%Re:publica'24 | 27-28-29 de maig | Berlin
 %% el cridarà nUp_pliegOS.ps per llegir una imatge JPEG i, de forma aleatòria, extraure'n retalls proporcionals a les pàgines
 %% del llançat. Un retall per a cadascuna, tret de les 2 pàgines centrals i la contraportada. A la doble plana central hi
-%% reproduirem la imatge original marcant-hi els traus que hi hem extret
-
+%% reproduirem la imatge original marcant-hi els traus que hi hem extret amb rectangles puntejats o transparències
+%% els retalls ara poden cavalcar-se i també podem establir-hi un % mínim de mida /trauMinim
 
 noNULL  %% pinta el contingut de pàgina?
 { %% anellem el codi sencer perquè no és aleatori
@@ -30,9 +30,17 @@ noNULL  %% pinta el contingut de pàgina?
   mark  %% per netejar la brossa que encara hi hara hi ha quan llegim les dades del jpeg
 %%JPEG
 %%URLREpublica
+
+%%COM podem superar? Error: /limitcheck in --string-- Operand stack:  --nostringval--   18330543
+%% ara les strings al GS tenen una capacitat màxima de 16777216 octets
+%% la qual cosa vol dir p.e. una imatge en RGB de 5592405 píxels totals, o sigui uns 2364 x 2364
+(/Users/femfum/jo/sessioJGC281223Manlleu/4A3A0341.jpeg)
+
+%(/Library/WebServer/Documents/angeleta/20170224_plaAngeleta5.jpg)
+%(/Users/femfum/JardinsDeLlum2024/fotosJoanVillaplana/Installacio_EpitafiDeLesMalesHerbes_JardinsDeLlum_Feb24_AriadnaTorres_MarcantoniMalagarriga.jpeg)
 %(/Users/femfum/PliegOS/trausExquisits/8x8_cmyk.jpg)
 %(/Users/femfum/PliegOS/trausExquisits/ninot_8x8_CMYKRGB.jpg)
-(/Users/femfum/PliegOS/trausExquisits/1400x350.jpg)
+%(/Users/femfum/PliegOS/trausExquisits/1400x350.jpg)
 %(/Users/femfum/PliegOS/trausExquisits/150x700.jpg)
 %(/Users/femfum/PliegOS/trausExquisits/405x405.jpg)
 %(/Users/femfum/PliegOS/trausExquisits/392x392.jpg)
@@ -56,8 +64,7 @@ noNULL  %% pinta el contingut de pàgina?
    >> /ReusableStreamDecode filter
   }stopped
   {
-   elD'ara print flush ( <<<< JPEG incompatible amb el filtre DCTDecode de PostScript...\n\n) print flush
-   stop
+   ( <<<< JPEG incompatible amb el filtre DCTDecode de PostScript...\n\n) print flush stop
   }if
   /original_octets exch def  %% fitxer raw de lectura
 
@@ -166,11 +173,12 @@ noNULL  %% pinta el contingut de pàgina?
      }if
     }
     {
-     %% (CAP KAPPUT)==
+     (CAP KAPPUT)==
     }ifelse
    }
    {
-    %% (PEUS KAPPUT)==
+    tesela closefile (\n\n <<<< JPEG amb dades de cua incorrectes...\n\n) print flush stop  %% 
+    %(PEUS KAPPUT)==
    }ifelse
    %%(quimquimquimquim)pstack quit
   }stopped
@@ -794,7 +802,7 @@ noNULL  %% pinta el contingut de pàgina?
   %1.41
   /ratioXvsY exch def
 
-  0  %% aquest valor de % també podria ser aleatori? p.e. entre .9? i .1?
+  0  %% aquest valor de % de la mida del retall també podria ser aleatori? p.e. entre .9? i .1?
   dup /trauMinim exch def
   _A mul cvi /topallX exch def
 
@@ -879,6 +887,15 @@ noNULL  %% pinta el contingut de pàgina?
      /uY exch def  %% desem el valor Y dels píxels del trau
 
      %uY uX div  %% el test de la ratio ens hauria de donar valors al voltant de 1.41 (Y/X) o 0.70 (X/Y)
+
+     %% aquí és on podem activar un filtre pel buffer de dades, multiplicant ample i alt de píxels, uX uY, pels canals, CNLs
+     %% un buffer que ara gestionem via string, i les strings al GS 9.5# tenen una capacitat màxima de 16777216 octets
+     %% mirem abans si excedim aquest límit per evitar errors de limitcheck en imatges grans
+uX uY mul CNLs mul
+16777216 gt  %% límit d'una string de Ghostscript
+{
+ (\n\n <<<< el trau d'imatge excedeix el limit del buffer del torsimany, via string...\n\n) print flush
+}{
 
      [  %% cadascun dels 4 procediments extrau el raw/crop de dades que li correspon a cada trau
 
@@ -1045,6 +1062,8 @@ noNULL  %% pinta el contingut de pàgina?
       0 /iTraus exch def  %% índex comptador de traus fets
       exit
      }if
+
+}ifelse
 
     }
     {  %% tornem al punt Primer
