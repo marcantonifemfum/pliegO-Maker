@@ -1,0 +1,273 @@
+%!
+%% llegeix un fitxer txt, amb una determinada sintaxi, per generar una rèplica a visionar més còmodament amb un navegador
+
+%% fitxer a llegir
+%(/Library/WebServer/Documents/www.pliegos.net/maker/REpublica/estatDlart/onpeta.txt)
+(/Users/femfum/PliegOS/incertagloria_pliegOmaker.txt)
+%(/Library/WebServer/Documents/www.pliegos.net/maker/REpublica/estatDlart/test_estatdelart.txt)
+%(/Library/WebServer/Documents/www.pliegos.net/maker/REpublica/estatDlart/test_multinivell.txt)
+/Fllegeix exch def
+
+(/Library/WebServer/Documents/www.pliegos.net/maker/REpublica/estatDlart/pliegOMaker_estatdelart.html)
+(w) file /Fescriu exch def
+
+/CAPS 0 array def  %% via length controlarem quants capítols endins estem
+%% a partir de l'índex 1 controlarem si va en blau true o en gris false
+/PRE 0 array def  %% controlador de text pelat <pre>
+
+Fllegeix (r) file
+{  %% loop
+ dup
+ 2048 string readline
+ {  %% seguim llegint
+  dup length 0 eq
+  {
+   pop
+  }
+  {
+   dup 0 get
+   dup 35 eq  %% #
+   {
+    pop dup 2 get 35 eq  %% ###
+    {  %% és el titular i cap del fitxer
+     Fescriu
+     (<!DOCTYPE html>
+<html lang="ca">
+<head>
+<title> PliegO&rsquo;Maker | estat de l'art </title>
+<link rel="icon" href="http://www.pliegos.net/maker/logoPliegOS_96x96.png" type="image/x-icon" />
+<meta name = "viewport"             content = "width = device-width, initial-scale = 1" />
+<!-- ATENCIÓ és fonamental esmentar el type i media en aqueeta crida a CSS per tal rutlli bé al Chrome i al Brave -->
+<link rel="stylesheet" href="http://localhost/www.pliegos.net/maker/maker.css" type="text/css" media="screen, print">
+<link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet" type='text/css' />
+<script>
+function neteja()
+{
+ document.getElementById("gomaker").reset();
+}
+
+// desarà en una galeta l'hora del client per tal de llegir-la via PHP i fusHorariLiterari_xPliegOS.ps la tibarà via getenv
+function setCookie(c_name, value, exdays) {
+    var exdate = new Date();
+    exdate.setDate(exdate.getDate() + exdays);
+    var c_value = escape(value) + ((exdays == null) ? '' : '; expires=' + exdate.toUTCString());
+    document.cookie = c_name + '=' + c_value;
+}
+</script>
+</head>
+<body onload="neteja()">
+
+<section>
+<br>
+<span style="color:#ff9999;font-size: 48px">)
+     writestring
+     Fescriu exch dup length 3 sub 3 exch getinterval writestring
+     Fescriu(</span>
+<article>
+<br>
+<br>
+)
+     writestring
+    }
+    {  %% és un Capítol
+     CAPS length 0 ne
+     {  %% tanquem i obrim un nou capítol
+      Fescriu
+      (</div>
+</article>
+</section> <br> <section><article>)
+      writestring
+     }if
+
+     Fescriu
+     (<button type="button" class="collapsible" style="background-color:#553333">)
+     writestring
+     Fescriu exch
+     %% esquilem les ##
+     dup length 2 sub 2 exch getinterval
+     writestring
+     Fescriu
+     (</button><div class="content" style="cursor:pointer;overflow:auto">)
+     writestring
+
+     /CAPS 1 array def  %% inicialitzem el controlador de capítols
+    }ifelse
+   }
+   {
+    dup 37 eq  %% és un comentari? %
+    {
+     pop pop
+    }
+    {
+     9 eq
+     {  %% pot ser un subCapitol
+      %% és text pla o http o un nou subCapítol?
+      /iSC 1 def  %% comptador de subCapítols (tabuladors)
+      {  %% loop
+       dup iSC get 9 eq
+       {  %% pot ser un subCapítol?
+        iSC 1 add /iSC exch def
+       }
+       {
+        exit
+       }ifelse 
+      }loop
+
+%% podem veure com compta tabuladors (subCapítols)
+%iSC ==
+ 
+      dup iSC get 58 eq  %% :
+      {  %% és un subCapítol
+%% aquí és on filtraríem si tanquem i quantes vegades ho fem
+       CAPS length 1 gt
+       {  %% si és més gran de 1, hem de tancar el subCapítol anterior
+        Fescriu (</div>) writestring
+       }if
+ 
+       %% ampliem l'array CAPS
+       CAPS dup length dup /araVa exch def 1 add array dup 3 -1 roll 0 exch putinterval dup araVa
+       dup 2 mod 0 eq
+ 
+       {  %% si és senar anirà en gris
+        false
+        put /CAPS exch def
+        Fescriu
+        (<br><br><button type="button" class="collapsible" style="background-color:#bbbbbb;color:#000000">)
+        writestring
+       }
+       {  %% si és parell anirà en blau
+        true
+        put /CAPS exch def
+        Fescriu
+        (<br><br><button type="button" class="collapsible" style="background-color:#d4fdff;color:#000000">)
+        writestring
+       }ifelse
+       Fescriu exch writestring
+       Fescriu
+       (</button><div class="content" style="cursor:pointer;overflow:auto">)
+       writestring
+
+%% aquí podem veure com creix el controlador de subCapítols
+%% d'un sol nivell [null true false true false true false]
+%% multinivell [null]
+%CAPS ==
+ 
+      }
+      {  %% és text pla o http
+       %% després del darrer tabulador hi ha menys de 3 caràcters?
+       dup length iSC sub 3 lt
+       {  %% és text pelat
+        Fescriu (<pre>) writestring
+        Fescriu exch writestring
+        Fescriu (</pre>) writestring
+       }
+       {
+        dup iSC 3 getinterval
+        (htt) eq
+        {  %% és una URL
+         %% ens polim tants tabuladors com hi hagi
+         {
+          (\t) search
+          {
+           pop pop
+          }
+          {
+           exit
+          }ifelse
+         }loop
+         Fescriu
+        (<pre>
+        <a href=")
+         writestring
+         dup Fescriu exch writestring
+         Fescriu (" style="color:#0000ff">) writestring
+         Fescriu exch writestring
+         Fescriu (</a></pre>) writestring
+        }
+        {  %% és text pelat
+         Fescriu (<pre>) writestring
+         Fescriu exch writestring
+         Fescriu (</pre>) writestring
+        }ifelse
+       }ifelse
+      }ifelse
+     }
+     {  %% text pla o http? (sense tabulador previ)
+      %% el primer caràcter NO és un tabulador
+      dup length 3 lt
+      {  %% és text pelat
+       Fescriu (<pre>) writestring
+       Fescriu exch writestring
+       Fescriu (</pre>) writestring
+      }
+      {
+       dup 0 3 getinterval
+       (htt) eq
+       {  %% és una URL
+        %% ens polim tants tabuladors com hi hagi
+        {
+         (\t) search
+         {
+          pop pop
+         }
+         {
+          exit
+         }ifelse
+        }loop
+        Fescriu
+        (<pre>
+        <a href=")
+        writestring
+        dup Fescriu exch writestring
+        Fescriu (" style="color:#0000ff">) writestring
+        Fescriu exch writestring
+        Fescriu (</a></pre>) writestring
+       }
+       {  %% és text pelat
+        Fescriu (<pre>) writestring
+        Fescriu exch writestring
+        Fescriu (</pre>) writestring
+       }ifelse
+      }ifelse
+     }ifelse
+    }ifelse
+   }ifelse
+
+  }ifelse
+
+ }
+ {  %% som al final del fitxer i sortim
+  exit
+ }ifelse
+
+}loop
+
+%% escivim la cua del fitxer?
+Fescriu
+(</article>
+</section>
+
+<footer>
+</footer>
+<script>
+var coll = document.getElementsByClassName("collapsible");
+var i;
+for (i = 0; i < coll.length; i++) {
+  coll[i].addEventListener("click", function() {
+    this.classList.toggle("active");
+    var content = this.nextElementSibling;
+    if (content.style.display === "block") {
+      content.style.display = "none";
+    } else {
+      content.style.display = "block";
+    }
+  });
+}
+</script>
+</body>
+</html>)
+writestring
+
+Fescriu dup flushfile closefile
+
+
