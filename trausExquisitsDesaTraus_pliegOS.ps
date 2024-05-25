@@ -9,6 +9,7 @@ noNULL  %% pinta el contingut de pàgina?
 { %% anellem el codi sencer perquè no és aleatori
 % gsave  %% profilàctic
 
+%TAMPOCNOPETES?
  iSeq 1 eq  %% només 1 cop
  {  %% aquí dins és crític que hi posem, p.e. mai hi posarem la crida a la tipografia
   %% raonament per planificar el contingut de les pàgines del llançat:
@@ -28,13 +29,37 @@ noNULL  %% pinta el contingut de pàgina?
   %% quina la meitat dreta de la imatge sencera (1) i quina la contraportada (2)
 
   mark  %% per netejar la brossa que encara hi hara hi ha quan llegim les dades del jpeg
-%%JPEG
-%%URLREpublica
+
+   %% capturem la variable d'entorn que porta el nom del fitxer PDF normalitzat que s'ha carregat al servidor commonscloud.coop
+   (MRCT_santSudari) getenv  %% la variable d'entorn existeix?
+   {  
+    dup length 0 eq
+    {  %% arriba buida perquè executem via URL amb pliegOmaker.php sense paràmetres (mètode $_GET)
+     pop true  %% si l'eliminem del menú via mètode $_POST també
+    } 
+    {  %% té dades perquè executem via URL amb index_##.php (mètode $_POST) o amb pliegOmaker.php amb paràmetres (mètode $_GET)
+%%URLREpublica farcim el path absolut al PDF a imposar
+(/var/www/wordpress/maker/REpublica/Hjpeg/) /serverPath exch def
+     dup length serverPath length add string dup 0 serverPath putinterval dup 3 -1 roll serverPath length exch putinterval
+     %% és una string!
+    }ifelse 
+   }
+   {  %% la variable d'entorn NO existeix perquè executem l'applet en local via Terminal per línia de comanda
+    CddVf
+    {
+   %  false  %% fem visible la vora de la pàgina del llançat? (imposició) més endavant podrem posar-ho en una capa
+    }       
+    {
+    (ETSAQUIQUANEXEUTOALTERMINAL?)pstack quit	    
+     true   
+    }ifelse
+    %% (\n Ghostscript no pot capturar aquesta variable d'entorn!\n\n)print flush
+   }ifelse
 
 %%COM podem superar? Error: /limitcheck in --string-- Operand stack:  --nostringval--   18330543
 %% ara les strings al GS tenen una capacitat màxima de 16777216 octets
 %% la qual cosa vol dir p.e. una imatge en RGB de 5592405 píxels totals, o sigui uns 2364 x 2364
-(/Users/femfum/jo/sessioJGC281223Manlleu/4A3A0341.jpeg)
+%(/Users/femfum/jo/sessioJGC281223Manlleu/4A3A0341.jpeg)
 
 %(/Library/WebServer/Documents/angeleta/20170224_plaAngeleta5.jpg)
 %(/Users/femfum/JardinsDeLlum2024/fotosJoanVillaplana/Installacio_EpitafiDeLesMalesHerbes_JardinsDeLlum_Feb24_AriadnaTorres_MarcantoniMalagarriga.jpeg)
@@ -692,8 +717,8 @@ noNULL  %% pinta el contingut de pàgina?
    }  %% 1
    {  %% 2 contraportada seguint el mètode de farceixPDFs_pseudoPDFX5_ReferenceXObjects_EnricSenabre.ps 
 %%URLREpublica
-    (/Library/WebServer/Documents/www.pliegos.net/maker/30segons/Plantilla_plana_pliego_postal2.pdf)  %% Terminal / localhost
-    %(/var/www/wordpress/maker/30egons/Plantilla_plana_pliego_postal2.pdf) %% commonscloud.coop
+    %(/Library/WebServer/Documents/www.pliegos.net/maker/30segons/Plantilla_plana_pliego_postal2.pdf)  %% Terminal / localhost
+    (/var/www/wordpress/maker/30segons/Plantilla_plana_pliego_postal2.pdf) %% commonscloud.coop
     /pedeefa exch def
     %1% deixa una instància oberta a memòria sense cap objecte a l'stack que permet anar interrogant
     pedeefa (r) file dup /elF exch def runpdfbegin  %% cal tancar-la amb runpdfend al final
@@ -888,6 +913,7 @@ noNULL  %% pinta el contingut de pàgina?
 
      %uY uX div  %% el test de la ratio ens hauria de donar valors al voltant de 1.41 (Y/X) o 0.70 (X/Y)
 
+%%REpublica
      %% aquí és on podem activar un filtre pel buffer de dades, multiplicant ample i alt de píxels, uX uY, pels canals, CNLs
      %% un buffer que ara gestionem via string, i les strings al GS 9.5# tenen una capacitat màxima de 16777216 octets
      %% mirem abans si excedim aquest límit per evitar errors de limitcheck en imatges grans
