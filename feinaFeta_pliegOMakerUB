@@ -9,7 +9,7 @@ DESCRIPCIÓ DE FEINA FETA
 #    EC: #16h
 
 + tant a Tuxedo (/home/femfum/Documents/pliegOMakerU / localhost /var/www/html/pliegOMakerUB) com a somNúvol (?) treballem amb GPL Ghostscript 9.55.0 (2021-09-27)
-+ etiquetem amb %%UBpliegOMaker els canvis i novetats de codi en els algorisme que ja tenim desenvolupats
++ etiquetem amb %%UBpliegOMaker els canvis i novetats de codi en els algorismes que ja tenim desenvolupats
 
 #    1.1 ~ Detecció de PDFs erronis, protegits per encriptació i signats digitalment, determinant el tipus de missatge que donarem a l'ususari per continuar treballant
 
@@ -17,18 +17,20 @@ DESCRIPCIÓ DE FEINA FETA
 %%H: de 11h00 a 13h15
 %%H: de 13h45 a 14h15
 %%H: de 22h00 a 22h45
-%%HT 4.5h
+%%HT 4.50h
 
-+ línia de comanda CalI2CoPi Tuxedo:
-+ gs -q -dNOSAFER -o re.pdf -sDEVICE=pdfwrite -f FemFum_CaLi2CoPi_042_pliegOMakerUB.ps
++ línia de comanda Cali2CoPi_042 (reanomenat amb la cua _pliegOMakerUBESH) Tuxedo:
++ gs -q -dNOSAFER -o re.pdf -sDEVICE=pdfwrite -f FemFum_CaLi2CoPi_042_pliegOMakerUBESH.ps
 
 + configurat CaLi2CoPi per executar-se visa prompt del Tuxedo
++ un cop ha fet anàlisi repica el fitxer original en un nou fitxer al mteix lloc i que es diu igual però amb l'afegit… _pla
+
++ a l'execució via Terminal cal advertir que s'ha de ser curós amb els noms dels fitxers PDF/TXT a processar, per no tenir problemes amb el caràcters fora de l'ascii, alguns signes reservat (* ?) i l'espai en blanc
 
 + deixem intacte, per ara, la detecció fitxers signats digitalment (ídem REpublica), p.e.
 + (gatell CaLi2CoPi 16) MRCT6 Aquest PDF duu Signatura Digital
 
 + gatells GS específics d'encriptació:
-
 + The following switches are used for creating encrypted documents:
 
 + -sOwnerPassword=string
@@ -84,25 +86,55 @@ DESCRIPCIÓ DE FEINA FETA
 + arribem a la conclusió que hem de fusionar CaLi2CoPi amb el fitxer de capçalera de pliegO'Maker… nUp_pliegOS.ps …que aniria a la cua
 + hi ha el gatell 17 ENCAVALCA CONTINGUTS (línia 32591) on ja hi han resolts diversos mètodes comparatius del /MediaBox amb el /CropBox útils per a 1.3
 + cal veure si el gatell 17 també podria servir per a fer funcions d'imposar pàgines tal i com ara fem amb el PDF scripting
++ cal plantejar-se tenir una opció que CaLi2CoPi NO reescrigui de nou el PDF (sobretot en fitxers molt grans) doncs al pliegO'Maker, per segons quines característiques/opcions que haguem analitzat/triat, no li faria falta (el comportament de /CropBox és crític per això)
++ tampoc no és estrictament necessari escriure el fitxer d'anàlisi XRay
++ cal fer valoracions de temps d'execució de CaLi2CoPi jugant amb l'operador… vmthreshold …doncs per exemple el replicat (gatell 0) del manual de PDF 1.7 (pdfreference1.7old.pdf 1310 pàgs 31MB) triga més de mitja hora (Tuxedo Aura 13) a processar-se
 
     22.10.2024
 - - - - - - - -
 
 %%H: de 07h45 a 08h15
-%%H: de 09h00 a
-
+%%H: de 09h00 a 12h30
+%%H: de 18h15 a 20h30
+%%H: de 21h00 a 21h30
+%%HT 6.75h
 
 #    1.2 ~ Detecció de PDFs amb anotacions, bookmarks i capes, determinant el tipus de missatge que donarem a l'ususari per continuar treballant
 
 + què passa quan passem a pliegOS un PDF amb capes?
 + segons el comportament que veiem amb PDFs que tinguin capes un cop passat a pliegOS, tenim el gatell 15 ELIMINA LLEIXES
++ tenim l'exemple… OJUmesD9milCapes.pdf (té 915 pàgines) …que a l'executar el procés amb:
+gs -q -dNOSAFER -o re.pdf -sDEVICE=pdfwrite -f nUp_pliegOS_UBESH.ps …veiem que s'eliminen les capes
++ com que al passar per pliegOS s'eliminen les capes, hauríem d'avisar, si el PDF en té, que desapareixeran
 
 + què passa quan passem a pliegOS un PDF amb anotacions?
++ fem… fa8paginesAmbAnotacions.ps …per generar exemples amb anotacions… 8paginesAmbAnotacions.pdf …de cara a detectar-les i veure què passa amb pliegOS
++ CaLi2CoPi detecta les anotacions en general (clau /Annots a cada diccionari /Page) en un petit algorisme del gatell 16 (cerca i substitució de text)
++ vegeu línia aprox 69405 però que hauríem de traslladar al principi de l'anàlisi al gatell que assignem a UBESH
++ com que les anotacions es conserven a cada pàgina imposada, hauríem d'avisar, si el PDF en té
 
 + què passa quan passem a pliegOS un PDF amb bookmarks?
++ el gatell 8 de CaLi2CoPi analitza l'exitència de bookmarks (/Outlines a /Catalog) traduït com a CONTINGUT en català (Okular)
++ els bookmarks es conserven intactes fent un pliegOS, però llavors es perden completament els vincles doncs la distribució de les pàgines imposades dins les planes PDF no tenen res a veure amb el PDF d'origen. Exemple… 4upDeComSarrosseguenTOTSelsBookmarksD1OriginalD1310paginesA1D2.pdf
+
++ posada en marxa de pliegOS per ser executat al Terminal
++ 1 ~ descarreguem del Git REpublica: nUp_pliegOS_plec.ps i el reanomenem nUp_pliegOS_UBESH.ps
++ 2 ~ descarreguem del Git REpublica: farceixPDFs_pseudoPDFX5_REpublica.ps i el reanomenem farceixPDFs_pseudoPDFX5_UBESH.ps
++ 3 ~ descarreguem del Git REpublica: FemFum_CaLi2CoPi_042_REpublica.ps i el reanomenem FemFum_CaLi2CoPi_042_pliegOMakerUBESH.ps
++ 4 ~ actualitzem tots els path de treball i els marquem amb %%URLUBESH també els punts potencials de modificació amb %%UBESH
++ 5 ~ la línia de comanda des del directori de treball del Terminal… /home/femfum/Documents/pliegOMakerUB …és:
+gs -q -dNOSAFER -o re.pdf -sDEVICE=pdfwrite -f nUp_pliegOS_UBESH.ps
++ 6 ~ a… farceixPDFs_pseudoPDFX5_UBESH.ps …mantenim l'estratègia de separar el nom de fitxer PDF a tractar amb el path absolut fix on hi posarem aquests PDFs en paral·lel a l'estratègia seguida treballant via web. Al Tuxedo… /home/femfum/Documents/pliegOMakerUB/Hpdf/
++ 7 ~ en canvi on volem que s'escrigui el fitxer PDF imposat, resultat del pliegO'Maker, i el seu nom, només dependrà de com escrivim la línia de comanda al Terminal… gs -q -dNOSAFER -o pliegOSimposat.pdf -sDEVICE=pdfwrite -f nUp_pliegOS_UBESH.ps
+
++ operacions amb PDFs via línia de comanda GS:
++ sumar PDFs un darrera l'altre (si porta capes se les poleix!) gs -q -dNOPAUSE -dBATCH -sDEVICE=pdfwrite -sOutputFile=aimposarambcapes.pdf 21700154803_cubDeNoordzij.pdf 21700154803_cubDeNoordzij.pdf 21700154803_cubDeNoordzij.pdf
 
 
 #    1.3 ~ Detecció d'àrees de retall de pàgines (CropBox), determinant prèviament de com les tractarem: sigui per eliminar-les (interfereixen l'algorisme pristí) o sigui per adaptar el retall a la pàgina del llançat
 
++
+
 #    1.4 ~ Detecció del nombre de pàgines
 
++ a CaLi2CoPi la variable /maxPlana és la que emmagatzema aquest valor en tota mena de gatells

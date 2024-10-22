@@ -1,0 +1,1764 @@
+%!
+%%  [ca]
+%%  `GNU GPL FemFum nUp_pliegOS.ps v.001´ és una eina del projecte PliegO'Maker pel llançat de pàgines (N-up)
+%%  transparent a tota mena de plegats i facilitant totalment l'aleatorietat dels layouts que vindran
+%%  seguint la filosofia pliegOS: «Féu que un sol full de paper esdevingui un llibret excepcional»
+%%  Per a intèrprets `GNU GPL Ghostscript´ però també, amb ben pocs retocs, pot córrer
+%%  amb l'Adobe Acrobat Distiller o amb el PSNormalizer Framework/Apple pstopdf a MacOSX.
+%%
+%%  `Copyleft 2017-2024 :: l'Ametlla de Merola :: Marcantoni Malagarriga-Picas´
+%%  `<http://www.femfum.com> | <marcantoni@femfum.com>´
+%%  `https://github.com/marcantonifemfum/pliegO-Maker´
+%%  `http://pliegos.net/maker´
+%% 
+%%  Aquest programa és programari lliure: podeu redistribuir-lo i/o modificar-lo
+%%  sota els termes de la Llicència Pública General de GNU publicada per la Free
+%%  Software Foundation, ja sigui la versió 3 de la Llicència, o (a la seva elecció)
+%%  qualsevol versió posterior.
+%% 
+%%  Aquest programa es distribueix amb l'esperança que sigui útil, però SENSE CAP GARANTIA;
+%%  ni tan sols la garantia implícita MERCANTIL o d'APTITUD PER A UN OBJECTIU PARTICULAR.
+%%  Consulteu els detalls de la Llicència Pública General de GNU per a més informació.
+%%        
+%%  Haurieu de rebre una còpia de la Llicència Pública General de GNU junt amb aquest
+%%  programa. En cas contrari, consulteu <http://www.gnu.org/licenses/>
+%%
+%%  [en]
+%%  `GNU GPL FemFum nUp_pliegOS.ps v.001´ is a PliegO'Maker project tool component for the N-up features
+%%  available for all kind of folding paper modes and friendly for the future random layout modules
+%%  following the pliegOS phylosophy: «Turn one simple sheet of paper into a little awesome book»
+%%  For `GNU GPL Ghostscript´ interpreter, but also available with minor changes
+%%  for Adobe Acrobat Distiller and even for MacOSX PSNormalizer Framework/Apple pstopdf.
+%%
+%%  All the comments inside the code are in catalan [ca], we hope to add english annotations in future versions
+%%  
+%%  `Copyleft 2017-2024 :: l'Ametlla de Merola :: Marcantoni Malagarriga-Picas´
+%%  `<http://www.femfum.com> | <marcantoni@femfum.com>´
+%%  `https://github.com/marcantonifemfum/pliegO-Maker´
+%%  `http://pliegos.net/maker´
+%%  
+%%  This program is free software: you can redistribute it and/or modify
+%%  it under the terms of the GNU General Public License as published by
+%%  the Free Software Foundation, either version 3 of the License, or
+%%  (at your option) any later version.
+%% 
+%%  This program is distributed in the hope that it will be useful,
+%%  but WITHOUT ANY WARRANTY; without even the implied warranty of
+%%  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+%%  GNU General Public License for more details.
+%% 
+%%  You should have received a copy of the GNU General Public License
+%%  along with this program.  If not, see <http://www.gnu.org/licenses/>
+
+
+%% generem un algorisme vàlid per a tots els llançats nUp, vegeu http://www.pliegOS.net
+%% filosofia pliegOS: "Turn one simple sheet of paper into a little awesome book"
+
+%% per a ús directe en impressores PostScript o en intèrprets per generar PDFs, preferiblement Ghostscript (GS)
+%% però també per l'Adobe Acrobat Distiller o l'Apple pstopdf (el Distiller de MacOSX via PSNormalizer Framework)
+%% a GS l'ús de l'switch -dAutoRotatePages=/None és crucial perquè no ens giri les pàgines seguint la rotació d'imposició
+%% vegeu Setting page orientation a... https://ghostscript.com/doc/9.20/VectorDevices.htm
+%% When there is no text on the page or automatic page rotation is set to /None an orientation value from setpagedevice is used.
+%% Valid values are: 0 (portrait), 3 (landscape), 2 (upside down), and 1 (seascape). The orientation can be set from the command
+%% line as -c "<</Orientation 3>> setpagedevice" using Ghostscript directly but cannot be set in ps2pdf. See Limitations below.
+%% gs -q -dNOSAFER -o resultat.pdf -sDEVICE=pdfwrite -dAutoRotatePages=/None -c .setpdfwrite -f nUp_pliegOS.ps
+%% des de la versió 9.52 del GS han desactivat .setpdfwrite (hemde documentar bé què suposa això ara)
+%% la crida alternativa informen que és...
+%% gs -q -dNOSAFER -o resultat.pdf -sDEVICE=pdfwrite -dAutoRotatePages=/None -c 3000000 setvmthreshold -f nUp_pliegOS.ps
+%%NOVA crida a partir del GS v9.55
+%% gs -q -dNOSAFER -o plegaVeu.pdf -sDEVICE=pdfwrite -dAutoRotatePages=/None -f nUp_pliegOS.ps
+%%Error: /undefined in /--.beginpage-- provocat per l'operador de transparència .setopacityalpha
+%%   **** WARNING: .setopacityalpha is deprecated (as of 9.53.0) and will be removed in a future release
+%%   **** See .setfillconstantalpha/.setalphaisshape for the improved solution
+%%Canviarem tots els .setopacityalpha per .setalphaisshape
+%%NOUgs9.55 marca el que hem desactivat temporalment en relació a la transparència
+%% com que és un canvi progressiu des de la 9.53 permeten mantenir els operadors eliminats afegint -dALLOWPSTRANSPARENCY
+%% gs -q -dNOSAFER -dALLOWPSTRANSPARENCY -dAutoRotatePages=/None -o surt.pdf -sDEVICE=pdfwrite -f nUp_pliegOS.ps
+
+%% control d'errors via interfície PHP
+%%URLREpublica estratègia important per provocar errors controlats:
+%{ %% anellar amb stopped un error de sintaxi qualsevol (o sense anellat, llavors ja no cal invocar stop)
+% aeiou
+%}stopped
+%{
+% ( <<<<<< ERROR CONTROLAT)pstack
+% %% aturar l'execució amb stop (MAI AMB quit, doncs llavors el GS ignora l'error i ens genera un PDF en blanc)
+% stop
+%}if
+
+%% glossari:
+%% full: peça de paper que s'imprimeix (MediaBox), en algun dels formats estàndards o no (ISO, JIS, ARCH, Ansi, etc)
+%% plana: anvers o revers, cadascuna de les 2 cares del full de paper
+%% pàgina: les del pliegO acabat, i dins la plana són cadascuna les àrees on es compon el document, limitades pel plec i tall
+%% vertical: l'ample és més estret que l'alt
+%% horitzontal: l'alt és més estret que l'ample
+%% llançat: imposició, o sigui la disposició de les pàgines dins la plana
+%% plec: full enllestit amb el llançat a les 2 planes
+%% tripa: conjunt de pàgines un cop enquadernat el llibret
+%%Fem la descripció de la imposició amb les mateixes directrius que es descriu la imatge: columnes x files
+%%Llavors 1hvUpHV = 1x1 + 1x1  2vUpHV = 2x1 + 2x1  4vUpHV = 2x2 + 2x2
+
+%% PliegO > és el producte, el llibret, és un "plec", un "pliego". Per què la "O" està en caixa alta?
+%% perquè així fa referència al següent...
+%% PliegOS > és un joc de paraules entre "plec/pliego" i "OS" (operating system)
+%% PliegOS és el sistema operatiu (social, d'autoria, editorial, tecnològic) d'entorn en la creació de PliegOs
+%% PliegOS.net > és la web del projecte
+%% PliegOs o PliegO's (amb la "s" en minúscula o amb apòstrof + minúscula) és el plural del primer
+%% són uns quants PliegO, uns quants llibrets.
+%% Plieg'o'Maker / Plieg-O-Maker / PliegO-Maker (hem de decidir la ortotipografia exacta) > és el programa generador de PliegOs
+%% Li podríem dir "Plieg-O-Matic", de fet la "o" del mig fa referència a aquestes coses "aut-omatic"
+%% que en anglès solen separar la "o" (no sé per què) i que ens va bé perquè nosaltres hi tenim una "o" ja
+%% l'opció més senzilla potser és PliegO'Maker on no cal entendre què fa la "o" separada. 
+
+%% qüestions
+%% 0 :: farem servir, sempre que es pugui, l'argot d'ofici de la indústria gràfica i el llibre (p.e. el full llançat és un plec)
+%% 1 :: les pàgines resultants tenen la mateixa ràtio que el full(MediaBox)?
+%% per exemple: un full A4 vertical té una ràtio ample/alt (595/842) de 0.706650831353919
+%% amb una combinatòria 4+4 les pàgines fan 210.5 297.5 les pàgines tenen una ràtio idèntica fins el 2n decimal 0,707563025210084
+%% el factor d'escala és fS x 595 = 210.5 o sigui fS = 210.5/595 o sigui 0,353781512605042
+%% amb una combinatòria 2+2 les pàgines fan 297.5 421 les pàgines tenen una ràtio idèntica de 0,706650831353919
+%% el factor d'escala és fS x 595 = 297.5 o sigui fS = 297.5/595 o sigui 0.5
+%% 2 :: mecànica de l'nUp
+%% l'nUp triat primer comprova si la ratio del full (MediaBox) es manté a les pàgines que conté (TrimBox/ArtBox)
+%% si no manté la ràtio, triem entre forçar-la o adaptar-nos 100% al full amb una de nova
+%% seguidament hi deduïm el factor d'escala i fem la combinatòria de translates + rotates
+%% a BeginPage és on s'escala i es fa el translate + rotate, pàgina a pàgina, dins la imposició (llançat) de la plana
+%& a EndPage és on es decideix si hem acabat amb el llançat (imposició), generant la plana
+%% al loop componedor treballem sense escales/translacions/rotacions i el format serà el del full (MediaBox) si la ratio és ídem
+%% si la ràtio no és ídem i no la forcem, treballarem amb el nou format adaptat
+%% l'algorisme componedor s'executarà dues vegades (una per plana) per tal sigui possible treballar amb l'aleatori
+
+%%Captura de dades via fitxer?
+false
+
+dup /CddVf exch def
+{
+ (/Users/femfum/PliegOS/codi_pliegOS/ESH_Canodrom.txt)
+ (r) file cvx exec
+}if
+
+%%MENÚ capçalera
+%% marca l'entrada de dades i tria d'opcions
+
+%%M? donar la possibilitat de rotació i/o mirall del contingut de determinades pàgines?
+
+%%M? donar la possibilitat de triar pàgines en blanc? (false) sobre l'esquema del desplegat de planes
+%% no activarem aquesta opció encara a l'espera de com es configuri la tria a la interfície d'usuari
+
+%%M0 capturar quina és la llengua del navegador per tal d'activar determinades informacions en català o anglès
+
+%%M1 donar la possibilitat de fer visible la vora de la pàgina d'imposició, sigui o no dins una capa i com?
+%% capturem la variable d'entorn generada amb PHP com a PHP2PS2PHPgeneracioicapturadunavariabledentorn.php
+(MRCT_vp) getenv  %% la variable d'entorn existeix?
+{
+ dup length 0 eq 
+ {  %% arriba buida perquè executem via URL amb pliegOmaker.php sense paràmetres (mètode $_GET)
+  pop true  %% si l'eliminem del menú via mètode $_POST també
+ }
+ {  %% té dades perquè executem via URL amb index_##.php (mètode $_POST) o amb pliegOmaker.php amb paràmetres (mètode $_GET)
+  cvx exec  %% és una string!
+ }ifelse
+}
+{  %% la variable d'entorn NO existeix perquè executem l'applet en local via Terminal per línia de comanda
+ CddVf
+ {
+%  false  %% fem visible la vora de la pàgina del llançat? (imposició) més endavant podrem posar-ho en una capa
+ }
+ {
+  true
+ }ifelse
+%% (\n Ghostscript no pot capturar aquesta variable d'entorn!\n\n)print flush
+}ifelse
+
+%%M2 quin nUp de pliegOS escollim?
+%% definicions d'imposició:
+%% 1 1hvUpHV 1 pàgina (en dúplex), horitzontal o vertical, imposada en un full horitzontal o vertical (2 imposicions totals)
+%% 2 2vUpHV 2 pàgines verticals (en dúplex) imposades DE COSTAT en un full horitzontal o vertical (4 imposicions totals)
+%% 4 4vUpHV 4 pàgines verticals (en dúplex) imposades de costat, 2+2, en un full horitzontal o vertical (8 imposicions totals)
+%% 8 8vUpH 8 pàgines verticals (en dúplex) imposades de costat, 4+4, en un full horitzontal (16 imposicions totals)
+%% capturem la variable d'entorn generada amb PHP des de PHP2PS2PHPgeneracioicapturadunavariabledentorn.php
+(MRCT_nup) getenv %% la variable d'entorn existeix?
+{
+ dup length 0 eq
+ {  %% arriba buida perquè executem via URL amb pliegOmaker.php sense paràmetres (mètode $_GET)
+  pop 4  %% si l'eliminem del menú via mètode $_POST també
+ }
+ {  %% té dades perquè executem via URL amb index_##.php (mètode $_POST) o amb pliegOmaker.php amb paràmetres (mètode $_GET)
+  cvx exec  %% és una string!
+ }ifelse
+}
+{  %% la variable d'entorn NO existeix perquè executem l'applet en local via Terminal per línia de comanda
+ CddVf
+ {
+ }
+ {
+  4
+ }ifelse
+%% (\n Ghostscript no pot capturar aquesta variable d'entorn!\n\n)print flush
+}ifelse
+
+%%M3 orientació del full
+%% false vertical
+%% true horitzontal
+(MRCT_hv) getenv  %% la variable d'entorn existeix?
+{
+ dup length 0 eq
+ {  %% arriba buida perquè executem via URL amb pliegOmaker.php sense paràmetres (mètode $_GET)
+  pop false  %% si l'eliminem del menú via mètode $_POST també
+ }
+ {  %% té dades perquè executem via URL amb index_##.php (mètode $_POST) o amb pliegOmaker.php amb paràmetres (mètode $_GET)
+  cvx exec  %% és una string!
+ }ifelse
+}
+{  %% la variable d'entorn NO existeix perquè executem l'applet en local via Terminal per línia de comanda
+ CddVf
+ {
+ }
+ {
+  false  %% pel plegaVeu 19.12.21 forcem el 4+4 sempre en vertical (el 8+8 ja ho fa per defecte)
+ }ifelse
+%%EP! el 2Up en vertical talla els originals (cal revisar també en H perquè es veu menys però també passa!)
+%% (\n Ghostscript no pot capturar aquesta variable d'entorn!\n\n)print flush
+}ifelse
+
+%%M4 format estàndard del full (d'impressora)
+%% els DiNS conserven l´índex
+(MRCT_full) getenv  %% la variable d'entorn existeix?
+{
+ dup length 0 eq
+ {  %% arriba buida perquè executem via URL amb pliegOmaker.php sense paràmetres (mètode $_GET)
+  pop 4  %% si l'eliminem del menú via mètode $_POST també
+ }
+ {  %% té dades perquè executem via URL amb index_##.php (mètode $_POST) o amb pliegOmaker.php amb paràmetres (mètode $_GET)
+  cvx exec  %% és una string!
+ }ifelse
+}
+{  %% la variable d'entorn NO existeix perquè executem l'applet en local via Terminal per línia de comanda
+ CddVf
+ {
+ }
+ {
+  4
+ }ifelse
+%% (\n Ghostscript no pot capturar aquesta variable d'entorn!\n\n)print flush
+}ifelse
+
+%%M5 en cas que el plec no sigui proporcional (ràtio full/pàgina diferent), forcem mantenir la ràtio?
+%% false NO forcem mantenir la ràtio (en cas que el plec no sigui proporcional!)
+%% true FORCEM mantenir la ràtio (en cas que el plec no sigui proporcional!)
+(MRCT_r) getenv  %% la variable d'entorn existeix?
+{
+ dup length 0 eq
+ {  %% arriba buida perquè executem via URL amb pliegOmaker.php sense paràmetres (mètode $_GET)
+  pop false  %% si l'eliminem del menú via mètode $_POST també
+ }
+ {  %% té dades perquè executem via URL amb index_##.php (mètode $_POST) o amb pliegOmaker.php amb paràmetres (mètode $_GET)
+  cvx exec  %% és una string!
+ }ifelse
+}
+{  %% la variable d'entorn NO existeix perquè executem l'applet en local via Terminal per línia de comanda
+%%EP! true falla a 8auricsHVgranFormat.pdf quan treballa en 4Up i l'orientació de pàgina és V
+ CddVf
+ {
+ }
+ {
+  false
+ }ifelse
+%% (\n Ghostscript no pot capturar aquesta variable d'entorn!\n\n)print flush
+}ifelse
+
+%%M6 índex a l'algorisme de composició independent del nUp triat
+(MRCT_labal) getenv  %% la variable d'entorn existeix?
+{
+ dup length 0 eq
+ {  %% arriba buida perquè executem via URL amb pliegOmaker.php sense paràmetres (mètode $_GET)
+  pop 9  %% si l'eliminem del menú via mètode $_POST també (per defecte activem l'algorisme de?)
+ }
+ {  %% té dades perquè executem via URL amb index_##.php (mètode $_POST) o amb pliegOmaker.php amb paràmetres (mètode $_GET)
+  cvx exec  %% és una string!
+ }ifelse
+}
+{  %% la variable d'entorn NO existeix perquè executem l'applet en local via Terminal per línia de comanda
+ CddVf
+ {
+ }
+ {
+
+  9
+
+    %% 0 algorisme de reglatge
+
+    %% 1 fus horari
+
+    %% 2 interrogador de variables
+
+    %% 3 algorisme buit i només pintaria els marges de pàgina?
+
+    %% 4 nadala amigots (ha d'anar amb 8vUpH!)
+
+    %% 5 inocula codi pdf per farcir Reference XObjectes
+
+    %% 6 traçat harmònic VanDeGraaf
+
+    %% 7 plegaVeu mestre ple (restringit a les condicions del plegaVeu de l'Espai Òmnium 19.12.21)
+    %% ara mateix aquesta versió dóna Error: /undefined in mEtrica
+
+    %% filosofies d'imposició
+    %% 8 visSensFi_senseEnflafaGlifs.ps
+
+    %% 9 farceixPDFs_pseudoPDFX5_ReferenceXObjects_EnricSenabre.ps
+
+    %% 10 sonar+PAPER
+
+    %% 11 Josep70
+
+    %% 12 palimpsest.ps compagina JPEGs (palimpsest d'imatges)
+
+    %% 13 traus exquisits
+    %% 14 traus exquisits FineArt24
+    %% 15 traus exquisits Re:publica'24
+ }ifelse
+
+%% (\n Ghostscript no pot capturar aquesta variable d'entorn!\n\n)print flush
+}ifelse
+
+%%M7 text a compondre
+(MRCT_tlab) getenv  %% la variable d'entorn existeix?
+{
+ dup length 0 eq
+ {  %% arriba buida perquè executem via URL amb pliegOmaker.php sense paràmetres (mètode $_GET)
+  %% si l'eliminem del menú via mètode $_POST també
+  pop (Aquest plegaVeu no duu cap text!)  %% text de farcit que ens indica que la variable ha arribat buida
+  %% després de l'string hi hauria d'haver un dígit per redefinir el valor de la variable d'entorn MRCT_lab?
+  %(/////)pstack exit
+ }
+ {  %% té dades perquè executem via URL amb index_##.php (mètode $_POST) o amb pliegOmaker.php amb paràmetres (mètode $_GET)
+  %% pot venir de la <textarea> via interfície
+  %pop (aquí arriba el text que hem escrit o capturat)
+  %(!!!!)pstack exit
+  %% és una string a polir i decodificar via plegaVeu_mestre_ple.ps 
+  %% després de l'string hi hauria d'haver un dígit per redefinir el valor de la variable d'entorn MRCT_lab?
+ }ifelse
+}
+{  %% la variable d'entorn NO existeix perquè executem l'applet en local via Terminal per línia de comanda
+%%RELLEVANT: si volem reflectir un error PS al prompt de la interfície necessitem sortir amb exit
+%% llavors surt del GS, doncs sinó sempre fa un pdf buit
+%(nnnn)pstack exit  
+%(text a compondre)  %% text en manual que posem nosaltres
+
+(Una polla xica, pica, pellarica, camatorta i becarica va tenir sis polls xics, pics, pellarics, camacurts i becarics.\nSi la polla no hagués sigut xica, pica, pellarica, camatorta i becarica, els sis polls no haguessin sigut xics, pics, pellarics, camacurts i becarics.)
+
+%% almenys per línia de comanda interpreta correctament els canvis de línia
+%% aquest vers es pot veure com queda curt en nombre de línies (4) i pàgines a omplir (6), deixant-ne dues en blanc correctament
+%(agafaré aquest meu cor balb,
+%per llançar-lo lluny, enllà,
+%i un cop après l'art de tirar
+%et regalaré la fona)
+
+%(De cos present et necessita la meva primavera\no acabaré vomitant flors mutilades,\nque jo no vull tornar-me lletra\nper fer-te imatge i mentida,\nque ens vull elèctrics i brutals\nen mig del desastre, morint,\nsi cal, al cos de l'altre,\nsacsejats pel tro, bruts de desfici,\nescampats al paisatge de l'abril més salvatge,\nla tempesta que esclati!)
+
+%(boja, goja o fada?)  %% amb només una g, o una f, podem veure el control minimalista compositiu?
+
+%% sense res o amb espais en blanc dins aquesta string seguiríem amb un Error: /undefinedresult in --div--
+%% però aquí no té sentit, doncs és només via interfície que es pot cometre aquesta badada de no posar-hi res
+%(             )
+
+
+%(Peixos dins el rostoll\nàligues dins el foc\nla mar dins els ulls\nels peus plens de cans\nel vent és pudent\ntots els déus van gats\n\nOh serra mamerra\nens roben la terra\ni ens fonen l'aram.)
+
+%(Si vinguessis per tardor\nespolsaríem l'estiu\namb llengots i mitja rialla,\ncom mestresses al badiu.\n\nSi ens veiéssim en un any\ncabdellaríem mesades,\ntotes al seu calaixer,\nmentre el temps passa debades.\n\nSi triguessis sols un segles,\ncomptats només amb la mà,\ndeixondint els dits tot d'una\ndins el Van Diemens llunyà.\n\nSi del cert la vida fuig,\nbé prou que ambdós ho sabem,\nbo i foragitant l'embolcall\nfaríem un tast a l'etern.\n\nAra però, ignorem al capdavall\nsi el temps és l'ala incerta\nd'un borinot que, cap a mi furiós,\nenvà el seu fibló no encerta.)
+
+%%EP! perquè no sembla un poema? (perquè tenia una línia de més de 64 caràcters i feia abaixar el cos per sota de 7)
+%(segle xvi 00\nsoleta jo aquí si voleu que us vagi a obrir\nara que n'és hora si voleu venir món marit\nés de fora on a Montalbà demà bé serà mig hora\n\nla rutina tutelada de maria josepa massanés facebook l'ou\nmatrones acudiu acudir\ncom les que un xiprer tindran fer corones per als vells desitjat\ndes dels herois morts)
+%(segle xvi 00\nsoleta jo aquí si voleu que us vagi a obrir\nara que n'és hora si voleu venir món marit\nés de fora on a Montalbà demà bé serà mig hora\n\nla rutina tutelada de maria josepa massanés facebook l'ou\nmatrones acudiu acudir\ncom les que un xiprer tindran fer corones per als vells desitjat\ndes dels herois morts\ni ara què tal?\nuna més, a veure?\ni encara una altra?\nno entenem perquè no l'admet!\nho fa el nombre de línies?\ntambé en relació al 120% de la interlínia triada?\nfins que no desxifrem el codi no ho sabrem\naquesta podria ser la línia que fes vessar el got\ntampoc\ntampoc encara?\nres a fer!\nno, que va home!\nva home vaaaaaa!)
+
+%% aquesta va, doncs tot i que són línies molt curtes, repartides, no superen el màxim Y
+%(sol\ni de\ndol i\namb vetusta\ngonella\nem veig)
+
+%(El bou pesant, veient la gent\nque tantes coses oferia,\ndiu que volia fer un present\nal dolç Infant de l'Establia.\n\nI quan minvà una mica el fred\ni l'Infantó ja no plorava,\nsortí amb pas lent, dins l'aire net,\nsota la nit florida i blava.\n\nVa caminar per fondes valls\ni resseguia la carena.\nSent el clarí de tots els galls,\nperò ja du la rica ofrena.\n\nSaltant de goig i bruelant,\nel bou baixà de la muntanya,\ni s'oferia al dolç Infant\namb una estrella a cada banya.)
+
+  %% després de l'string hi hauria d'haver un dígit per redefinir el valor de la variable d'entorn MRCT_lab?
+%% (\n Ghostscript no pot capturar aquesta variable d'entorn!\n\n)print flush exit
+
+%%MarcelDuchamp
+%%Aquesta cadena de text té tots els canvis de línia convertits a \n?
+%%No té cap més tractament que el fet de ser ISO-8859-1
+%(/Library/WebServer/Documents/www.pliegos.net/maker/txt/theCreativeAct_MarcelDuchamp.txt)
+%(r) file 65535 string readstring pop
+
+%% (Just Like) Starting Over | John Lennon
+%(Our life together is so precious together\nWe have grown, we have grown\nAlthough our love is still special\nLet's take a chance and fly away\nSomewhere alone\nIt's been too long since we took the time\nNo-one's to blame, I know time flies so quickly\nBut when I see you darling\nIt's like we both are falling in love again\nIt'll be just like starting over\nStarting over\nEveryday we used to make it love\nWhy can't we be making love nice and easy\nIt's time to spread our wings and fly\nDon't let another day go by my love\nIt'll be just like starting over\nStartin' over\nWhy don't we take off alone\nTake a trip somewhere far, far away\nWe'll be together all alone again\nLike we used to in the early days\nWell, well, well darling\nIt's been too long since we took the time\n\nNo-one's to blame, I know time flies so quickly\nBut when I see you darling\nIt's like we both are falling in love again\nIt'll be just like starting over\nStarting over, Look out\nOur life together\nIs so precious together\nWe have grown, mmh we have grown\nAlthough our love still is special\nLet's take a chance and fly away somewhere\nStarting over \(over and over and over\))
+
+%% Je te laisserai des mots | Patrick Watson
+%(Je te laisserai des mots
+%En-dessous de ta porte
+%En-dessous de les murs qui chantent
+%Tout près de la place où tes pieds passent
+%Cachés dans les trous de ton divan
+%Et quand tu es seule pendant un instant
+%Ramasse-moi
+%Quand tu voudras
+%Embrasse-moi
+%Quand tu voudras
+%Ramasse-moi
+%Quand tu voudras)
+
+}ifelse
+
+%% (a veure?)pstack quit
+
+%% fi de MENÚ de capçalera
+
+/M7 exch def  %% composició de text
+/M6 exch def  %% índex a l'algorisme de composició independent del nUp triat
+/M5 exch def  %% en cas que el plec no sigui proporcional (ràtio full/pàgina diferent)i, forcem mantenir la ràtio?
+/M4 exch def  %% format estàndard de full (d'impressora)
+/M3 exch def  %% orientació del full
+/M2 exch def  %% quin nUp de pliegOS escollim?
+/M1 exch def  %% fem visible la vora de la pàgina d'imposició? (llançat)
+%%/M0 exch def  %% capturem la llengua del navegador
+%%/M? exch def  %% donar la possibilitat de triar pàgines en blanc? (false) sobre l'esquema del desplegat de planes
+
+/compOnedors
+%%URLsnr és absolutament necessari posar el path sencer als algorismes executats via php al localhost i a servidors
+[
+ (/Users/femfum/PliegOS/codi_pliegOS/reglatge.ps)  %% 0 algorisme de reglatge
+ (fusHorariLiterari_xPliegOS.ps)  %% 1 el rellotge necessita ajustar el cos automàticament pel bbox de la suma de pàginess 
+ (interroguem.ps)  %% 2 interrogador de variables de l'algorisme nUp_pliegOs.ps
+ (buit.ps)  %% 3 només pintaria els marges de pàgina?
+ (nadala2017.ps)  %% 4 nadala amigots / %%M2 ha de ser 8 / %%M4 ha de ser 4 / %%M5 ha de ser false
+ (/Users/femfum/PliegOS/codi_pliegOS/inocula.ps)  %% 5 inocula codi pdf per farcir Reference XObjects
+ (VanDeGraaf3.ps)  %% 6 traçat harmònic VanDeGraaf
+% (VanDeGraaf4.ps)  %% 6 traçat harmònic VanDeGraaf / glif per pàgina pliegOSchapbooks ATypI2020AllOver
+
+% (compon_VanDeGraaf.ps)  %% 7 el bo i millor per compondre text
+% (plegaVeu_mestre_buit.ps)  %% 7 plegaVeu mestre
+
+ (plegaVeu_mestre_ple.ps)  %% 7 veste'n Anton que el que es queda ja es compon!
+ %% ara mateix aquesta verssió dóna Error: /undefined in mEtrica
+ 
+% (plegaVeu_mestre_ple_StEsteve.ps)  %% 7 dinar familiar de Sant Esteve 2021 
+
+% (/Users/femfum/PliegOS/codi_pliegOS/mesuraTripa.ps)  %% 8  pel vis sens fi?
+ (/Users/femfum/PliegOS/codi_pliegOS/filosofiesDimposicio.ps)  %% 8 filosofies d'imposició
+% (/Users/femfum/PliegOS/codi_pliegOS/filosofiesDimposicio_visSensFi_cosPendent.ps)  %% 8
+% (/Users/femfum/PliegOS/codi_pliegOS/visSensFi_senseEnflafaGlifs.ps)  %% 8
+
+ %% 9 farcidor de PDFs
+ %% Terminal/localhost
+% (/Users/femfum/PliegOS/codi_pliegOS/PDFscripting/farceixPDFs_pseudoPDFX5_ReferenceXObjects_EnricSenabre.ps)
+%%URLREpublica
+% (/var/www/wordpress/maker/REpublica/farceixPDFs_pseudoPDFX5_ReferenceXObjects_EnricSenabre.ps)
+% (/var/www/wordpress/maker/REpublica/farceixPDFs_pseudoPDFX5_REpublica.ps)
+%%URLUBESH
+ (/home/femfum/Documents/pliegOMakerUB/farceixPDFs_pseudoPDFX5_UBESH.ps)  %% Terminal Tuxedo
+
+ %% 10 sonar+PAPER
+ (/Users/femfum/PliegOS/sonarD2023_paper/sonarD2023_paper.ps)  %% Terminal
+%%SNRD
+%%URLsnr
+% (/Library/WebServer/Documents/www.pliegos.net/maker/sonarD2023/sonarD2023_paper.ps)  %% localhost
+% (/var/www/wordpress/maker/sonarD2023/sonarD2023_paper.ps) %% Teixidora
+
+ %% 11 engalzaglifs amb garigot
+%%Josep70
+ (/Users/femfum/PliegOS/faJosep70/faJosep70.ps)
+
+ %% 12 palimpsest d'imatges
+ (/Users/femfum/PliegOS/fulletsBosoms/palimpsest.ps)
+
+ %% 13 traus exquisits
+ (/Users/femfum/PliegOS/trausExquisits/trausExquisits_pliegOS.ps)
+
+ %% 14 traus exquisits FineArt24
+%%URL30segons
+%% activem fer visibles a la imatge sencera d'on surten els traus exquisits
+%(/Users/femfum/PliegOS/trausExquisits/trausExquisitsFineArt24_AsierGogortza000_pliegOS_mostraTraus.ps)
+
+ (/Users/femfum/PliegOS/trausExquisits/trausExquisitsFineArt24_AsierGogortza000_pliegOS.ps)
+% (/Library/WebServer/Documents/www.pliegos.net/maker/30segons/trausExquisitsFineArt24_AsierGogortza000_pliegOS.ps)  %% localhost
+% (/var/www/wordpress/maker/30egons/trausExquisitsFineArt24_AsierGogortza000_pliegOS.ps) %% Teixidora
+
+ %% 15 traus exquisits, desant els traus
+%%URLREpublica
+(/Users/femfum/PliegOS/trausExquisits/trausExquisitsDesaTraus_pliegOS.ps)
+% (/Library/WebServer/Documents/www.pliegos.net/maker/REpublica/trausExquisitsDesaTraus_pliegOS.ps)  %% localhost
+% (/var/www/wordpress/maker/REpublica/trausExquisitsDesaTraus_pliegOS.ps)  %% commonscloud.coop
+
+] def
+
+/pliegOS_nUpS
+[  %% en cadascun dels nUpS la distribució de les pàgines dins la plana és independent a l'orientació H/V del full (MediaBox)
+ null  %% 0 ?
+
+ [  %% 1 1hvUpHV una pàgina (en dúplex), horitzontal o vertical, imposada en un full horitzontal o vertical
+
+%%MENÚ M? donar la possibilitat de triar pàgines en blanc? (false)
+  [  %% 0 desplegat de planes al full (MediaBox) on a cada plana (anvers/revers) hi ha tota la sèrie sencera de pàgines del full
+   %% true = la pàgina es compon / false = pàgina en blanc (s'enretira a la següent) / null = la pàgina no toca en aquesta plana
+   [  %% anvers (a#índex:#númDpàgina)
+    true  %% a0:1 la pàgina pot compondres's (true) o ser en blanc (false)
+    null  %% a1:2 la pàgina a null forma part de l'estructura d'aquest nUp (pliegO) i per tant és fixa
+   ]
+   [  %% revers (r#índex:#númDpàgina)
+    null  %% r0:1
+    true  %% r1:2
+   ]
+  ]
+
+  [  %% 1 ordre seqüencial seguit de pàgines, anvers + revers, per no aturar el componedor aleatori
+   <<  %% 0:0 índex dins la plana +1 núm. de pàgina : índex d'ordre pel componedor
+     /T_R  %% translate i rotate de la pàgina a imposar
+     {
+      %xPagina yPagina translate 180 rotate
+     }
+     /FEMshowpage false
+   >>
+
+   <<  %% 1:1 índex dins la plana +1 núm. de pàgina : índex d'ordre pel componedor
+     /T_R  %% translate i rotate de la pàgina a imposar
+     {
+      %xPagina yPagina translate 180 rotate
+     }
+     /FEMshowpage true
+   >>
+
+   %% final de l'anvers i inici del revers
+
+   <<  %% 0:2 índex dins la plana +1 núm. de pàgina : índex d'ordre pel componedor
+     /T_R  %% translate i rotate de la pàgina a imposar
+     {
+      %xPagina yPagina translate 180 rotate
+     }
+     /FEMshowpage false
+   >>
+
+   <<  %% 1:3 índex dins la plana +1 núm. de pàgina : índex d'ordre pel componedor
+     /T_R  %% translate i rotate de la pàgina a imposar
+     {
+%%EP podríem posar per menú el capgirar el contingut?
+      %xPagina yPagina translate 180 rotate
+     }
+     /FEMshowpage true
+   >>
+   %% ja no cal que BeginPage cridi un darrer diccionari extra, doncs hem filtrat el darrer índex sobrer amb stopBP
+  ]
+
+%%MENÚ M1 donar la possibilitat de fer visible la vora de la pàgina d'imposició, sigui o no dins una capa i com?
+  {  %% 2 TrimBox fix de la pàgina d'imposició?
+%%[ /ca 1 /CA 1 /BM /Multiply /SetTransparency pdfmark  %% parametre equivalent amb Distiller de la crida
+   M1  %% pintem la vora de les pàgines del llançat?
+   {
+    %% capturem la matriu per situar i pintar el rectangle net de retall de la pàgina del llançat
+    matrix currentmatrix /xirtam exch def
+
+    [0 0 xPagina yPagina] %dup
+    rectclip  %% retallem la vora de la pàgina (equivalent a TrimBox)
+
+    %% transparència que trepitja encara que estigui a sota de tot
+%%NOUgs9.55 obliga a incloure -dALLOWPSTRANSPARENCY a la línia d'execució
+%gsave
+%    /Overlay .setblendmode true .setalphaisshape 1 .setstrokeconstantalpha
+
+%    1 0 1 setrgbcolor  %% magenta? gris? vermell? blanc? negre?
+%    1 setlinewidth  %% gruix per tal vessi mig punt als marges del full
+%    [2] 1 setdash  %% discontínua
+%    rectstroke  %% pintem la vora de la pàgina (equivalent a TrimBox)
+%grestore
+   }
+   {
+    [0 0 xPagina yPagina]
+    rectclip  %% retallem la vora de la pàgina (equivalent a TrimBox)
+   }ifelse
+  }  %% en cas que l'haguéssim de personalitzar per cada pàgina, l'hauríem d'imcloure a l'índex 1
+
+  {  %% 3 àrees de pàgina, comportament i càlcul de l'escala/ràtio
+   %% cal veure com juguem amb les àrees: MediaBox(full), CropBox(?), TrimBox(pàgina), ArtBox(taca), BleedBox(àrea impresa)
+   %% si les volem definir com a tals (només 1 per cada pàgina PDF al diccionari /Type/Page) com que som obligats a duplicar-les
+
+   %% desambigüitat amb la ràtio:
+   %% Malgrat es diu que els formats DiN treballen amb una ràtio vertical equivalent al valor de l'arrel quadrada de 2
+   %% aquesta és una dada aproximada (certa només fins al 2n decimal), doncs considerant fins al 8è decimal significatiu
+   %% cap format DiN, d'A0 fins a A10, té exactament la mateixa ràtio i cap RATioVe és tampoc idèntica a l'arrel de dos
+   %% per exemple: l'A5 és el DiN que s'acosta més al valor de 2 sqrt 1.41421354 vs 1.41428566 fins al 4rt decimal
+   %% Consideració important: treballant només amb els 2 primers decimals significatius, ràtios idèntiques poden tolerar
+   %% diferències de format fins a 33 punts!, llavors només treballarem amb els dos primers decimals per avaluar si dues ràtios
+   %% les considerem idèntiques (RATioH vs pRATio), doncs pels càlculs de format treballarem amb tots els decimals via fS
+   %% RATioV: el divisor és el costat vertical: s'obté dividint l'ample per l'alt
+   %% RATioH: el divisor és el costat horitzontal: s'obté dividint l'alt per l'ample
+   %% una altra opció seria treballar via regla de tres
+
+%%Hi ha una incoherència entre els missatges de pantalleta (confusos) i el comportament (inicialment correcte)
+%%Per què surten creuades les ràtios H del full vs la pàgina? ...per què no informem de la orientació de la pàgina dins el full?
+   %% calculem la raó del full (MediaBox) en vertical i en horitzontal
+   yFull xFull div  %% dividint l'alt per l'ample:
+   100 mul cvi 100 div  %% deixem només els 2 primers decimals com a significatius per descartar diferències irrellevants
+   /RATioH exch def  %% ràtio horitzontal
+
+   xFull yFull div  %% dividim l'ample per l'alt:
+   dup /RATioVe exch def  %% amb tots els decimals
+   100 mul cvi 100 div  %% i deixant només els 2 primers decimals com a significatius per descartar diferències irrellevants
+   /RATioV exch def  %% ràtio vertical
+
+%%Tindria sentit incloure la tria de si volem la pàgina d'imposició de costat (com ara) o un a sobre l'altra (x fer)?
+   %% les pàgines del 1vhUpHV tenen la mateixa ràtio que el full sempre que mantinguem l'orientació
+   xFull dup currentdict exch /xPagina exch put
+   yFull dup /yPagina exch def div 100 mul cvi 100 div /pRATio exch def
+
+   %% comportament?
+   RATioH pRATio eq
+   {  %% ràtio ídem
+    yPagina xFull div /fS exch def  %% el factor d'escala és ídem a la ràtio però no retallem els decimals
+   }
+   {  %% diferent ràtio, què fem?
+    fRATio  %% forcem la ràtio?
+    {  %% mantenim la ràtio deduïnt el factor d'escala
+     yPagina xFull div /fS exch def  %% factor d'escala ídem a la ràtio (però amb tots els decimals)
+    }
+    {  %% aprofitem el 100% la nova àrea deduint el factor d'escala
+     yPagina xFull div /fS exch def  %% factor d'escala SENSE mantenir la ràtio
+    }ifelse
+   }ifelse
+  }
+
+  (1hvUpHV)  %% 4 nom o ID únic? una pàgina (en dúplex), horitzontal o vertical, imposada en un full horitzontal o vertical
+ ]
+
+ [  %% 2 2vUpHV dues pàgines verticals (en dúplex) imposades DE COSTAT en un full horitzontal o vertical
+
+%%MENÚ M? donar la possibilitat de triar pàgines en blanc? (false)
+  [  %% 0 desplegat de planes al full (MediaBox) on a cada plana (anvers/revers) hi ha tota la sèrie sencera de pàgines del full
+   %% true = la pàgina es compon / false = pàgina en blanc (s'enretira a la següent) / null = la pàgina no toca en aquesta plana
+   [  %% anvers (a#índex:#númDpàgina)
+    true  %% a0:1 la pàgina pot compondres's (true) o ser en blanc (false)
+    null  %% a1:2 la pàgina a null forma part de l'estructura d'aquest nUp (pliegO) i per tant és fixa
+    null  %% a2:3
+    true  %% a3:4
+   ]
+   [  %% revers (r#índex:#númDpàgina)
+    null  %% r0:1
+    true  %% r1:2
+    true  %% r2:3
+    null  %% r3:4
+   ]
+  ]
+
+  [  %% 1 ordre seqüencial seguit de pàgines, anvers + revers, per no aturar el componedor aleatori
+
+   <<  %% 0:0 índex dins la plana +1 núm. de pàgina : índex d'ordre pel componedor
+     /T_R  %% translate i rotate de la pàgina a imposar
+     {
+      %%ATENCIÓ: sense -dAutoRotatePages=/None el rotate és doble, doncs també invoca la rotació del format de pàgina al PDF
+      %xPagina yPagina translate 180 rotate
+      xFull 2 div 0 translate
+     }
+     /FEMshowpage false
+   >>
+
+   <<  %% 1:1 índex dins la plana +1 núm. de pàgina : índex d'ordre pel componedor
+     /T_R  %% translate i rotate de la pàgina a imposar
+     {
+     }
+     /FEMshowpage false
+   >>
+
+   <<  %% 2:2 índex dins la plana +1 núm. de pàgina : índex d'ordre pel componedor
+     /T_R  %% translate i rotate de la pàgina a imposar
+     {
+     }
+     /FEMshowpage false
+   >>
+
+   <<  %% 3:3 índex dins la plana +1 núm. de pàgina : índex d'ordre pel componedor
+     /T_R  %% translate i rotate de la pàgina a imposar
+     {
+     }
+     /FEMshowpage true  %% generem el full imprès o pàgina pdf
+   >>
+
+   %% final de l'anvers i inici del revers
+
+   <<  %% 0:4 índex dins la plana +1 núm. de pàgina : índex d'ordre pel componedor
+     /T_R {} %% translate i rotate de la pàgina a imposar
+     /FEMshowpage false
+   >>
+
+   <<  %% 1:5 índex dins la plana +1 núm. de pàgina : índex d'ordre pel componedor
+     /T_R  %% translate i rotate de la pàgina a imposar
+     {
+     }
+     /FEMshowpage false
+   >>
+
+   <<  %% 2:6 índex dins la plana +1 núm. de pàgina : índex d'ordre pel componedor
+     /T_R
+     {
+      xFull 2 div 0 translate  %% la segona pàgina sempre a partir de la meitat del full
+     } %% translate i rotate de la pàgina a imposar
+     /FEMshowpage false
+   >>
+
+   <<  %% 3:7 índex dins la plana +1 núm. de pàgina : índex d'ordre pel componedor
+     /T_R  %% translate i rotate de la pàgina a imposar
+     {
+     }
+     /FEMshowpage true  %% generem el full imprès o pàgina pdf
+   >>
+   %% ja no cal que BeginPage cridi un darrer diccionari extra, doncs hem filtrat el darrer índex sobrer amb stopBP
+  ]
+
+%%MENÚ M1 donar la possibilitat de fer visible la vora de la pàgina d'imposició, sigui o no dins una capa i com?
+  {  %% 2 TrimBox fix de la pàgina d'imposició?
+   M1  %% pintem la vora de les pàgines del llançat?
+   {
+    %% capturem la matriu per situar i pintar el rectangle net de retall de la pàgina del llançat
+    matrix currentmatrix /xirtam exch def
+
+    [0 0 xPagina yPagina] %dup
+    rectclip  %% retallem la vora de la pàgina (equivalent a TrimBox)
+
+    %% transparència que trepitja encara que estigui a sota de tot
+%%NOUgs9.55 obliga a incloure -dALLOWPSTRANSPARENCY a la línia d'execució
+%gsave
+%    /Overlay .setblendmode true .setalphaisshape 1 .setstrokeconstantalpha
+
+%    1 0 1 setrgbcolor  %% magenta? gris? vermell? blanc? negre?
+%    1 setlinewidth  %% gruix per tal vessi mig punt als marges del full
+%    [2] 1 setdash  %% discontínua
+%    rectstroke  %% pintem la vora de la pàgina (equivalent a TrimBox)
+%grestore
+   }
+   {
+    [0 0 xPagina yPagina]
+    rectclip  %% retallem la vora de la pàgina (equivalent a TrimBox)
+   }ifelse
+  }  %% en cas que l'haguéssim de personalitzar per cada pàgina, l'hauríem d'imcloure a l'índex 1
+
+  {  %% 3 àrees de pàgina, comportament i càlcul de l'escala/ràtio
+   %% cal veure com juguem amb les àrees: MediaBox(full), CropBox(?), TrimBox(pàgina), ArtBox(taca), BleedBox(àrea impresa)
+   %% si les volem definir com a tals (només 1 per cada pàgina PDF al diccionari /Type/Page) com que som obligats a duplicar-les
+
+   %% desambigüitat amb la ràtio:
+   %% Malgrat es diu que els formats DiN treballen amb una ràtio vertical equivalent al valor de l'arrel quadrada de 2
+   %% aquesta és una dada aproximada (certa només fins al 2n decimal), doncs considerant fins al 8è decimal significatiu
+   %% cap format DiN, d'A0 fins a A6, té exactament la mateixa ràtio i cap RATioVe és tampoc idèntica a l'arrel de dos
+   %% per exemple: l'A5 és el DiN que s'acosta més al valor de 2 sqrt 1.41421354 vs 1.41428566 fins al 4rt decimal
+   %% Consideració important: treballant només amb els 2 primers decimals significatius, ràtios idèntiques poden tolerar
+   %% diferències de format fins a 33 punts!, llavors només treballarem amb els dos primers decimals per avaluar si dues ràtios
+   %% les considerem idèntiques (RATioH vs pRATio), doncs pels càlculs de format treballarem amb tots els decimals via fS
+   %% RATioV: s'obté dividint el costat gran pel petit, de manera que multiplicant el costat petit per RATioV s'obté el gran
+   %% RATioH: s'obté dividint el costat petit pel gran, de manera que multiplicant el costat gran per RATioH s'obté el petit
+   %% una altra opció seria treballar via regla de tres
+
+   %% calculem la raó del full (MediaBox) en vertical i en horitzontal
+   yFull xFull div  %% dividint l'alt per l'ample:
+   100 mul cvi 100 div  %% deixem només els 2 primers decimals com a significatius per descartar diferències irrellevants
+   /RATioH exch def  %% ràtio horitzontal
+
+   xFull yFull div  %% dividim l'ample per l'alt:
+   dup /RATioVe exch def  %% amb tots els decimals
+   100 mul cvi 100 div  %% i deixant només els 2 primers decimals com a significatius per descartar diferències irrellevants
+   /RATioV exch def  %% ràtio vertical
+
+   %% abandonem l'opció d'incloure la tria de si volem la pàgina d'imposició en vertical (com ara) o en horitzontal (x fer)?
+   %% les pàgines del 2vUpHV tenen la mateixa ràtio que el full?
+   xFull 2 div dup currentdict exch /xPagina exch put
+   yFull dup /yPagina exch def div 100 mul cvi 100 div /pRATio exch def
+
+   %% comportament?
+   RATioH pRATio eq
+   {  %% ràtio ídem
+    yPagina xFull div /fS exch def  %% el factor d'escala és ídem a la ràtio però no retallem els decimals
+   }
+   {  %% diferent ràtio, què fem?
+    fRATio  %% forcem la ràtio?
+    {  %% mantenim la ràtio deduïnt el factor d'escala
+     yPagina xFull div /fS exch def  %% factor d'escala ídem a la ràtio (però amb tots els decimals)
+     %% com que escalem a BeginPage no cal escalar aquí
+     %% cal saber si per l'alçada de la pàgina n'admet dues de costat dins el full
+     %% prioritzant el fet que les pàgines s'han d'imposar en vertical!
+     yFull RATioH mul  %% càlcul de l'ample de pàgina 
+     dup 2 mul xFull gt  %% hi cap dins l'ample del full?
+     {  %% no, llavors mana la meitat de l'ample del full
+      pop
+      RATioH pRATio gt
+      {  %% si la RATioH del full és més gran que pRATio de la pàgina, gira la pàgina a horitzontal (formats 28 29 30)
+       Hrtzntl
+       {
+        yFull /yPagina exch def
+        yPagina fS mul 2 mul dup xFull 2 div gt  %% l'ample de pàgina resultant hi cap dins el full dues vegades?
+        {  %% no, per tant...
+         pop
+         xFull 2 div /xPagina exch def  %% fem que la meitat de l'ample del full sigui l'ample de pàgina
+         xPagina RATioV mul /yPagina exch def  %% i recalculem l'alt de pàgina
+        }
+        {  %% si
+         /xPagina exch def
+        }ifelse
+       }
+       {  %% tret de que el full sigui vertical
+        xFull 2 div /xPagina exch def  %% serà l'ample de pàgina imposada
+        xPagina fS mul /yPagina exch def  %% serà l'alt de pàgina imposada
+       }ifelse
+      }
+      {
+       xFull 2 div /xPagina exch def  %% serà l'ample de pàgina imposada
+       xPagina fS mul /yPagina exch def  %% serà l'alt de pàgina imposada
+      }ifelse
+     }
+     {  %% si, llavors mana l'alt del full
+      /xPagina exch def  %% serà l'ample de pàgina imposada
+      yFull /yPagina exch def  %% serà l'alt de pàgina imposada
+     }ifelse
+    }
+    {  %% aprofitem el 100% la nova àrea deduint el factor d'escala
+     yPagina xFull div /fS exch def  %% factor d'escala SENSE mantenir la ràtio
+    }ifelse
+   }ifelse
+  }
+
+  (2vUpHV)  %% 4 nom o ID únic? dues pàgines verticals (en dúplex) imposades DE COSTAT en un full horitzontal o vertical
+ ]
+
+ null  %% 3 2hUpV
+
+ [  %% 4 4vUpHV quatre pàgines verticals (en dúplex) imposades de costat, 2+2, en un full horitzontal o vertical
+
+%%MENÚ M? donar la possibilitat de triar pàgines en blanc? (false)
+  [  %% 0 desplegat de planes al full (MediaBox) on a cada plana (anvers/revers) hi ha tota la sèrie sencera de pàgines del full
+   %% true = la pàgina es compon / false = pàgina en blanc (s'enretira a la següent) / null = la pàgina no toca en aquesta plana
+   [  %% anvers (a#índex:#númDpàgina)
+    true  %% a0:1 la pàgina pot compondres's (true) o ser en blanc (false)
+    null  %% a1:2 la pàgina a null forma part de l'estructura d'aquest nUp (pliegO) i per tant és fixa
+    null  %% a2:3
+    true  %% a3:4
+    true  %% a4:5
+    null  %% a5:6
+    null  %% a6:7
+    true  %% a7:8
+   ]
+   [  %% revers (r#índex:#númDpàgina)
+    null  %% r0:1
+    true  %% r1:2
+    true  %% r2:3
+    null  %% r3:4
+    null  %% r4:5
+    true  %% r5:6
+    true  %% r6:7
+    null  %% r7:8
+   ]
+  ]
+
+  [  %% 1 ordre seqüencial seguit de pàgines, (a)nvers + (r)evers, per no aturar el componedor aleatori
+   %% anvers
+   <<  %% a0:1
+     /T_R  %% translate i rotate de la pàgina a imposar
+     {
+      xFull 2 div yFull translate 180 rotate
+     }
+     /FEMshowpage false  %% això
+   >>
+   <<  %% a1:2
+     /T_R null  %% també ens diu que la pàgina no toca en aquesta plana
+     /FEMshowpage false
+   >>
+   <<  %% a2:3
+     /T_R null
+     /FEMshowpage false
+   >>
+   <<  %% a3:4
+     /T_R
+     {
+     }
+     /FEMshowpage false
+   >>
+   <<  %% a4:5
+     /T_R
+     {
+      xFull 2 div 0 translate
+     }
+     /FEMshowpage false
+   >>
+   <<  %% a5:6
+     /T_R null
+     /FEMshowpage false
+   >>
+   <<  %% a6:7
+     /T_R null
+     /FEMshowpage false
+   >>
+   <<  %% a7:8
+     /T_R
+     {
+      xFull yFull translate 180 rotate
+     }
+     /FEMshowpage true
+   >>
+   %% revers
+   <<  %% r0:1
+     /T_R null
+     /FEMshowpage false
+   >>
+   <<  %% r1:2
+     /T_R
+     {
+      xFull yFull translate 180 rotate
+     }
+     /FEMshowpage false
+   >>
+   <<  %% r2:3
+     /T_R
+     {
+      xFull 2 div 0 translate
+     }
+     /FEMshowpage false
+   >>
+   <<  %% r3:4
+     /T_R null
+     /FEMshowpage false
+   >>
+   <<  %% r4:5
+     /T_R null
+     /FEMshowpage false
+   >>
+   <<  %% r5:6
+     /T_R
+     {
+     }
+     /FEMshowpage false
+   >>
+   <<  %% r6:7
+     /T_R
+     {
+      xFull 2 div yFull translate 180 rotate
+     }
+     /FEMshowpage false
+   >>
+   <<  %% r7:8
+     /T_R null
+     /FEMshowpage true
+   >>
+  ]
+
+%%MENÚ M1 donar la possibilitat de fer visible la vora de la pàgina d'imposició, sigui o no dins una capa i com?
+  {  %% 2 TrimBox fix de la pàgina d'imposició?
+   M1  %% pintem la vora de les pàgines del llançat?
+   {
+    %% capturem la matriu per situar i pintar el rectangle net de retall de la pàgina del llançat
+    matrix currentmatrix /xirtam exch def
+
+    [0 0 xPagina yPagina] %dup
+    rectclip  %% retallem la vora de la pàgina (equivalent a TrimBox)
+
+    %% transparència que trepitja encara que estigui a sota de tot
+%%NOUgs9.55 obliga a incloure -dALLOWPSTRANSPARENCY a la línia d'execució
+%gsave
+%    /Overlay .setblendmode true .setalphaisshape 1 .setstrokeconstantalpha
+
+%    1 0 1 setrgbcolor  %% magenta? gris? vermell? blanc? negre?
+%    1 setlinewidth  %% gruix per tal vessi mig punt als marges del full
+%    [2] 1 setdash  %% discontínua
+%    rectstroke  %% pintem la vora de la pàgina (equivalent a TrimBox)
+%grestore
+   }
+   {
+    [0 0 xPagina yPagina]
+    rectclip  %% retallem la vora de la pàgina (equivalent a TrimBox)
+   }ifelse
+  }  %% en cas que l'haguéssim de personalitzar per cada pàgina, l'hauríem d'imcloure a l'índex 1
+
+  {  %% 3 àrees de pàgina, comportament i càlcul de l'escala/ràtio
+   %% cal veure com juguem amb les àrees: MediaBox(full), CropBox(?), TrimBox(pàgina), ArtBox(taca), BleedBox(àrea impresa)
+   %% si les volem definir com a tals (només 1 per cada pàgina PDF al diccionari /Type/Page) com que som obligats a duplicar-les
+
+   %% desambigüitat amb la ràtio:
+   %% Malgrat es diu que els formats DiN treballen amb una ràtio vertical equivalent al valor de l'arrel quadrada de 2
+   %% aquesta és una dada aproximada (certa només fins al 2n decimal), doncs considerant fins al 8è decimal significatiu
+   %% cap format DiN, d'A0 fins a A6, té exactament la mateixa ràtio i cap RATioVe és tampoc idèntica a l'arrel de dos
+   %% per exemple: l'A5 és el DiN que s'acosta més al valor de 2 sqrt 1.41421354 vs 1.41428566 fins al 4rt decimal
+   %% Consideració important: treballant només amb els 2 primers decimals significatius, ràtios idèntiques poden tolerar
+   %% diferències de format fins a 33 punts!, llavors només treballarem amb els dos primers decimals per avaluar si dues ràtios
+   %% les considerem idèntiques (RATioH vs pRATio), doncs pels càlculs de format treballarem amb tots els decimals via fS
+   %% RATioV: s'obté dividint el costat gran pel petit, de manera que multiplicant el costat petit per RATioV s'obté el gran
+   %% RATioH: s'obté dividint el costat petit pel gran, de manera que multiplicant el costat gran per RATioH s'obté el petit
+   %% una altra opció seria treballar via regla de tres
+
+   %% calculem la raó del full (MediaBox) en vertical i en horitzontal
+   yFull xFull div  %% dividint l'alt per l'ample:
+   100 mul cvi 100 div  %% deixem només els 2 primers decimals com a significatius per descartar diferències irrellevants
+   /RATioH exch def  %% ràtio horitzontal
+
+   xFull yFull div  %% dividim l'ample per l'alt:
+   dup /RATioVe exch def  %% amb tots els decimals
+   100 mul cvi 100 div  %% i deixant només els 2 primers decimals com a significatius per descartar diferències irrellevants
+   /RATioV exch def  %% ràtio vertical
+
+   %% abandonem l'opció d'incloure la tria de si volem la pàgina d'imposició en vertical (com ara) o en horitzontal (x fer)?
+   %% les pàgines del 2vUpHV tenen la mateixa ràtio que el full?
+   xFull 2 div dup currentdict exch /xPagina exch put
+   yFull 2 div dup /yPagina exch def div 100 mul cvi 100 div /pRATio exch def
+
+   %% comportament?
+   RATioH pRATio eq
+   {  %% ràtio ídem
+    yPagina xFull div /fS exch def  %% el factor d'escala és ídem a la ràtio però no retallem els decimals
+   }
+   {  %% diferent ràtio, què fem?
+    fRATio  %% forcem la ràtio?
+    {  %% mantenim la ràtio deduïnt el factor d'escala
+     yPagina xFull div /fS exch def  %% factor d'escala ídem a la ràtio (però amb tots els decimals)
+     %% com que escalem a BeginPage no cal escalar aquí
+     %% cal saber si per l'alçada de la pàgina n'admet dues de costat dins el full
+     %% prioritzant el fet que les pàgines s'han d'imposar en vertical!
+     yFull RATioH mul  %% càlcul de l'ample de pàgina 
+     dup 2 mul xFull gt  %% hi cap dins l'ample del full?
+     {  %% no, llavors mana la meitat de l'ample del full
+      pop
+      RATioH pRATio gt
+      {  %% si la RATioH del full és més gran que pRATio de la pàgina, gira la pàgina a horitzontal (formats 28 29 30)
+       Hrtzntl
+       {
+        yFull /yPagina exch def
+        yPagina fS mul 2 mul dup xFull 2 div gt  %% l'ample de pàgina resultant hi cap dins el full dues vegades?
+        {  %% no, per tant...
+         pop
+         xFull 2 div /xPagina exch def  %% fem que la meitat de l'ample del full sigui l'ample de pàgina
+         xPagina RATioV mul /yPagina exch def  %% i recalculem l'alt de pàgina
+        }
+        {  %% si
+         /xPagina exch def
+        }ifelse
+       }
+       {  %% tret de que el full sigui vertical
+        xFull 2 div /xPagina exch def  %% serà l'ample de pàgina imposada
+        xPagina fS mul /yPagina exch def  %% serà l'alt de pàgina imposada
+       }ifelse
+      }
+      {
+       xFull 2 div /xPagina exch def  %% serà l'ample de pàgina imposada
+       xPagina fS mul /yPagina exch def  %% serà l'alt de pàgina imposada
+      }ifelse
+     }
+     {  %% si, llavors mana l'alt del full
+      /xPagina exch def  %% serà l'ample de pàgina imposada
+      yFull 2 div /yPagina exch def  %% serà l'alt de pàgina imposada
+     }ifelse
+    }
+    {  %% aprofitem el 100% la nova àrea deduint el factor d'escala
+     yPagina xFull div /fS exch def  %% factor d'escala SENSE mantenir la ràtio
+    }ifelse
+   }ifelse
+  }
+
+  (4vUpHV)  %% 4 nom o ID únic? quatre pàgines verticals (en dúplex) imposades de costat, 2+2, en un full horitzontal o vertical
+ ]
+
+ null  %% 5 nUp leporello? afegir una opció de nombre de cares? diuen que millor sempre imparelles?
+
+ null  %% 6 Tangram? https://ca.wikipedia.org/wiki/Tangram
+
+ null  %% 7 flexàgons i tetraflexàgons? https://www.youtube.com/watch?v=LiyQ0Q4KB0c https://www.youtube.com/watch?v=qIwUCH1aSQs 
+
+ [  %% 8 8vUpH vuit pàgines verticals (en dúplex) imposades de costat, 4+4, en un full horitzontal
+%%MENÚ M? donar la possibilitat de triar pàgines en blanc? (false)
+  [  %% 0 desplegat de planes al full (MediaBox) on a cada plana (anvers/revers) hi ha tota la sèrie sencera de pàgines del full
+   %% true = la pàgina es compon / false = pàgina en blanc (s'enretira a la següent) / null = la pàgina no toca en aquesta plana
+   [  %% anvers (a#índex:#númDpàgina)
+    true  %% a0:1 aquesta pàgina pot compondres's (true) o ser en blanc (false)
+    null  %% a1:2 la pàgina a null forma part de l'estructura d'aquest nUp (pliegO) i per tant és fixa
+    null  %% a2:3
+    true  %% a3:4
+    true  %% a4:5
+    null  %% a5:6
+    null  %% a6:7
+    true  %% a7:8
+    true  %% a8:9
+    null  %% a9:10
+    null  %% a10:11
+    true  %% a11:12
+    true  %% a12:13
+    null  %% a13:14
+    null  %% a14:15
+    true  %% a15:16
+   ]
+
+   [  %% revers (r#índex:#númDpàgina)
+    null  %% r0:1
+    true  %% r1:2
+    true  %% r2:3
+    null  %% r3:4
+    null  %% r4:5
+    true  %% r5:6
+    true  %% r6:7
+    null  %% r7:8
+    null  %% r8:9
+    true  %% r9:10
+    true  %% r10:11
+    null  %% r11:12
+    null  %% r12:13
+    true  %% r13:14
+    true  %% r14:15
+    null  %% r15:16
+   ]
+  ]
+  [  %% 1 ordre seqüencial seguit de pàgines, anvers + revers, per no aturar el componedor aleatori
+   %% anvers
+   <<  %% a0:1
+     /T_R  %% translate i rotate de la pàgina a imposar
+     {
+      xFull 4 div 3 mul yFull translate 180 rotate
+     }
+     /FEMshowpage false  %% NO imprimeix el full
+   >>
+   <<  %% a1:2
+     /T_R null  %% també ens diu que la pàgina no toca en aquesta plana
+     /FEMshowpage false
+   >>
+   <<  %% a2:3
+     /T_R null
+     /FEMshowpage false
+   >>
+   <<  %% a3:4
+     /T_R
+     {
+      xFull 4 div 2 mul yFull translate 180 rotate
+     }
+     /FEMshowpage false
+   >>
+   <<  %% a4:5
+     /T_R
+     {
+      xFull 4 div 0 translate
+     }
+     /FEMshowpage false
+   >>
+   <<  %% a5:6
+     /T_R null
+     /FEMshowpage false
+   >>
+   <<  %% a6:7
+     /T_R null
+     /FEMshowpage false
+   >>
+   <<  %% a7:8
+     /T_R
+     {
+      xFull 4 div 2 mul 0 translate
+     }
+     /FEMshowpage false
+   >>
+   <<  %% a8:9
+     /T_R
+     {
+      xFull 4 div 3 mul 0 translate
+     }
+     /FEMshowpage false
+   >>
+   <<  %% a9:10
+     /T_R null
+     /FEMshowpage false
+   >>
+   <<  %% a10:11
+     /T_R null
+     /FEMshowpage false
+   >>
+   <<  %% a11:12
+     /T_R
+     {
+     }
+     /FEMshowpage false
+   >>
+   <<  %% a12:13
+     /T_R
+     {
+      xFull 4 div yFull translate 180 rotate
+     }
+     /FEMshowpage false
+   >>
+   <<  %% a13:14
+     /T_R null
+     /FEMshowpage false
+   >>
+   <<  %% a14:15
+     /T_R null
+     /FEMshowpage false
+   >>
+   <<  %% a15:16
+     /T_R
+     {
+      xFull yFull translate 180 rotate
+     }
+     /FEMshowpage true  %% IMPRIMEIX el full
+   >>
+   %% revers
+   <<  %% r0:1
+     /T_R null 
+     /FEMshowpage false
+   >>
+   <<  %% r1:2
+     /T_R
+     {
+      xFull 4 div 2 mul 0 translate
+     }
+     /FEMshowpage false
+   >>
+   <<  %% r2:3
+     /T_R
+     {
+      xFull 4 div 0 translate
+     }
+     /FEMshowpage false
+   >>
+   <<  %% r3:4
+     /T_R null
+     /FEMshowpage false
+   >>
+   <<  %% r4:5
+     /T_R null
+     /FEMshowpage false
+   >>
+   <<  %% r5:6
+     /T_R
+     {
+      xFull 4 div 2 mul yFull translate 180 rotate
+     }
+     /FEMshowpage false
+   >>
+   <<  %% r6:7
+     /T_R
+     {
+      xFull 4 div 3 mul yFull translate 180 rotate
+     }
+     /FEMshowpage false
+   >>
+   <<  %% r7:8
+     /T_R null
+     /FEMshowpage false
+   >>
+   <<  %% r8:9
+     /T_R null
+     /FEMshowpage false
+   >>
+   <<  %% r9:10
+     /T_R
+     {
+      xFull yFull translate 180 rotate
+     }
+     /FEMshowpage false
+   >>
+   <<  %% r10:11
+     /T_R
+     {
+      xFull 4 div yFull translate 180 rotate
+     }
+     /FEMshowpage false
+   >>
+   <<  %% r11:12
+     /T_R null
+     /FEMshowpage false
+   >>
+   <<  %% r12:13
+     /T_R null
+     /FEMshowpage false
+   >>
+   <<  %% r13:14
+     /T_R
+     {
+     }
+     /FEMshowpage false
+   >>
+   <<  %% r14:15
+     /T_R
+     {
+      xFull 4 div 3 mul 0 translate
+     }
+     /FEMshowpage false
+   >>
+   <<  %% r15:16
+     /T_R null
+     /FEMshowpage true  %% IMPRIMEIX el full
+   >>
+  ]
+%%MENÚ M1 donar la possibilitat de fer visible la vora de la pàgina d'imposició, sigui o no dins una capa i com?
+  {  %% 2 TrimBox fix de la pàgina d'imposició?
+   M1  %% pintem la vora de les pàgines del llançat?
+   {
+    %% capturem la matriu per situar i pintar el rectangle net de retall de la pàgina del llançat
+    matrix currentmatrix /xirtam exch def
+
+    [0 0 xPagina yPagina] %dup
+    rectclip  %% retallem la vora de la pàgina (equivalent a TrimBox)
+
+    %% transparència que trepitja encara que estigui a sota de tot
+%%NOUgs9.55 obliga a incloure -dALLOWPSTRANSPARENCY a la línia d'execució
+%gsave
+%    /Overlay .setblendmode true .setalphaisshape 1 .setstrokeconstantalpha
+
+%    1 0 1 setrgbcolor  %% magenta? gris? vermell? blanc? negre?
+%    1 setlinewidth  %% gruix per tal vessi mig punt als marges del full
+%    [2] 1 setdash  %% discontínua
+%    rectstroke  %% pintem la vora de la pàgina (equivalent a TrimBox)
+%grestore
+   }
+   {
+    [0 0 xPagina yPagina]
+    rectclip  %% retallem la vora de la pàgina (equivalent a TrimBox)
+   }ifelse
+  }  %% en cas que l'haguéssim de personalitzar per cada pàgina, l'hauríem d'imcloure a l'índex 1
+  {  %% 3 àrees de pàgina, comportament i càlcul de l'escala/ràtio
+   %% cal veure com juguem amb les àrees: MediaBox(full), CropBox(?), TrimBox(pàgina), ArtBox(taca), BleedBox(àrea impresa)
+   %% si les volem definir com a tals (només 1 per cada pàgina PDF al diccionari /Type/Page) com que som obligats a duplicar-les
+
+   %% desambigüitat amb la ràtio:
+   %% Malgrat es diu que els formats DiN treballen amb una ràtio vertical equivalent al valor de l'arrel quadrada de 2
+   %% aquesta és una dada aproximada (certa només fins al 2n decimal), doncs considerant fins al 8è decimal significatiu
+   %% cap format DiN, d'A0 fins a A6, té exactament la mateixa ràtio i cap RATioVe és tampoc idèntica a l'arrel de dos
+   %% per exemple: l'A5 és el DiN que s'acosta més al valor de 2 sqrt 1.41421354 vs 1.41428566 fins al 4rt decimal
+   %% Consideració important: treballant només amb els 2 primers decimals significatius, ràtios idèntiques poden tolerar
+   %% diferències de format fins a 33 punts!, llavors només treballarem amb els dos primers decimals per avaluar si dues ràtios
+   %% les considerem idèntiques (RATioH vs pRATio), doncs pels càlculs de format treballarem amb tots els decimals via fS
+   %% RATioV: s'obté dividint el costat gran pel petit, de manera que multiplicant el costat petit per RATioV s'obté el gran
+   %% RATioH: s'obté dividint el costat petit pel gran, de manera que multiplicant el costat gran per RATioH s'obté el petit
+   %% una altra opció seria treballar via regla de tres
+
+   %% calculem la raó del full (MediaBox) en vertical i en horitzontal
+   yFull xFull div  %% dividint l'alt per l'ample:
+   dup /RATioHo exch def  %% amb tots els decimals
+   100 mul cvi 100 div  %% deixem només els 2 primers decimals com a significatius per descartar diferències irrellevants
+   /RATioH exch def  %% ràtio horitzontal
+
+   xFull yFull div  %% dividim l'ample per l'alt:
+   dup /RATioVe exch def  %% amb tots els decimals
+   100 mul cvi 100 div  %% i deixant només els 2 primers decimals com a significatius per descartar diferències irrellevants
+   /RATioV exch def  %% ràtio vertical
+
+   %% abandonem l'opció d'incloure la tria de si volem la pàgina d'imposició en vertical (com ara) o en horitzontal (x fer)?
+   %% les pàgines del 2vUpHV tenen la mateixa ràtio que el full?
+   xFull 4 div dup currentdict exch /xPagina exch put
+   yFull 2 div dup /yPagina exch def div 100 mul cvi 100 div /pRATio exch def
+
+   %% comportament?
+   RATioH pRATio eq
+   {  %% ràtio ídem
+    yPagina xFull div /fS exch def  %% el factor d'escala és ídem a la ràtio però no retallem els decimals
+   }
+   {  %% diferent ràtio, què fem?
+    fRATio  %% forcem la ràtio?
+    {  %% mantenim la ràtio deduïnt el factor d'escala
+(\n <<<<<< tenim un problema!\n\n)print flush quit
+    }
+    {  %% aprofitem el 100% la nova àrea deduint el factor d'escala
+     yPagina xFull div /fS exch def  %% factor d'escala SENSE mantenir la ràtio
+    }ifelse
+   }ifelse
+  }
+  (8vUpH) %% 4 nom o ID únic? vuit pàgines verticals (en dúplex) imposades de costat, 4+4, en un full horitzontal
+ ]
+] def
+
+%% definicions d'imposició
+%%MENÚ M2
+%% quin nUp de pliegOS escollim?
+pliegOS_nUpS M2 get  %% extraiem l'array amb les definicions de l'nUp
+
+%% filtre teòricament innecessari
+dup null eq
+{
+ (\n>>>>>> llançat de pàgines N-up... ) print flush M2 == (...inexistent, pleguem! <<<<<<\n\n)print flush quit
+}if
+
+dup 0 get /_anversrevers exch def  %% desplegat de planes d'un full (anvers/revers)
+
+
+%%NOVA estratègia de numeració de pàgines per gestionar pàgines en blanc
+_anversrevers dup 0 get /aA exch def  %% array de l'anvers
+1 get dup length /iS exch def  %% salt d'index de l'anvers al revers
+/aR exch def  %% array del revers
+iS 2 mul array /aNpgn exch def  %% array de numeració de pàgines
+/ipg 1 def  %% numerador de pàgines
+/i 0 def  %% índex de pàgines de l'array de plana
+aA
+{  %% forall explorant l'anvers per completar la numeració amb el revers
+ dup null eq
+ {  %% si a l'anvers no toca...
+  pop
+  aR i get  %% ...al revers pot compondre's (true) o ser pàgina en blanc (false)
+  {  %% només si es compon
+   aNpgn i iS add ipg put  %% incrustem el núm. de pàgina que es compon a l'índex de l'array de numeració
+   ipg 1 add /ipg exch def  %% actualitzem el numerador de pàgines
+  }if
+ }
+ {  %% només mirem l'anvers perquè el revers segur que no toca
+  {  %% només si es compon
+   aNpgn i ipg put  %% incrustem el núm. de pàgina que es compon a l'índex de l'array de numeració
+   ipg 1 add /ipg exch def  %% actualitzem el numerador de pàgines
+  }if 
+ }ifelse
+ i 1 add /i exch def  %% actualitzem l'índex de pàgines de l'array de plana
+}forall
+%aNpgn (<<<<<<)pstack quit
+
+
+dup 1 get dup /_ordre exch def  %% ordre seqüencial de pàgines a imposar amb les intruccions de posicionat i rotació
+length /stopBP exch def  %% índex on aturem les crides de BeginPage
+
+dup 2 get /pTrimBox exch def  %% retalla el TrimBox de cada pàgina que s'imposa
+
+dup 4 get /NpliegOS exch def  %% ID literal del pliegOS
+
+%%MENÚ M3
+M3
+{
+ true
+}
+{  %% forcem a horitzontal si és 8vUpH
+ M2 8 eq
+}ifelse
+/Hrtzntl exch def  %% orientació del full
+
+%%Caldria afegir l'enllaç a la pàgina de formats de GS
+1 dict dup /PageSize
+[  %% formats estàndards de full d'impressora
+   %% marquem amb * els formats que els seus plecs són proporcionals o quasi ~* (falla el segon decimal)
+ [2384 3370]  %% 0 A0 ISO standard vertical*
+ [1684 2384]  %% 1 A1 ISO standard vertical*
+ [1191 1684]  %% 2 A2 ISO standard vertical*
+ [842 1191]   %% 3 A3 ISO standard vertical*
+ [595 842]    %% 4 A4 ISO standard vertical*
+ [420 595]    %% 5 A5 ISO standard vertical*
+ [297 420]    %% 6 A6 ISO standard vertical*
+ [210 297]    %% 7 A7 ISO standard vertical*
+ [148 210]    %% 8 A8 ISO standard vertical*
+ [105 148]    %% 9 A9 ISO standard vertical*
+ [73 105]     %% 10 A10 ISO standard vertical
+ [2835 4008]  %% 11 B0 ISO standard vertical*
+ [2004 2835]  %% 12 B1 ISO standard vertical*
+ [1417 2004]  %% 13 B2 ISO standard vertical*
+ [1001 1417]  %% 14 B3 ISO standard vertical*
+ [709 1001]   %% 15 B4 ISO standard vertical*
+ [499 709]    %% 16 B5 ISO standard vertical~*
+ [354 499]    %% 17 B6 ISO standard vertical*
+ [2599 3677]  %% 18 C0 ISO standard vertical*
+ [1837 2599]  %% 19 C1 ISO standard vertical*
+ [1298 1837]  %% 20 C2 ISO standard vertical*
+ [918 1298]   %% 21 C3 ISO standard vertical*
+ [649 918]    %% 22 C4 ISO standard vertical*
+ [459 649]    %% 23 C5 ISO standard vertical*
+ [323 459]    %% 24 C6 ISO standard vertical~*
+
+ [792 1224]   %% 25 Tabloid/11x17 US standard vertical
+ [612 1008]   %% 26 Legal US standard vertical
+ [612 792]    %% 27 Letter US standard vertical
+ [2592 3456]  %% 28 ARCHE/36x48 US standard vertical
+ [1728 2592]  %% 29 ARCHD/24x36 US standard vertical
+ [1296 1728]  %% 30 ARCHC/18x24 US standard vertical
+ [864 1296]   %% 31 ARCHB/12x18 US standard vertical
+ [648 864]    %% 32 ARCHA/9x12 US standard vertical
+
+ [1030 1456]  %% 33 B0 JIS standard vertical*
+ [728 1030]   %% 34 B1 JIS standard vertical*
+ [515 728]    %% 35 B2 JIS standard vertical*
+ [364 515]    %% 36 B3 JIS standard vertical*
+ [257 364]    %% 37 B4 JIS standard vertical*
+ [182 257]    %% 38 B5 JIS standard vertical*
+ [128 182]    %% 39 B6 JIS standard vertical~*
+ 
+ [2064 2920]  %% 40 B1 vertical*
+ [1460 2064]  %% 41 B2 vertical*
+ [1032 1460]  %% 42 B3 vertical*
+ [729 1032]   %% 43 B4 vertical*
+ [516 729]    %% 44 B5 vertical*
+ [363 516]    %% 45 B6 vertical~*
+
+ [522 756]    %% 46 Executive vertical
+ [612 936]    %% 47 FLSA/FLSE/FanFoldGermanLegal/US foolscap/European foolscap/8.5x13 vertical
+ [576 936]    %% 48 Folio/8x13 vertical
+ [595 935]    %% 49 Folio/8.25x13 vertical
+ [396 612]    %% 40 Halfletter/Statement/5.5x8.5 vertical
+ [283 420]    %% 51 Hagaki/Japanese postcard vertical
+ [1224 1584]  %% 52 17x22 vertical
+ [1512 2160]  %% 53 21x30 vertical~*
+ [1584 2448]  %% 54 AnsiD/22x34 vertical
+ [2160 3024]  %% 55 30x42 vertical~*
+ [2448 3168]  %% 56 AnsiE/34x44 vertical
+ [400 900]    %% 57 manual per proves escala/ràtio/translate/rotate
+]
+%%MENÚ M4
+M4 get  %% format estàndard de full (d'impressora)
+
+Hrtzntl
+{
+ aload pop exch 2 array astore
+}if
+
+dup dup 0 get /xFull exch def 1 get /yFull exch def  %% ample i alt per deduir scale/ratio i els translate
+put  %% el format del full (MediaBox) i la seva orientació determinen moltes coses
+
+%%MENÚ M5
+M5 /fRATio exch def  %% en cas que el plec no sigui proporcional (ràtio full/pàgina diferent)i, forcem mantenir la ràtio?
+
+exch 3 get exec  %% càlcul d'escala/ràtio
+
+%%+ no va a pstopdf
+%% nova proposta pels missatges del prompt dins {...} salpassem el xifrat i ens permet treballar amb Immediately Evaluated Names
+{ --ràtio H full vs pàgina: //RATioH vs //pRATio } ==
+{ --ràtio vertical del full: //RATioVe } ==
+{ --factor d'escala: //fS } ==
+%% les ràtios no són iguals?
+RATioH pRATio ne
+{
+ fRATio
+ {
+%%+ no va a pstopdf
+  { --malgrat els ràtios diferents, mantenim el del full a la pàgina a imposar-- } ==
+ }
+ {
+%%+ no va a pstopdf
+  { --pels ràtios diferents, aprofitem tot l'espai de pàgina a imposar-- } ==
+ }ifelse
+}if
+%% informem de la mida (en punts) de les pàgines (TrimBox/ArtBox) de l'nUp
+%%+ no va a pstopdf
+{ --les pàgines d'imposició del //NpliegOS fan: //xPagina x //yPagina punts } ==
+
+dup
+
+/BeginPage
+{  %% invoca 1 valor a l'stack: l'índex del nombre de vegades que s'ha cridat showpage i no retorna res
+
+ %% lògica anterior parell/senar de 2vUpHV
+ %% 2 mod 1 eq  %% detectem la pàgina senar (ep! el comptador que comença per 0)
+ %% {  %% les pàgines senars van a la dreta del full (MediaBox)
+ %%  xFull 2 div 0 translate  %% la segona pàgina sempre a partir de la meitat del full
+ %% }if
+
+ dup stopBP lt  %% si NO som al final de l'index de pàgines a imposar
+ {
+  %% valor que hem definit al procediment 1 de /pliegOS_nUpS
+  _ordre exch get /T_R get cvx exec  %% ordre seqüencial de pàgines a imposar amb les intruccions de posicionat i rotació
+
+  %% valor que hem definit al procediment 2 de /pliegOS_nUpS
+  pTrimBox  %% retallem el TrimBox de la pàgina a imposar
+
+  %% valor que hem definit al procediment 3 de /pliegOS_nUpS
+  %% cal escalar, via ràtio, un cop posicionades les pàgines (clip+vora)
+%  pRATio dup scale  %% és millor escalar a BenginPage que no pas dins l'algorisme componedor?
+ }if
+ %% sembla que és imprescindible que BeginPage es mengi, ell solet, el darrer valor que invoca a l'stack
+ %% o sigui, el que fa n+1 de les pàgines a imposar, doncs si voléssim processar-lo nosaltres ens donaria un ragecheck
+}put
+
+dup
+
+/EndPage
+{ %% invoca 2 valors a l'stack: l'índex del nombre de vegades que s'ha cridat showpage i un altre enter que diu
+  %% qui ha cridat EndPage: 0 showpage, 1 copypage, 2 un altra operador que suspèn el que s'ha definit amb setpagedevice
+  %% PLRM3 p.443 «when restore, grestore, grestoreall or setgstate causes a page device to be deactivated and a different
+  %% page device to be activated»
+ 0 ne  %% avaluem el primer valor: no és showpage qui crida EndPage?
+ {
+  false  %% com que NO és showpage qui ara crida, fem que no s'imprimeixi la plana
+ }
+ {  %% avaluem el segon valor: índex del nombre de vegades que s'ha cridat showpage
+  %% lògica anterior parell/senar de 2vUpHV
+  %% 2 mod 1 eq  %% imprimirà la pàgina (true) sempre que sigui senar (comença per zero!)
+  %% {  %% senar
+  %%  userdict /apareix true put
+  %%  true  %% fem efectiu showpage i generem la plana (impresa o al pdf)
+  %% }
+  %% {  %% parell
+  %%  userdict /apareix false put
+  %%  false  %% showpage NO genera la plana (impresa o al pdf)
+  %% }ifelse
+
+  %% generem (true) o no generem (false) la plana? (impresa o al pdf)
+  %% fent que el showpage (que sempre hi és) es faci o no efectiu
+  _ordre exch get /FEMshowpage get
+
+ }ifelse
+}put
+
+%% activem al màxim la resolució (veure ghostpdf.ppd), doncs fem crides molt acurades a l'espai de coordenades
+dup /HWResolution [4000 4000] put
+
+setpagedevice
+
+%%Test
+%matrix currentmatrix ==
+
+%%EP Nou càlcul per saber el bbox de tota la tripa de pàgines sumades abans no fem rodar el componedor
+/xTripa 0 def  %% ample total de les pàgine sumades
+/yTripa yPagina def  %% alt de les pàgines
+aNpgn
+%length aA aR(vvvv)pstack quit
+{
+ null ne
+ {
+  xPagina xTripa add /xTripa exch def
+ }if
+}forall
+
+/ar true def  %% gatell d'anvers/revers
+/iSeq 0 def  %% índex seqüencial per tota la sèrie de pàgines del full (anvers+revers)
+
+{  %% stopped
+
+
+_anversrevers
+{  %% forall per l'anvers i el revers del full (planes)
+
+ /iPln 0 def  %% índex seqüencial de pàgines a cada plana
+
+ ar
+ {
+%%+ no va a pstopdf
+  { --ANVERS-- } ==
+  /ar false def  %% gatell d'anvers/revers
+ }
+ {
+%%+ no va a pstopdf
+  { --REVERS-- } ==
+ }ifelse
+ {  %% forall per cadascuna de les pàgines (TrimBox/ArtBox) de la plana
+  %% no toca? (null)
+  dup null eq
+  {  %% null: la maquinària de composició treballa però no pinta res a la pàgina
+   pop
+   /compON true def  %% teòricament l'algorisme componedor treballa
+   /noNULL false def  %% la pàgina s'ignora però no atura el componedor
+   (    ara no toca --pg. ) print flush
+   %% estratègia pel numerador de pàgines, per tal tingui en compte si n'hi han en blanc
+   iPln 1 add ==  %% aquí ja és número de pàgina
+  }
+  {  %% componem
+   {  %% true: la maquinària de composició treballa i pinta la pàgina
+    /compON true def  %% l'algorisme componedor treballa
+    /noNULL true def  %% la pàgina NO s'ignora
+    (         compon --pg. ) print flush
+    %% estratègia pel numerador de pàgines, per tal tingui en compte si n'hi han en blanc
+    aNpgn iSeq get dup == 3 string cvs /Npgn exch def
+   }
+   {  %% false=pàgina en blanc: la maquinària de composició NO treballa
+    /compON false def  %% l'algorisme componedor NO treballa
+    (pàgina en blanc --    #\n) print flush
+   }ifelse
+  }ifelse
+  iSeq 1 add /iSeq exch def
+  iPln 1 add /iPln exch def
+
+  compON  %% l'algorisme componedor treballa?
+  {  %% treballa malgrat pinti o no els elements a la pàgina
+     %% pel fet que el componedor ha de ser dinàmic, necessitarà que no s'aturi malgrat no pinti (noNULL)
+     %% i necessitarà poder treballar en base a valors aleatoris per calcular (que desarà) o als valors ja calculats (desats)
+     %% ha de beure d'algunes dades del format de pàgina, com: noNULL, Npgn, Hrtzntl, xPagina, yPagina, etc.
+
+   %% componedor (layoutLíquid) 
+   %% treballem amb les mides sense escalar doncs l'aplica BeginPage
+   %% treballem amb les coordenades de pàgina independents a la seva rotació o translació, doncs ho aplica BeginPage
+   %% si hi ha elements de l'estat gràfic que ultrapassen el showpage, és millor anellar-ho tot
+   %% tants showpage com pàgines totals del llançat (anvers+revers) tingui l'nUp
+
+   gsave
+   compOnedors M6 get
+%%REpublica
+%HHHUUUUMMM
+
+ (r) file cvx exec  %% pesquem i executem l'algorisme de composició independent del nUp triat
+   grestore
+
+   M1  %% pintem la vora de les pàgines del llançat?
+   {  %% cridem la matrix de posicionament per tal de pintar el rectangle de les vores de la pàgina del llançat
+    %% que, aquí sí! es sobreposen a tot (sense necessitat d'efectes de transparència)
+    %% quedaria molt elegant posar-ho en una capa per tal que es pogués deshabilitar manualment
+    gsave
+    xirtam setmatrix
+    1 0 1 setrgbcolor  %% magenta? gris? vermell? blanc? negre?
+    1 setlinewidth  %% gruix per tal vessi mig punt als marges del full
+    [2] 1 setdash  %% discontínua
+    [0 0 xPagina yPagina] rectstroke  %% pintem la vora de la pàgina (equivalent a TrimBox)
+    grestore
+   }if
+
+   showpage  %% tants showpage com pàgines totals (anvers+revers) tingui l'nUp
+  }
+  {
+   M1  %% pintem la vora de les pàgines del llançat?
+   {  %% cridem la matrix de posicionament per tal de pintar el rectangle de les vores de la pàgina del llançat
+    %% que, aquí sí! es sobreposen a tot (sense necessitat d'efectes de transparència)
+    %% quedaria molt elegant posar-ho en una capa per tal que es pogués deshabilitar manualment
+    gsave
+    xirtam setmatrix
+    1 0 1 setrgbcolor  %% magenta? gris? vermell? blanc? negre?
+    1 setlinewidth  %% gruix per tal vessi mig punt als marges del full
+    [2] 1 setdash  %% discontínua
+    [0 0 xPagina yPagina] rectstroke  %% pintem la vora de la pàgina (equivalent a TrimBox)
+    grestore
+   }if
+
+   showpage  %% l'algorisme del componedor NO treballa, però la pàgina es pinta en blanc
+  }ifelse
+
+ }forall  %% per cadascuna de les pàgines (TrimBox/ArtBox) de la plana
+
+}forall  %% per l'anvers i el revers del full (planes)
+
+}stopped { (ueps) pstack stop }if
+
+%% per la farcidora de PDFs caldria tancar la instància en memòria runpdfend ?
+M6 9 eq
+{
+ MdL
+ {
+ }
+ {
+  (taquem el PDFscripting)==
+  Context1 .PDFClose
+  runpdfend
+ }ifelse
+}if
+
+%% pdfmarks
+mark
+%% incrusta al Catalog el layout de com es veurà el document a l'obrir
+/PageLayout /TwoPageLeft  %% la pàgina 1 (senar) a l'esquerra, emparellada amb la següent
+/ViewerPreferences
+<<  %% aquests paràmetres es detecten automàticament però, malgrat manen, no es fixen al driver de la HP Color LaserJet M553
+  %% cal comprovar si amb el gestor d'impressió del direct PDF (?) també es comporta de la mateixa manera
+
+   %% a la impressora HP Color LaserJet M553 i el driver d'impressió de l'AdobeAcrobatReader/MacOSX:
+   %% encara que, per defecte, surti una altra configuració de dúplex al driver, mana el paràmetre que tinguem aquí actiu
+   %% el que sí que, creiem, no podem manar des d'aquí, és imprimir al 100% (NO forçar mai el 'Fit' als marges d'impressió)
+   /Duplex /DuplexFlipLongEdge  %% el necessita 8Up i 4Up
+   % /Duplex /DuplexFlipShortEdge
+>>  %% activem les opcions del dúplex d'impressió?
+/DOCVIEW pdfmark
+
+mark
+%% camps públics del Docinfo
+/Subject %(Turn one simple sheet of paper into a little awesome book)
+(Féu que un sol full de paper esdevingui un llibret excepcional)
+/Title
+NpliegOS
+%%SNRD
+%(sonar+PAPER)
+/Author (copyleft 2017-2024: Marcantoni Malagarriga-Picas <marcantoni@femfum.com>)
+/Keywords %(poesia, literatura, canya i cordill, fil i canya, plegaVeu, en Patufet,)
+%(pliegOS, sonar+D, chapbooks, microbooks, print, fold, cut, read, nUps, canya i cordill, en Patufet, Catalonia, Barcelona)
+(pliegOS, nUps, poesia, poetry, canya i cordill, chapbooks, plegaVeu, en Patufet)
+/Creator %(PliegO'Maker {FemFum PostScript Applet} | https://ja.cat/sonarDpaper)
+
+%% afegim a la cua de la URL del github el nom de l'algorisme que executem
+(https://github.com/marcantonifemfum/pliegO-Maker) dup length dup /araVa exch def 3 add string dup 3 -1 roll 0 exch putinterval
+dup araVa ( | ) putinterval dup length /araVa exch def  %% separador
+compOnedors M6 get  %% ventem el nom de l'algorisme componedor executat
+{
+ (/) search 
+ {pop pop}{exit}ifelse
+}loop
+dup length araVa add string dup 4 -1 roll 0 exch putinterval dup 3 -1 roll araVa exch putinterval
+/DOCINFO pdfmark
+%% podríem generar un camp privat per desar-hi tots els paràmetres clau de les variables aleatòries que han fet el PDF
+
+%(////*fi*////)pstack  %% brossa a l'stack?
+%% mentre gs no deixa brossa a l'stack, pstopdf deixa dos índex a l'stack (per què?)
+
