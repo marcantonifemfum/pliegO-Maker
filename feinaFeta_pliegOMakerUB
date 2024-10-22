@@ -1,0 +1,108 @@
+DESCRIPCIÓ DE FEINA FETA
+
+    21.10.2024
+- - - - - - - -
+
+#1    Anàlisi dels PDFs a imposar:
+#    1 >> RI: FemFum_CaLi2CoPi_042_*.ps / farceixPDFs_pseudoPDFX5_ReferenceXObjects_EnricSenabre.ps
+#    AR: #4h
+#    EC: #16h
+
++ tant a Tuxedo (/home/femfum/Documents/pliegOMakerU / localhost /var/www/html/pliegOMakerUB) com a somNúvol (?) treballem amb GPL Ghostscript 9.55.0 (2021-09-27)
++ etiquetem amb %%UBpliegOMaker els canvis i novetats de codi en els algorisme que ja tenim desenvolupats
+
+#    1.1 ~ Detecció de PDFs erronis, protegits per encriptació i signats digitalment, determinant el tipus de missatge que donarem a l'ususari per continuar treballant
+
+%%H: de 9h00 a 10h00
+%%H: de 11h00 a 13h15
+%%H: de 13h45 a 14h15
+%%H: de 22h00 a 22h45
+%%HT 4.5h
+
++ línia de comanda CalI2CoPi Tuxedo:
++ gs -q -dNOSAFER -o re.pdf -sDEVICE=pdfwrite -f FemFum_CaLi2CoPi_042_pliegOMakerUB.ps
+
++ configurat CaLi2CoPi per executar-se visa prompt del Tuxedo
+
++ deixem intacte, per ara, la detecció fitxers signats digitalment (ídem REpublica), p.e.
++ (gatell CaLi2CoPi 16) MRCT6 Aquest PDF duu Signatura Digital
+
++ gatells GS específics d'encriptació:
+
++ The following switches are used for creating encrypted documents:
+
++ -sOwnerPassword=string
++    Defines that the document be encrypted with the specified owner password.
+
++ -sUserPassword=string
++    Defines the user password for opening the document. If empty, the document can be opened with no password, but the owner password is required to edit it.
+
++ -dPermissions=number
++    Defines the PDF permissions flag field. Negative values are allowed to represent unsigned integers with the highest bit set. See the PDF Reference manual for the meaning of the flag bits.
+
++ -dEncryptionR=number
++    Defines the encryption method revision number - either 2 or 3.
+
++ -dKeyLength=number
++    Defines the length (in bits) of the encryption key. Must be a multiple of 8 in the interval [40, 128]. If the length isn’t 40, -dEncryptionR must be 3.
+
++ deixem intacte, per ara, la detecció fitxers encriptats (ídem REpublica), p.e. encriptatAEIOUSenzill_obertura_aeiou.pdf | encriptatAEIOUSenzill.pdf
++ (gatell CaLi2CoPi 11) MRCT4  Aquest PDF és Encriptat
++ (gatell CaLi2CoPi ) MRCT9 Aquest PDF ha estat desencriptat per un Crack
+
++ gatell GS genèric per tractar un PDF encriptat?
++ -sPDFPassword= "?"
+
++ creat el fitxer… PDFencriptatSenzill.ps …per veure com generem PDFs amb diferents tipus d'encriptació
+
++ altres errors que CaLi2Copi detecta i que marquem al codi amb %%UBpliegOMaker:
++ (gatell CaLi2CoPi 4) MRCT2  Error de Sintaxi al Path del PDF a tractar
++ (gatell CaLi2CoPi 8) MRCT3  Estructura de Fitxer No Suportada per CaLi2CoPi\n ... objecte malmès ...
++ (gatell CaLi2CoPi 13) MRCT5 Teniu un Error a la capçalera de dades de CaLi2CoPi
++ ATENCIÓ tenim documentat en aquest error (BaBeL 8 get en un if no actiu) un mètode de control/lectura d'errors que més endavant ens pot interessar
++ (gatell CaLi2CoPi 18) MRCT8 Error d'estructura: PDF sense l'arrel /Pages
++ (gatell CaLi2CoPi 22) MRCT19 Aquesta plana no duu /Contents
++ (gatell CaLi2CoPi 26) MRCT13 Cap del PDF erroni
++ (gatell CaLi2CoPi 27) MRCT14 Cap del PDF amb brossa
++ (gatell CaLi2CoPi 28) MRCT15 Cua de PDF erronia
++ (gatell CaLi2CoPi 29) MRCT16 Cua de PDF amb brossa
++ (gatell CaLi2CoPi 32) MRCT18 Stream sense l'entrada /Length
++ (gatell CaLi2CoPi 33) MRCT20 Aquesta pagina no duu /Resources
++ (gatell CaLi2CoPi 35) MRCT21 Aquesta imatge XObject duu l'stream buit
++ (gatell CaLi2CoPi 39) MRCT23 Aquest objecte duu una clau /Length erronia i no suportada
++ (gatell CaLi2CoPi 41) MRCT24 ERROR inLine: hem exhaurit la capacitat permesa per una inLine i ens hem menjat les dades sens trobar el final correcte!
++ (gatell CaLi2CoPi 42) MRCT25 ERROR inLine: ens hem menjat les dades sens trobar el final correcte!
+
++ avisos importants:
++ (gatell CaLi2CoPi 8) Desfem el Fast Web View
++ (gatell CaLi2CoPi 17) MRCT7 Aquest PDF duu la compressió 1.5 Object Stream (desemboliquem automàticament el PDF per ser tractat sense aquesta compressió)
++ (gatell CaLi2CoPi 38) MRCT22 Aquest document te mes d'una (1) pagina (genera un error fent la separació de tintes però el podem fer servir a pliegOS)
++ (gatell CaLi2CoPi 43) ... Aquesta pagina no duu text, podria complementar a 1.4 quan fem l'anàlisi de pàgines
+
++ estratègies possibles:
++ (gatell CaLi2CoPi 31 | MRCT17 Errors a XRay) hi ha el gatell /XRayError (utilitzat pel projecte WebProof/TetraBrik) que ens permet filtrar errors més en diferit a través del TXT que emmagatzema dades diverses del PDF
++ arribem a la conclusió que hem de fusionar CaLi2CoPi amb el fitxer de capçalera de pliegO'Maker… nUp_pliegOS.ps …que aniria a la cua
++ hi ha el gatell 17 ENCAVALCA CONTINGUTS (línia 32591) on ja hi han resolts diversos mètodes comparatius del /MediaBox amb el /CropBox útils per a 1.3
++ cal veure si el gatell 17 també podria servir per a fer funcions d'imposar pàgines tal i com ara fem amb el PDF scripting
+
+    22.10.2024
+- - - - - - - -
+
+%%H: de 07h45 a 08h15
+%%H: de 09h00 a
+
+
+#    1.2 ~ Detecció de PDFs amb anotacions, bookmarks i capes, determinant el tipus de missatge que donarem a l'ususari per continuar treballant
+
++ què passa quan passem a pliegOS un PDF amb capes?
++ segons el comportament que veiem amb PDFs que tinguin capes un cop passat a pliegOS, tenim el gatell 15 ELIMINA LLEIXES
+
++ què passa quan passem a pliegOS un PDF amb anotacions?
+
++ què passa quan passem a pliegOS un PDF amb bookmarks?
+
+
+#    1.3 ~ Detecció d'àrees de retall de pàgines (CropBox), determinant prèviament de com les tractarem: sigui per eliminar-les (interfereixen l'algorisme pristí) o sigui per adaptar el retall a la pàgina del llançat
+
+#    1.4 ~ Detecció del nombre de pàgines
+
