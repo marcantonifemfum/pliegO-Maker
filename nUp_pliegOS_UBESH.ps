@@ -307,6 +307,7 @@ dup /CddVf exch def
     %% 8 visSensFi_senseEnflafaGlifs.ps
 
     %% 9 farceixPDFs_pseudoPDFX5_ReferenceXObjects_EnricSenabre.ps
+    %% farceixPDFs_pseudoPDFX5_UBESH.ps
 
     %% 10 sonar+PAPER
 
@@ -1700,9 +1701,13 @@ _anversrevers
 
  }forall  %% per cadascuna de les pàgines (TrimBox/ArtBox) de la plana
 
-}forall  %% per l'anvers i el revers del full (planes)
+}forall  %% per l'anvers i el revers del full (2 planes)
 
-}stopped { (ueps) pstack stop }if
+}stopped
+{
+ (\b\n >>> Hi ha moltes possibilitats que l'error vingui de l'algorisme... ) print flush M6 3 string cvs print flush (\n\n)print flush
+ (G E N E R A L F A I L U R E) pstack stop
+}if
 
 %% per la farcidora de PDFs caldria tancar la instància en memòria runpdfend ?
 M6 9 eq

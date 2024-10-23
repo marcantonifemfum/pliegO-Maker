@@ -1570,6 +1570,13 @@ false{
 0
 
 
+%%UBESH
+%#% Gbis
+%# adaptem certs gatells G a comportaments (/aMESaMES)
+%# 0 :: eliminem el CropBox, TrimBox, BleedBox i ArtBox (si existeixen) i desem a /aMCBox el MediaBox i CropBox de cada pàgina
+
+0
+
 
 %#% H path + inici del nom del fitxer TXT informatiu XRay %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -2131,6 +2138,8 @@ cvx exec
  %% I %% /FemXRay exch def  % deixem x defecte fixada la generacio d'XRay
  %% H path + inici del nom del fitxer TXT informatiu XRay
  /FitxerXRay exch def
+ %% Gbis comportaments
+ /aMESaMES exch def
  %% G triem Que Li Fem Fer
  /QueLiFemFer exch def
 
@@ -5823,7 +5832,8 @@ wFitxerXRay dup (\015\012PDF:pages:) writestring maxPlana 7 string cvs writestri
  dup
 
 %%REpublica esborrem a sac tots els CropBox
-dup /CropBox undef
+%%UBESH no és eficient intentar eliminar el /CropBox aquí, doncs en casos on aquest valor NO és dins el dicciconari /Page (doncs l'hereta de més enrera) NO s'elimina
+%dup /CropBox undef
 
  /sOrtim false def
  /hihaParent false def
@@ -5872,6 +5882,10 @@ dup /CropBox undef
    %% aqui cal endrecar el MediaBox al dic numerat de la pagina a PeDeEfa de l'XRay xq no falli la comprovacio a la seccio seguent
    dup /AMedia exch def  %% en desem una copia
    XRay /PeDeEfa get araPlana 12 string cvs get /MediaBox AMedia put  %% desem al dic numerat de la pagina
+
+%%UBESH
+%% aquí hi ha l'array del MediaBox
+
    QueLiFemFer 2 eq xQuinaArea 1 eq xQuinaArea 2 eq or and  %% hem de fer creus pel Crop o el Trim per no escriure ara la dada del MediaBox a fitxer XRay
    {
     pop  %% ens carreguem l'array del MediaBox
@@ -5943,6 +5957,13 @@ dup /CropBox undef
   /CropBox known
   {
    dup /CropBox get dup /ACrop exch def  %% en desem una copia
+
+%%UBESH
+aMESaMES 0 eq
+{  %% eliminem el CropBox després d'haver desat el seu valor
+ 2 index /CropBox undef
+}if
+
    %% avaluem si CropBox es dins els marges minim i maxims de MediaBox i si no, fem un WARNING i l'adaptem
    /femWARNING false def
    XRay /PeDeEfa get araPlana 12 string cvs get /MediaBox known  %% hi ha MediaBox?
@@ -6064,6 +6085,9 @@ dup /CropBox undef
     pop  %% ens carreguem l'array del CropBox
    }
    {
+%%UBESH
+%% aquí hi ha l'array del /CropBox
+
     %% escriu la part sencera mes el punt mes la part decimal (fins al quart) manualment
     {  %% forall
      10000 mul cvi 20 string cvs dup
@@ -6148,6 +6172,9 @@ dup /CropBox undef
   }if
  } loop  %% recursiu per trobar el CropBox fins l'arrel /Pages si cal
 
+%%UBESH
+%XRay /PeDeEfa get /1 get {== ==}forall
+%(ESH)pstack quit
 %%Hackovid
  %% ens cal desar preferentment el CropBox doncs, en cas de ser-hi, és qui visualment mana
  XRay /PeDeEfa get araPlana 12 string cvs get dup /CropBox known  %% hi ha CropBox?
@@ -6168,6 +6195,13 @@ dup /CropBox undef
  dup /TrimBox known
  {
   dup /TrimBox get dup /ATrim exch def  %% en desem una copia
+
+%%UBESH
+aMESaMES 0 eq
+{  %% eliminem el TrimBox després d'haver desat el seu valor
+ 1 index /TrimBox undef
+}if
+
   %% avaluem si TrimBox es dins els marges minim i maxims de CropBox i si no, fem un WARNING i l'adaptem
   /femWARNING false def
   XRay /PeDeEfa get araPlana 12 string cvs get /MediaBox known  %% hi ha MediaBox?
@@ -6318,6 +6352,13 @@ dup /CropBox undef
  dup /BleedBox known
  {
   dup /BleedBox get
+
+%%UBESH
+aMESaMES 0 eq
+{  %% eliminem el BleedBox després d'haver desat el seu valor
+ 1 index /BleedBox undef
+}if
+
   QueLiFemFer 2 eq  %:02 MARQUES DE TALL
   {  %% tant si la pagina creix o s'arronsa, ajustem el BleedBox sumant sempre llUm als 4 valors dels seus arrays
    {llUm add}forall
@@ -6349,6 +6390,13 @@ dup /CropBox undef
  dup /ArtBox known
  {
   dup /ArtBox get
+
+%%UBESH
+aMESaMES 0 eq
+{  %% eliminem el ArtBox després d'haver desat el seu valor
+ 1 index /ArtBox undef
+}if
+
   QueLiFemFer 2 eq  %:02 MARQUES DE TALL
   {  %% tant si la pagina creix o s'arronsa, ajustem l'ArtBox sumant sempre llUm als 4 valors dels seus arrays
    {llUm add}forall
@@ -6402,13 +6450,14 @@ iPmaker 1 add /iPmaker exch def
 
 } loop  %% fi del loop explorador d'arees pagina a pagina
 
+
 %%Hackovid
-%% capturaríem la variable d'entorn amb la id úncia del pdf provinent de $PDFunic
+%% capturaríem la variable d'entorn amb la id única del pdf provinent de $PDFunic
 %% i si no hi fos?
 %% aquí cal activar el filtre del nou gatell pel Hackovid
 plgmkr
 {
- %% ens cal escriure al directori addon_pdf/ l'array dins un .dat únic
+%% ens cal escriure al directori addon_pdf/ l'array dins un .dat únic
  (aPmaker.dat) (w) file /FaPmaker exch def
  FaPmaker ([) writestring
  aPmaker

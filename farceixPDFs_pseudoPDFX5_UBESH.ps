@@ -194,7 +194,9 @@ noNULL  %% pinta el contingut de pàgina?
 %% nom del PDF que hem d'imposar
 %(OJUmesD9milCapes.pdf)
 %(8paginesAmbAnotacions.pdf)
-(pdfreference1.7old.pdf)  %% duu bookmarks
+%(pdfreference1.7old.pdf)  %% duu bookmarks
+%(8CropBox.pdf)
+(8CropBox_MediaBox_CropBox_NOMESaLarrelPage_pla.pdf)
 
 (/home/femfum/Documents/pliegOMakerUB/Hpdf/)  %% path absolut del fitxer a processar a Tuxedo
      /serverPath exch def
@@ -245,30 +247,51 @@ bateiG
   1 pdfgetpage dup /Pdict exch def
  }
  {  %2% interroguem el MediaBox i el deixa a l'stack
-  Npgn cvx exec
+  Npgn  %cvx exec
 
 %%Un truc per començar més enllà de la pàgina 1 del PDF
 %4 add
 
-  pdfgetpage dup /Pdict exch def
+%  pdfgetpage dup /Pdict exch def
  }ifelse
 
-%%Hem detectat problemes amb PDFs amb la clau /CropBox, doncs sembla influenciar en la configuració del /MediaBox del full
-%% on fem el llançat, anul·lant-la i aplicant el valor de la darrera pàgina que es llança ...de fet el /CropBox sempre mana
-%% sobre el /MediaBox, el problema està que dins el context de la imposició no queda blindat i actua sobre el /MediaBox del
-%% full (podem fer una consulta a gs-devel), llavors, abans d'anul·lar-lo, l'hauríem d'interrogar per saber si és ídem al
-%% /MediaBox de la pàgina que llancem dins l'nUp doncs, en aquest cas, li hauríem de corregir el seu posicionat (la resta ja
-%% encaixaria dins el rectclip del llançat) ...com sigui, el que cal saber és si via PDF scripting podem anar més enllà de la
-%% interrogació per modificar el contingut (diccionaris o streams) del PDF que estem llançant, just abans de pintar-lo
-%% si NO fos així, prèviament hauríem d'executar CaLi2CoPi, per a cadascun dels PDFs a imposar, i filtra/modificar el necessari
+%%Hem detectat que en el llançat de PDFs que duen la clau /CropBox manen per sobre del comportament de /MediaBox al full d'imposició
+%% anul·lant-la i aplicant el valor de la darrera pàgina que es llança ...de fet el /CropBox sempre mana sobre el /MediaBox
+%% el problema està que dins el context de la imposició no queda blindat i actua sobre el /MediaBox del full (una consulta a gs-devel?)
+%% llavors, abans d'anul·lar-lo, l'interroguem per saber si és ídem al /MediaBox de la pàgina que llancem dins l'nUp doncs, en cas de no ser igual
+%% li haurem de corregir el seu posicionat LL activant un rectclip afegit que encaixi dins el LL/UR i redimensionat-lo dins el format de pàgina de l'nUP
+%% ...com sigui, hem vist que via PDF scripting NO podem anar més enllà de la interrogació de dades doncs no ens permet modificar el contingut de diccionaris o streams
+%% del PDF que estem llançant, just abans de pintar-lo, per aquest motiu hem d'executar CaLi2CoPi abans i filtrar/modificar el necessari
 %% per exemple: hem de permetre imposar PDFs encriptats? signats? 
+
+%pop
 %dup /CropBox undef  %% de moment no en fa cas
 
- /MediaBox get  %% de la primera pàgina (no és un índex i per tant comença per 1!)
- %{== ==}forall(<<<<?)== quit
+%% aquesta interrogació directe pot fallar (veure 8CropBox_MediaBox_CropBox_NOMESaLarrelPage_pla.pdf) i necessitaria un loop ascendent per l'arbre de pàgines
+%% doncs no podem assegurar que /MediaBox estigui al diccionari /Page degut a que és un valor que (com /CropBox) es pot heretar de més enrera o de l'arrel /Pages
+% /MediaBox get  %% de la primera pàgina (no és un índex i per tant comença per 1!)
+%2 pdfgetpage /MediaBox get  %% de la segona, etc
 
- %2 pdfgetpage /MediaBox get  %% de la segona, etc
- /araMediaBox exch def
+%% aquest valor ja l'haurem analitzat a FemFum_CaLi2CoPi_042_pliegOMakerUBESH.ps que és on hi tenim la rutina que explora l'arbre de pàgines eficientment 
+%% caldrà saber si hem de fer cas al valor de CropBox, en cas que sigui diferent de MediaBox, i n'hi haurà prou en haver-lo eliminat
+%% o haurem d'adaptar-nos al retall de CropBox activant un rectclip amb translació+escala
+
+%%UBESH
+%% primer ens cal saber per %MENU% si hem de respectar el /CropBox en cas que existeixi
+%% segon ens cal saber si MediaBox i CropBox (si existeix) són idèntics
+%% si no ho són hem d'engegar l'operativa per moure i fer el rectclip de l'àrea del /CropBox que ha de fer de /araMediaBox 
+%% si ho són no fem res i ja és bo el valor de /MediaBox
+aMESaMES 0 eq
+{  %% explorem  els valors de les àrees desades
+ XRay /PeDeEfa get exch  get
+ {
+== ==
+ }forall
+(* * * * *)pstack quit
+}if
+
+(<<<<?)pstack quit
+/araMediaBox exch def
 
 %%TEST
 %/Rotate get 0 ne
@@ -352,7 +375,7 @@ pop pop
    1 sub
 
 %%NOVA metode per eliminar el /CropBox?
-%%   Context1 1 index .PDFPageInfo /CropBox undef
+%%   Context1 1 index .PDFPageInfo /CropBox undef  %% NO rutlla
 
 
    .PDFDrawPage  %% repiquem la pàgina Npgn però cridada com a índex
@@ -375,7 +398,9 @@ pop pop
  }ifelse
 
 }stopped
-{ (\n\n >>> ON PETES?\n\n) print flush (!!!!)pstack stop }if
+{
+ (\n\n >>> ON PETES?\n\n) print flush (- - - - - - - - - -)pstack stop
+}if
 
 }if  %% noNULL anellem el codi sencer perquè no és aleatori per pàgina
 

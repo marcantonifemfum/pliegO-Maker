@@ -83,12 +83,14 @@ DESCRIPCIÓ DE FEINA FETA
 
 + estratègies possibles:
 + (gatell CaLi2CoPi 31 | MRCT17 Errors a XRay) hi ha el gatell /XRayError (utilitzat pel projecte WebProof/TetraBrik) que ens permet filtrar errors més en diferit a través del TXT que emmagatzema dades diverses del PDF
-+ arribem a la conclusió que hem de fusionar CaLi2CoPi amb el fitxer de capçalera de pliegO'Maker… nUp_pliegOS.ps …que aniria a la cua
 + hi ha el gatell 17 ENCAVALCA CONTINGUTS (línia 32591) on ja hi han resolts diversos mètodes comparatius del /MediaBox amb el /CropBox útils per a 1.3
 + cal veure si el gatell 17 també podria servir per a fer funcions d'imposar pàgines tal i com ara fem amb el PDF scripting
 + cal plantejar-se tenir una opció que CaLi2CoPi NO reescrigui de nou el PDF (sobretot en fitxers molt grans) doncs al pliegO'Maker, per segons quines característiques/opcions que haguem analitzat/triat, no li faria falta (el comportament de /CropBox és crític per això)
 + tampoc no és estrictament necessari escriure el fitxer d'anàlisi XRay
 + cal fer valoracions de temps d'execució de CaLi2CoPi jugant amb l'operador… vmthreshold …doncs per exemple el replicat (gatell 0) del manual de PDF 1.7 (pdfreference1.7old.pdf 1310 pàgs 31MB) triga més de mitja hora (Tuxedo Aura 13) a processar-se
++ cal valorar quines estratègies d'avís (CropBox, signatures, encriptats, anotacions, bookmarks, capes, etc.) podem fer servir segons s'executi via Terminal o via web: via prompt (apunt) al Terminal, via apunt (prompt) JS alert(); o via TXT (XRay) o via .log doncs hi ha una crida específica de GS que l'escriu
++ cal definir quines noves opcions de menú hem d'afegir %MENU% dins l'àmbit de l'anàlisi/repicat que ens fa CaLi2CoPi i com les jerarquitzem dins el menú minimalista en TXT i/o usabilitat web de la interfície
+
 
     22.10.2024
 - - - - - - - -
@@ -111,11 +113,11 @@ gs -q -dNOSAFER -o re.pdf -sDEVICE=pdfwrite -f nUp_pliegOS_UBESH.ps …veiem que
 + fem… fa8paginesAmbAnotacions.ps …per generar exemples amb anotacions… 8paginesAmbAnotacions.pdf …de cara a detectar-les i veure què passa amb pliegOS
 + CaLi2CoPi detecta les anotacions en general (clau /Annots a cada diccionari /Page) en un petit algorisme del gatell 16 (cerca i substitució de text)
 + vegeu línia aprox 69405 però que hauríem de traslladar al principi de l'anàlisi al gatell que assignem a UBESH
-+ com que les anotacions es conserven a cada pàgina imposada, hauríem d'avisar, si el PDF en té
++ com que les anotacions es conserven a cada pàgina imposada, hauríem d'avisar, si el PDF en té i decidir si es volen eliminar %MENU%
 
 + què passa quan passem a pliegOS un PDF amb bookmarks?
 + el gatell 8 de CaLi2CoPi analitza l'exitència de bookmarks (/Outlines a /Catalog) traduït com a CONTINGUT en català (Okular)
-+ els bookmarks es conserven intactes fent un pliegOS, però llavors es perden completament els vincles doncs la distribució de les pàgines imposades dins les planes PDF no tenen res a veure amb el PDF d'origen. Exemple… 4upDeComSarrosseguenTOTSelsBookmarksD1OriginalD1310paginesA1D2.pdf
++ els bookmarks es conserven intactes fent un pliegOS, però llavors es perden completament els vincles doncs la distribució de les pàgines imposades dins les planes PDF no tenen res a veure amb el PDF d'origen. Exemple… 4upDeComSarrosseguenTOTSelsBookmarksD1OriginalD1310paginesA1D2.pdf %MENU%
 
 + posada en marxa de pliegOS per ser executat al Terminal
 + 1 ~ descarreguem del Git REpublica: nUp_pliegOS_plec.ps i el reanomenem nUp_pliegOS_UBESH.ps
@@ -124,17 +126,54 @@ gs -q -dNOSAFER -o re.pdf -sDEVICE=pdfwrite -f nUp_pliegOS_UBESH.ps …veiem que
 + 4 ~ actualitzem tots els path de treball i els marquem amb %%URLUBESH també els punts potencials de modificació amb %%UBESH
 + 5 ~ la línia de comanda des del directori de treball del Terminal… /home/femfum/Documents/pliegOMakerUB …és:
 gs -q -dNOSAFER -o re.pdf -sDEVICE=pdfwrite -f nUp_pliegOS_UBESH.ps
-+ 6 ~ a… farceixPDFs_pseudoPDFX5_UBESH.ps …mantenim l'estratègia de separar el nom de fitxer PDF a tractar amb el path absolut fix on hi posarem aquests PDFs en paral·lel a l'estratègia seguida treballant via web. Al Tuxedo… /home/femfum/Documents/pliegOMakerUB/Hpdf/
++ 6 ~ a… farceixPDFs_pseudoPDFX5_UBESH.ps …mantenim l'estratègia de separar el nom de fitxer PDF a tractar amb el path absolut fix on hi posarem aquests PDFs %MENU% en paral·lel a l'estratègia seguida treballant via web. Al Tuxedo… /home/femfum/Documents/pliegOMakerUB/Hpdf/
 + 7 ~ en canvi on volem que s'escrigui el fitxer PDF imposat, resultat del pliegO'Maker, i el seu nom, només dependrà de com escrivim la línia de comanda al Terminal… gs -q -dNOSAFER -o pliegOSimposat.pdf -sDEVICE=pdfwrite -f nUp_pliegOS_UBESH.ps
 
 + operacions amb PDFs via línia de comanda GS:
 + sumar PDFs un darrera l'altre (si porta capes se les poleix!) gs -q -dNOPAUSE -dBATCH -sDEVICE=pdfwrite -sOutputFile=aimposarambcapes.pdf 21700154803_cubDeNoordzij.pdf 21700154803_cubDeNoordzij.pdf 21700154803_cubDeNoordzij.pdf
 
 
+    23.10.2024
+- - - - - - - -
+
+%%H: de 11h45 a 13h15
+%%H: de 13h45 a 14h45
+%%H: de 16h00 a 18h00
+%%H: de 21h00 a 22h00
+%%HT 5.50h
+
 #    1.3 ~ Detecció d'àrees de retall de pàgines (CropBox), determinant prèviament de com les tractarem: sigui per eliminar-les (interfereixen l'algorisme pristí) o sigui per adaptar el retall a la pàgina del llançat
 
-+
++ experimentem amb l'exemple… 8CropBox.pdf …on cadascuna de les 8 pàgines té un /CropBox activat diferent
++ com que aquí els 8 CropBox són quadrats, n'hauríem de fer un on n'hi hagués també rectangles verticals i horitzontals
+
++ el protocol d'anàlisi/avís seria:
++ 0 ~ el /CropBox, si existeix sempre, s'ha d'eliminar
++ 1 ~ hem d'avisar que hi ha /CropBox NOMÉS si és diferent a /MediaBox, llavors s'haurien de citar quines pàgines estan afectades
++ 2 ~ la resta d'àrees de treball (/TrimBox /BleedBox /ArtBox) creiem que, en cas d'existir, també es poden elminar directament doncs només són indicatives i podrien aparèixer (si el viewer ho permet) sense cap sentit dins el pliegOS imposat
++ 3 ~ si es vol que mani el /CropBox (afegirem una nova opció de %MENU%), d'entrada no deixarem distingir pàgines, i adaptarem la seva àrea sobre el retallador que ja activem a cadascuna de les pàgines del llançat
+
++ amb l'etiqueta %%Hackovid tenim les variables /iPmaker /aPmaker que ens detallen el valor, pàgina a pàgina, del MediaBox/CropBox
++ va lligat al gatell 18 de CaLi2CoPi i ens cal veure com es comporta i com ho reaprofitem:
++ 18 :: Hackovid | pliegO'Maker fa un procés parcial de l'XRay, just per capturar el MediaBox/CropBox de les pàgines i surt
++ hi ha coses del comportament a repassar: repica el PDF i cal veure perquè només escriu al /aPmaker i aPmaker.dat els CropBox
++ la clau de la comparació és al diccionari XRay /PeDeEfa get /1 get {== ==}forall on hi han [0 0 133.333328 133.333328] /CropBox [0 0 400 400] /MediaBox
++ estem veient que serà millor desactivar tot el relacionat amb %%Hackovid
++ a %%MASATSencvlct hi ha un algorisme de comparació de les arrays Media i Crop
+
++ hem generat l'exemple… 8CropBox_MediaBox_CropBox_NOMESaLarrelPage_pla …que defineix inextremis només Media i Crop una vegada a l'arrel /Pages
++ aquest tipus d'estructura fa fracassar la interrogació del MediaBox via PDFscripting
+
++ potser ens cal afegir un nou gatell /aMESaMES on modifiquem lleugerament certs comportaments del gatell principal /QueLiFemFer
++ per exemple per esborrar eficientment /CropBox sense que afecti a l'anàlisi XRay que necessitem preservar per poder replicar el CropBox via rectclip de la pàgina del llançat dins la plana d'imposició
+
++ afinem millor la captura d'errors dels algorismes de composició, afegint un indicador a l'stopped general de… nUp_pliegOS_UBESH.ps …que ens diu l'índex de l'algorisme componedor que estem executant
 
 #    1.4 ~ Detecció del nombre de pàgines
 
 + a CaLi2CoPi la variable /maxPlana és la que emmagatzema aquest valor en tota mena de gatells
++ el valor final de /araPlana també
++ informació a afegir a les estratègies d'avís
+
++ a… farceixPDFs_pseudoPDFX5_UBESH.ps …també fem una crida per interrogar el nombre de pàgines del PDF a imposar:
++ Context1 .PDFInfo /NumPages get /pAimposar exch def  %% nombre de pàgines a imposar del PDF a incrustar
