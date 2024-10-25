@@ -1,0 +1,98 @@
+%% INTERFÍCIE TXT SENSE FORMAT (ascii)
+
+%% Un sol % fins a final de línia és un comentari que l'intèrpret ignora
+
+%% Exemple de línia de comanda, via Terminal, des del mateix directori on tinguem els .ps de pliegO'Maker i on també hi anirà a parar el resultat.pdf
+%% gs -q -dNOSAFER -o resultat.pdf -sDEVICE=pdfwrite -f nUp_pliegOS_UBESH.ps
+
+
+%% MENÚ
+
+%% ??? cal saber a què ens referim aquí:
+%% escrivim aquí en ordre invers de com es criden les variables seqüencials dins aveurefilefor.ps
+
+
+
+%% FEM PDFs O FEM JPEGs ?
+
+true  %% true fem PDFs | false fem JPEGs
+
+{
+
+%(/Users/femfum/Downloads/Descarrlt/babia.pdf)
+%(F:\\HackovidPliegOS\\patufet_avuiFa100anys_19200410-23204.pdf)
+%(C:\\Users\\Fina\\Desktop\\Marcantoni\\pliegOMaker\\babia.pdf)
+%(C:/Users/Fina/Desktop/Marcantoni/pliegOMaker/babia.pdf)
+
+(/home/femfum/Documents/pliegOMakerUB/Hpdf/8CropBox_MediaBox_NOMESaLarrelPage_CropBox_QuadratsRectanglesVH_pla.pdf)
+
+}
+{
+%% crida tots els fitxers amb extensió .jpeg que hi hagi al directori
+
+%(/Users/femfum/PliegOS/fulletsBosoms/*.jpeg)
+% (C:/Users/Fina/Documents/StMateu/maria/*.jpg)
+(F:/PlacaDelVi/*.jpeg)
+
+%% en quin ordre alfabètic/alfanumètic s'endrecen els fitxers?
+
+%true  %% de petit a gran (numèric) del cap a la cua (alfabètic)
+
+false  %% de la cua al cap (alfabètic) de gran a petit (numèric)
+
+}ifelse
+
+
+
+%% VORA DE LA PÀGINA DEL LLANÇAT ?
+
+%% true sí | false no
+
+true
+
+
+
+%% QUIN LLANÇAT/IMPOSICIÓ ESCOLLIM ?
+%% Un full de paper de dues planes (cares en dúplex) on s'hi imposen n pàgines d'un PDF en un ordre determinat
+%% https://en.wikipedia.org/wiki/N-up
+
+%% 1 llançat d'1 pàgina de PDF per plana, en vertical o horitzontal en un full en dúplex horitzontal o vertical 1+1 | 2 imposicions totals | impressió 1-up | 1hvUpHV
+%% 2 llançat de 2 pàgines de PDF per plana, en vertical, en un full en dúplex horitzontal o vertical 2+2 | 4 imposicions totals | impressió 2-up | 2vUpHV
+%% 4 llançat de 4 pàgines de PDF per plana, en vertical, en un full en dúplex horitzontal o vertical 4+4 | 8 imposicions totals | impressió 4-up | 4vUpHV
+%% 8 llançat de 8 pàgines de PDF per plana, en vertical, en un full en dúplex horitzontal 8+8 | 16 imposicions totals | impressió 8-up | 8vUpH
+
+8
+
+
+
+%% ORIENTACIÓ DEL FULL ?
+
+false  %% true horitzontal | false vertical
+
+
+
+%% FORMAT DEL FULL ?
+%% DIN estàndard d'impressora
+
+%% 4 DIN A4 | 3 DIN A3
+
+4
+
+
+
+%% FORCEM LA RÀTIO ?
+%% adaptar la ràtio de la pàgina del PDF a la del llançat
+
+false
+
+
+
+%% LABORATORI D'ALGORISMES COMPONEDORS
+%% la rutina d'imposició és independent del llançat triat
+
+%9   %% compagina 1 PDF d'n pàgines segons el llançat escollit (més endavant una col·leció de PDFs d'1 sola pàgina?)
+
+%12  %% compagina imatges JPEG a l'nUp triat
+
+0  %% reglatge per veure l'ordre i orientació de les pàgines imposades del PDF segons el llançat (nUp) escollit
+

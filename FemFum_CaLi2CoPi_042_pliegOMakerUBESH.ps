@@ -5961,7 +5961,9 @@ wFitxerXRay dup (\015\012PDF:pages:) writestring maxPlana 7 string cvs writestri
 %%UBESH
 aMESaMES 0 eq
 {  %% eliminem el CropBox després d'haver desat el seu valor
- 2 index /CropBox undef
+%(,,,,,,)pstack quit
+ count 1 sub index  %% el diccionari de pàgina és sempre el darrer de la pila, doncs pot variar aquí el seu estat
+ /CropBox undef
 }if
 
    %% avaluem si CropBox es dins els marges minim i maxims de MediaBox i si no, fem un WARNING i l'adaptem

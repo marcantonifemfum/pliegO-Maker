@@ -126,6 +126,8 @@ noNULL  %% pinta el contingut de pàgina?
   {  %% aquí dins és crític què i com ho posem
    %0% adreça al pdf a incrustar
 
+   (\n\n ::: rutina UBESH \n\n)print flush
+
 %%EP cal saber quina bruixa o paràmetre del PDF fa que l'escala no rutlli com cal
    %(/Users/femfum/515-Book_Manuscript-1184-2-10-20221020.pdf)
    %(/Users/femfum/Downloads/Origin_of_Patterning_LU_OPT.pdf)
@@ -196,7 +198,8 @@ noNULL  %% pinta el contingut de pàgina?
 %(8paginesAmbAnotacions.pdf)
 %(pdfreference1.7old.pdf)  %% duu bookmarks
 %(8CropBox.pdf)
-(8CropBox_MediaBox_CropBox_NOMESaLarrelPage_pla.pdf)
+%(8CropBox_MediaBox_CropBox_NOMESaLarrelPage_pla.pdf)
+(8CropBox_MediaBox_NOMESaLarrelPage_CropBox_QuadratsRectanglesVH_pla.pdf)
 
 (/home/femfum/Documents/pliegOMakerUB/Hpdf/)  %% path absolut del fitxer a processar a Tuxedo
      /serverPath exch def
@@ -247,7 +250,12 @@ bateiG
   1 pdfgetpage dup /Pdict exch def
  }
  {  %2% interroguem el MediaBox i el deixa a l'stack
+
+%%UBESH el número de pàgina que processem ja ens arriba de  com una string
   Npgn  %cvx exec
+
+%%UBESH cal veure si és aquí on farem les crides al mapa d'imposició, doncs també haurem d'actuar als /pliegOS_nUpS per deixar a false les pàgines en blanc
+dup ==
 
 %%Un truc per començar més enllà de la pàgina 1 del PDF
 %4 add
@@ -277,20 +285,57 @@ bateiG
 %% o haurem d'adaptar-nos al retall de CropBox activant un rectclip amb translació+escala
 
 %%UBESH
-%% primer ens cal saber per %MENU% si hem de respectar el /CropBox en cas que existeixi
-%% segon ens cal saber si MediaBox i CropBox (si existeix) són idèntics
-%% si no ho són hem d'engegar l'operativa per moure i fer el rectclip de l'àrea del /CropBox que ha de fer de /araMediaBox 
-%% si ho són no fem res i ja és bo el valor de /MediaBox
-aMESaMES 0 eq
-{  %% explorem  els valors de les àrees desades
- XRay /PeDeEfa get exch  get
- {
-== ==
- }forall
-(* * * * *)pstack quit
-}if
+%% primer ens cal saber per %MENU% si hem de respectar el /CropBox, si existeix, en cas que sigui diferent de /MediaBox
+true
+{
+ aMESaMES 0 eq
+ {  %% explorem  els valors de les àrees desades
+  XRay /PeDeEfa get exch get
+  %% segon ens cal saber si CropBox existeix
+  dup /CropBox known
+  {  %% si CropBox existeix
+   %% tercer ens cal saber si MediaBox i CropBox són idèntics
+   dup /CropBox get /_CB exch def
+   /MediaBox get /_MB exch def
+   /MBCBidem true def
+   0 1 3
+   {
+    dup _CB exch get
+    exch _MB exch get
+    ne
+    {
+     /MBCBidem false def
+     exit
+    }if
+   }for
 
-(<<<<?)pstack quit
+   MBCBidem
+   {  %% si ho són no fem res i ja és bo el valor de /MediaBox
+    _MB
+    /enQuadra false def
+   }
+   {  %% si NO ho són hem d'engegar l'operativa per moure i retallar l'àrea del /CropBox que ha de fer de /araMediaBox 
+    _CB  %% el valor del CropBox ja ens serveix de nou MediaBox i només mancarà moure'l i retallar
+    /enQuadra true def
+%(vvvvvv) ==  %pstack quit
+   }ifelse
+  }
+  {  %% si CropBox no existeix no fem res i extraiem el valor del MediaBox per treballar
+   /MediaBox get
+   /enQuadra false def
+  }ifelse
+ }
+ {
+  (\n\n >>> COMPORTAMENT NO PROGRAMAT ...sortim!\n\n)print flush stop
+ }ifelse
+}
+{  %% com que no hem de respectar el /CropBox extraiem el valor del MediaBox per treballar
+ XRay /PeDeEfa get exch get /MediaBox get
+ /enQuadra false def
+% (!!!!)pstack quit
+}ifelse
+
+%(<<<<?)pstack quit
 /araMediaBox exch def
 
 %%TEST
@@ -344,9 +389,22 @@ pop pop
   }ifelse
  }ifelse
 
+ dup /araScl exch def
+
  dup scale  %% adapta al màxim cada pàgina del PDF que llegim dins la pàgina del llançat
 %% ídem si escalem via matriu
 %[ exch 0 0 2 index 0 0 ] concat
+
+%%UBESH
+ enQuadra
+ {  %% només si hi ha CropBox actiu diferent de MediaBox
+  %% la translació i el retall l'hem de fer per aquest ordre
+  araMediaBox dup
+  aload pop  pop pop neg exch neg exch translate
+  aload pop 2 index sub exch 3 index sub exch
+  %Npgn cvx exec 6 eq {araMediaBox (***)pstack quit}if
+  rectclip
+ }if
 
  MdL
  {
@@ -399,7 +457,7 @@ pop pop
 
 }stopped
 {
- (\n\n >>> ON PETES?\n\n) print flush (- - - - - - - - - -)pstack stop
+ (\n\n >>> farceixPDFs_pseudoPDFX5_UBESH ON PETES?\n\n) print flush (- - - - - - - - - -)pstack stop
 }if
 
 }if  %% noNULL anellem el codi sencer perquè no és aleatori per pàgina

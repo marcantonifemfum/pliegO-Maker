@@ -1,23 +1,24 @@
 DESCRIPCIÓ DE FEINA FETA
 
-    21.10.2024
-- - - - - - - -
 
-#1    Anàlisi dels PDFs a imposar:
-#    1 >> RI: FemFum_CaLi2CoPi_042_*.ps / farceixPDFs_pseudoPDFX5_ReferenceXObjects_EnricSenabre.ps
+#A1    Anàlisi dels PDFs a imposar:
+#    A1 >> RI: FemFum_CaLi2CoPi_042_*.ps / farceixPDFs_pseudoPDFX5_ReferenceXObjects_EnricSenabre.ps
 #    AR: #4h
 #    EC: #16h
 
 + tant a Tuxedo (/home/femfum/Documents/pliegOMakerU / localhost /var/www/html/pliegOMakerUB) com a somNúvol (?) treballem amb GPL Ghostscript 9.55.0 (2021-09-27)
-+ etiquetem amb %%UBpliegOMaker els canvis i novetats de codi en els algorismes que ja tenim desenvolupats
++ etiquetem amb %%UBESHpliegOMaker o %%UBESH els canvis i novetats de codi en els algorismes que ja tenim desenvolupats
 
-#    1.1 ~ Detecció de PDFs erronis, protegits per encriptació i signats digitalment, determinant el tipus de missatge que donarem a l'ususari per continuar treballant
+#    A1.1 ~ Detecció de PDFs erronis, protegits per encriptació i signats digitalment, determinant el tipus de missatge que donarem a l'ususari per continuar treballant
+
+    21.10.2024
+- - - - - - - - HT 4.50h
 
 %%H: de 9h00 a 10h00
 %%H: de 11h00 a 13h15
 %%H: de 13h45 a 14h15
 %%H: de 22h00 a 22h45
-%%HT 4.50h
+
 
 + línia de comanda Cali2CoPi_042 (reanomenat amb la cua _pliegOMakerUBESH) Tuxedo:
 + gs -q -dNOSAFER -o re.pdf -sDEVICE=pdfwrite -f FemFum_CaLi2CoPi_042_pliegOMakerUBESH.ps
@@ -93,15 +94,15 @@ DESCRIPCIÓ DE FEINA FETA
 
 
     22.10.2024
-- - - - - - - -
+- - - - - - - - HT 6.75h
 
 %%H: de 07h45 a 08h15
 %%H: de 09h00 a 12h30
 %%H: de 18h15 a 20h30
 %%H: de 21h00 a 21h30
-%%HT 6.75h
 
-#    1.2 ~ Detecció de PDFs amb anotacions, bookmarks i capes, determinant el tipus de missatge que donarem a l'ususari per continuar treballant
+
+#    A1.2 ~ Detecció de PDFs amb anotacions, bookmarks i capes, determinant el tipus de missatge que donarem a l'ususari per continuar treballant
 
 + què passa quan passem a pliegOS un PDF amb capes?
 + segons el comportament que veiem amb PDFs que tinguin capes un cop passat a pliegOS, tenim el gatell 15 ELIMINA LLEIXES
@@ -134,18 +135,18 @@ gs -q -dNOSAFER -o re.pdf -sDEVICE=pdfwrite -f nUp_pliegOS_UBESH.ps
 
 
     23.10.2024
-- - - - - - - -
+- - - - - - - - HT 5.50h
 
 %%H: de 11h45 a 13h15
 %%H: de 13h45 a 14h45
 %%H: de 16h00 a 18h00
 %%H: de 21h00 a 22h00
-%%HT 5.50h
 
-#    1.3 ~ Detecció d'àrees de retall de pàgines (CropBox), determinant prèviament de com les tractarem: sigui per eliminar-les (interfereixen l'algorisme pristí) o sigui per adaptar el retall a la pàgina del llançat
+
+#    A1.3 ~ Detecció d'àrees de retall de pàgines (CropBox), determinant prèviament de com les tractarem: sigui per eliminar-les (interfereixen l'algorisme pristí) o sigui per adaptar el retall a la pàgina del llançat
 
 + experimentem amb l'exemple… 8CropBox.pdf …on cadascuna de les 8 pàgines té un /CropBox activat diferent
-+ com que aquí els 8 CropBox són quadrats, n'hauríem de fer un on n'hi hagués també rectangles verticals i horitzontals
++ com que aquí els 8 CropBox són quadrats, en fem un on hi ha també rectangles verticals i horitzontals… 8CropBox_MediaBox_NOMESaLarrelPage_CropBox_QuadratsRectanglesVH_pla.pdf …per tal de verificar que el llançat sobre el format de pàgina d'imposició és correcte
 
 + el protocol d'anàlisi/avís seria:
 + 0 ~ el /CropBox, si existeix sempre, s'ha d'eliminar
@@ -159,7 +160,7 @@ gs -q -dNOSAFER -o re.pdf -sDEVICE=pdfwrite -f nUp_pliegOS_UBESH.ps
 + hi ha coses del comportament a repassar: repica el PDF i cal veure perquè només escriu al /aPmaker i aPmaker.dat els CropBox
 + la clau de la comparació és al diccionari XRay /PeDeEfa get /1 get {== ==}forall on hi han [0 0 133.333328 133.333328] /CropBox [0 0 400 400] /MediaBox
 + estem veient que serà millor desactivar tot el relacionat amb %%Hackovid
-+ a %%MASATSencvlct hi ha un algorisme de comparació de les arrays Media i Crop
++ a %%MASATSencvlct hi ha un algorisme de comparació de les arrays Media i Crop però en valors absoluts d'ample i alt i aquí no ens fa servei
 
 + hem generat l'exemple… 8CropBox_MediaBox_CropBox_NOMESaLarrelPage_pla …que defineix inextremis només Media i Crop una vegada a l'arrel /Pages
 + aquest tipus d'estructura fa fracassar la interrogació del MediaBox via PDFscripting
@@ -167,9 +168,11 @@ gs -q -dNOSAFER -o re.pdf -sDEVICE=pdfwrite -f nUp_pliegOS_UBESH.ps
 + potser ens cal afegir un nou gatell /aMESaMES on modifiquem lleugerament certs comportaments del gatell principal /QueLiFemFer
 + per exemple per esborrar eficientment /CropBox sense que afecti a l'anàlisi XRay que necessitem preservar per poder replicar el CropBox via rectclip de la pàgina del llançat dins la plana d'imposició
 
-+ afinem millor la captura d'errors dels algorismes de composició, afegint un indicador a l'stopped general de… nUp_pliegOS_UBESH.ps …que ens diu l'índex de l'algorisme componedor que estem executant
++ afinem millor la captura d'errors dels algorismes de composició, afegint un indicador a l'stopped general de… nUp_pliegOS_UBESH.ps …que ens diu l'índex de l'algorisme componedor que estem executant PERÒ ALERTA PERQUÈ AQUEST AVÍS HAURIA DE SORTIR DESPRÉS DE…  ...FET (certa morralla al /tmp pot ser de profit) …i/o hauriem de marcar l'inici de la rutina 9: farceix…
++ cal tenir en compte que CaLi2CoPi s'executa dins el context de nUp_pliegOS_UBESH
 
-#    1.4 ~ Detecció del nombre de pàgines
+
+#    A1.4 ~ Detecció del nombre de pàgines
 
 + a CaLi2CoPi la variable /maxPlana és la que emmagatzema aquest valor en tota mena de gatells
 + el valor final de /araPlana també
@@ -177,3 +180,68 @@ gs -q -dNOSAFER -o re.pdf -sDEVICE=pdfwrite -f nUp_pliegOS_UBESH.ps
 
 + a… farceixPDFs_pseudoPDFX5_UBESH.ps …també fem una crida per interrogar el nombre de pàgines del PDF a imposar:
 + Context1 .PDFInfo /NumPages get /pAimposar exch def  %% nombre de pàgines a imposar del PDF a incrustar
++ també /araPlana
+
+    24.10.2024
+- - - - - - - - HT 5.75h
+
+%%H: de 07h00 a 08h30
+%%H: de 09h00 a 11h00
+%%H: de 11h45 a 12h45
+%%H: de 15h00 a 16h45
+%%H: de 22h00 a 22h30
+
+
++ cal explorar un sistema paral·lel de valoració de feina per mitjà dels octets escrits, sigui perquè escribim de zero un nou algorisme o sigui que restant els octets d'un d'existent els restem de com va creixent. Hauríem d'establir un valor temps/EUR per octet, considerant que se'ns escaparan aquells octets que esborrem a mida que el treball vagi avançant
+
++ hem de fer una primera adaptació de la interfície via TXT (ESH_Canodrom.txt)
++ li canviem el nom a… ESH_UB.txt
+
++ hauríem de tenir un mapa d'on hi ha paths de treball sensibles a canvis per veure si ho podriem unificar en un sol fitxer de configuració, doncs ajudaria molt al manteniment en entorns i plataformes diferents
+
+
+    24.10.2024
+- - - - - - - - HT
+
+%%H: de 16h00 a 18h45
+%%H: de 21h00 a
+
+
++ assagem l'execució via interfície TXT per veure com podem anar avançant en les noves opcions de menú que haurem d'anar afegint
+
++ hem d'afegir una nova opció a la interfície per saber com actuem davant de l'existència de /CropBox amb valor diferent al /MediaBox. Dit d'una altra manera: com que el document duu uns retalladors activats, els conservem? o deixem al descobert tota la superfície del format de pàgina original?
+
+#A2    Planificació de com farem la redistribució de pàgines en la proposta d'imposició:
+    A2 >> RI: nUp_pliegOS_*.ps / farceixPDFs_pseudoPDFX5_ReferenceXObjects_EnricSenabre.ps
+    AR: #4h
+    EC: #24h
+
+#    A2.1 ~ Determinar si deixem que sigui l'aplicació qui ens faci una proposta (en base a l'anàlisi previ), de quines i quantes imposicions podem fer (en base al PDF o PDFs triats) i quina distribució de pàgines proposa
+
++ cal generar un mapa/array que guiarà el comportament de la imposició de les pàgines del PDF o PDFs a llegir, en funció de l'nUp triat i del sistema de plegat (llibrets múltiples, de costat o encartats, etc.)
++ llavors, cal que aquest mapa/array de pàgines mani el treball d'imposició. El comportament possible de l'array seria, en base a un exemple d'un PDF de 8 pàgines i una imposició 4Up:
+    [ 0 1 2 3 4 5 6 7 ] …array d'índex natural de lectura (veurem si té sentit fer-ne variacions)
+    [ ] …l'array buida equivaldria a no intervenir per seguir l'ordre natural de lectura
+    [ 1 2 3 4 5 6 7 8 ] …si el PDF a llegir tingués 8 pàgines, la seqüència natural del números de pàgina de l'1 al 8, seria equivalent a l'array buida
+    [ 8 5 2 4 3 5 7 6 ] …imposaríem totes les pàgines però en ordre diferent
+    [ 1 2 3 null null 4 5 6 ] …establim el valor… null …per indicar les pàgines que s'han de deixar en blanc
+    més endavant podem activar els boolenis true/false per indicar altres coses
+
+#    A2.2 ~ Fixar d'entrada una proposta d'imposició: nombre de llibrets, suma o encartament, comportament de les pàgines en blanc
+#    A2.3 ~ Un o altre assaig (2.1 o 2.2) ens ha de donar una o més opcions per triar definitivament la feina a fer
+#    A2.4 ~ Complementàriament a 2.3 podrem intervenir dins l'array numèric de distribució de pàgines per fer-hi canvis: determinar quines pàgines seran en blanc i/o canviar-ne l'ordre o ignorar per qualsevol criteri
+
++ quin seria el diàleg usuari/pliegO'Maker per l'anàlisi, a mida que anem imposant?
+pOM: heu triat imposar el PDF (tal) o + …per aquest ordre
+pOM: heu triat crear # pliegOS (encartats o disposats de costat)
+pOM: heu triat #Up i el PDF a imposar té # pàgines
+pOM: el PDF (tal) té la mida justa de pàgines per l'nUp escollit
+pOM: el PDF (tal) té # pàgines de més, imposarem les # primeres
+pOM: el PDF (tal) té # pàgines de menys, deixarem les pàgines de # a # en blanc
+pOM: el mapa/es d'imposició que aplicarem serà/an: […]
+pOM: farem # imposicions (encartades o disposades de costat)
+pOM: modifiqueu el mapa d'imposició […] si voleu un altre comportament per aquest llançat
+
+
+
+

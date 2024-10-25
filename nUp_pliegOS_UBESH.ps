@@ -128,12 +128,13 @@
 %% si la ràtio no és ídem i no la forcem, treballarem amb el nou format adaptat
 %% l'algorisme componedor s'executarà dues vegades (una per plana) per tal sigui possible treballar amb l'aleatori
 
-%%Captura de dades via fitxer?
-false
+%%Captura de dades via fitxer d'interfície TXT?
+true
 
 dup /CddVf exch def
 {
- (/Users/femfum/PliegOS/codi_pliegOS/ESH_Canodrom.txt)
+% (/Users/femfum/PliegOS/codi_pliegOS/ESH_Canodrom.txt)
+ (/home/femfum/Documents/pliegOMakerUB/ESH_UB.txt)
  (r) file cvx exec
 }if
 
@@ -161,7 +162,7 @@ dup /CddVf exch def
 }
 {  %% la variable d'entorn NO existeix perquè executem l'applet en local via Terminal per línia de comanda
  CddVf
- {
+ {  %% UBESH interfície TXT
 %  false  %% fem visible la vora de la pàgina del llançat? (imposició) més endavant podrem posar-ho en una capa
  }
  {
@@ -189,7 +190,7 @@ dup /CddVf exch def
 }
 {  %% la variable d'entorn NO existeix perquè executem l'applet en local via Terminal per línia de comanda
  CddVf
- {
+ {  %% UBESH interfície TXT
  }
  {
   4
@@ -212,7 +213,7 @@ dup /CddVf exch def
 }
 {  %% la variable d'entorn NO existeix perquè executem l'applet en local via Terminal per línia de comanda
  CddVf
- {
+ {  %% UBESH interfície TXT
  }
  {
   false  %% pel plegaVeu 19.12.21 forcem el 4+4 sempre en vertical (el 8+8 ja ho fa per defecte)
@@ -235,7 +236,7 @@ dup /CddVf exch def
 }
 {  %% la variable d'entorn NO existeix perquè executem l'applet en local via Terminal per línia de comanda
  CddVf
- {
+ {  %% UBESH interfície TXT
  }
  {
   4
@@ -259,7 +260,7 @@ dup /CddVf exch def
 {  %% la variable d'entorn NO existeix perquè executem l'applet en local via Terminal per línia de comanda
 %%EP! true falla a 8auricsHVgranFormat.pdf quan treballa en 4Up i l'orientació de pàgina és V
  CddVf
- {
+ {  %% UBESH interfície TXT
  }
  {
   false
@@ -280,7 +281,7 @@ dup /CddVf exch def
 }
 {  %% la variable d'entorn NO existeix perquè executem l'applet en local via Terminal per línia de comanda
  CddVf
- {
+ {  %% UBESH interfície TXT
  }
  {
 
@@ -406,7 +407,7 @@ dup /CddVf exch def
 
 }ifelse
 
-%% (a veure?)pstack quit
+%%(a veure?)pstack quit
 
 %% fi de MENÚ de capçalera
 
@@ -423,7 +424,8 @@ dup /CddVf exch def
 /compOnedors
 %%URLsnr és absolutament necessari posar el path sencer als algorismes executats via php al localhost i a servidors
 [
- (/Users/femfum/PliegOS/codi_pliegOS/reglatge.ps)  %% 0 algorisme de reglatge
+ (reglatge.ps)  %% 0 algorisme de reglatge
+
  (fusHorariLiterari_xPliegOS.ps)  %% 1 el rellotge necessita ajustar el cos automàticament pel bbox de la suma de pàginess 
  (interroguem.ps)  %% 2 interrogador de variables de l'algorisme nUp_pliegOs.ps
  (buit.ps)  %% 3 només pintaria els marges de pàgina?
@@ -547,7 +549,7 @@ dup /CddVf exch def
 
 %%MENÚ M1 donar la possibilitat de fer visible la vora de la pàgina d'imposició, sigui o no dins una capa i com?
   {  %% 2 TrimBox fix de la pàgina d'imposició?
-%%[ /ca 1 /CA 1 /BM /Multiply /SetTransparency pdfmark  %% parametre equivalent amb Distiller de la crida
+%%mark /ca 1 /CA 1 /BM /Multiply /SetTransparency pdfmark  %% parametre equivalent amb Distiller de la crida
    M1  %% pintem la vora de les pàgines del llançat?
    {
     %% capturem la matriu per situar i pintar el rectangle net de retall de la pàgina del llançat
@@ -1365,7 +1367,7 @@ pliegOS_nUpS M2 get  %% extraiem l'array amb les definicions de l'nUp
 %% filtre teòricament innecessari
 dup null eq
 {
- (\n>>>>>> llançat de pàgines N-up... ) print flush M2 == (...inexistent, pleguem! <<<<<<\n\n)print flush quit
+ (\n>>>>>> llançat de pàgines N-up... ) print flush M2 == (...inexistent, pleguem! <<<<<<\n\n)print flush stop
 }if
 
 dup 0 get /_anversrevers exch def  %% desplegat de planes d'un full (anvers/revers)
@@ -1716,7 +1718,7 @@ M6 9 eq
  {
  }
  {
-  (taquem el PDFscripting)==
+  (\n\n ...tanquem el PDFscripting\n\n >>> Enllestit!\n\n)print flush
   Context1 .PDFClose
   runpdfend
  }ifelse
