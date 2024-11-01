@@ -1,0 +1,26 @@
+%!
+%% fem un PDF d'n pàgines numerat
+
+595
+/xPagina exch def
+
+842
+/yPagina exch def
+
+<</PageSize[ xPagina yPagina ]>>setpagedevice
+
+1 1 8
+{
+ 1 0 0 setrgbcolor
+% (/usr/share/fonts/truetype/noto/NotoMono-Regular.ttf)
+ (/usr/share/fonts/truetype/hack/Hack-Regular.ttf)
+ yPagina 2 div selectfont  %% numeració de pàgina centrada
+ 3 string cvs dup stringwidth pop 2 div xPagina 2 div exch sub yPagina 4 div moveto show
+ showpage
+}for
+
+1 0 1 setrgbcolor
+0 0 xPagina yPagina rectfill
+1 1 1 setrgbcolor
+(9) dup stringwidth pop 2 div xPagina 2 div exch sub yPagina 4 div moveto show
+showpage

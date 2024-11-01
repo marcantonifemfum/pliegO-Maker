@@ -407,11 +407,14 @@ dup /CddVf exch def
 
 }ifelse
 
-%%(a veure?)pstack quit
-
 %% fi de MENÚ de capçalera
 
-/M7 exch def  %% composició de text
+/M9 exch def  %% composició de text
+
+%%UBESH noves funcions
+/M8 exch def  %% MAPA D'IMPOSICIÓ
+/M7 exch def  %% RESPECTEM ELS RETALLS ORIGINALS ?
+
 /M6 exch def  %% índex a l'algorisme de composició independent del nUp triat
 /M5 exch def  %% en cas que el plec no sigui proporcional (ràtio full/pàgina diferent)i, forcem mantenir la ràtio?
 /M4 exch def  %% format estàndard de full (d'impressora)
@@ -424,7 +427,8 @@ dup /CddVf exch def
 /compOnedors
 %%URLsnr és absolutament necessari posar el path sencer als algorismes executats via php al localhost i a servidors
 [
- (reglatge.ps)  %% 0 algorisme de reglatge
+ %(reglatge.ps)  %% 0 algorisme de reglatge
+ (reglatge2.ps)
 
  (fusHorariLiterari_xPliegOS.ps)  %% 1 el rellotge necessita ajustar el cos automàticament pel bbox de la suma de pàginess 
  (interroguem.ps)  %% 2 interrogador de variables de l'algorisme nUp_pliegOs.ps
@@ -516,6 +520,7 @@ dup /CddVf exch def
       %xPagina yPagina translate 180 rotate
      }
      /FEMshowpage false
+     /00imp true  %% som a la pàgina del llançat que toca a l'orígen 0,0 de l'espai de coordenades de la plana?
    >>
 
    <<  %% 1:1 índex dins la plana +1 núm. de pàgina : índex d'ordre pel componedor
@@ -524,6 +529,7 @@ dup /CddVf exch def
       %xPagina yPagina translate 180 rotate
      }
      /FEMshowpage true
+     /00imp true  %% som a la pàgina del llançat que toca a l'orígen 0,0 de l'espai de coordenades de la plana?
    >>
 
    %% final de l'anvers i inici del revers
@@ -534,6 +540,7 @@ dup /CddVf exch def
       %xPagina yPagina translate 180 rotate
      }
      /FEMshowpage false
+     /00imp true  %% som a la pàgina del llançat que toca a l'orígen 0,0 de l'espai de coordenades de la plana?
    >>
 
    <<  %% 1:3 índex dins la plana +1 núm. de pàgina : índex d'ordre pel componedor
@@ -543,6 +550,7 @@ dup /CddVf exch def
       %xPagina yPagina translate 180 rotate
      }
      /FEMshowpage true
+     /00imp true  %% som a la pàgina del llançat que toca a l'orígen 0,0 de l'espai de coordenades de la plana?
    >>
    %% ja no cal que BeginPage cridi un darrer diccionari extra, doncs hem filtrat el darrer índex sobrer amb stopBP
   ]
@@ -656,6 +664,7 @@ dup /CddVf exch def
       xFull 2 div 0 translate
      }
      /FEMshowpage false
+     /00imp false  %% som a la pàgina del llançat que toca a l'orígen 0,0 de l'espai de coordenades de la plana?
    >>
 
    <<  %% 1:1 índex dins la plana +1 núm. de pàgina : índex d'ordre pel componedor
@@ -663,6 +672,7 @@ dup /CddVf exch def
      {
      }
      /FEMshowpage false
+     /00imp true  %% som a la pàgina del llançat que toca a l'orígen 0,0 de l'espai de coordenades de la plana?
    >>
 
    <<  %% 2:2 índex dins la plana +1 núm. de pàgina : índex d'ordre pel componedor
@@ -670,6 +680,7 @@ dup /CddVf exch def
      {
      }
      /FEMshowpage false
+     /00imp true  %% som a la pàgina del llançat que toca a l'orígen 0,0 de l'espai de coordenades de la plana?
    >>
 
    <<  %% 3:3 índex dins la plana +1 núm. de pàgina : índex d'ordre pel componedor
@@ -677,6 +688,7 @@ dup /CddVf exch def
      {
      }
      /FEMshowpage true  %% generem el full imprès o pàgina pdf
+     /00imp true  %% som a la pàgina del llançat que toca a l'orígen 0,0 de l'espai de coordenades de la plana?
    >>
 
    %% final de l'anvers i inici del revers
@@ -684,6 +696,7 @@ dup /CddVf exch def
    <<  %% 0:4 índex dins la plana +1 núm. de pàgina : índex d'ordre pel componedor
      /T_R {} %% translate i rotate de la pàgina a imposar
      /FEMshowpage false
+     /00imp true  %% som a la pàgina del llançat que toca a l'orígen 0,0 de l'espai de coordenades de la plana?
    >>
 
    <<  %% 1:5 índex dins la plana +1 núm. de pàgina : índex d'ordre pel componedor
@@ -691,6 +704,7 @@ dup /CddVf exch def
      {
      }
      /FEMshowpage false
+     /00imp true  %% som a la pàgina del llançat que toca a l'orígen 0,0 de l'espai de coordenades de la plana?
    >>
 
    <<  %% 2:6 índex dins la plana +1 núm. de pàgina : índex d'ordre pel componedor
@@ -699,6 +713,7 @@ dup /CddVf exch def
       xFull 2 div 0 translate  %% la segona pàgina sempre a partir de la meitat del full
      } %% translate i rotate de la pàgina a imposar
      /FEMshowpage false
+     /00imp false  %% som a la pàgina del llançat que toca a l'orígen 0,0 de l'espai de coordenades de la plana?
    >>
 
    <<  %% 3:7 índex dins la plana +1 núm. de pàgina : índex d'ordre pel componedor
@@ -706,6 +721,7 @@ dup /CddVf exch def
      {
      }
      /FEMshowpage true  %% generem el full imprès o pàgina pdf
+     /00imp true  %% som a la pàgina del llançat que toca a l'orígen 0,0 de l'espai de coordenades de la plana?
    >>
    %% ja no cal que BeginPage cridi un darrer diccionari extra, doncs hem filtrat el darrer índex sobrer amb stopBP
   ]
@@ -835,7 +851,11 @@ dup /CddVf exch def
     null  %% a1:2 la pàgina a null forma part de l'estructura d'aquest nUp (pliegO) i per tant és fixa
     null  %% a2:3
     true  %% a3:4
+
+%%UBESH
+%    false
     true  %% a4:5
+
     null  %% a5:6
     null  %% a6:7
     true  %% a7:8
@@ -846,7 +866,11 @@ dup /CddVf exch def
     true  %% r2:3
     null  %% r3:4
     null  %% r4:5
+
+%%UBESH
+%    false
     true  %% r5:6
+
     true  %% r6:7
     null  %% r7:8
    ]
@@ -860,6 +884,7 @@ dup /CddVf exch def
       xFull 2 div yFull translate 180 rotate
      }
      /FEMshowpage false  %% això
+     /00imp false  %% som a la pàgina del llançat que toca a l'orígen 0,0 de l'espai de coordenades de la plana?
    >>
    <<  %% a1:2
      /T_R null  %% també ens diu que la pàgina no toca en aquesta plana
@@ -874,13 +899,19 @@ dup /CddVf exch def
      {
      }
      /FEMshowpage false
+     /00imp true  %% som a la pàgina del llançat que toca a l'orígen 0,0 de l'espai de coordenades de la plana?
    >>
    <<  %% a4:5
      /T_R
+
+%%UBESH
+%null
      {
       xFull 2 div 0 translate
      }
+
      /FEMshowpage false
+     /00imp false  %% som a la pàgina del llançat que toca a l'orígen 0,0 de l'espai de coordenades de la plana?
    >>
    <<  %% a5:6
      /T_R null
@@ -896,6 +927,7 @@ dup /CddVf exch def
       xFull yFull translate 180 rotate
      }
      /FEMshowpage true
+     /00imp false  %% som a la pàgina del llançat que toca a l'orígen 0,0 de l'espai de coordenades de la plana?
    >>
    %% revers
    <<  %% r0:1
@@ -908,6 +940,7 @@ dup /CddVf exch def
       xFull yFull translate 180 rotate
      }
      /FEMshowpage false
+     /00imp false  %% som a la pàgina del llançat que toca a l'orígen 0,0 de l'espai de coordenades de la plana?
    >>
    <<  %% r2:3
      /T_R
@@ -915,6 +948,7 @@ dup /CddVf exch def
       xFull 2 div 0 translate
      }
      /FEMshowpage false
+     /00imp false  %% som a la pàgina del llançat que toca a l'orígen 0,0 de l'espai de coordenades de la plana?
    >>
    <<  %% r3:4
      /T_R null
@@ -926,9 +960,12 @@ dup /CddVf exch def
    >>
    <<  %% r5:6
      /T_R
+%%UBESH
+%null
      {
      }
      /FEMshowpage false
+     /00imp true  %% som a la pàgina del llançat que toca a l'orígen 0,0 de l'espai de coordenades de la plana?
    >>
    <<  %% r6:7
      /T_R
@@ -936,6 +973,7 @@ dup /CddVf exch def
       xFull 2 div yFull translate 180 rotate
      }
      /FEMshowpage false
+     /00imp false  %% som a la pàgina del llançat que toca a l'orígen 0,0 de l'espai de coordenades de la plana?
    >>
    <<  %% r7:8
      /T_R null
@@ -1112,14 +1150,17 @@ dup /CddVf exch def
       xFull 4 div 3 mul yFull translate 180 rotate
      }
      /FEMshowpage false  %% NO imprimeix el full
+     /00imp false  %% som a la pàgina del llançat que toca a l'orígen 0,0 de l'espai de coordenades de la plana?
    >>
    <<  %% a1:2
      /T_R null  %% també ens diu que la pàgina no toca en aquesta plana
      /FEMshowpage false
+     /00imp false  %% som a la pàgina del llançat que toca a l'orígen 0,0 de l'espai de coordenades de la plana?
    >>
    <<  %% a2:3
      /T_R null
      /FEMshowpage false
+     /00imp false  %% som a la pàgina del llançat que toca a l'orígen 0,0 de l'espai de coordenades de la plana?
    >>
    <<  %% a3:4
      /T_R
@@ -1127,6 +1168,7 @@ dup /CddVf exch def
       xFull 4 div 2 mul yFull translate 180 rotate
      }
      /FEMshowpage false
+     /00imp false  %% som a la pàgina del llançat que toca a l'orígen 0,0 de l'espai de coordenades de la plana?
    >>
    <<  %% a4:5
      /T_R
@@ -1134,14 +1176,17 @@ dup /CddVf exch def
       xFull 4 div 0 translate
      }
      /FEMshowpage false
+     /00imp false  %% som a la pàgina del llançat que toca a l'orígen 0,0 de l'espai de coordenades de la plana?
    >>
    <<  %% a5:6
      /T_R null
      /FEMshowpage false
+     /00imp false  %% som a la pàgina del llançat que toca a l'orígen 0,0 de l'espai de coordenades de la plana?
    >>
    <<  %% a6:7
      /T_R null
      /FEMshowpage false
+     /00imp false  %% som a la pàgina del llançat que toca a l'orígen 0,0 de l'espai de coordenades de la plana?
    >>
    <<  %% a7:8
      /T_R
@@ -1149,6 +1194,7 @@ dup /CddVf exch def
       xFull 4 div 2 mul 0 translate
      }
      /FEMshowpage false
+     /00imp false  %% som a la pàgina del llançat que toca a l'orígen 0,0 de l'espai de coordenades de la plana?
    >>
    <<  %% a8:9
      /T_R
@@ -1156,20 +1202,24 @@ dup /CddVf exch def
       xFull 4 div 3 mul 0 translate
      }
      /FEMshowpage false
+     /00imp false  %% som a la pàgina del llançat que toca a l'orígen 0,0 de l'espai de coordenades de la plana?
    >>
    <<  %% a9:10
      /T_R null
      /FEMshowpage false
+     /00imp false  %% som a la pàgina del llançat que toca a l'orígen 0,0 de l'espai de coordenades de la plana?
    >>
    <<  %% a10:11
      /T_R null
      /FEMshowpage false
+     /00imp false  %% som a la pàgina del llançat que toca a l'orígen 0,0 de l'espai de coordenades de la plana?
    >>
    <<  %% a11:12
      /T_R
      {
      }
      /FEMshowpage false
+     /00imp true  %% som a la pàgina del llançat que toca a l'orígen 0,0 de l'espai de coordenades de la plana?
    >>
    <<  %% a12:13
      /T_R
@@ -1177,14 +1227,17 @@ dup /CddVf exch def
       xFull 4 div yFull translate 180 rotate
      }
      /FEMshowpage false
+     /00imp false  %% som a la pàgina del llançat que toca a l'orígen 0,0 de l'espai de coordenades de la plana?
    >>
    <<  %% a13:14
      /T_R null
      /FEMshowpage false
+     /00imp false  %% som a la pàgina del llançat que toca a l'orígen 0,0 de l'espai de coordenades de la plana?
    >>
    <<  %% a14:15
      /T_R null
      /FEMshowpage false
+     /00imp false  %% som a la pàgina del llançat que toca a l'orígen 0,0 de l'espai de coordenades de la plana?
    >>
    <<  %% a15:16
      /T_R
@@ -1192,11 +1245,13 @@ dup /CddVf exch def
       xFull yFull translate 180 rotate
      }
      /FEMshowpage true  %% IMPRIMEIX el full
+     /00imp false  %% som a la pàgina del llançat que toca a l'orígen 0,0 de l'espai de coordenades de la plana?
    >>
    %% revers
    <<  %% r0:1
      /T_R null 
      /FEMshowpage false
+     /00imp false  %% som a la pàgina del llançat que toca a l'orígen 0,0 de l'espai de coordenades de la plana?
    >>
    <<  %% r1:2
      /T_R
@@ -1204,6 +1259,7 @@ dup /CddVf exch def
       xFull 4 div 2 mul 0 translate
      }
      /FEMshowpage false
+     /00imp false  %% som a la pàgina del llançat que toca a l'orígen 0,0 de l'espai de coordenades de la plana?
    >>
    <<  %% r2:3
      /T_R
@@ -1211,14 +1267,17 @@ dup /CddVf exch def
       xFull 4 div 0 translate
      }
      /FEMshowpage false
+     /00imp false  %% som a la pàgina del llançat que toca a l'orígen 0,0 de l'espai de coordenades de la plana?
    >>
    <<  %% r3:4
      /T_R null
      /FEMshowpage false
+     /00imp false  %% som a la pàgina del llançat que toca a l'orígen 0,0 de l'espai de coordenades de la plana?
    >>
    <<  %% r4:5
      /T_R null
      /FEMshowpage false
+     /00imp false  %% som a la pàgina del llançat que toca a l'orígen 0,0 de l'espai de coordenades de la plana?
    >>
    <<  %% r5:6
      /T_R
@@ -1226,6 +1285,7 @@ dup /CddVf exch def
       xFull 4 div 2 mul yFull translate 180 rotate
      }
      /FEMshowpage false
+     /00imp false  %% som a la pàgina del llançat que toca a l'orígen 0,0 de l'espai de coordenades de la plana?
    >>
    <<  %% r6:7
      /T_R
@@ -1233,14 +1293,17 @@ dup /CddVf exch def
       xFull 4 div 3 mul yFull translate 180 rotate
      }
      /FEMshowpage false
+     /00imp false  %% som a la pàgina del llançat que toca a l'orígen 0,0 de l'espai de coordenades de la plana?
    >>
    <<  %% r7:8
      /T_R null
      /FEMshowpage false
+     /00imp false  %% som a la pàgina del llançat que toca a l'orígen 0,0 de l'espai de coordenades de la plana?
    >>
    <<  %% r8:9
      /T_R null
      /FEMshowpage false
+     /00imp false  %% som a la pàgina del llançat que toca a l'orígen 0,0 de l'espai de coordenades de la plana?
    >>
    <<  %% r9:10
      /T_R
@@ -1248,6 +1311,7 @@ dup /CddVf exch def
       xFull yFull translate 180 rotate
      }
      /FEMshowpage false
+     /00imp false  %% som a la pàgina del llançat que toca a l'orígen 0,0 de l'espai de coordenades de la plana?
    >>
    <<  %% r10:11
      /T_R
@@ -1255,20 +1319,24 @@ dup /CddVf exch def
       xFull 4 div yFull translate 180 rotate
      }
      /FEMshowpage false
+     /00imp false  %% som a la pàgina del llançat que toca a l'orígen 0,0 de l'espai de coordenades de la plana?
    >>
    <<  %% r11:12
      /T_R null
      /FEMshowpage false
+     /00imp false  %% som a la pàgina del llançat que toca a l'orígen 0,0 de l'espai de coordenades de la plana?
    >>
    <<  %% r12:13
      /T_R null
      /FEMshowpage false
+     /00imp false  %% som a la pàgina del llançat que toca a l'orígen 0,0 de l'espai de coordenades de la plana?
    >>
    <<  %% r13:14
      /T_R
      {
      }
      /FEMshowpage false
+     /00imp true  %% som a la pàgina del llançat que toca a l'orígen 0,0 de l'espai de coordenades de la plana?
    >>
    <<  %% r14:15
      /T_R
@@ -1276,10 +1344,12 @@ dup /CddVf exch def
       xFull 4 div 3 mul 0 translate
      }
      /FEMshowpage false
+     /00imp false  %% som a la pàgina del llançat que toca a l'orígen 0,0 de l'espai de coordenades de la plana?
    >>
    <<  %% r15:16
      /T_R null
      /FEMshowpage true  %% IMPRIMEIX el full
+     /00imp false  %% som a la pàgina del llançat que toca a l'orígen 0,0 de l'espai de coordenades de la plana?
    >>
   ]
 %%MENÚ M1 donar la possibilitat de fer visible la vora de la pàgina d'imposició, sigui o no dins una capa i com?
@@ -1370,11 +1440,23 @@ dup null eq
  (\n>>>>>> llançat de pàgines N-up... ) print flush M2 == (...inexistent, pleguem! <<<<<<\n\n)print flush stop
 }if
 
-dup 0 get /_anversrevers exch def  %% desplegat de planes d'un full (anvers/revers)
+dup 0 get
 
+%%UBESH aquí és on podem intervenir per gestionar les pàgines en blanc?
+%(/////)pstack quit
+%dup dup 0 get dup 4 false put 0 exch put  %% test per fer que la pàgina 5 (vía índex) de l'anvers sigui en blanc?
+%% EP! es planteja però lal qüestió de decidir si posem una pàgina 1 en blanc per tal de SUBSTITUIR la que allà tocava (o sigui que el seu contingut desapareix)
+%% o senzillament el què fa la pàgina en blanc és ENRETIRAR l'ordre de composició, de manera que en un 4+4 si la 1 és en blanc la pàgina 8 quedaria fora (no es compon)
+%% actuant només aquí el que ara fem és ENRETIRAR continguts
+%%EP però ara malgrat enretirem la 5 deixant una pàgina en blanc al seu lloc, això no passa i sempre comença deixant en blanc el lloc de la pàgina 1
+%% necessitarem modificar algun altre paràmetre perquè això no passi
+
+/_anversrevers exch def  %% desplegat de planes d'un full (anvers/revers)
 
 %%NOVA estratègia de numeració de pàgines per gestionar pàgines en blanc
-_anversrevers dup 0 get /aA exch def  %% array de l'anvers
+_anversrevers dup 0 get
+
+/aA exch def  %% array de l'anvers
 1 get dup length /iS exch def  %% salt d'index de l'anvers al revers
 /aR exch def  %% array del revers
 iS 2 mul array /aNpgn exch def  %% array de numeració de pàgines
@@ -1399,10 +1481,16 @@ aA
  }ifelse
  i 1 add /i exch def  %% actualitzem l'índex de pàgines de l'array de plana
 }forall
-%aNpgn (<<<<<<)pstack quit
+
+dup 1 get dup
+
+%%UBESH
+%% també anul·lem el valor de /T_R al diccionari de la pàgina que ha de quedar/enretirar en blanc
+%dup dup 4 get dup /T_R null put 4 exch put
+%%Això tampoc soluciona el fet que sempre s'apliqui el blanc a la posició de la pàgina 1
 
 
-dup 1 get dup /_ordre exch def  %% ordre seqüencial de pàgines a imposar amb les intruccions de posicionat i rotació
+/_ordre exch def  %% ordre seqüencial de pàgines a imposar amb les intruccions de posicionat i rotació
 length /stopBP exch def  %% índex on aturem les crides de BeginPage
 
 dup 2 get /pTrimBox exch def  %% retalla el TrimBox de cada pàgina que s'imposa
@@ -1538,6 +1626,8 @@ dup
  dup stopBP lt  %% si NO som al final de l'index de pàgines a imposar
  {
   %% valor que hem definit al procediment 1 de /pliegOS_nUpS
+
+
   _ordre exch get /T_R get cvx exec  %% ordre seqüencial de pàgines a imposar amb les intruccions de posicionat i rotació
 
   %% valor que hem definit al procediment 2 de /pliegOS_nUpS
@@ -1604,7 +1694,7 @@ aNpgn
 /ar true def  %% gatell d'anvers/revers
 /iSeq 0 def  %% índex seqüencial per tota la sèrie de pàgines del full (anvers+revers)
 
-{  %% stopped
+%{  %% stopped
 
 
 _anversrevers
@@ -1662,24 +1752,35 @@ _anversrevers
    %% tants showpage com pàgines totals del llançat (anvers+revers) tingui l'nUp
 
    gsave
-   compOnedors M6 get
-%%REpublica
-%HHHUUUUMMM
+%%UBESH
+   %% activem el gatell que ens diu si som a la pàgina del llançat que toca al punt 0,0 de la plana per pintar el número de pàgina en vermell quan fem el reglatge
+   _ordre iSeq 1 sub
+   get
+   dup /00imp known
+   {
+    /00imp get /00imp exch def
+   }
+   {
+    pop
+   }ifelse
 
- (r) file cvx exec  %% pesquem i executem l'algorisme de composició independent del nUp triat
+   compOnedors M6 get (r) file cvx exec  %% pesquem i executem l'algorisme de composició independent del nUp triat
    grestore
 
    M1  %% pintem la vora de les pàgines del llançat?
    {  %% cridem la matrix de posicionament per tal de pintar el rectangle de les vores de la pàgina del llançat
-    %% que, aquí sí! es sobreposen a tot (sense necessitat d'efectes de transparència)
-    %% quedaria molt elegant posar-ho en una capa per tal que es pogués deshabilitar manualment
-    gsave
-    xirtam setmatrix
-    1 0 1 setrgbcolor  %% magenta? gris? vermell? blanc? negre?
-    1 setlinewidth  %% gruix per tal vessi mig punt als marges del full
-    [2] 1 setdash  %% discontínua
-    [0 0 xPagina yPagina] rectstroke  %% pintem la vora de la pàgina (equivalent a TrimBox)
-    grestore
+    M6 0 ne  %% malgrat tinguem activat el pintat de les vores, si fem l'algorisme de reglatge NO les pintem
+    {
+     %% que, aquí sí! es sobreposen a tot (sense necessitat d'efectes de transparència)
+     %% quedaria molt elegant posar-ho en una capa per tal que es pogués deshabilitar manualment
+     gsave
+     xirtam setmatrix
+     1 0 1 setrgbcolor  %% magenta? gris? vermell? blanc? negre?
+     1 setlinewidth  %% gruix per tal vessi mig punt als marges del full
+     [2] 1 setdash  %% discontínua
+     [0 0 xPagina yPagina] rectstroke  %% pintem la vora de la pàgina (equivalent a TrimBox)
+     grestore
+    }if
    }if
 
    showpage  %% tants showpage com pàgines totals (anvers+revers) tingui l'nUp
@@ -1687,15 +1788,18 @@ _anversrevers
   {
    M1  %% pintem la vora de les pàgines del llançat?
    {  %% cridem la matrix de posicionament per tal de pintar el rectangle de les vores de la pàgina del llançat
-    %% que, aquí sí! es sobreposen a tot (sense necessitat d'efectes de transparència)
-    %% quedaria molt elegant posar-ho en una capa per tal que es pogués deshabilitar manualment
-    gsave
-    xirtam setmatrix
-    1 0 1 setrgbcolor  %% magenta? gris? vermell? blanc? negre?
-    1 setlinewidth  %% gruix per tal vessi mig punt als marges del full
-    [2] 1 setdash  %% discontínua
-    [0 0 xPagina yPagina] rectstroke  %% pintem la vora de la pàgina (equivalent a TrimBox)
-    grestore
+    M6 0 ne  %% malgrat tinguem activat el pintat de les vores, si fem l'algorisme de reglatge NO les pintem
+    {
+     %% que, aquí sí! es sobreposen a tot (sense necessitat d'efectes de transparència)
+     %% quedaria molt elegant posar-ho en una capa per tal que es pogués deshabilitar manualment
+     gsave
+     xirtam setmatrix
+     1 0 1 setrgbcolor  %% magenta? gris? vermell? blanc? negre?
+     1 setlinewidth  %% gruix per tal vessi mig punt als marges del full
+     [2] 1 setdash  %% discontínua
+     [0 0 xPagina yPagina] rectstroke  %% pintem la vora de la pàgina (equivalent a TrimBox)
+     grestore
+    }if
    }if
 
    showpage  %% l'algorisme del componedor NO treballa, però la pàgina es pinta en blanc
@@ -1705,11 +1809,11 @@ _anversrevers
 
 }forall  %% per l'anvers i el revers del full (2 planes)
 
-}stopped
-{
- (\b\n >>> Hi ha moltes possibilitats que l'error vingui de l'algorisme... ) print flush M6 3 string cvs print flush (\n\n)print flush
- (G E N E R A L F A I L U R E) pstack stop
-}if
+%}stopped
+%{
+% (\b\n >>> Hi ha moltes possibilitats que l'error vingui de l'algorisme... ) print flush M6 3 string cvs print flush (\n\n)print flush
+% (G E N E R A L F A I L U R E) pstack stop
+%}if
 
 %% per la farcidora de PDFs caldria tancar la instància en memòria runpdfend ?
 M6 9 eq
@@ -1718,9 +1822,12 @@ M6 9 eq
  {
  }
  {
-  (\n\n ...tanquem el PDFscripting\n\n >>> Enllestit!\n\n)print flush
-  Context1 .PDFClose
-  runpdfend
+%  llançat
+%  {
+%   (\n\n ...tanquem el PDFscripting\n\n >>> Enllestit!\n\n)print flush
+%   Context1 .PDFClose
+%   runpdfend
+%  }if
  }ifelse
 }if
 

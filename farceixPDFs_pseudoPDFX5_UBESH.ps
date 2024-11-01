@@ -50,6 +50,7 @@
 noNULL  %% pinta el contingut de pàgina?
 { %% anellem el codi sencer perquè no és aleatori
 
+
 %%Dos mètodes de lectura
  false
  /MdL exch def
@@ -201,6 +202,8 @@ noNULL  %% pinta el contingut de pàgina?
 %(8CropBox_MediaBox_CropBox_NOMESaLarrelPage_pla.pdf)
 (8CropBox_MediaBox_NOMESaLarrelPage_CropBox_QuadratsRectanglesVH_pla.pdf)
 
+%(- - - - - - ON SOM?)pstack quit
+
 (/home/femfum/Documents/pliegOMakerUB/Hpdf/)  %% path absolut del fitxer a processar a Tuxedo
      /serverPath exch def
      dup length serverPath length add string dup 0 serverPath putinterval dup 3 -1 roll serverPath length exch putinterval
@@ -223,18 +226,35 @@ grestore
 
 %%REpublica cal retornar el nom del PDF repicat per CaLi2CoPi
 %%URLUBESH
+%% com ho fem perquè els noms dels PDFs 1 o + arribin dins una array?
 bateiG
 %(UUUIIII)pstack quit
    /pedeefa exch def
 
+false
+{
+%%Scripting 2
+   pedeefa (r) file /elF exch def
+ elF runpdfbegin  %% inicialitzem el fitxer PDF
+}
+{
+%%Scripting 1
    %1% deixa una instància oberta a memòria sense cap objecte a l'stack que permet anar interrogant
    pedeefa (r) file dup /elF exch def runpdfbegin  %% cal tancar-la amb runpdfend al final
 
+%%Scripting 1
    %3% inicialitzem per intervenir dins l'estructura del pdf, afegint noves branques de dades, com la dels formularis
-   /Context1 .PDFInit def
+   /Context1 <<>> .PDFInit def
    pedeefa Context1 .PDFFile
 
-   Context1 .PDFInfo /NumPages get /pAimposar exch def  %% nombre de pàgines a imposar del PDF a incrustar
+%% per què el text/tipografia dóna recursos a .PDFDRawPage per situar-se en el lloc correcte i una imatge o un vectorial NO?
+   (/home/femfum/Documents/pliegOMakerUB/1paginaDINbuida.pdf) dup (r) file runpdfbegin
+   /Context2 <<>> .PDFInit def
+   Context2 .PDFFile
+}ifelse
+
+%(???)pstack quit
+%   Context1 .PDFInfo /NumPages get /pAimposar exch def  %% nombre de pàgines a imposar del PDF a incrustar
    %% aquí podem treure conclusions de si l' M2, pel pliegOS escollit, podrem fer el llançat de totes les pàgines
    %% si en quedaran de buides a pliegOS (EP! n'hi pot haver de forçades) o si no les podrem imposar totes
   }if  %% un cop!
@@ -243,7 +263,7 @@ bateiG
 
 %gsave
 
-{  %% stopped
+%{  %% stopped
 
  MdL
  {
@@ -251,11 +271,8 @@ bateiG
  }
  {  %2% interroguem el MediaBox i el deixa a l'stack
 
-%%UBESH el número de pàgina que processem ja ens arriba de  com una string
-  Npgn  %cvx exec
-
-%%UBESH cal veure si és aquí on farem les crides al mapa d'imposició, doncs també haurem d'actuar als /pliegOS_nUpS per deixar a false les pàgines en blanc
-dup ==
+%%UBESH el número de pàgina que processem ja ens arriba com una string
+  Npgn  % cvx exec
 
 %%Un truc per començar més enllà de la pàgina 1 del PDF
 %4 add
@@ -285,9 +302,12 @@ dup ==
 %% o haurem d'adaptar-nos al retall de CropBox activant un rectclip amb translació+escala
 
 %%UBESH
-%% primer ens cal saber per %MENU% si hem de respectar el /CropBox, si existeix, en cas que sigui diferent de /MediaBox
-true
-{
+%% per l'opció M7 del menú sabem si hem de respectar o no els valors del /CropBox, si existeix, en cas que sigui diferent de /MediaBox
+%% el CropBox però, en cas d'exisitir, sempre l'eliminem com a paràmetre de cadascuna de les pàgines via FemFum_CaLi2CoPi_042_pliegOMakerUBESH.ps
+%% estigui situat a on estigui, doncs és un valor heretable (com /MediaBox) i pot estar només a l'arrel de l'arbre /Pages o en qualsevol dels seus nodes
+%% si /CropBox existeix i és diferent a /MediaBox en conservem els valors i els tornem a aplicar via rectclip quan s'activa la rutina controlada per /enQuadra 
+M7
+{  %% respectem els valors del /CropBox
  aMESaMES 0 eq
  {  %% explorem  els valors de les àrees desades
   XRay /PeDeEfa get exch get
@@ -426,18 +446,86 @@ pop pop
  { %% primer mètode de pintar la pàgina
 
 %%Pàgina Npgn -1 com a índex
-   Context1 Npgn cvx exec
+
+   Npgn cvx exec
 %%Un truc per començar més enllà de la pàgina 1 del PDF
 %4 add
 
    1 sub
 
-%%NOVA metode per eliminar el /CropBox?
+%%UBESH un cop tinguem l'OK del mapa/array d'imposició revisat a ?, serà aquí on farem les crides al mapa d'imposició
+%% és aquí on procedim a fer jugar em mapa/array d'imposició
+   M8 length 0 eq
+   {
+    /llançat true def
+   }
+   {
+
+    M8 exch get  %% tibem pel núm. de pàgina
+    %% si ens arriba un null equival a una pàgina en blanc i evitem el .PDFDrawPage
+    dup null eq
+    {
+     pop
+     /llançat false def
+    }
+    {
+     1 sub  %% però el retornem al seu índex per fer el .PDFDrawPage
+     /llançat true def
+    }ifelse
+   }ifelse
+
+%% metode per eliminar el /CropBox?
 %%   Context1 1 index .PDFPageInfo /CropBox undef  %% NO rutlla
 
+     llançat  %% quin tipus de pàgina llancem?
+     {  %% imposem la pàgina segons l'índex capturat a M8
+   %1% deixa una instància oberta a memòria sense cap objecte a l'stack que permet anar interrogant
+%   pedeefa (r) file dup /elF exch def runpdfbegin  %% cal tancar-la amb runpdfend al final
+   %3% inicialitzem per intervenir dins l'estructura del pdf, afegint noves branques de dades, com la dels formularis
+%   /Context1 .PDFInit def
+%   pedeefa Context1 .PDFFile
 
-   .PDFDrawPage  %% repiquem la pàgina Npgn però cridada com a índex
+false
+{
+%%Scripting 2
+% elF runpdfbegin  %% inicialitzem el fitxer PDF
+ 1 add pdfgetpage  %% agafa les dades de la pàgina i en deixa el seu diccionari a l'stack però aquí NO pas com a índex!
+ pdfgetpage  %% pren el diccionari de pàgina i executa showpage
+% runpdfend  %% tanca el procés
 
+
+}
+{
+%%Scripting 1
+      Context1 exch .PDFDrawPage  %% imposem la pàgina Npgn però cridada com a índex i que hem tibat de M8
+%%Hauríem d'explorar el comportament de /BeginPage /EndPage en relació a aquesta crida de l'scripting doncs es comporta de forma erràtica treballant amb pàgines en blanc
+%% doncs si no va acompanyada d'una segona crida a un PDF buit /Context2 no les situa allà on tocaria
+}ifelse
+      %matrix currentmatrix ==
+     }
+     {  %% pàgina en blanc
+false
+{
+%%Scripting 2
+}
+{
+%%Scripting 1
+      %% imposem una pàgina (la 9) que fa de blanc teòric
+      %% hem vist que el mètode demana que dugui text o imatge, doncs amb vectorials no ens fa cas
+      %Context1 8 .PDFDrawPage
+
+%% per què el text/tipografia dóna recursos a .PDFDRawPage per situar-se en el lloc correcte i una imatge o un vectorial NO?
+      Context2 0 .PDFDrawPage
+
+}ifelse
+
+
+%(UEP!)pstack quit
+%gsave
+%1 1 1 setrgbcolor
+%0 0 xPagina yPagina rectfill
+%grestore
+     }ifelse
 
 %grestore
 
@@ -455,10 +543,10 @@ pop pop
 %grestoreall
  }ifelse
 
-}stopped
-{
- (\n\n >>> farceixPDFs_pseudoPDFX5_UBESH ON PETES?\n\n) print flush (- - - - - - - - - -)pstack stop
-}if
+%}stopped
+%{
+% (\n\n >>> farceixPDFs_pseudoPDFX5_UBESH ON PETES?\n\n) print flush (- - - - - - - - - -)pstack stop
+%}if
 
 }if  %% noNULL anellem el codi sencer perquè no és aleatori per pàgina
 

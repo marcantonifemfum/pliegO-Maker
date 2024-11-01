@@ -24,7 +24,9 @@ true  %% true fem PDFs | false fem JPEGs
 %(C:\\Users\\Fina\\Desktop\\Marcantoni\\pliegOMaker\\babia.pdf)
 %(C:/Users/Fina/Desktop/Marcantoni/pliegOMaker/babia.pdf)
 
-(/home/femfum/Documents/pliegOMakerUB/Hpdf/8CropBox_MediaBox_NOMESaLarrelPage_CropBox_QuadratsRectanglesVH_pla.pdf)
+%(/home/femfum/Documents/pliegOMakerUB/Hpdf/8CropBox_MediaBox_NOMESaLarrelPage_CropBox_QuadratsRectanglesVH_pla.pdf)
+%(/home/femfum/Documents/pliegOMakerUB/8paginesPDFnumerades.pdf)
+(/home/femfum/Documents/pliegOMakerUB/8numerades_ladarreraENblanc.pdf)
 
 }
 {
@@ -44,7 +46,7 @@ false  %% de la cua al cap (alfabètic) de gran a petit (numèric)
 
 
 
-%% VORA DE LA PÀGINA DEL LLANÇAT ?
+%%M1 MOSTREM LA VORA DE LA PÀGINA DEL LLANÇAT ?
 
 %% true sí | false no
 
@@ -52,7 +54,7 @@ true
 
 
 
-%% QUIN LLANÇAT/IMPOSICIÓ ESCOLLIM ?
+%%M2 QUIN LLANÇAT/IMPOSICIÓ ESCOLLIM ?
 %% Un full de paper de dues planes (cares en dúplex) on s'hi imposen n pàgines d'un PDF en un ordre determinat
 %% https://en.wikipedia.org/wiki/N-up
 
@@ -61,17 +63,17 @@ true
 %% 4 llançat de 4 pàgines de PDF per plana, en vertical, en un full en dúplex horitzontal o vertical 4+4 | 8 imposicions totals | impressió 4-up | 4vUpHV
 %% 8 llançat de 8 pàgines de PDF per plana, en vertical, en un full en dúplex horitzontal 8+8 | 16 imposicions totals | impressió 8-up | 8vUpH
 
-8
+4
 
 
 
-%% ORIENTACIÓ DEL FULL ?
+%%M3 ORIENTACIÓ DEL FULL D'IMPRESSIÓ ?
 
 false  %% true horitzontal | false vertical
 
 
 
-%% FORMAT DEL FULL ?
+%%M4 FORMAT DEL FULL D'IMPRESSIÓ ?
 %% DIN estàndard d'impressora
 
 %% 4 DIN A4 | 3 DIN A3
@@ -80,19 +82,41 @@ false  %% true horitzontal | false vertical
 
 
 
-%% FORCEM LA RÀTIO ?
-%% adaptar la ràtio de la pàgina del PDF a la del llançat
-
+%%M5 FORCEM LA RÀTIO
+%% adaptar la ràtio de les pàgines del PDF a les del llançat
 false
 
 
 
-%% LABORATORI D'ALGORISMES COMPONEDORS
+%%M6 LABORATORI D'ALGORISMES COMPONEDORS
 %% la rutina d'imposició és independent del llançat triat
 
-%9   %% compagina 1 PDF d'n pàgines segons el llançat escollit (més endavant una col·leció de PDFs d'1 sola pàgina?)
+9   %% imposa 1 PDF d'n pàgines segons el llançat escollit (més endavant una col·leció de PDFs d'1 sola pàgina?)
 
-%12  %% compagina imatges JPEG a l'nUp triat
+%12  %% imposa imatges JPEG a l'nUp triat
 
-0  %% reglatge per veure l'ordre i orientació de les pàgines imposades del PDF segons el llançat (nUp) escollit
+%0  %% reglatge per verificar l'ordre i orientació de les pàgines imposades segons el llançat (nUp) escollit i també els marges i qualitat d'impressió
+
+
+
+%%M7 RESPECTEM ELS RETALLS QUE DUGUI EL PDF D'ORIGEN ?
+%% només té sentit quan activem l'algorisme 9 d'imposició de PDFs
+
+%% true respectem el /CropBox per a tot el document
+%% false ignorem el /CropBox i treballem amb el /MediaBox per a tot el document
+
+true
+
+
+
+%%M8 MAPA D'IMPOSICIÓ
+%% una array buida significa que no s'aplicaran canvis en l'ordre original de lectura del PDF a imposar
+%% posarem un enter del número de pàgina a imposar seguint l'ordre de lectura (ho mana la seqüència d'índex de l'array)
+%% posarem un null en el punt de l'ordre de lectura on hi hagi d'haver una pàgina en blanc
+%% el nombre d'enters + null de l'array ha de ser igual al nombre de pàgines de l'nUp triat
+
+%[1    2   3    4    5    6    7    8   ]
+ [null 8   null null null null null 7 ]
+%[ 1 2 null null null null null null]
+
 

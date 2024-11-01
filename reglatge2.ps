@@ -1,0 +1,153 @@
+%% algorisme de reglatge de cadascuna de les pàgines del llançat (imposició) de pliegOS
+%% indiquem l'orígen de l'eix de coordenades (xamfrà ll), la dimensió de pàgina (xamfrà ur) i la seva numeració
+
+noNULL  %% pinta el contingut de pàgina?
+{  %% comportament null: el componedor ha de tenir anellat el codi que pinta contingut de pàgina
+
+ %% aquí li fem abraçar tot l'algorisme doncs no hi ha cap tipus de composició dinàmica/aleatòria
+ gsave
+
+%%+ color
+%.4 .5 .6 setrgbcolor
+% 0 0 xPagina yPagina rectfill
+
+%%+ color
+%gsave
+%{1 exch sub} settransfer  %% negativem el color vigent pel fons
+
+%%NOUgs9.55
+% /Normal .setblendmode 1 .setopacityalpha  %% contraresta la transparència Overlay activa per les vores de les pàgines
+
+%1 1 1 1 setcmykcolor
+%0 0 0 setrgbcolor
+
+%%EP!
+ %% hauríem de poder marcar en vermell (els rajos o la tipografia) quina és la pàgina del llançat on hi ha l'orígen de l'eix de coordenades del full
+ %% això ens permetria orientar-nos per mesurar els 4 valors dels marges d'impressió protegint la tinta quan imprimim al 100% d'escala (no pas adaptant!)
+ %% llavors, podríem fer un senzill fitxer de calibració on faríem un rectangle perfilat a 0 setlinewidth arran del nou enquadrament en base als 4 valors de protecció
+ %% un cop comprobéssim que, imprimint amb el 100% d'escala, aquests 4 valors són correctes, podríem entrar-los en un fitxer de configuració
+ %% això ens permetria personalitzar qualsevol tipus d'impressora per treballar amb un dúplex absolutament exacte i calibrat
+
+ %% càlcul de la diagonal de la pàgina d'imposició
+ xPagina dup mul yPagina dup mul add sqrt /dgnl exch def  %( <<<<<)pstack quit
+
+ 0 setlinewidth
+ 0 setgray
+
+ %% ventall d'orígen de l'eix de coordenades a LL
+ % -90 1 0
+ % {
+ %  gsave
+ %  rotate 0 0 moveto 0 dgnl lineto stroke
+ %  grestore
+ % }for
+ %% capgirem l'origen aln xamfrà UR
+ gsave
+ xPagina yPagina translate
+ 90 1 180
+ {
+  gsave
+  rotate 0 0 moveto 0 dgnl lineto stroke
+  grestore
+ }for
+ grestore
+
+ %% quadrat negre amb ratlles blanques verticals/horitzontals pel control dels 4 marges de protecció en impressores de full
+ xPagina 5 div /qdrt exch def  %% una cinquena part de l'ample
+
+ 0 1 2
+ {
+  gsave
+  [
+   {}
+   { 0 yPagina translate -90 rotate}
+   {xPagina 0 translate 90 rotate}
+  ] exch get exec
+
+ % xPagina qdrt sub yPagina qdrt sub qdrt dup rectfill  %% UR
+ 0 0 qdrt dup rectfill  %% LL
+
+ 1 setgray
+ %% 20 filets blancs horitzontals i verticals de 0.5? punts per mesurar els 4 marges de protecció de tinta en impressores de full
+ %% quan funcioni aquest algorisme, hauríem de desactivar automàticament la funció de marcar les vores de les pàgines del llançat
+ .5  %% gruix del filet blanc 
+ dup /gruixF exch def
+ setlinewidth
+%% filets horitzontals
+ gruixF 2 div  %% inici en H meitat del gruix
+ gruixF 2 mul  %% el salt de gruix del filet és el doble del gruix
+ gruixF
+ 20            %% nombre de filets blancs a pintar
+ 2 mul mul
+ {
+  dup /finalH exch def
+  dup 0 exch  moveto qdrt exch lineto stroke
+ }for
+
+%% filets verticals
+ gruixF 2 div  %% inici en H meitat del gruix
+ gruixF 2 mul  %% el salt de gruix del filet és el doble del gruix
+ gruixF
+ 20            %% nombre de filets blancs a pintar
+ 2 mul mul
+ {
+  dup /finalH exch def
+  dup 0 moveto qdrt lineto stroke
+ }for
+ grestore
+}for
+
+%% p.e. en cas que les 20 ratlles blanques superi la meitat del quadrati o tot sencer?
+%% potser hauríem de calcular el rectangle negre en funció de la mida de les 20 ratlles blanques en H/V?
+ %qdrt finalH pstack quit
+
+
+%%NOUgs9.55
+% /Normal .setblendmode 1 .setopacityalpha  %% contraresta la transparència Overlay activa per les vores de les pàgines
+
+
+%0 0 0 0 setcmykcolor
+%1 1 1 setrgbcolor
+ 00imp  %% si som a la pàgina del llançat que toca a l'origen 0,0 de l'espai de coordenades de la plana, pintem el número en vermell
+ {  %% assenyalem en vermell la pànina del llançat que marca l'orígen de coordenades per tal d'orientar bé els marcadors que mesuren el marges de protecció d'impressió
+  1 0 0 setrgbcolor
+ }
+ {  %% en blanc
+  1 setgray
+ }ifelse
+
+ /Courier yPagina 2 div selectfont  %% numeració de pàgina centrada
+
+%%UBESH ara encara no hem fet res però, per la gestió de les pàgines en blanc (xafant o enretirant), haurem d'incidir aquí o al algorisme de llançat?
+ Npgn
+
+ 3 string cvs dup stringwidth pop 2 div xPagina 2 div exch sub yPagina 4 div moveto show
+
+%%+ color
+
+% newpath  %% fora traces de posicionaments anteriors (elimina l'efecte de la ratlla final)
+% gsave
+% 0.3 setlinewidth  %% en negatiu la línia més prima sempre es tapa i cal que tingui un gruix mínim
+% xPagina qdrt 2 div sub yPagina qdrt 2 div sub qdrt 2 div 0 360 arc stroke
+% grestore
+
+%% ara no cal acrivar el pintat de la vora de la pàgina dins l'algorisme de composició doncs ja ho fem dins l'algorisme del llançat nUp
+% M1  %% fem visible la vora de la pàgina del llançat?
+% {
+%  gsave  %% provem de fer la vora de la pàgina aquí
+%  newpath
+
+%%NOUgs9.55
+%  /Normal .setblendmode 1 .setopacityalpha
+
+%  1 setlinewidth 1 0 0 setrgbcolor
+%  0 0 xPagina yPagina rectstroke
+%  grestore
+% }if
+
+ grestore
+
+}if  %% comportament null: anellat del codi que pinta contingut de pàgina
+
+%% prohibit fer servir showpage!
+
