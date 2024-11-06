@@ -1,6 +1,6 @@
 %!
 %%  [ca]
-%%  `GNU GPL FemFum nUp_pliegOS.ps v.001´ és una eina del projecte PliegO'Maker pel llançat de pàgines (N-up)
+%%  `GNU GPL FemFum nUp_pliegOS.ps v.002´ és una eina del projecte PliegO'Maker pel llançat de pàgines (N-up)
 %%  transparent a tota mena de plegats i facilitant totalment l'aleatorietat dels layouts que vindran
 %%  seguint la filosofia pliegOS: «Féu que un sol full de paper esdevingui un llibret excepcional»
 %%  Per a intèrprets `GNU GPL Ghostscript´ però també, amb ben pocs retocs, pot córrer
@@ -24,7 +24,7 @@
 %%  programa. En cas contrari, consulteu <http://www.gnu.org/licenses/>
 %%
 %%  [en]
-%%  `GNU GPL FemFum nUp_pliegOS.ps v.001´ is a PliegO'Maker project tool component for the N-up features
+%%  `GNU GPL FemFum nUp_pliegOS.ps v.002´ is a PliegO'Maker project tool component for the N-up features
 %%  available for all kind of folding paper modes and friendly for the future random layout modules
 %%  following the pliegOS phylosophy: «Turn one simple sheet of paper into a little awesome book»
 %%  For `GNU GPL Ghostscript´ interpreter, but also available with minor changes
@@ -62,11 +62,11 @@
 %% Valid values are: 0 (portrait), 3 (landscape), 2 (upside down), and 1 (seascape). The orientation can be set from the command
 %% line as -c "<</Orientation 3>> setpagedevice" using Ghostscript directly but cannot be set in ps2pdf. See Limitations below.
 %% gs -q -dNOSAFER -o resultat.pdf -sDEVICE=pdfwrite -dAutoRotatePages=/None -c .setpdfwrite -f nUp_pliegOS.ps
-%% des de la versió 9.52 del GS han desactivat .setpdfwrite (hemde documentar bé què suposa això ara)
-%% la crida alternativa informen que és...
+%% des de la versió 9.52 del GS han desactivat .setpdfwrite i la crida abans de la v9.55 és...
 %% gs -q -dNOSAFER -o resultat.pdf -sDEVICE=pdfwrite -dAutoRotatePages=/None -c 3000000 setvmthreshold -f nUp_pliegOS.ps
 %%NOVA crida a partir del GS v9.55
 %% gs -q -dNOSAFER -o plegaVeu.pdf -sDEVICE=pdfwrite -dAutoRotatePages=/None -f nUp_pliegOS.ps
+
 %%Error: /undefined in /--.beginpage-- provocat per l'operador de transparència .setopacityalpha
 %%   **** WARNING: .setopacityalpha is deprecated (as of 9.53.0) and will be removed in a future release
 %%   **** See .setfillconstantalpha/.setalphaisshape for the improved solution
@@ -87,13 +87,13 @@
 %}if
 
 %% glossari:
-%% full: peça de paper que s'imprimeix (MediaBox), en algun dels formats estàndards o no (ISO, JIS, ARCH, Ansi, etc)
+%% full: peça de paper que s'imprimeix (MediaBox), en algun dels formats estàndards o no (DIN, ISO, JIS, ARCH, Ansi, etc)
 %% plana: anvers o revers, cadascuna de les 2 cares del full de paper
 %% pàgina: les del pliegO acabat, i dins la plana són cadascuna les àrees on es compon el document, limitades pel plec i tall
 %% vertical: l'ample és més estret que l'alt
 %% horitzontal: l'alt és més estret que l'ample
 %% llançat: imposició, o sigui la disposició de les pàgines dins la plana
-%% plec: full enllestit amb el llançat a les 2 planes
+%% plec: full enllestit amb el llançat a les 2 planes (pliegO)
 %% tripa: conjunt de pàgines un cop enquadernat el llibret
 %%Fem la descripció de la imposició amb les mateixes directrius que es descriu la imatge: columnes x files
 %%Llavors 1hvUpHV = 1x1 + 1x1  2vUpHV = 2x1 + 2x1  4vUpHV = 2x2 + 2x2
@@ -119,7 +119,7 @@
 %% amb una combinatòria 2+2 les pàgines fan 297.5 421 les pàgines tenen una ràtio idèntica de 0,706650831353919
 %% el factor d'escala és fS x 595 = 297.5 o sigui fS = 297.5/595 o sigui 0.5
 %% 2 :: mecànica de l'nUp
-%% l'nUp triat primer comprova si la ratio del full (MediaBox) es manté a les pàgines que conté (TrimBox/ArtBox)
+%% l'nUp triat primer comprova si la ratio del full (MediaBox) es manté a les pàgines que conté (teòric TrimBox/ArtBox)
 %% si no manté la ràtio, triem entre forçar-la o adaptar-nos 100% al full amb una de nova
 %% seguidament hi deduïm el factor d'escala i fem la combinatòria de translates + rotates
 %% a BeginPage és on s'escala i es fa el translate + rotate, pàgina a pàgina, dins la imposició (llançat) de la plana
@@ -853,6 +853,7 @@ dup /CddVf exch def
     true  %% a3:4
 
 %%UBESH
+%null
 %    false
     true  %% a4:5
 
@@ -868,6 +869,7 @@ dup /CddVf exch def
     null  %% r4:5
 
 %%UBESH
+%null
 %    false
     true  %% r5:6
 
@@ -1441,16 +1443,6 @@ dup null eq
 }if
 
 dup 0 get
-
-%%UBESH aquí és on podem intervenir per gestionar les pàgines en blanc?
-%(/////)pstack quit
-%dup dup 0 get dup 4 false put 0 exch put  %% test per fer que la pàgina 5 (vía índex) de l'anvers sigui en blanc?
-%% EP! es planteja però lal qüestió de decidir si posem una pàgina 1 en blanc per tal de SUBSTITUIR la que allà tocava (o sigui que el seu contingut desapareix)
-%% o senzillament el què fa la pàgina en blanc és ENRETIRAR l'ordre de composició, de manera que en un 4+4 si la 1 és en blanc la pàgina 8 quedaria fora (no es compon)
-%% actuant només aquí el que ara fem és ENRETIRAR continguts
-%%EP però ara malgrat enretirem la 5 deixant una pàgina en blanc al seu lloc, això no passa i sempre comença deixant en blanc el lloc de la pàgina 1
-%% necessitarem modificar algun altre paràmetre perquè això no passi
-
 /_anversrevers exch def  %% desplegat de planes d'un full (anvers/revers)
 
 %%NOVA estratègia de numeració de pàgines per gestionar pàgines en blanc
@@ -1462,6 +1454,31 @@ _anversrevers dup 0 get
 iS 2 mul array /aNpgn exch def  %% array de numeració de pàgines
 /ipg 1 def  %% numerador de pàgines
 /i 0 def  %% índex de pàgines de l'array de plana
+
+%%UBESH anàlisi del mapa d'imposició per saber:
+%% (1) el length de l'array M8 és zero o equival al length de l'nUp?
+%% (2) si el nombre d'elements de l'array que NO són null és igual o més petit que el nombre de pàgines del PDF a imposar
+%% (3) si el número de pàgina més gran que hi hagi a l'array és igual o més petit que el número de pàgines del PDF a imposar
+
+%%ESTRATÈGIA PER ASSENYALAR QUE ÉS LA PRIMERA VEGADA QUE EXECUTEM farceixPDFs_pseudoPDFX5_UBESH.ps 
+%% per això ens caldrà desar quin és el núm de pàgina que imposarem primer!
+
+%%PREGUNTA: el mapa d'imposició i el seu anàlisi ens farà canviar el resultat del forall a /aA ???
+
+%%+ CAL REDUÏR EL DIÀLEG AL MÍNIM ens guia la filosofia del #NOinterface
+%pOM: heu triat imposar el PDF (tal) o + per aquest ordre
+%pOM: heu triat crear # pliegOS (encartats o disposats de costat)
+%pOM: heu triat #Up i el PDF a imposar té # pàgines
+%+ hem de blindar l'error (ARA PETA!) de quan triem un nUp que no es correspon al nombre de pàgines del PDF (p.e. fer un 8+8 amb un PDF de només 8 pàgines)
+%pOM: el PDF (tal) té la mida justa de pàgines per l'nUp escollit
+%pOM: el PDF (tal) té # pàgines de més, imposarem les # primeres (però si el mapa/array és coherent ja no cal dir-ho)
+%pOM: el PDF (tal) té # pàgines de menys, deixarem les pàgines de # a # en blanc (cal dir-ho i aturar? o procedim?)
+%pOM: heu triat el mapa d'imposició: [...]
+%pOM: el mapa/es d'imposició que aplicarem serà/an: [...]
+%pOM: farem # imposicions (encartades o disposades de costat)
+%pOM: modifiqueu el mapa d'imposició [...] si voleu un altre comportament per aquest llançat
+
+
 aA
 {  %% forall explorant l'anvers per completar la numeració amb el revers
  dup null eq
@@ -1617,6 +1634,9 @@ dup
 /BeginPage
 {  %% invoca 1 valor a l'stack: l'índex del nombre de vegades que s'ha cridat showpage i no retorna res
 
+%%UBESH anellem el valor que invoca?
+dup 1 array astore ==
+
  %% lògica anterior parell/senar de 2vUpHV
  %% 2 mod 1 eq  %% detectem la pàgina senar (ep! el comptador que comença per 0)
  %% {  %% les pàgines senars van a la dreta del full (MediaBox)
@@ -1631,7 +1651,7 @@ dup
   _ordre exch get /T_R get cvx exec  %% ordre seqüencial de pàgines a imposar amb les intruccions de posicionat i rotació
 
   %% valor que hem definit al procediment 2 de /pliegOS_nUpS
-  pTrimBox  %% retallem el TrimBox de la pàgina a imposar
+  pTrimBox  %% retallem el virtual TrimBox de la pàgina a imposar
 
   %% valor que hem definit al procediment 3 de /pliegOS_nUpS
   %% cal escalar, via ràtio, un cop posicionades les pàgines (clip+vora)
@@ -1648,6 +1668,10 @@ dup
   %% qui ha cridat EndPage: 0 showpage, 1 copypage, 2 un altra operador que suspèn el que s'ha definit amb setpagedevice
   %% PLRM3 p.443 «when restore, grestore, grestoreall or setgstate causes a page device to be deactivated and a different
   %% page device to be activated»
+
+%%UBESH anellem els 2 valors que invoca?
+2 copy 2 array astore ==
+
  0 ne  %% avaluem el primer valor: no és showpage qui crida EndPage?
  {
   false  %% com que NO és showpage qui ara crida, fem que no s'imprimeixi la plana
@@ -1694,7 +1718,7 @@ aNpgn
 /ar true def  %% gatell d'anvers/revers
 /iSeq 0 def  %% índex seqüencial per tota la sèrie de pàgines del full (anvers+revers)
 
-%{  %% stopped
+{  %% stopped
 
 
 _anversrevers
@@ -1713,25 +1737,42 @@ _anversrevers
   { --REVERS-- } ==
  }ifelse
  {  %% forall per cadascuna de les pàgines (TrimBox/ArtBox) de la plana
+
   %% no toca? (null)
   dup null eq
-  {  %% null: la maquinària de composició treballa però no pinta res a la pàgina
+  {  %% null: la maquinària dimposició treballa però l'algorisme componedor no pinta res a la pàgina
    pop
-   /compON true def  %% teòricament l'algorisme componedor treballa
-   /noNULL false def  %% la pàgina s'ignora però no atura el componedor
+   /compON true def  %% la maquinària d'imposició treballa
+   /noNULL false def  %% l'algorisme componedor no treballa
    (    ara no toca --pg. ) print flush
    %% estratègia pel numerador de pàgines, per tal tingui en compte si n'hi han en blanc
    iPln 1 add ==  %% aquí ja és número de pàgina
   }
   {  %% componem
-   {  %% true: la maquinària de composició treballa i pinta la pàgina
-    /compON true def  %% l'algorisme componedor treballa
-    /noNULL true def  %% la pàgina NO s'ignora
+   {  %% true: la maquinària d'imposició treballa i l'algorisme componedor pinta la pàgina
+    /compON true def  %% la maquinària d'imposició treballa
+    /noNULL true def  %% la pàgina NO s'ignora i l'algorisme componedor treballa
     (         compon --pg. ) print flush
     %% estratègia pel numerador de pàgines, per tal tingui en compte si n'hi han en blanc
-    aNpgn iSeq get dup == 3 string cvs /Npgn exch def
+    aNpgn iSeq get dup
+
+%%UBESH és aquí on hauríem de redefinir noNULL en base al mapa d'imposició?
+%%UBESH una estratègia ELEGANT per les pàgines en blanc, però és obligatori fer la crida al gs amb -dAutoRotatePages=/None perquè sino capgira el full ! 
+dup M8 dup length 0 eq
+{
+ pop pop
+}
+{
+%%CAL veure com solucionar el fet que provoca l'Error: /undefined in aMESaMES degut a que el mètode que tenim per detectar la primera execució ara aquí NO va
+ exch 1 sub get null eq  %% el mapa d'imposició ens diu si la pàgina és en blanc?
+ {  %% l'índex de la pàgina del llançat serà en blanc
+  /noNULL false def  %% desactivem l'algorisme del componedor 
+ }if
+}ifelse
+
+    == 3 string cvs /Npgn exch def
    }
-   {  %% false=pàgina en blanc: la maquinària de composició NO treballa
+   {  %% false=pàgina en blanc: la maquinària d'imposició NO treballa
     /compON false def  %% l'algorisme componedor NO treballa
     (pàgina en blanc --    #\n) print flush
    }ifelse
@@ -1752,8 +1793,10 @@ _anversrevers
    %% tants showpage com pàgines totals del llançat (anvers+revers) tingui l'nUp
 
    gsave
+
 %%UBESH
    %% activem el gatell que ens diu si som a la pàgina del llançat que toca al punt 0,0 de la plana per pintar el número de pàgina en vermell quan fem el reglatge
+   %% o per altres funcions que ara mateix no podem preveure
    _ordre iSeq 1 sub
    get
    dup /00imp known
@@ -1764,7 +1807,13 @@ _anversrevers
     pop
    }ifelse
 
+{  %% stopped
+   
    compOnedors M6 get (r) file cvx exec  %% pesquem i executem l'algorisme de composició independent del nUp triat
+
+}stopped
+{(<<<<< AQUI PODEM AFIRMAR QUE PETA L'ALGORISME DE COMPOSICIO INDEPENDENT DE NUP) pstack stop}if
+
    grestore
 
    M1  %% pintem la vora de les pàgines del llançat?
@@ -1805,15 +1854,15 @@ _anversrevers
    showpage  %% l'algorisme del componedor NO treballa, però la pàgina es pinta en blanc
   }ifelse
 
- }forall  %% per cadascuna de les pàgines (TrimBox/ArtBox) de la plana
+ }forall  %% per cadascuna de les pàgines del llançat (teòric TrimBox/ArtBox) dins la plana
 
 }forall  %% per l'anvers i el revers del full (2 planes)
 
-%}stopped
-%{
-% (\b\n >>> Hi ha moltes possibilitats que l'error vingui de l'algorisme... ) print flush M6 3 string cvs print flush (\n\n)print flush
-% (G E N E R A L F A I L U R E) pstack stop
-%}if
+}stopped
+{
+ (\b\n >>> Hi ha moltes possibilitats que l'error vingui de l'algorisme... ) print flush M6 3 string cvs print flush (\n\n)print flush
+ (G E N E R A L F A I L U R E) pstack stop
+}if
 
 %% per la farcidora de PDFs caldria tancar la instància en memòria runpdfend ?
 M6 9 eq

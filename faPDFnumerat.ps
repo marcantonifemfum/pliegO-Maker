@@ -1,5 +1,8 @@
 %!
-%% fem un PDF d'n pàgines numerat
+%% fem un PDF d'n pàgines numerat i acolorint les xifres segons els criteris triats d' nUp i enquadernació
+%% en base a l'array del mapa d'imposició, idèntic al que farem servir a pliegO'Maker
+%% permet generar exemples de fins a 3 nivells/llibrets enquadernats en mode encartat o en mode apilat
+%% de manera que perr mitjà d'acolorir les xifres es vegi més clar de si treballem correctament quan fem el llançat
 
 595
 /xPagina exch def
@@ -9,18 +12,258 @@
 
 <</PageSize[ xPagina yPagina ]>>setpagedevice
 
-1 1 8
-{
- 1 0 0 setrgbcolor
+%% tipografia
 % (/usr/share/fonts/truetype/noto/NotoMono-Regular.ttf)
- (/usr/share/fonts/truetype/hack/Hack-Regular.ttf)
- yPagina 2 div selectfont  %% numeració de pàgina centrada
- 3 string cvs dup stringwidth pop 2 div xPagina 2 div exch sub yPagina 4 div moveto show
- showpage
-}for
+(/usr/share/fonts/truetype/hack/Hack-Regular.ttf)
+findfont /dTipus exch def
 
-1 0 1 setrgbcolor
-0 0 xPagina yPagina rectfill
-1 1 1 setrgbcolor
-(9) dup stringwidth pop 2 div xPagina 2 div exch sub yPagina 4 div moveto show
-showpage
+%% colors
+[
+ {0 0 0 setrgbcolor}  %% 0 primer llibret negre
+ {1 0 0 setrgbcolor}  %% 1 segon llibret vermell
+ {0 0 1 setrgbcolor}  %% 2 tercer llibret blau
+ {0 1 0 setrgbcolor}  %% 3 quart llibret verd
+ {1 0 1 setrgbcolor}  %% 4 cinquè llibret magenta
+ {1 1 0 setrgbcolor}  %% 5 sisè llibret groc
+ {0 1 1 setrgbcolor}  %% 6 setè llibret cyan
+] /mColors exch def
+
+/iColors 0 def  %% índex de llibrets/colors
+
+%% Aquí treballem amb 1 sol PDF d'entrada que generarà 1 sol PDF de sortida (cada 2 planes anvers/revers seran 1 pliegOS)
+%%+1 cal saber quantes pàgines té el PDF d'entrada a imposar
+32 /pPDF exch def
+%+2 cal saber quin nUp hem triat
+8 /Nup exch def
+%%+3 cal saber quin enquadernat hem triat
+true  %% null = pàgines seguides fins que s'esgoti l'nUp (si falten pàgines s'omplen amb buides i si en sobren es talla) | true = encartat | false = apilat
+/nqdrnt exch def
+
+%% a partir d'aquí podem deduir un o més mapes d'imposició i generar l'array(s) corresponent(s)
+%% un cop generat l'array del mapa d'imposició automàtic hauria de ser l'usuari de pliegOS qui l'ajustés manualment si cal
+%% fem una petita rutina que fa això
+nqdrnt null eq
+{  %% pàgines seguides fins que s'esgoti l'nUp (si falten pàgines s'omplen amb buides i si en sobren es talla fins a esgotar nUp)
+ [
+  1 1  %% comencem per la 1 sumant 1
+  Nup 2 mul pPDF sub
+  dup 0 eq
+  {  %% el PDF d'entrada quadra exactament amb el nombre de pàgines de l'nUp triat
+   pop pPDF
+   /enBlanc 0 def
+  }
+  {
+   dup 0 gt
+   {  %% el PDF d'entrada té MENYS pàgines que l'nUp triat
+    /enBlanc exch def
+    pPDF
+   }
+   {  %% el PDF d'entrada té MÉS pàgines que l'nUp triat
+    pop /enBlanc 0 def
+    Nup 2 mul
+   }ifelse
+  }ifelse
+
+  {
+  }for
+
+  enBlanc
+  {
+   null
+  }repeat
+ ]
+}
+{  %% true = encartat | false = apilat
+ nqdrnt
+ {  %% encartem els pliegOS
+  [  %% inici de l'array d'imposició
+  pPDF Nup 2 mul sub  %% nombre de pàgines a part el llibret central
+  dup 0 eq
+  {  %% no hi haurà encartat perquè només dóna per 1 llibret exacte
+   pop
+   1 1 pPDF
+   {
+   }for
+   ]  %% fi de l'array d'imposició
+  }
+  {
+   dup 0 lt
+   {  %% hi haurà 1 sol llibret amb pàgines en blanc (null) que inicialment situarem a la cua
+    abs /dNULLS exch def
+    1 1 pPDF
+    {
+    }for
+    dNULLS
+    {
+     null
+    }repeat
+    ]  %% fi de l'array d'imposició
+   }
+   {  %% hi hauran 2 o més llibrets encartats
+    %% deduïm quants llibrets sortiran a part del llibret central
+    dup Nup 2 mul div ceiling cvi dup
+    /Nllibrets exch def  %% és el nombre de llibrets (arrays) que envolten al llibret central
+    div Nup 2 mul exch sub dup 0 ne  %% hi hauran pàgines en blanc?
+    {  %% SÍ, hi haurà pàgines en blanc
+     Nllibrets mul round cvi
+     /enBlanc exch def  %% nombre de pàgines en blanc
+    }
+    {  %% NO hi haurà pàgines en blanc
+     pop
+     /enBlanc 0 def
+    }ifelse
+
+    1 /PgEncartada exch def
+
+    Nllibrets
+    {  %% meitat dels llibrets encartats a l'esquerra
+     1 1 Nup
+     {
+      pop PgEncartada dup 1 add /PgEncartada exch def
+     }for
+     [
+    }repeat
+    enBlanc 0 ne  %% hi ha pàgines en blanc?
+    {  %% sí
+     Nup enBlanc sub dup 0 lt
+     {  %% si és més petit de zero és que també hi haurà pàgines en blanc al llibret central o a la penúltima array
+      abs cvi /dNULLSc exch def  %% nombre de null que indiquen pàgines en blanc al llibret central o a la penúltima array
+      /dNULLS Nup def  %% nombre de null que indiquen pàgines en blanc al llibret més extern
+      %% ara aquí cal esbrinar si /dNULLSc va al llibret central o a la penúltima array
+      Nllibrets 1 eq     %% només si és 1 durà null al llibret central
+      {
+       /blanquesALmig true def
+       /blanquesALpenultim false def
+      }
+      {
+       /blanquesALpenultim true def
+       /blanquesALmig false def
+      }ifelse
+     }
+     {
+      pop enBlanc cvi /dNULLS exch def  %% nombre de null que indiquen pàgines en blanc al llibret més extern
+      /blanquesALmig false def
+      /blanquesALpenultim false def
+     }ifelse
+     /blanquesAcua true def
+    }
+    {  %% no
+     /blanquesALmig false def
+     /blanquesAcua false def
+     /blanquesALpenultim false def
+    }ifelse
+
+    %% llibret central
+    blanquesALmig  %% n'hi ha?
+    {  %% fins on arriben les pàgines del PDF?
+     1 1 Nup 2 mul dNULLSc sub
+    }
+    {  %% comportament normal
+     1 1 Nup 2 mul
+    }ifelse
+    {
+     pop PgEncartada dup 1 add /PgEncartada exch def
+    }for
+    blanquesALmig  %% n'hi ha?
+    {
+     dNULLSc
+     {  %% acabem de farcir amb null el llibret central on no arriben les pàgines del PDF
+      null
+     }repeat
+    }if
+    ]
+
+    %% meitat dels llibrets encartats a la dreta
+    enBlanc 0 ne
+    {  %% hi ha pàgines blanques
+     blanquesALpenultim blanquesAcua and
+     {  %% a la cua i al penúltim array
+      Nllibrets 2 sub  %% fem tots els llibrets menys els 2 darrers
+     }
+     {  %% només a la cua
+      Nllibrets 1 sub  %% fem tots els llibrets menys el darrer
+     }ifelse
+    }
+    {  %% comportament normal
+     Nllibrets
+    }ifelse
+    {  %% repeat
+     1 1 Nup
+     {
+      pop PgEncartada dup 1 add /PgEncartada exch def
+     }for
+     ]
+    }repeat
+
+    %% aquí el penúltim llibret/array per ficar null com a pàgines en blanc en cas que n'hi hagi
+    blanquesALpenultim  %% hi ha pàgines en blanc a la penúltima array?
+    {
+     1 1 Nup dNULLSc sub  %% escrivim la cua de pàgines finals del PDF
+     {
+      pop PgEncartada dup 1 add /PgEncartada exch def
+     }for
+     %% la cua de pàgines en blac
+     dNULLSc
+     {
+      null
+     }repeat
+     ]
+    }if
+
+    %% aquí el darrer llibret/array per ficar null com a pàgines en blanc en cas que n'hi hagi
+    blanquesAcua  %% hi ha pàgines en blanc?
+    {
+     1 1 Nup dNULLS sub  %% escrivim la cua de pàgines finals del PDF
+     {
+      pop PgEncartada dup 1 add /PgEncartada exch def
+     }for
+     %% la cua de pàgines en blac
+     dNULLS
+     {
+      null
+     }repeat
+     ]
+    }if
+    %% la fi de l'array d'imposició ja va implícita
+   }ifelse
+  }ifelse
+
+ }
+ {  %% apilem els pliegOS
+
+ }ifelse
+}ifelse
+
+    (matriu d'imposició!)pstack quit
+
+%%+ CAL REDUÏR EL DIÀLEG AL MÍNIM ens guia la filosofia del #NOinterface
+%pOM: heu triat imposar el PDF (tal) o + per aquest ordre
+%pOM: heu triat crear # pliegOS (encartats o disposats de costat)
+%pOM: heu triat #Up i el PDF a imposar té # pàgines
+%+ hem de blindar l'error (ARA PETA!) de quan triem un nUp que no es correspon al nombre de pàgines del PDF (p.e. fer un 8+8 amb un PDF de només 8 pàgines)
+%pOM: el PDF (tal) té la mida justa de pàgines per l'nUp escollit
+%pOM: el PDF (tal) té # pàgines de més, imposarem les # primeres (però si el mapa/array és coherent ja no cal dir-ho)
+%pOM: el PDF (tal) té # pàgines de menys, deixarem les pàgines de # a # en blanc (cal dir-ho i aturar? o procedim?)
+%pOM: heu triat el mapa d'imposició: [...]
+%pOM: el mapa/es d'imposició que aplicarem serà/an: [...]
+%pOM: farem # imposicions (encartades o disposades de costat)
+%pOM: modifiqueu el mapa d'imposició [...] si voleu un altre comportament per aquest llançat
+
+
+%% mapes d'imposició tipus que sempre haurem de contrastar amb el nombre de pàgines del PDF a imposar
+%[]  %% 1 llibret segons l'nUp triat
+%[[]]  %% 2 llibrets encartats segons l'nUp triat
+%[1 2 3 4 5 6 7 8]  %% 2 llibrets apilats 2+2 | 1 llibret 4+4
+%[1 2 [3 4 5 6] 7 8]  %% 2 llibrets encartats 2+2
+%[1 2 [3 4 [5 6 7 8] 9 10 ] 11 12]  %% 3 llibrets encartats 2+2
+%[1 2 [3 4 [null null null null] 9 10 ] 11 12]  %% 3 llibrets encartats 2+2 amb 4 pàgines en blanc
+%[1 2 3 4 [5 6 7 8 9 10 11 12] 13 14 15 16]  %% 2 llibrets encartats 4+4
+%[1 2 3 4 5 6 7 8 [9 10 11 12 13 14 15 16 [17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32] 33 34 35 36 37 38 39 40] 41 42 43 44 45 46 47 48]  %% 3 llibrets encartats 8+8
+
+%% adaptem l'algorisme /espiapaq_fura3 rebatejat com /espiapaq_fura3_pliegOS per tal de generar exemples de mapes d'imposició de qualsevol complexitat
+%% es crida [...] /salva'l save def espiapaq_fura3_pliegOS salva'l restore ()
+(mapaDimposicio.txt) (w) file /Objected'Ara exch def  %% desem el fitxer d'escriptura a la variable q fa servir /espiapaq_fura3_pliegOS
+(espiapaq_fura3_pliegOS.ps) (r) file cvx exec
+/salva'l save def espiapaq_fura3_pliegOS salva'l restore ()
+
+(BROSSA?)pstack

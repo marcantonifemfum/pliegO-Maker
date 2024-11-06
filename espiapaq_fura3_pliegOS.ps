@@ -1,0 +1,493 @@
+%! adaptem l'algorisme /espiapaq_fura3 que ja opera dins a CaLi2CoPi rebatejat i adaptat per generar pàgines numerades
+%% amb el colors que identifiquen determinats exmples d'enquadernat i nUp
+
+
+/espiapaq_fura3_pliegOS
+{
+ %% fem el diccionari on definirem els objectype, així evitem treballar amb els if recursius
+ <<
+   %% és un paquet ...
+   /arraytype
+   {
+    %% exch dup AraBorro exch undef  % dóno de baixa l'element
+    %% donem de baixa un element cada vegada (cal saber el seu índex) marcant-lo amb un null
+    /iAo 0 def  %% índex general del paquet original
+    AraBorro_A
+    {  %% forall
+     iAo iKill eq
+     {
+      AraBorro_A iAo %% null
+      mark put
+      pop
+     }  %% si és l'element que hem de matar, doncs el matem
+     {
+      pop
+     } ifelse
+     iAo 1 add /iAo exch def
+    } forall
+    Objected'Ara ([) writestring  %% escrivim l'inici del paquet
+    iPaq 1 add /iPaq exch def  %% comptador d'índex pel proper paquet
+    %% ampliem l'array de paquets a 1 més i reincrustem l'anterior
+    Apaq length 1 add array dup Apaq 0 exch putinterval /Apaq exch def
+    Apaq exch iPaq exch put  %% incrustem el paquet que ventem a la darrera posició
+    %% purguem els nulls d'AraBorro que hi hagin
+    /iKill 0 def  %% l'índex a matar
+    {  %% loop
+     /iAo 0 def  %% índex general del paquet original
+     /iAr 0 def  %% índex general del paquet a repicar
+     AraBorro_A
+     iKill get %% null
+     mark eq
+     {
+      AraBorro_A dup length 1 sub array
+      /laNova exch def  %% el paquet repicat sempre tindrà n-1 elements
+      {  %% forall
+       iAo iKill eq
+       {
+        pop
+        iAr 1 sub /iAr exch def
+       }  %% si és l'element que hem de matar, doncs el matem
+       {
+        laNova exch iAr exch put
+       } ifelse  %% la resta els repiquem a laNova
+       iAo 1 add /iAo exch def
+       iAr 1 add /iAr exch def
+      } forall
+      laNova /AraBorro_A exch def
+      iKill 1 sub /iKill exch def  %% comptador per saber l'índex a matar
+     } if
+     iKill 1 add /iKill exch def  %% comptador per saber l'índex a matar
+     AraBorro_A length /maxLoop exch def  %% quan sortim
+     iKill maxLoop ge {exit} if
+    } loop
+    %% fi del purgat de nulls
+    Apaq iPaq 1 sub AraBorro_A put  %% incrustem el paquet còpia purgat a la posició anterior
+    /NohApaq false def
+    Apaq iPaq get /AraVento_A exch def
+    AraVento_A dup length array copy /AraBorro_A exch def exit
+   }
+   %% és un enter ...
+   /integertype 
+   {
+    %% fix per a tots els objectes
+    %% donem de baixa un element cada vegada (cal saber el seu índex) marcant-lo amb un null
+    /iAo 0 def  %% índex general del paquet original
+    AraBorro_A
+    {  %% forall
+     iAo iKill eq
+     {
+      AraBorro_A iAo  %% null
+      mark put
+      pop
+     }  %% si és l'element que hem de matar, doncs el matem
+     {
+      pop
+     } ifelse
+     iAo 1 add /iAo exch def
+    } forall
+    %% fix per a tots els objectes
+    256 string cvs
+
+%%UBESH
+dup == iPaq ==
+mColors iPaq get cvx exec
+dTipus yPagina 2 div scalefont setfont  %% numeració ponderada a mida de pàgina i centrada
+dup dup stringwidth pop 2 div xPagina 2 div exch sub yPagina 4 div moveto show
+showpage
+
+   }
+   %% és un booleà ...
+   /booleantype
+   {
+    %% fix per a tots els objectes
+    %% donem de baixa un element cada vegada (cal saber el seu índex) marcant-lo amb un null
+    /iAo 0 def  %% índex general del paquet original
+    AraBorro_A
+    {  %% forall
+     iAo iKill eq
+     {
+      AraBorro_A iAo  %% null
+      mark put
+      pop
+     }  %% si és l'element que hem de matar, doncs el matem
+     {
+      pop
+     } ifelse
+     iAo 1 add /iAo exch def
+    } forall
+    %% fix per a tots els objectes
+    6 string cvs
+   }
+   %% és un real ...
+   /realtype
+   {
+    %% fix per a tots els objectes
+    %% donem de baixa un element cada vegada (cal saber el seu índex) marcant-lo amb un null
+    /iAo 0 def  %% índex general del paquet original
+    AraBorro_A
+    {  %% forall
+     iAo iKill eq
+     {
+      AraBorro_A iAo  %% null
+      mark put
+      pop
+     }  %% si és l'element que hem de matar, doncs el matem
+     {
+      pop
+     } ifelse
+     iAo 1 add /iAo exch def
+    } forall
+    %% fix per a tots els objectes
+    10000 mul truncate 10000 div
+    256 string cvs
+   }
+   %% és una cadena ...
+   /stringtype
+   {
+    %% fix per a tots els objectes
+    %% donem de baixa un element cada vegada (cal saber el seu índex) marcant-lo amb un null
+    /iAo 0 def  % índex general del paquet original
+    AraBorro_A
+    {  %% forall
+     iAo iKill eq
+     {
+      AraBorro_A iAo  %% null
+      mark put
+      pop
+     }  %% si és l'element que hem de matar, doncs el matem
+     {
+      pop
+     } ifelse
+     iAo 1 add /iAo exch def
+    } forall
+    %%% fix per a tots els objectes
+    %%% salvaparent2.ps
+    %%% de com reescriure una string per solucionar el problema de no deixar-nos
+    %%% el backslash \ i els parentesi () sense el \ que els marca com a caràcters
+    %%% adaptat de l'algorisme NRMLTZDR2.ps del cercador de pal·líndroms TURURUT2
+    /fora
+    [  %% paquet de caràcters a cercar
+     (\134)  %% \
+     (\050)  %% (
+     (\051)  %% )
+    ] def
+    /FAfora 3 def  %% pestell de sortida del loop
+    /foraX
+    [  %% paquet de substitució de caràcter
+     (\\\\)
+     (\\\()
+     (\\\))
+    ] def
+    /ifora 0 def  %% índex de fora
+    %% aquí la cadena a reescriure correctament
+    %% (el primer \\\)el segon\\\( el tercer \)\(el quart i el cinque\(\))
+    mark exch
+    {  %% loop general
+     {  %% loop cerca/subs de caràcters
+      fora ifora get search
+      {
+       exch pop
+       dup length dup 2 add string dup 3 -1 roll foraX ifora get putinterval
+       dup 3 -1 roll 0 exch putinterval
+      }
+      {
+       exit
+      }ifelse
+      exch
+     } loop
+     %% aquest loop capgira tots els elements trobats a l'stack mentre n'hi hagi més d'un
+     counttomark 1 gt
+     {
+      counttomark /atura't exch def
+      /ici 2 def
+      {ici -1 roll ici 1 add /ici exch def ici atura't gt {exit} if} loop
+      {  %% loop empalmador de les cadenes trobades en 1 sola
+       dup length dup 3 index length add string dup 4 -1 roll
+       0 exch putinterval dup 3 -1 roll 4 -1 roll putinterval
+       counttomark 1 eq {exit} if
+      } loop
+     } if
+     ifora 1 add /ifora exch def
+     FAfora ifora eq {exit}if
+    } loop
+    exch pop  %% ens carreguem mark
+    %% fi de salvaparent2.ps
+    %% posem els caràcters ( ... ) com a cadena
+    dup length dup /lAstC exch def 2 add string dup 0 (\() putinterval
+    dup 3 -1 roll 1 exch putinterval dup lAstC 1 add (\)) putinterval
+   }
+   %% és un literal ...
+   /nametype
+   {
+    %% fix per a tots els objectes
+    %% donem de baixa un element cada vegada (cal saber el seu índex) marcant-lo amb un null
+    /iAo 0 def  %% índex general del paquet original
+    AraBorro_A
+    {  %% forall
+     iAo iKill eq
+     {
+      AraBorro_A iAo  %% null
+      mark put
+      pop
+     }  %% si és l'element que hem de matar, doncs el matem
+     {
+      pop
+     } ifelse
+     iAo 1 add /iAo exch def
+    } forall
+    %% fix per a tots els objectes
+    %% hem localitzat noms que excepcionalment NO compleixen la convenció dels 128 de màxim!
+    %% exemple ... 7Ciencies36_iMARTI 3.pdf d'A3copiseny
+    256 string cvs
+    dup length 16 eq
+    {
+     dup 10 get 95 eq  %% ens assegurem que el caràcter central sigui un _
+     {  %% reconstruïm les tres dades originals de referència indirecte d'objecte (# # R)
+      (_) search pop exch pop exch
+      {
+       (_) search {pop pop}{(R) exit}ifelse
+      } loop
+      3 -1 roll Objected'Ara exch writestring Objected'Ara ( ) writestring exch
+      Objected'Ara exch writestring Objected'Ara ( ) writestring   %% deixem la (R) per cua de l'algorisme
+     }
+     {  %% posem el caràcter / per la clau literal
+      dup length 1 add string dup 0 (/) putinterval dup 3 -1 roll 1 exch putinterval
+     }ifelse
+    }
+    {  %% posem el caràcter / per la clau literal
+     dup length 1 add string dup 0 (/) putinterval dup 3 -1 roll 1 exch putinterval
+    }ifelse
+   }  %% tots aquest tipus els posa el seu valor en una cadena de text i després en un paquet
+   %% és un diccionari ...
+   /dicttype
+   {  %% aquí cridem l'espiadic_fura2 i deixem una string buida per que no peti
+    %% fix per a tots els objectes
+    %% donem de baixa un element cada vegada (cal saber el seu índex) marcant-lo amb un null
+    /iAo 0 def  %% índex general del paquet original
+    AraBorro_A
+    {  %% forall
+     iAo iKill eq
+     {
+      AraBorro_A iAo  %% null
+      mark
+      put
+      pop
+     }  %% si és l'element que hem de matar, doncs el matem
+     {
+      pop
+     } ifelse
+     iAo 1 add /iAo exch def
+    } forall
+    %% fix per a tots els objectes
+    Objected'Ara (<<) writestring
+    /salva'l save def espiadic_fura2 salva'l restore ()
+    Objected'Ara (>>) writestring
+    %% el diccionari que quedaria a l'stack seria el presumible culpable
+    %% del null de més que sempre sortia a la cua del l'array
+    %% però realment ara integrat a Rustec ... hi queda?
+    %% deixem aquest codi com a test temporal per comprovar-ho
+    %% count 1 ne {exch dup type /dicttype eq {pop ( ... Hi ha el Dic dels Nulls!!)==}{exch}ifelse}if
+    %% si veiem que amb molts tests no hi surt l'eliminarem ...
+   }
+   %% és un null ...
+   /nulltype
+   {
+    %% fix per a tots els objectes
+    %% donem de baixa un element cada vegada (cal saber el seu índex) marcant-lo amb un null
+    /iAo 0 def  %% índex general del paquet original
+    AraBorro_A
+    {  %% forall
+     iAo iKill eq
+     {
+      AraBorro_A iAo  %% null
+      mark put
+      pop
+     }  %% si és l'element que hem de matar, doncs el matem
+     {
+      pop
+     } ifelse
+     iAo 1 add /iAo exch def
+    } forall
+    %% fix per a tots els objectes
+    pop (null)
+
+%%UBESH
+dup == iPaq ==
+%mColors iColors get cvx exec
+%dTipus yPagina 2 div scalefont setfont  %% numeració ponderada a mida de pàgina i centrada
+%3 string cvs dup stringwidth pop 2 div xPagina 2 div exch sub yPagina 4 div moveto show
+showpage
+
+   }
+   %% és una mark ...
+   /marktype
+   {
+    %% fix per a tots els objectes
+    %% donem de baixa un element cada vegada (cal saber el seu índex) marcant-lo amb un null
+    /iAo 0 def  %% índex general del paquet original
+    AraBorro_A
+    {  %% forall
+     iAo iKill eq
+     {
+      AraBorro_A iAo  %% null
+      mark put
+      pop
+     }  %% si és l'element que hem de matar, doncs el matem
+     {
+      pop
+     } ifelse
+     iAo 1 add /iAo exch def
+    } forall
+    %% fix per a tots els objectes
+    pop (mark)
+   }
+ >>
+ /furaP exch def
+ /AraVento_A exch def  %% pesquem el paquet
+ Objected'Ara ([) writestring  %% escrivim l'inici del paquet
+ /iPaq 0 def  %% índex de paquets a incrustar a l'array Apaq
+ /NohApaq true def  %% és imprescindible que comenci amb true ?
+ %% la idea és fer una array dels paquets que anem ventant (còpies no vinculades)
+ %% l'array anirà creixent a mida que anem entrant a paquets més interns
+ %% i d'aquestos anirem eliminant els elements ventats a mida que els anem ventant
+ %% fent-ne l'actualització/eliminació del array quan convingui
+ /Apaq 1 array def  %% paquet amb els arrays que anem ventant
+ %% deixem el paquet a trams a l'stack
+ %% aquest algorisme extrau trams d'un paquet en funció de la variable rAng
+ %% sempre que rAng sigui més petit que maxA, si no extrau tota l'array de forma intacte
+ /rAng 13 def  %% mida del tram a extraure, ÉS LA MILLOR QUE HEM TROBAT PER UNA ARRAY AL MÀXIM!!
+ /iRay 0 def  %% índex dinàmic d'inici d'extracció del tram
+ mark  %% pel counttomark!
+ AraVento_A  %% paquet a tractar
+ dup length /maxA exch def  %% mida del paquet
+ maxA rAng lt  %% la capacitat del paquet és més petita que el tram a extraure?
+ {
+  iRay maxA getinterval  %% extraiem el paquet de forma intacte
+ }
+ {
+  {
+   dup iRay rAng getinterval exch  %% extraiem el paquet
+   iRay rAng add /iRay exch def  %% actualitzem l'índex dinàmic d'inici d'extracció del tram
+   %% si queda per extraure una quantitat menor que rAng, l'agafem com a darrer valor
+   maxA iRay sub rAng lt {maxA iRay sub /rAng exch def}if
+   maxA iRay le {pop exit}if  %% si la capacitat del paquet és més petita o igual que l'índex dinàmic, sortim
+  } loop
+ } ifelse
+ %% fi de deixar el paquet a trams a l'stack
+ %% aquest loop capgira tots els elements trobats a l'stack
+ counttomark dup 1 gt
+ {  %% capgirem sempre que hi hagi més d'un paquet
+  /atura't exch def
+  /ici 2 def
+  {ici -1 roll ici 1 add /ici exch def ici atura't gt {exit} if} loop
+  %% per carregar-nos la mark
+  atura't 1 add -1 roll pop
+ }
+ {
+  pop exch pop /atura't 1 def
+ } ifelse
+ %%
+ %% ara ho farem amb un repeat en comptes d'un loop!
+ atura't
+ { %% repeat 0 de llegir l'array per trams
+  /AraVento_A exch def
+  %% AraVento i AraBorro són variables que s'aniran alternant el paquet intern d'esborrat
+  %% de les dades a mida que es vagin ventant
+  AraVento_A dup length
+  dup 0 eq
+  {
+   pop pop
+   %% 1 array
+   0 array  %% quan és una simple array buida no hi podem posar un null doncs p.e. al PDF 21KX75.pdf (d'Esko!) es dóna la curiositat que al diccionari 28 0 obj (una mena de Shading Pattern crec) l'entrada /Bounds ha d'estar buida [] i si duia [null] no donava error pero l'Acrobat no visualitzava res!
+  }
+  {
+   array copy
+  } ifelse %% filtre per arrays buides
+  /AraBorro_A exch def
+  save /salva'm exch def
+  {  %% loop 1
+   {  %% loop 2
+    /iKill 0 def  %% inicialitzem l'índex a matar
+    AraVento_A
+    {  %% forall
+     %% aquí interroguem l'objecte i tibem el seu type de la definició del diccionari furaP
+     dup type furaP exch get exec
+     Objected'Ara exch writestring
+     Objected'Ara  %% dup
+     ( ) writestring  %% flushfile
+     %% fi d'escriptura del valor i esbrinat de la mena
+     iKill 1 add /iKill exch def  %% comptador per saber l'índex a matar
+    } forall
+%%UBESH
+%iPaq ==
+%iAo ==
+%Apaq ==
+%iKill ==
+    NohApaq {exit}if  %% sortim si a l'array més allunyat ja no en niua cap més
+    /NohApaq true def  %% cada vegada que acabem de ventar un array ...
+   } loop  %% 2
+   %% purguem els nulls d'AraBorro que hi hagin
+   /iKill 0 def  %% l'índex a matar
+   {  %% loop
+    /iAo 0 def  %% índex general del paquet original
+    /iAr 0 def  %% índex general del paquet a repicar
+    AraBorro_A
+    %% filtre per arrays buides
+    %% sense aquest filtre el cas de l'objecte 9 0 del fitxer H200205081001000JAI.pdf
+    %% dóna un error típic d'array buida ...
+    %% [ Error: rangecheck; OffendingCommand: get ] %% Stack: 0 []
+    dup length 0 eq {pop Apaq length 0 eq {1 array /Apaq exch def}if exit} if
+    iKill get  %% null
+    mark eq
+    {
+     AraBorro_A dup length 1 sub array
+     /laNova exch def  %% el paquet repicat sempre tindrà n-1 elements
+     {  %% forall
+      iAo iKill eq
+      {
+       pop
+       iAr 1 sub /iAr exch def
+      }  %% si és l'element que hem de matar, doncs el matem
+      {
+       laNova exch iAr exch put
+      } ifelse  %% la resta els repiquem a laNova
+      iAo 1 add /iAo exch def
+      iAr 1 add /iAr exch def
+     } forall
+     laNova /AraBorro_A exch def
+     iKill 1 sub /iKill exch def  %% comptador per saber l'índex a matar
+    } if
+    iKill 1 add /iKill exch def  %% comptador per saber l'índex a matar
+    AraBorro_A length /maxLoop exch def  %% quan sortim
+    iKill maxLoop ge {exit} if
+   } loop
+   %% fi del purgat de nulls
+   Apaq iPaq AraBorro_A put  %% incrustem el paquet acabat de ventar i purgat a la darrera posició
+   %% eliminem enrera els paquets buits i reconstruïm Apaq a la mida justa per continuar el ventat
+   %% només sortirem quan Apaq estigui a 0
+   {  %% loop
+    Apaq iPaq get length 0 eq  %% quan trobem una array que no és a 0 sortim del purgat d'Apaq
+    {
+     Apaq length 1 sub Apaq exch 0 exch getinterval /Apaq exch def
+     Apaq length 0 eq {exit} if
+     %% aquí la cua del paquet
+     Objected'Ara  %% dup
+     (]) writestring  %% flushfile  % escrivim la cua del paquet
+    }
+    {
+     exit
+    } ifelse
+    iPaq 1 sub /iPaq exch def
+   } loop
+   Apaq length 0 eq {exit} if  %% pleguem ?
+   Apaq iPaq get /AraVento_A exch def  %% agafem el darrer array no zero per continuar el ventat
+   AraVento_A dup length array copy /AraBorro_A exch def  %% en fem la còpia pel purgat
+  } loop  %% 1
+  salva'm restore
+  %% counttomark 0 eq {pop exit}if  % sortim quan ja no hi hagi cap paquet a l'stack
+  %% dup type /arraytype ne {exit}if
+ } repeat  %% ARA NO loop  % 0 NOOOOOUUUUUU
+ Objected'Ara  %%dup dup
+ (]\012) writestring  %%EOL writestring flushfile  % escrivim el final del paquet
+} bind def
+%% fi de l'algorisme que reescriu un paquet espiapaq_fura3

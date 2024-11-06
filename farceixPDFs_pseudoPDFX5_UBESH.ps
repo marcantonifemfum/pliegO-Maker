@@ -231,13 +231,24 @@ bateiG
 %(UUUIIII)pstack quit
    /pedeefa exch def
 
-false
-{
+%%Scripting 3
+%false
+%{
+   %1% deixa una instància oberta a memòria sense cap objecte a l'stack que permet anar interrogant
+%   pedeefa (r) file dup /elF exch def runpdfbegin  %% cal tancar-la amb runpdfend al final
+
+   %3% inicialitzem per intervenir dins l'estructura del pdf, afegint noves branques de dades, com la dels formularis
+%   /Context1 <<>> .PDFInit def
+%   pedeefa Context1 .PDFFile
+%}
+%{
+%false
+%{
 %%Scripting 2
-   pedeefa (r) file /elF exch def
- elF runpdfbegin  %% inicialitzem el fitxer PDF
-}
-{
+%   pedeefa (r) file /elF exch def
+% elF runpdfbegin  %% inicialitzem el fitxer PDF
+%}
+%{
 %%Scripting 1
    %1% deixa una instància oberta a memòria sense cap objecte a l'stack que permet anar interrogant
    pedeefa (r) file dup /elF exch def runpdfbegin  %% cal tancar-la amb runpdfend al final
@@ -247,11 +258,14 @@ false
    /Context1 <<>> .PDFInit def
    pedeefa Context1 .PDFFile
 
+%%URLUBESH
 %% per què el text/tipografia dóna recursos a .PDFDRawPage per situar-se en el lloc correcte i una imatge o un vectorial NO?
    (/home/femfum/Documents/pliegOMakerUB/1paginaDINbuida.pdf) dup (r) file runpdfbegin
    /Context2 <<>> .PDFInit def
    Context2 .PDFFile
-}ifelse
+%}ifelse
+%}ifelse
+
 
 %(???)pstack quit
 %   Context1 .PDFInfo /NumPages get /pAimposar exch def  %% nombre de pàgines a imposar del PDF a incrustar
@@ -416,6 +430,7 @@ pop pop
 %[ exch 0 0 2 index 0 0 ] concat
 
 %%UBESH
+
  enQuadra
  {  %% només si hi ha CropBox actiu diferent de MediaBox
   %% la translació i el retall l'hem de fer per aquest ordre
@@ -450,9 +465,14 @@ pop pop
    Npgn cvx exec
 %%Un truc per començar més enllà de la pàgina 1 del PDF
 %4 add
-
    1 sub
 
+%%Scripting 3
+%false
+%{
+% Context1 exch .PDFDrawPage  %% imposem la pàgina Npgn però cridada com a índex i que hem tibat de M8
+%}
+%{
 %%UBESH un cop tinguem l'OK del mapa/array d'imposició revisat a ?, serà aquí on farem les crides al mapa d'imposició
 %% és aquí on procedim a fer jugar em mapa/array d'imposició
    M8 length 0 eq
@@ -485,30 +505,30 @@ pop pop
 %   /Context1 .PDFInit def
 %   pedeefa Context1 .PDFFile
 
-false
-{
+%false
+%{
 %%Scripting 2
 % elF runpdfbegin  %% inicialitzem el fitxer PDF
- 1 add pdfgetpage  %% agafa les dades de la pàgina i en deixa el seu diccionari a l'stack però aquí NO pas com a índex!
- pdfgetpage  %% pren el diccionari de pàgina i executa showpage
+% 1 add pdfgetpage  %% agafa les dades de la pàgina i en deixa el seu diccionari a l'stack però aquí NO pas com a índex!
+% pdfshowpage  %% pren el diccionari de pàgina i executa showpage
 % runpdfend  %% tanca el procés
 
 
-}
-{
+%}
+%{
 %%Scripting 1
       Context1 exch .PDFDrawPage  %% imposem la pàgina Npgn però cridada com a índex i que hem tibat de M8
 %%Hauríem d'explorar el comportament de /BeginPage /EndPage en relació a aquesta crida de l'scripting doncs es comporta de forma erràtica treballant amb pàgines en blanc
 %% doncs si no va acompanyada d'una segona crida a un PDF buit /Context2 no les situa allà on tocaria
-}ifelse
+%}ifelse
       %matrix currentmatrix ==
      }
      {  %% pàgina en blanc
-false
-{
+%false
+%{
 %%Scripting 2
-}
-{
+%}
+%{
 %%Scripting 1
       %% imposem una pàgina (la 9) que fa de blanc teòric
       %% hem vist que el mètode demana que dugui text o imatge, doncs amb vectorials no ens fa cas
@@ -517,7 +537,7 @@ false
 %% per què el text/tipografia dóna recursos a .PDFDRawPage per situar-se en el lloc correcte i una imatge o un vectorial NO?
       Context2 0 .PDFDrawPage
 
-}ifelse
+%}ifelse
 
 
 %(UEP!)pstack quit
@@ -526,6 +546,8 @@ false
 %0 0 xPagina yPagina rectfill
 %grestore
      }ifelse
+%}ifelse
+%%Scripting 3
 
 %grestore
 

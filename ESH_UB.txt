@@ -112,11 +112,12 @@ true
 %%M8 MAPA D'IMPOSICIÓ
 %% una array buida significa que no s'aplicaran canvis en l'ordre original de lectura del PDF a imposar
 %% posarem un enter del número de pàgina a imposar seguint l'ordre de lectura (ho mana la seqüència d'índex de l'array)
+%% o sigui, que podem fer qualsevol mena de repetició de pàgines i/o canvi d'ordre en la distribucció de les pàgines a imposar
 %% posarem un null en el punt de l'ordre de lectura on hi hagi d'haver una pàgina en blanc
-%% el nombre d'enters + null de l'array ha de ser igual al nombre de pàgines de l'nUp triat
+%% el nombre d'enters + null de l'array ha de ser igual o més petit al nombre de pàgines de l'nUp triat
 
-%[1    2   3    4    5    6    7    8   ]
- [null 8   null null null null null 7 ]
-%[ 1 2 null null null null null null]
+% [1    2    3    4    5    6    7    8 ]
+  [null 2    null 4    5    null 7    null]
+% [  ]
 
 
