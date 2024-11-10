@@ -163,9 +163,9 @@ dup /CddVf exch def
 {  %% la variable d'entorn NO existeix perquè executem l'applet en local via Terminal per línia de comanda
  CddVf
  {  %% UBESH interfície TXT
-%  false  %% fem visible la vora de la pàgina del llançat? (imposició) més endavant podrem posar-ho en una capa
  }
  {
+  % false  %% fem visible la vora de la pàgina del llançat? (imposició) més endavant podrem posar-ho en una capa
   true
  }ifelse
 %% (\n Ghostscript no pot capturar aquesta variable d'entorn!\n\n)print flush
@@ -324,7 +324,99 @@ dup /CddVf exch def
 %% (\n Ghostscript no pot capturar aquesta variable d'entorn!\n\n)print flush
 }ifelse
 
-%%M7 text a compondre
+%%UBESH
+%%M7 RESPECTEM L'ENQUADRAMENT DEL PDF D'ORIGEN ?
+%% capturem la variable d'entorn generada amb PHP com a PHP2PS2PHPgeneracioicapturadunavariabledentorn.php
+(MRCT_Xdefinir) getenv  %% la variable d'entorn existeix?
+{
+ dup length 0 eq 
+ {  %% arriba buida perquè executem via URL amb pliegOmaker.php sense paràmetres (mètode $_GET)
+  pop true  %% si l'eliminem del menú via mètode $_POST també
+ }
+ {  %% té dades perquè executem via URL amb index_##.php (mètode $_POST) o amb pliegOmaker.php amb paràmetres (mètode $_GET)
+  cvx exec  %% és una string!
+ }ifelse
+}
+{  %% la variable d'entorn NO existeix perquè executem l'applet en local via Terminal per línia de comanda
+ CddVf
+ {  %% UBESH interfície TXT
+ }
+ {
+  true
+ }ifelse
+%% (\n Ghostscript no pot capturar aquesta variable d'entorn!\n\n)print flush
+}ifelse
+
+%%UNESH
+%%M8 MAPA D'IMPOSICIÓ
+%% capturem la variable d'entorn generada amb PHP com a PHP2PS2PHPgeneracioicapturadunavariabledentorn.php
+(MRCT_Xdefinir) getenv  %% la variable d'entorn existeix?
+{
+ dup length 0 eq 
+ {  %% arriba buida perquè executem via URL amb pliegOmaker.php sense paràmetres (mètode $_GET)
+  pop []  %% si l'eliminem del menú via mètode $_POST també
+ }
+ {  %% té dades perquè executem via URL amb index_##.php (mètode $_POST) o amb pliegOmaker.php amb paràmetres (mètode $_GET)
+  cvx exec  %% és una string!
+ }ifelse
+}
+{  %% la variable d'entorn NO existeix perquè executem l'applet en local via Terminal per línia de comanda
+ CddVf
+ {  %% UBESH interfície TXT
+ }
+ {
+  []
+ }ifelse
+%% (\n Ghostscript no pot capturar aquesta variable d'entorn!\n\n)print flush
+}ifelse
+
+%%UNESH
+%%M9 ENQUADERNAT
+%% capturem la variable d'entorn generada amb PHP com a PHP2PS2PHPgeneracioicapturadunavariabledentorn.php
+(MRCT_Xdefinir) getenv  %% la variable d'entorn existeix?
+{
+ dup length 0 eq 
+ {  %% arriba buida perquè executem via URL amb pliegOmaker.php sense paràmetres (mètode $_GET)
+  pop null  %% si l'eliminem del menú via mètode $_POST també
+ }
+ {  %% té dades perquè executem via URL amb index_##.php (mètode $_POST) o amb pliegOmaker.php amb paràmetres (mètode $_GET)
+  cvx exec  %% és una string!
+ }ifelse
+}
+{  %% la variable d'entorn NO existeix perquè executem l'applet en local via Terminal per línia de comanda
+ CddVf
+ {  %% UBESH interfície TXT
+ }
+ {
+  null
+ }ifelse
+%% (\n Ghostscript no pot capturar aquesta variable d'entorn!\n\n)print flush
+}ifelse
+
+%%UNESH
+%%M10 ASSAGEM EL MAPA D'IMPOSICIÓ?
+%% capturem la variable d'entorn generada amb PHP com a PHP2PS2PHPgeneracioicapturadunavariabledentorn.php
+(MRCT_Xdefinir) getenv  %% la variable d'entorn existeix?
+{
+ dup length 0 eq 
+ {  %% arriba buida perquè executem via URL amb pliegOmaker.php sense paràmetres (mètode $_GET)
+  pop false  %% si l'eliminem del menú via mètode $_POST també
+ }
+ {  %% té dades perquè executem via URL amb index_##.php (mètode $_POST) o amb pliegOmaker.php amb paràmetres (mètode $_GET)
+  cvx exec  %% és una string!
+ }ifelse
+}
+{  %% la variable d'entorn NO existeix perquè executem l'applet en local via Terminal per línia de comanda
+ CddVf
+ {  %% UBESH interfície TXT
+ }
+ {
+  false
+ }ifelse
+%% (\n Ghostscript no pot capturar aquesta variable d'entorn!\n\n)print flush
+}ifelse
+
+%%M11 text a compondre
 (MRCT_tlab) getenv  %% la variable d'entorn existeix?
 {
  dup length 0 eq
@@ -408,12 +500,13 @@ dup /CddVf exch def
 }ifelse
 
 %% fi de MENÚ de capçalera
-
-/M9 exch def  %% composició de text
+/M11 exch def  %% text a compondre
 
 %%UBESH noves funcions
+/M10 exch def  %% ASSAGEM EL MAPA D'IMPOSICIÓ? 
+/M9 exch def  %% ENQUADERNAT
 /M8 exch def  %% MAPA D'IMPOSICIÓ
-/M7 exch def  %% RESPECTEM ELS RETALLS ORIGINALS ?
+/M7 exch def  %% RESPECTEM L'ENQUADRAMENT ORIGINAL?
 
 /M6 exch def  %% índex a l'algorisme de composició independent del nUp triat
 /M5 exch def  %% en cas que el plec no sigui proporcional (ràtio full/pàgina diferent)i, forcem mantenir la ràtio?
@@ -1717,6 +1810,7 @@ aNpgn
 
 /ar true def  %% gatell d'anvers/revers
 /iSeq 0 def  %% índex seqüencial per tota la sèrie de pàgines del full (anvers+revers)
+/nomesUNAvegada true def  %% obrim el gatell d'execució única
 
 {  %% stopped
 
@@ -1752,6 +1846,7 @@ _anversrevers
    {  %% true: la maquinària d'imposició treballa i l'algorisme componedor pinta la pàgina
     /compON true def  %% la maquinària d'imposició treballa
     /noNULL true def  %% la pàgina NO s'ignora i l'algorisme componedor treballa
+
     (         compon --pg. ) print flush
     %% estratègia pel numerador de pàgines, per tal tingui en compte si n'hi han en blanc
     aNpgn iSeq get dup
@@ -1780,9 +1875,9 @@ dup M8 dup length 0 eq
   iSeq 1 add /iSeq exch def
   iPln 1 add /iPln exch def
 
-  compON  %% l'algorisme componedor treballa?
-  {  %% treballa malgrat pinti o no els elements a la pàgina
-     %% pel fet que el componedor ha de ser dinàmic, necessitarà que no s'aturi malgrat no pinti (noNULL)
+  compON  %% la maquinària d'imposició treballa?
+  {  %% treballa malgrat pinti o no els elements a la pàgina (treballi o no l'algorisme del componedor)
+     %% pel fet que el componedor ha de ser dinàmic, necessitarà que no s'aturi la imposició malgrat no pinti (noNULL)
      %% i necessitarà poder treballar en base a valors aleatoris per calcular (que desarà) o als valors ja calculats (desats)
      %% ha de beure d'algunes dades del format de pàgina, com: noNULL, Npgn, Hrtzntl, xPagina, yPagina, etc.
 

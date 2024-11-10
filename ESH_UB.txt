@@ -26,7 +26,7 @@ true  %% true fem PDFs | false fem JPEGs
 
 %(/home/femfum/Documents/pliegOMakerUB/Hpdf/8CropBox_MediaBox_NOMESaLarrelPage_CropBox_QuadratsRectanglesVH_pla.pdf)
 %(/home/femfum/Documents/pliegOMakerUB/8paginesPDFnumerades.pdf)
-(/home/femfum/Documents/pliegOMakerUB/8numerades_ladarreraENblanc.pdf)
+(/home/femfum/Documents/pliegOMakerUB/9numerades_ladarreraENfucsia.pdf)
 
 }
 {
@@ -99,7 +99,8 @@ false
 
 
 
-%%M7 RESPECTEM ELS RETALLS QUE DUGUI EL PDF D'ORIGEN ?
+%%M7 RESPECTEM L'ENQUADRAMENT DEL PDF D'ORIGEN ?
+%% molts PDF duen uns retalladors activats (CropBox) com per exemple les publicacions que amaguen les creus de tall i creus de registre
 %% només té sentit quan activem l'algorisme 9 d'imposició de PDFs
 
 %% true respectem el /CropBox per a tot el document
@@ -114,10 +115,28 @@ true
 %% posarem un enter del número de pàgina a imposar seguint l'ordre de lectura (ho mana la seqüència d'índex de l'array)
 %% o sigui, que podem fer qualsevol mena de repetició de pàgines i/o canvi d'ordre en la distribucció de les pàgines a imposar
 %% posarem un null en el punt de l'ordre de lectura on hi hagi d'haver una pàgina en blanc
-%% el nombre d'enters + null de l'array ha de ser igual o més petit al nombre de pàgines de l'nUp triat
+%% el nombre d'enters + null de l'array ha de ser igual o més petit al nombre de pàgines de l'nUp triat (en manual filtrarem aquest possible error)
+%% ara es permet que tot siguin pàgines en blanc (sembla no tenir massa sentit però ho mantenim)
 
-% [1    2    3    4    5    6    7    8 ]
-  [null 2    null 4    5    null 7    null]
+% [ 8    2    1    4    5    1    7    1 ]
+  [null  null null null null null 9    null]
 % [  ]
+
+
+
+%%M9 ENQUADERNAT
+%% podem triar entre tres tipus d'enquadernat:
+%% null = 1 sol llibret, fins que s'esgoti el llançat (si falten pàgines s'omplen amb buides i si en sobren es talla)
+%% true = encartat, amb diversos llibrets (fins que s'esgotin les pàgines del PDF i si falten pàgines s'afegeixen en blanc a la cua del llançat)
+%% false = apilat, amb diversos llibrets (fins que s'esgotin les pàgines del PDF i si falten pàgines s'afegeixen en blanc a la cua del llançat)
+
+true
+
+
+%%M10 ASSAGEM EL MAPA D'IMPOSICIÓ?
+%% true = si assagem el mapa d'imposició no crearem el PDF amb el pliegOS i només donarem com a resultat una matriu per a M8
+%% false = aplicarem el mapa d'imposició definit a M8 i generarem el PDF amb el pliegOS
+
+true
 
 

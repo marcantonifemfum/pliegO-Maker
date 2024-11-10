@@ -4,7 +4,7 @@ DESCRIPCIÓ DE FEINA FETA
 https://pad.femprocomuns.coop/pressUBpliegOS_ESH
 
 + etiquetem els paràgrafs dels registres de feina segons el seu estat:
-@VIST | @FET (comentaris) | @PENDENT | @ESTEMFENT
+@VIST | @FET (comentaris) | @PENDENT | @ESTEMFENT | @URGENT
 
 #A1    Anàlisi dels PDFs a imposar:
 #    A1 >> RI: FemFum_CaLi2CoPi_042_*.ps / farceixPDFs_pseudoPDFX5_ReferenceXObjects_EnricSenabre.ps
@@ -163,6 +163,7 @@ gs -q -dNOSAFER -o re.pdf -sDEVICE=pdfwrite -f nUp_pliegOS_UBESH.ps
 
 + operacions amb PDFs via línia de comanda GS:
 + sumar PDFs un darrera l'altre (si porta capes se les poleix!) gs -q -dNOPAUSE -dBATCH -sDEVICE=pdfwrite -sOutputFile=aimposarambcapes.pdf 21700154803_cubDeNoordzij.pdf 21700154803_cubDeNoordzij.pdf 21700154803_cubDeNoordzij.pdf
++ extraure pàgines de PDF
 @VIST
 
 
@@ -203,9 +204,11 @@ gs -q -dNOSAFER -o re.pdf -sDEVICE=pdfwrite -f nUp_pliegOS_UBESH.ps
 + aquest tipus d'estructura fa fracassar la interrogació del MediaBox via PDFscripting
 @FET
 
-+ potser ens cal afegir un nou gatell /aMESaMES on modifiquem lleugerament certs comportaments del gatell principal /QueLiFemFer
-+ per exemple per esborrar eficientment /CropBox sense que afecti a l'anàlisi XRay que necessitem preservar per poder replicar el CropBox via rectclip de la pàgina del llançat dins la plana d'imposició
-@PENDENT?
++ afegim a CaLi2CoPi un nou gatell… /aMESaMES …que és qui permet elimonar tots els Bbox menys el MediaBox
+@FET
++ fem possible que la capçalera de farceixPDFs_pseudoPDFX5_UBESH.ps actui amb la variable /nomesUNAvegada que assegura «una única i primera execució» amb qualsevol plana del PDF
+@FET
+
 
 + afinem millor la captura d'errors dels algorismes de composició, afegint un indicador a l'stopped general de… nUp_pliegOS_UBESH.ps …que ens diu l'índex de l'algorisme componedor que estem executant PERÒ ALERTA PERQUÈ AQUEST AVÍS HAURIA DE SORTIR DESPRÉS DE…  ...FET (certa morralla al /tmp pot ser de profit) …i/o hauriem de marcar l'inici de la rutina 9: farceix…
 + cal tenir en compte que CaLi2CoPi s'executa dins el context de nUp_pliegOS_UBESH
@@ -261,7 +264,8 @@ gs -q -dNOSAFER -o re.pdf -sDEVICE=pdfwrite -f nUp_pliegOS_UBESH.ps
 @FET
 
 + hem d'afegir una nova opció a la interfície per saber com actuem davant de l'existència de /CropBox amb valor diferent al /MediaBox. Dit d'una altra manera: com que el document duu uns retalladors activats, els conservem? o deixem al descobert tota la superfície del format de pàgina original?
-@PENDENT?
++ esborrem eficientment /CropBox sense que afecti a l'anàlisi XRay que necessitem preservar per poder replicar el CropBox via rectclip de la pàgina del llançat dins la plana d'imposició
+@FET
 
 #A2     Planificació de com farem la redistribució de pàgines en la proposta d'imposició:
     A2 >> RI: nUp_pliegOS_*.ps / farceixPDFs_pseudoPDFX5_ReferenceXObjects_EnricSenabre.ps
@@ -307,6 +311,7 @@ ignorar per qualsevol criteri
 + tenim escrit un algorisme que resol i genera tota mena de matrius/mapes d'imposició llegint 3 dades… pàgines del PDF/nUp/enquadernat …per exemple:
 [1 2 3 4 5 6 7 8 [9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24] 25 26 27 28 29 30 31 32]
 [1 2 3 4 [5 6 7 8 [9 10 11 12 13 14 15 16] 17 18 19 20] 21 null null null]
++ hem generat els algorismes d'encartament i desencartament: els tenim a dins de… faPDFnumerat.ps …i els haurem d'integrar dins la maquinària de… nUp_pliegOS_*.ps / farceixPDFs_pseudoPDFX5_UBESH.ps
 @FET
 
 + el comportament possible de l'array el podem veure amb l'exemple 8paginesPDFnumerades.pdf
@@ -327,25 +332,32 @@ ignorar per qualsevol criteri
 + casuístiques PDFs d'entrada/PDFs de sortida:
     1 PDF d'entrada > 1 pliegOS de sortida (en 1 sol PDF)
     1 PDF d'entrada > 2 o+ pliegOS de sortida (en 1 sol PDF)
-@FET
+@ESTEMFENT
 
     2 o+ PDFs d'entrada > 1 o+ pliegOS de sortida (en 1 sol PDF)
 @PENDENT
 
-+ haurem de posar un filtre per veure si (1) el length de l'array equival al length de l'nUp (2) si el nombre d'elements de l'array que NO són null és igual o més petit que el nombre de pàgines del PDF a imposar (3) si el número de pàgina més gran que hi hagi a l'array és igual o més petit que el número de pàgines del PDF a imposar
-@PENDENT?
++ haurem de posar un filtre per veure si:
+(1) el length de l'array (i les aniuades també) equival al length de l'nUp o múltiple = pàgines en blanc?
+(2) si el nombre d'elements de l'array que NO són null és igual o més petit que el nombre de pàgines del PDF a imposar
+(3) si el número de pàgina més gran que hi hagi a l'array és igual o més petit que el número de pàgines del PDF a imposar
+@URGENT
 
 + processant/pujant només 1 sol PDF, aquestes serien les 2 arrays d'1 PDF de 8 pàgines fet amb 2 pliegOS 2+2 encartats: [1 2 [3 4 5 6] 7 8]
 + i aquesta la d'1 PDF de 12 pàgines amb 3 pliegOS 2+2 encartats [1 2 [3 4 [5 6 7 8] 9 10] 11 12]
-+ això és extrapolable a qualsevol combinació nUp i hauríem de fer un petit algoritme que muntes aquestes arrays per guiar l'execuciói
++ això és extrapolable a qualsevol combinació nUp
+
++ fem un petit algoritme que munta aquestes arrays per guiar l'execució en els diferents modes d'enquadernat, en base al nombre de pàgines del PDF i el llançat (nUp) triat, que ha de servir d'ajut per donar una total llibertat d'imposició
 @FET
++ son a faPDFnumerat.ps i cal traslladar-les a farceixPDFs_pseudoPDFX5_UBESH.ps
++ cal decidir molt bé on les posem doncs ha de ser després que CaLi2CoPi hagi analitzat el PDF
+@URGENT
 
 + quan hi hagi més d'1 PDF a imposar haurem de replicar el protocol afegint el comportament específic pel segon PDF pujat (i màxim un tercer)
 + una altra qüestió seran els segons o tercers PDFs/JPEGs a pujar al servidor que s'hagin d'utilitzar per incrustar continguts dins de l'nUp triat
 @PENDENT
 
 + hauríem de fer treballar l'algorisme de reglatge2.ps de la mateixa manera? NO!
-@ESTEMFENT
 
 
 
@@ -381,6 +393,7 @@ pOM: heu triat el mapa d'imposició: […]
 pOM: el mapa/es d'imposició que aplicarem serà/an: […]
 pOM: farem # imposicions (encartades o disposades de costat)
 pOM: modifiqueu el mapa d'imposició […] si voleu un altre comportament per aquest llançat
++ cal situar quants i on aniran aquests missatges, valorant molt bé els seus 2 canals de sortida: el prompt del Terminal i un HTML per la web
 @ESTEMFENT (en un primer nivell)
 
 
@@ -511,35 +524,82 @@ pOM: modifiqueu el mapa d'imposició […] si voleu un altre comportament per aq
 
 
     07.11.2024
+- - - - - - - - HT 5
+
+%%H: de 09h45 a 11h30
+%%H: de 17h00 a 20h15
+
+
+
+    08.11.2024
+- - - - - - - - HT 3.25
+
+%%H: de 07h45 a 08h15
+%%H: de 11h15 a 12h30
+%%H: de 19h00 a 20h30
+
+
+
+    09.11.2024
+- - - - - - - - HT 2.50
+
+%%H: de 11h30 a 13h00
+%%H: de 16h30 a 17h30
+
+
+
+    10.11.2024
 - - - - - - - - HT
 
-%%H:
-
-CUA DE COSES PENDENTS:
-+ revisar els @PENDENT? per certificar si s'ha fet o no
-+ nova revisió de la interfície TXT pel que ja tenim implementat o a punt d'integrar
+%%H: de 07h45 a 08h45
+%%H: de 10h00 a 11h15
+%%H: de 18h00 a
 
 
-+ ens cal blindar per documentar a l'usuari quan hi hagi errors en la captura de dades de capçalera, tant per quan es faci servir la interfície TXT com per via web o URL
+
++ fem un duplicat de l'aplicació …/REpublica/plec_ca.html …traduïda al català per una urgència de l'Enric a…
+https://pliegos.net/maker/plec/plec_ca.html
+@FET
+
++ comencem a explicar els algorismes d'encartat/apilat i gestió de pàgines en blanc tot fent proves progressivament
+@FET
+
++ revisada la interfície TXT pel que ja tenim implementat o a punt d'integrar
++ revistada l'estructura de noves variables d'entorn (encara per definir) pel que ja tenim implementat o a punt d'integrar
+@FET
+
++ ens cal blindar per documentar a l'usuari quan hi hagi errors en la captura de dades de capçalera, tant per quan es faci servir la interfície TXT com per via web o URL (tot i que és més improvable que això passi)
 @PENDENT
 
 + hem de tornar a raonar tota la lògica nuclear que fa que pliegO'Maker pugui imposar i compondre a la vegada, amb total independència entre totes dues tasques
 + la clau de tot gira al voltant d'invocar… setpagedevice i showpage …al componedor (però no pas als algorismes de composició que ho tenen prohibit) i haver personalitzat el comportament de dos procediments… /BeginPage i /EndPage …que es defineixen dins el diccionari que crida… setpagedevice …que invoca /BeginPage una vegada i cada vegada que s'executa… showpage …invoca /EndPage i un nou /BeginPage
+
 + intentem descriure la mecànica de l'algorisme-ànima de pliegOS i fer-nos preguntes:
+
     · ¿com és que podem mantenir la continuitat del componedor (compaginant text/imposant pàgines) seguint l'ordre de lectura de les pàgines, si el que fem és imposar de forma discontínua les pàgines del llançat a cada una de les dues planes (anvers/revers) d'un full?
+        L'ordre de composició vs l'ordre del llançat? …imposar i compondre a la vegada, amb total independència entre totes dues tasques
+        L'exemple més clar que explica aquesta estratègia és la del algoritme que escriu una sola línia de text que ocupa, de punta a punta, tota la tripa del llibret. Això és:
+
     · ¿quin és el paper clau que juguen els procediments /BeginPage /EndPage, que redefinim, en relació al context de treball de setpagedevice i showpage ?
+        És el fet de poder invocar 'showpage' sense que la plana, amb les pàgines que anem imposant a dins, sigui creada fins que no haguem acabat el llançat
+
     · ¿l'algorisme componedor recorre i treballa 2 vegades el joc total de pàgines del llançat?
+        Sí, però…
+
     · ¿quin sentit té xafar o enretirar la composició? sigui perquè imposem PDFs o sigui perquè componem un determinat contingut de text/gràfics
+        La total llibertat de composició que ens permet…
+
 @ESTEMFENT
 
-+ el mètode que ara hem implementat per la gestió de pàgines en blanc i/o el canvi d'ordre o repetició de les pàgines del llançat, s'aprofita d'un curiós comportament de les crides d'Scripting que encara no hem acabat d'entendre i això ens fa sospitar que hi ha d'haver un altre mètode més elegant d'arribar al mateix resultat
+
++ el mètode que ara hem implementat per la gestió de pàgines en blanc i/o el canvi d'ordre o repetició de les pàgines del llançat, s'aprofita d'un curiós comportament de les crides d'Scripting que encara no hem acabat d'entendre (fent una crida a un altre fitxer PDF en blanc) i això ens fa sospitar que hi ha d'haver un altre mètode més elegant d'arribar al mateix resultat
 + segurament és un malentès visual que ens capgira les pàgines al no fer servir el gatell -dAutoRotatePages=/None a la línia de comanda d'execució del gs
 + ara hem trobat el lloc… a nUp_pliegOS_UBESH.ps …on podem activar aquest control sense necessitat de fer una crida a un altre fitxer PDF en blanc per fer pàgines en blanc a la imposició final, ho hem etiquetat amb ELEGANT
 @ESTEMFENT
 + fem un generador de PDF amb n pàgines numerades de prova (faPDFnumerat.ps) per veure com es comporta farceixPDFs_#.ps i l'estratègia de pàgines en blanc (xafa/enretira)
 @FET
 + analitzem l'execució d'un 4+4 per veure de com procedir amb l'array /mapaDimposicio tant per les pagines en blanc com pel canvi d'ordre
-@ESTEMFENT
+@FET
 
 
 

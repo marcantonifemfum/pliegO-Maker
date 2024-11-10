@@ -1,6 +1,6 @@
 %!
 %% És una alternativa a... inocula.ps (incrusta via Reference XObjects, un PDF dins un altre)
-%% A partir del GS 9.55 s'han documentat unes funcions de PostScript que ja existien en versions anteriors de l'interpret...
+%% A partir del GS 9.55 s'han documentat unes funcions de PostScript que ja existien de forma oculta en versions anteriors de l'interpret...
 %% https://ghostscript.readthedocs.io/en/latest/Language.html#scripting-the-pdf-interpreter
 %% la manera com ho expliquen a «Scripting the PDF interpreter» dóna la sensació que no es podien cridar en versions anteriors
 %% cosa que hem desmentit gràcies a documentar el què encara ens sembla un Bug o una mala documentació del manual
@@ -9,7 +9,7 @@
 %% podem utilitzar aquestes funcions que es documenten i a partir de la 9.55 hem de fer servir el gatell -dNEWPDF=false
 %% de fet aquest gatell és transparent si el fem servir en versions més antigues, via línia de comanda, i no actua
 %% llavors forcem l'ús de l'itèrpret PS en comptes de nou en C, que és on hi tindrem el problema a partir de la v.10.# doncs
-%% ja anuncien que l'eliminaran (fins la versió 10.0 encara rutlla) ...si no corregeixen els comportaments d'aquestes crides
+%% ja anuncien que l'intèrpret PS l'eliminaran (fins la versió 10.0.0 encara rutlla) ...si no corregeixen els comportaments d'aquestes crides
 %% dins el nou intèrpret (que ara no funcionen bé), haurem d'optar per incorporar CaLi2CoPi a l'execució amb pliegO'Maker
 
 %% Què fem doncs?
@@ -17,25 +17,28 @@
 %% via PDF scripting, consultant abans un seguit de coses:
 %% 01: quantes planes té el PDF a imposar? (en condiciona el comportament segons l'nUp triat)
 %% 02: la plana duu /CropBox? (aquest paràmetre resulta crític doncs ens ensorra tota l'estratègia del llançat)
-%% 03: si la plana no duu /CropBox seguim sense més entrebancs
+%% 03: si la plana no duu /CropBox seguim sense més entrebancs (alerta perquè hem detectat que l'Scripting no detecta el CropBox si s'hereta des de l'arrel /Pages!)
 %% 04: si la plana duu /CropBox el comparem amb el /MediaBox, si són idèntics eliminem /CropBox i seguim sense més entrebancs
 %% 05: si /CropBox i /MediaBox no són idèntics, capturem les dades del /CropBox i l'eliminem, el Bbox capturat en servirà per:
 %% 06: afegir un clip complementari al de la pàgina del llançat per tal s'imposi corregint l'escalat del retall del crop
 %% 07: la plana duu /TrimBox? (aquest paràmetre no és crític doncs només informa del tall de guillotina)
 %% 08: si a plana duu /TrimBox (i també /CropBox o no) podríem forçar fer treballar sempre /TrimBox amb el clip complementari
 %% 09: sigui com sigui /TrimBox també l'hauríem d'eliminar doncs ens condiciona, com la resta d'arees (/ArtBox /BleedBox)
-%% 10: uns valors particulars de les pàgines del llançat que ara ja no juguen cap paper dins la plana sencera de l'nUp
-%% 11: fent referència al punt 01 seria senzill contemplar el cas de quan el PDF a imposar té 2 pàgines dins 1 mateixa plana
+%% 10: doncs són uns valors particulars de les pàgines del llançat que ara ja no juguen cap paper dins la plana sencera de l'nUp
+%% 11: fent referència al punt 01 seria senzill contemplar el cas de quan el PDF a imposar ja té 2 pàgines imposades dins 1 mateixa plana
 
 %% A data d'avui (desembre de 2022) aquesta funcionalitat d'intercanvi de dades que recull la ISO 15930 PDF/X-5 (pdf 1.6)
 %% https://www.iso.org/standard/55844.html ...a nivell de producte final, només coneixem l'Adobe Acrobat (Reader o Professional)
 %% que contempli com a detectables els anomenats... Reference XObjects ...dins un programari d'ús per la indústria
-%% cap dels PDF Viewers que s'han implementat darrerament per als navegadors (Firefox/Chrome) ni a Linux, ho contempla
+%% cap dels PDF Viewers que s'han implementat darrerament per als navegadors (Firefox/Chrome) ni a Linux (Okular tampoc?), ho contempla
 %% El projecte pliegOS a través de pliegO'Maker implementa de manera bàsica Reference XObjects amb l'algoritme... inocula.ps
 
 %% Amb el codi que segueix, arribem als mateixos resultats que els plantejats per la filosofia dels Reference XObjects, però
 %% sense la necessitat de fer servir un programari de visualització (PDF Viewer) que ho activi de forma remota, doncs el
 %% resultat de la crida, pàgina a pàgina, ja queda completament integrada dins el nou PDF resultant
+
+%% més endavant podrem explorar les possibilitats de CaLi2CoPi amb l'opció que vam desenvolupar per Masats, etiquetada %%MASATSencvlct, que permet imposar encavalcant
+%% diverses pàgines de PDF una a sobre l'altra, aquesta funció adaptada ens podria servir per fer el mateix que ara fem via PDF Scripting
 
 %% crides al GS segons la versió:
 %% anteriors a 9.55
@@ -44,16 +47,16 @@
 %% ?
 
 %%REpublica hem integrat FemFum_CaLi2CoPi_042.ps per tal d'eliminar (de moment a sac) la clau /CropBox
-%% i filtrar PDFs amb signatura digital o amb encriptacio de seguretat
-%%UBESH hem de millorar l'anàlisi i comportament
+%% i filtrar PDFs amb signatura digital, encriptacio de seguretat i etc.
+%%UBESH hem afinat l'anàlisi i comportament per eliminar /CropBox
+
+ %%Dos mètodes de lectura que posem fora de l'anellat noNULL per tal de fer possible un mapa d'imposició buit (tot NULLs)
+ false
+ /MdL exch def
 
 noNULL  %% pinta el contingut de pàgina?
 { %% anellem el codi sencer perquè no és aleatori
 
-
-%%Dos mètodes de lectura
- false
- /MdL exch def
 
  MdL
  {  %% diversos fitxers d'1 sola pàgina separats
@@ -122,13 +125,16 @@ noNULL  %% pinta el contingut de pàgina?
   %% aquí podem treure conclusions de si l' M2, pel pliegOS escollit, podrem fer el llançat de totes les pàgines
   %% si en quedaran de buides a pliegOS (EP! n'hi pot haver de forçades) o si no les podrem imposar totes
  }
- {  %% un sol fitxer de nUp x 2 pàgines
-  iSeq 1 eq  %% només 1 cop al principi
+ {  %% un sol fitxer d'n pàgines
+%%UBESH quan el PDF NO es comença a imposar per la pàgina 1 (p.e. fem la primera en blanc o canviem l'ordre de les pàgines) la variable /iSeq ja no és fiable
+%  iSeq 1 eq  %% només 1 cop al principi
+%iPln (!!!!!!!!)pstack quit
+nomesUNAvegada  %% sigui una pàgina en blanc o sigui o no la pàgina 1
+
   {  %% aquí dins és crític què i com ho posem
+/nomesUNAvegada false def  %% tanquem el gatell d'execució única
+
    %0% adreça al pdf a incrustar
-
-   (\n\n ::: rutina UBESH \n\n)print flush
-
 %%EP cal saber quina bruixa o paràmetre del PDF fa que l'escala no rutlli com cal
    %(/Users/femfum/515-Book_Manuscript-1184-2-10-20221020.pdf)
    %(/Users/femfum/Downloads/Origin_of_Patterning_LU_OPT.pdf)
@@ -188,7 +194,6 @@ noNULL  %% pinta el contingut de pàgina?
    {  %% la variable d'entorn NO existeix perquè executem l'applet en local via Terminal per línia de comanda
     CddVf
     {
-   %  false  %% fem visible la vora de la pàgina del llançat? (imposició) més endavant podrem posar-ho en una capa
     }       
     {
 %    (ETSAQUIQUANEXECUTOALTERMINAL?)pstack quit	    
@@ -230,6 +235,363 @@ grestore
 bateiG
 %(UUUIIII)pstack quit
    /pedeefa exch def
+
+%%UBESH
+%% Ara treballem amb 1 sol PDF d'entrada que generarà 1 sol PDF de sortida (cada 2 planes del PDF resultant, anvers/revers, serà 1 pliegOS)
+%%+1 cal saber quantes pàgines té el PDF d'entrada a imposar
+aPmaker  %% aquest paquet desat per CaLi2CoPi duu tantes arrays com pàgines amb els valors del CropBox, en cas d'existir, i si no del MediaBox
+length /pPDF exch def
+%%+2 cal saber quin nUp hem triat
+M2 /Nup exch def
+%%+3 cal saber quin enquadernat hem triat
+M9  %% null = fem 1 sol llibret de pàgines seguides fins a esgotar l'nUp (si falten pàgines s'omplen amb buides a la cua i si en sobren es talla)
+       %% true = encartem amb tants llibrets com pàgines tingui el PDF i l'nUp triat (si falten pàgines s'omplen amb buides a la cua)
+       %% false = apilem amb tants llibrets com pàgines tingui el PDF i l'nUp triat (si falten pàgines s'omplen amb buides a la cua)
+/nqdrnt exch def
+
+%%UBESH
+%%M10 ASSAGEM EL MAPA D'IMPOSICIÓ?
+%% true = si assagem el mapa d'imposició no crearem el PDF amb el pliegOS i només donarem com a resultat una matriu per a M8
+%% false = aplicarem el mapa d'imposició definit a M8 i generarem el PDF amb el pliegOS
+%% un cop generat l'array del mapa d'imposició automàticament, haurà de ser l'usuari de pliegOS qui l'ajusti manualment si li cal
+M10
+{  %% NO fem el llançat i només generem el mapa d'imposició en base al nombre de pàgines del PDF i l'enquadernat triat
+
+%%UBESH sedassem | garbellem | destriem
+%(\n\n | | | | | | | | | | | | | | | | | | | | | | | | | | | | | |\n)print flush
+%(\n\n - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n)print flush
+%(\n\n + + + + + + + + + + + + + + + + + + + + + + + + + + + + + +\n)print flush
+%(\n\n ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~\n)print flush
+(\n\n / / / / / / / / / / / / / / / / / / / / / / / / / / / / / /\n)print flush
+( \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \n\n)print flush
+(                s   e   d   a   s   s   e   m\n)print flush
+(\n \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \n)print flush
+( / / / / / / / / / / / / / / / / / / / / / / / / / / / / / /\n)print flush
+%( ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~\n\n)print flush
+%( + + + + + + + + + + + + + + + + + + + + + + + + + + + + + +\n\n)print flush
+%( - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n\n)print flush
+%( | | | | | | | | | | | | | | | | | | | | | | | | | | | | | |\n\n)print flush
+
+ %% aquesta rutina genera mapes d'imposició en els 3 tipus d'enquadernat:
+ nqdrnt null eq
+ {  %% 1 sol llibret de pàgines seguides fins que s'esgoti l'nUp (si falten pàgines s'omplen amb buides a la cua i si en sobren es talla)
+  [
+   1 1  %% comencem per la 1 sumant 1
+   Nup 2 mul pPDF sub
+   dup 0 eq
+   {  %% el PDF d'entrada quadra exactament amb el nombre de pàgines de l'nUp triat
+    pop pPDF
+    /enBlanc 0 def
+   }
+   {
+    dup 0 gt
+    {  %% el PDF d'entrada té MENYS pàgines que l'nUp triat
+     /enBlanc exch def
+     pPDF
+    }
+    {  %% el PDF d'entrada té MÉS pàgines que l'nUp triat
+     pop /enBlanc 0 def
+     Nup 2 mul
+    }ifelse
+   }ifelse
+
+   {
+   }for
+
+   enBlanc
+   {
+    null
+   }repeat
+  ]
+  /mapaDimposicio exch def
+ }
+ {  %% tants llibrets com faci falta fins a esgotar les pàgines del PDF d'entrada per l'nUp triat
+  nqdrnt  %% true = encartat | false = apilat
+  {  %% encartem els pliegOS
+   [  %% inici de l'array d'imposició
+   pPDF Nup 2 mul sub  %% nombre de pàgines a part el llibret central
+   dup 0 eq
+   {  %% no hi haurà encartat perquè només dóna per 1 llibret exacte
+    pop
+    1 1 pPDF
+    {
+    }for
+    ]  %% fi de l'array d'imposició
+   }
+   {
+    dup 0 lt
+    {  %% hi haurà 1 sol llibret amb pàgines en blanc (null) que inicialment situarem a la cua
+     abs /dNULLS exch def
+     1 1 pPDF
+     {
+     }for
+     dNULLS
+     {
+      null
+     }repeat
+     ]  %% fi de l'array d'imposició
+    }
+    {  %% hi hauran 2 o més llibrets encartats
+     %% deduïm quants llibrets sortiran a part del llibret central
+     dup Nup 2 mul div ceiling cvi dup
+     /Nllibrets exch def  %% és el nombre de llibrets (arrays) que envolten al llibret central
+     div Nup 2 mul exch sub dup 0 ne  %% hi hauran pàgines en blanc?
+     {  %% SÍ, hi haurà pàgines en blanc
+      Nllibrets mul round cvi
+      /enBlanc exch def  %% nombre de pàgines en blanc
+     }
+     {  %% NO hi haurà pàgines en blanc
+      pop
+      /enBlanc 0 def
+     }ifelse
+
+     1 /PgEncartada exch def
+
+     Nllibrets
+     {  %% meitat dels llibrets encartats a l'esquerra
+      1 1 Nup
+      {
+       pop PgEncartada dup 1 add /PgEncartada exch def
+      }for
+      [
+     }repeat
+     enBlanc 0 ne  %% hi ha pàgines en blanc?
+     {  %% sí
+      Nup enBlanc sub dup 0 lt
+      {  %% si és més petit de zero és que també hi haurà pàgines en blanc al llibret central o a la penúltima array
+       abs cvi /dNULLSc exch def  %% nombre de null que indiquen pàgines en blanc al llibret central o a la penúltima array
+       /dNULLS Nup def  %% nombre de null que indiquen pàgines en blanc al llibret més extern
+       %% ara aquí cal esbrinar si /dNULLSc va al llibret central o a la penúltima array
+       Nllibrets 1 eq     %% només si és 1 durà null al llibret central
+       {
+        /blanquesALmig true def
+        /blanquesALpenultim false def
+       }
+       {
+        /blanquesALpenultim true def
+        /blanquesALmig false def
+       }ifelse
+      }
+      {
+       pop enBlanc cvi /dNULLS exch def  %% nombre de null que indiquen pàgines en blanc al llibret més extern
+       /blanquesALmig false def
+       /blanquesALpenultim false def
+      }ifelse
+      /blanquesAcua true def
+     }
+     {  %% no
+      /blanquesALmig false def
+      /blanquesAcua false def
+      /blanquesALpenultim false def
+     }ifelse
+
+     %% llibret central
+     blanquesALmig  %% n'hi ha?
+     {  %% fins on arriben les pàgines del PDF?
+      1 1 Nup 2 mul dNULLSc sub
+     }
+     {  %% comportament normal
+      1 1 Nup 2 mul
+     }ifelse
+     {
+      pop PgEncartada dup 1 add /PgEncartada exch def
+     }for
+     blanquesALmig  %% n'hi ha?
+     {
+      dNULLSc
+      {  %% acabem de farcir amb null el llibret central on no arriben les pàgines del PDF
+       null
+      }repeat
+     }if
+     ]
+
+     %% meitat dels llibrets encartats a la dreta
+     enBlanc 0 ne
+     {  %% hi ha pàgines blanques
+      blanquesALpenultim blanquesAcua and
+      {  %% a la cua i al penúltim array
+       Nllibrets 2 sub  %% fem tots els llibrets menys els 2 darrers
+      }
+      {  %% només a la cua
+       Nllibrets 1 sub  %% fem tots els llibrets menys el darrer
+      }ifelse
+     }
+     {  %% comportament normal
+      Nllibrets
+     }ifelse
+     {  %% repeat
+      1 1 Nup
+      {
+       pop PgEncartada dup 1 add /PgEncartada exch def
+      }for
+      ]
+     }repeat
+
+     %% aquí el penúltim llibret/array per ficar null com a pàgines en blanc en cas que n'hi hagi
+     blanquesALpenultim  %% hi ha pàgines en blanc a la penúltima array?
+     {
+      1 1 Nup dNULLSc sub  %% escrivim la cua de pàgines finals del PDF
+      {
+       pop PgEncartada dup 1 add /PgEncartada exch def
+      }for
+      %% la cua de pàgines en blac
+      dNULLSc
+      {
+       null
+      }repeat
+      ]
+     }if
+
+     %% aquí el darrer llibret/array per ficar null com a pàgines en blanc en cas que n'hi hagi
+     blanquesAcua  %% hi ha pàgines en blanc?
+     {
+      1 1 Nup dNULLS sub  %% escrivim la cua de pàgines finals del PDF
+      {
+       pop PgEncartada dup 1 add /PgEncartada exch def
+      }for
+      %% la cua de pàgines en blac
+      dNULLS
+      {
+       null
+      }repeat
+      ]
+     }if
+     %% la fi de l'array d'imposició ja va implícita
+    }ifelse
+   }ifelse
+
+   /mapaDimposicio exch def
+%== (matrius aniuades) ==  %pstack quit
+  }
+  {  %% apilem els pliegOS
+   %% fem tants llibrets (nUps) de pàgines seguides fins que s'esgotin les pàgines de PDF a imposar (si falten pàgines s'omplen amb buides)
+   %% calculem quants pliegOS ens surten i si hi ha pàgines en blanc (que ara deixarem a la cua)
+   pPDF Nup mod 0 eq
+   {  %% si la divisió és exacte voldrà dir que NO hi ha pàgines en blanc
+    pPDF Nup 2 mul div /nPliegOS exch def  %% nombre de pliegOS
+    /enBlanc 0 def
+   }
+   {  %% hi haurà pàgines en blanc
+    pPDF Nup 2 mul div ceiling /nPliegOS exch def  %% nombre de pliegOS que generem
+    %% pels pliegOS que generem comptem quantes pàgines en blanc necessitarem fins a completar el darrer nUp
+    Nup 2 mul nPliegOS mul pPDF sub  %% restem les pàgines del PDF del nombre total de pàgines de l'nUp triat
+    cvi /enBlanc exch def
+   }ifelse
+
+   [  %% com que els pliegOS van seguits ara posem totes les pàgines en 1 sol array
+    1 1 pPDF  %%
+    {
+    }for
+ 
+    enBlanc  %% si n'hi han, farcim la cua de pàgines en blanc per quadrar l'nUp
+    {
+     null
+    }repeat
+   ]
+   /mapaDimposicio exch def
+   %(APILEM)pstack quit
+  }ifelse
+ }ifelse
+
+(        ) dup 2 pPDF 4 string cvs putinterval print flush ( ......... pagines del PDF d'entrada\n)print flush  %% nombre absolut de pàgines del PDF a imposar
+(        ) dup 2 Nup 2 mul 4 string cvs putinterval print flush ( ......... pagines de l'nUp\n)print flush  %% pàgines d'1 sol llibre per l'nUp triat
+(        ) dup 2 enBlanc 4 string cvs putinterval print flush ( ......... pagines en blanc\n)print flush  %% nobre de NULLs al mapa d'imposició
+
+mapaDimposicio /ARArray exch def
+/ignorades pPDF 1 add array def  %% el total de NULLs -1 que hi hagin en aquesta array serà el nombre de pàgines ignorades
+{
+ /sorTim true def
+ ARArray
+ {  %% forall
+  dup type /nulltype eq
+  {
+   pop
+  }
+  {
+   dup type /arraytype eq
+   {
+    /ARArray exch def
+    /sorTim false def
+   }
+   {
+    dup ignorades 3 1 roll put
+   }ifelse
+  }ifelse
+ }forall
+ sorTim
+ {
+  exit
+ }if
+}loop
+/Pignorades -1 def
+ignorades
+{
+ null eq
+ {
+  Pignorades 1 add /Pignorades exch def
+ }if
+}forall
+
+(        ) dup 2 Pignorades 4 string cvs putinterval print flush ( ......... pagines ignorades\n)print flush  %% nombre de pàgines del PDF a imposar que no figuren al mapa d'imposició, llavors les repeticiions no compten
+
+nqdrnt null eq
+{
+ 1
+}
+{
+ nqdrnt
+ {
+  Nllibrets 1 add
+ }
+ {
+  nPliegOS
+ }ifelse
+}ifelse
+(        ) dup 2 4 -1 roll 4 string cvs putinterval print flush
+( ......... nombre de llibrets\n)print flush  %% nombre de pliegOS (nUps) encartats o apilats
+
+nqdrnt null eq
+{
+ (  1 de sol    ) print flush
+}
+{
+ nqdrnt
+ {
+  Nllibrets 1 add
+  dup 1 eq
+  {
+   pop (  1 de sol    ) print flush
+  }
+  {
+   2 string cvs
+   (     encartats) dup 3 -1 roll 2 exch putinterval print flush
+  }ifelse
+ }
+ {
+  nPliegOS
+  dup 1 eq
+  {
+   pop (  1 de sol    ) print flush
+  }
+  {
+   2 string cvs
+   (   apilats    ) dup 3 -1 roll 2 exch putinterval print flush
+  }ifelse
+ }ifelse
+}ifelse
+
+( ......... tipus d'enquadernat final\n)print flush %% 1 sol pliegOS o més d'1, encartat o apilat
+ ( ......... pagines totals de la tripa\n\n)print flush  %% pàgines sumades de tots els nUps
+ ( ......... mapa d'imposicio\n\n)print flush  %% potencial array per posar al menú
+ (STOP)pstack stop
+}
+{  %% FEM el llançat servint-nos del mapa d'imposició del menú
+ %% M8 ja és cridat per l' Scripting al seu lloc
+M8
+(.....)pstack quit
+}ifelse
+
+
 
 %%Scripting 3
 %false

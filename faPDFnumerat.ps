@@ -1,8 +1,8 @@
 %!
-%% fem un PDF d'n pàgines numerat i acolorint les xifres segons els criteris triats d' nUp i enquadernació
-%% en base a l'array del mapa d'imposició, idèntic al que farem servir a pliegO'Maker
-%% permet generar exemples de fins a 3 nivells/llibrets enquadernats en mode encartat o en mode apilat
-%% de manera que perr mitjà d'acolorir les xifres es vegi més clar de si treballem correctament quan fem el llançat
+%% fem un PDF d'n pàgines numerat i acolorint les xifres segons el llançat i enquadernació triada
+%% una enquadernació que definim a través d'una array que opera com un mapa d'imposició, idèntic al que farem servir a pliegO'Maker
+%% permet generar exemples de fins a qualsevol nivell d'enquadernat, sigui encartant o apilant els llibrets
+%% de manera que, acolorint les xifres amb un mateix color per a un mateix llibret, es vegi clar de si fem el llançat correctament 
 
 595
 /xPagina exch def
@@ -28,22 +28,23 @@ findfont /dTipus exch def
  {0 1 1 setrgbcolor}  %% 6 setè llibret cyan
 ] /mColors exch def
 
-/iColors 0 def  %% índex de llibrets/colors
+/iColors 0 def  %% índex de llibrets/colors (alerta perquè ara si arribem a l'índex 6 aquest array NO dóna la volta!)
 
-%% Aquí treballem amb 1 sol PDF d'entrada que generarà 1 sol PDF de sortida (cada 2 planes anvers/revers seran 1 pliegOS)
+%% Aquí treballem amb 1 sol PDF d'entrada que generarà 1 sol PDF de sortida (cada 2 planes del PDF resultant, anvers/revers, serà 1 pliegOS)
 %%+1 cal saber quantes pàgines té el PDF d'entrada a imposar
-32 /pPDF exch def
-%+2 cal saber quin nUp hem triat
-8 /Nup exch def
+7 /pPDF exch def
+%%+2 cal saber quin nUp hem triat
+2 /Nup exch def
 %%+3 cal saber quin enquadernat hem triat
-true  %% null = pàgines seguides fins que s'esgoti l'nUp (si falten pàgines s'omplen amb buides i si en sobren es talla) | true = encartat | false = apilat
+false  %% null = fem 1 sol llibret de pàgines seguides fins a esgotar l'nUp (si falten pàgines s'omplen amb buides a la cua i si en sobren es talla)
+       %% true = encartem amb tants llibrets com pàgines tingui el PDF i l'nUp triat (si falten pàgines s'omplen amb buides a la cua)
+       %% false = apilem amb tants llibrets com pàgines tingui el PDF i l'nUp triat (si falten pàgines s'omplen amb buides a la cua)
 /nqdrnt exch def
 
-%% a partir d'aquí podem deduir un o més mapes d'imposició i generar l'array(s) corresponent(s)
-%% un cop generat l'array del mapa d'imposició automàtic hauria de ser l'usuari de pliegOS qui l'ajustés manualment si cal
-%% fem una petita rutina que fa això
+%% un cop generat l'array del mapa d'imposició automàticament, haurà de ser l'usuari de pliegOS qui l'ajusti manualment si li cal
+%% aquesta rutina genera mapes d'imposició en els 3 tipus d'enquadernat:
 nqdrnt null eq
-{  %% pàgines seguides fins que s'esgoti l'nUp (si falten pàgines s'omplen amb buides i si en sobren es talla fins a esgotar nUp)
+{  %% 1 sol llibret de pàgines seguides fins que s'esgoti l'nUp (si falten pàgines s'omplen amb buides a la cua i si en sobren es talla)
  [
   1 1  %% comencem per la 1 sumant 1
   Nup 2 mul pPDF sub
@@ -73,8 +74,8 @@ nqdrnt null eq
   }repeat
  ]
 }
-{  %% true = encartat | false = apilat
- nqdrnt
+{  %% tants llibrets com faci falta fins a esgotar les pàgines del PDF d'entrada per l'nUp triat
+ nqdrnt  %% true = encartat | false = apilat
  {  %% encartem els pliegOS
   [  %% inici de l'array d'imposició
   pPDF Nup 2 mul sub  %% nombre de pàgines a part el llibret central
@@ -228,13 +229,69 @@ nqdrnt null eq
    }ifelse
   }ifelse
 
+== (matrius aniuades) ==  %pstack quit
  }
  {  %% apilem els pliegOS
+  %% fem tants llibrets (nUps) de pàgines seguides fins que s'esgotin les pàgines de PDF a imposar (si falten pàgines s'omplen amb buides)
+  %% calculem quants pliegOS ens surten i si hi ha pàgines en blanc (que ara deixarem a la cua)
+  pPDF Nup mod 0 eq
+  {  %% si la divisió és exacte voldrà dir que NO hi ha pàgines en blanc
+   pPDF Nup 2 mul div /nPliegOS exch def  %% nombre de pliegOS
+   /enBlanc 0 def
+  }
+  {  %% hi haurà pàgines en blanc
+   pPDF Nup 2 mul div ceiling /nPliegOS exch def  %% nombre de pliegOS que generem
+   %% pels pliegOS que generem comptem quantes pàgines en blanc necessitarem fins a completar el darrer nUp
+   Nup 2 mul nPliegOS mul pPDF sub  %% restem les pàgines del PDF del nombre total de pàgines de l'nUp triat
+   cvi /enBlanc exch def
+  }ifelse
+
+  [  %% com que els pliegOS van seguits ara posem totes les pàgines en 1 sol array
+   1 1 pPDF  %%
+   {
+   }for
+
+   enBlanc  %% si n'hi han, farcim la cua de pàgines en blanc per quadrar l'nUp
+   {
+    null
+   }repeat
+  ]
+  (APILEM)pstack quit
+
 
  }ifelse
 }ifelse
 
-    (matriu d'imposició!)pstack quit
+
+%%+ segurament ens serà útil una rutina que desenganxi l'estructura de les arrays aniuades d'un pliegOS encartat i les posi una al darrera de l'altre
+%% per tal de generar d'una forma continuada l'ordre del dúplex anvers/revers que hauria de tenir el PDF resultant
+[1 2 [3 4 [5 6 [7 8 [9 10 [11 12 13 14] 15 16] 17 18] 19 20] 21 null] null null]
+/aDesencartar exch def  %% array que desencartem cada vegada
+[
+ {  %% loop
+  /NOhiHAarray true def  %% gatell per saber si hi ha un nou array aniuat, quan torni a ser true sortirem del loop
+  [
+   aDesencartar
+   {  %% forall
+    dup type /arraytype eq
+    {
+     /aDesencartar exch def
+     /NOhiHAarray false def  %% n'hi ha 1 a dins!
+    }
+    {  %% no fem res i deixem l'element a l'stack
+    }ifelse
+   }forall
+  ]  %% quedarà a l'stack una array desencartada darrera l'altre
+
+  NOhiHAarray
+  {  %% sortim quan no n'hagi trobat cap
+   exit
+  }if
+ }loop
+]
+
+(DESENCARTEM!)pstack quit
+
 
 %%+ CAL REDUÏR EL DIÀLEG AL MÍNIM ens guia la filosofia del #NOinterface
 %pOM: heu triat imposar el PDF (tal) o + per aquest ordre

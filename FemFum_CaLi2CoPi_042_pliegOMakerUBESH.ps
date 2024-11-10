@@ -1573,7 +1573,8 @@ false{
 %%UBESH
 %#% Gbis
 %# adaptem certs gatells G a comportaments (/aMESaMES)
-%# 0 :: eliminem el CropBox, TrimBox, BleedBox i ArtBox (si existeixen) i desem a /aMCBox el MediaBox i CropBox de cada pàgina
+%# 0 :: eliminem el CropBox, TrimBox, BleedBox i ArtBox (si existeixen)
+%# 1 :: NO eliminem cap de les àrees
 
 0
 
@@ -2138,8 +2139,11 @@ cvx exec
  %% I %% /FemXRay exch def  % deixem x defecte fixada la generacio d'XRay
  %% H path + inici del nom del fitxer TXT informatiu XRay
  /FitxerXRay exch def
+
+%%UBESH
  %% Gbis comportaments
  /aMESaMES exch def
+
  %% G triem Que Li Fem Fer
  /QueLiFemFer exch def
 
@@ -5832,7 +5836,7 @@ wFitxerXRay dup (\015\012PDF:pages:) writestring maxPlana 7 string cvs writestri
  dup
 
 %%REpublica esborrem a sac tots els CropBox
-%%UBESH no és eficient intentar eliminar el /CropBox aquí, doncs en casos on aquest valor NO és dins el dicciconari /Page (doncs l'hereta de més enrera) NO s'elimina
+%%UBESH no és eficient intentar eliminar el /CropBox aquí, doncs en casos on aquest valor NO és dins el dicciconari /Page (doncs l'hereta de més enrera) NO s'elimina!
 %dup /CropBox undef
 
  /sOrtim false def
@@ -6395,7 +6399,7 @@ aMESaMES 0 eq
 
 %%UBESH
 aMESaMES 0 eq
-{  %% eliminem el ArtBox després d'haver desat el seu valor
+{  %% eliminem l' ArtBox després d'haver desat el seu valor
  1 index /ArtBox undef
 }if
 
