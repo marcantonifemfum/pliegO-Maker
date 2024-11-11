@@ -341,7 +341,7 @@ ignorar per qualsevol criteri
 (1) el length de l'array (i les aniuades també) equival al length de l'nUp o múltiple = pàgines en blanc?
 (2) si el nombre d'elements de l'array que NO són null és igual o més petit que el nombre de pàgines del PDF a imposar
 (3) si el número de pàgina més gran que hi hagi a l'array és igual o més petit que el número de pàgines del PDF a imposar
-@URGENT
+@ESTEMFENT
 
 + processant/pujant només 1 sol PDF, aquestes serien les 2 arrays d'1 PDF de 8 pàgines fet amb 2 pliegOS 2+2 encartats: [1 2 [3 4 5 6] 7 8]
 + i aquesta la d'1 PDF de 12 pàgines amb 3 pliegOS 2+2 encartats [1 2 [3 4 [5 6 7 8] 9 10] 11 12]
@@ -351,7 +351,7 @@ ignorar per qualsevol criteri
 @FET
 + son a faPDFnumerat.ps i cal traslladar-les a farceixPDFs_pseudoPDFX5_UBESH.ps
 + cal decidir molt bé on les posem doncs ha de ser després que CaLi2CoPi hagi analitzat el PDF
-@URGENT
+@FET
 
 + quan hi hagi més d'1 PDF a imposar haurem de replicar el protocol afegint el comportament específic pel segon PDF pujat (i màxim un tercer)
 + una altra qüestió seran els segons o tercers PDFs/JPEGs a pujar al servidor que s'hagin d'utilitzar per incrustar continguts dins de l'nUp triat
@@ -486,6 +486,7 @@ pOM: modifiqueu el mapa d'imposició […] si voleu un altre comportament per aq
 %%H: de 20h00 a 21h00
 
 
+
 - - - - - - - - SETMANA 2 30
 
 
@@ -549,12 +550,35 @@ pOM: modifiqueu el mapa d'imposició […] si voleu un altre comportament per aq
 
 
     10.11.2024
-- - - - - - - - HT
+- - - - - - - - HT 4
 
 %%H: de 07h45 a 08h45
 %%H: de 10h00 a 11h15
-%%H: de 18h00 a
+%%H: de 18h00 a 19h45
 
+
+
+- - - - - - - - SETMANA 3 30.75
+
+
+
+    11.11.2024
+- - - - - - - - HT
+
+%%H: de 09h30 a 11h30
+%%H: de 12h15 a 13h15
+%%H: de 16h30 a 19h00
+%%H: de 21h00 a 21h45
+
+
+
++ hem d'aconseguit generar el llibret múltiple començant per l'exemple més senzill: un nUp 2+2 sobre un PDF de 8 pàgines, la qual cosa genera 2 llibrets apilats, o sigui un pliegOS resultant de 4 pàgines amb: anvers/revers | anvers/revers
++ tenim un mètode estable per executar n vegades… nUp_pliegOS_UBESH.ps …canviant l'array amb el mapa d'imposició (hi haurà un altre solució més elegant?)
++ el mètode és el següent: executem per línia de comanda… altravolta.ps …que inicialitza 2 variables i duu un repetidor de les vegades que s'ha d'executar… nUp_pliegOS_UBESH.ps …tantes com el nombre de llibrets necessaris per generar el PDF de sortida
++ el gatell… /altravolta true def …per tibar un o altre array de pàgines a… ESH_UB.txt …hauria de ser un índex en comptes d'un booleni
+@ESTEMFENT
++ hem de solucionar la captura d'M8 i els nous paràmetres M11 i M12
++ hem d'unificar les adreces de treball en un fitxer de configuració
 
 
 + fem un duplicat de l'aplicació …/REpublica/plec_ca.html …traduïda al català per una urgència de l'Enric a…

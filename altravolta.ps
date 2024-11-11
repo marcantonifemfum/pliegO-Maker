@@ -1,0 +1,19 @@
+%!
+%% executem nLlibrets vegades nUp_pliegOS_UBESH.ps
+
+%% aquest fitxer haurà de canviar de nom
+%% aquí hi podria haver la captura d'adreces absolutes de treball des d'un fitxer indexat de configuració
+
+/nomesUNAvegada true def  %% obrim el gatell d'execució única
+/iLlibret 0 def  %% índex comptador per tibar els mapes d'imposició a ESH_UB.txt
+
+
+{  %% loop
+ (nUp_pliegOS_UBESH.ps) (r) file cvx exec
+ iLlibret 1 add /iLlibret exch def
+ iLlibret nLlibrets eq
+ {  %% hem fet tots els llibrets
+  exit
+ }if
+}loop
+

@@ -259,18 +259,32 @@ M10
 
 %%UBESH sedassem | garbellem | destriem
 %(\n\n | | | | | | | | | | | | | | | | | | | | | | | | | | | | | |\n)print flush
-%(\n\n - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n)print flush
+(\n\n - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n)print flush
 %(\n\n + + + + + + + + + + + + + + + + + + + + + + + + + + + + + +\n)print flush
 %(\n\n ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~\n)print flush
-(\n\n / / / / / / / / / / / / / / / / / / / / / / / / / / / / / /\n)print flush
-( \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \n\n)print flush
-(                s   e   d   a   s   s   e   m\n)print flush
-(\n \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \n)print flush
-( / / / / / / / / / / / / / / / / / / / / / / / / / / / / / /\n)print flush
+%(\n\n / / / / / / / / / / / / / / / / / / / / / / / / / / / / / /\n)print flush
+%( \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \n\n)print flush
+%(\n : : : : : : : : : : : : : : : : : : : : : : : : : : : : : :\n)print flush
+%%(\n                s   e   d   a   s   s   e   m\n\n)print flush
+(\n                  assagem el mapa d'imposicio\n\n)print flush
+%( : : : : : : : : : : : : : : : : : : : : : : : : : : : : : :\n\n)print flush
+%(\n \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \n)print flush
+%( / / / / / / / / / / / / / / / / / / / / / / / / / / / / / /\n)print flush
 %( ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~\n\n)print flush
 %( + + + + + + + + + + + + + + + + + + + + + + + + + + + + + +\n\n)print flush
-%( - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n\n)print flush
+( - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n\n)print flush
 %( | | | | | | | | | | | | | | | | | | | | | | | | | | | | | |\n\n)print flush
+
+}
+{  %% FEM el llançat servint-nos del mapa d'imposició del menú
+ %% M8 ja és cridat per l' Scripting al seu lloc
+%M8
+%(.....)pstack quit
+(\n\n - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n)print flush
+(\n                     f e m   p l i e g O S\n\n)print flush
+( - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n\n)print flush
+
+}ifelse
 
  %% aquesta rutina genera mapes d'imposició en els 3 tipus d'enquadernat:
  nqdrnt null eq
@@ -493,9 +507,11 @@ M10
   }ifelse
  }ifelse
 
-(        ) dup 2 pPDF 4 string cvs putinterval print flush ( ......... pagines del PDF d'entrada\n)print flush  %% nombre absolut de pàgines del PDF a imposar
-(        ) dup 2 Nup 2 mul 4 string cvs putinterval print flush ( ......... pagines de l'nUp\n)print flush  %% pàgines d'1 sol llibre per l'nUp triat
-(        ) dup 2 enBlanc 4 string cvs putinterval print flush ( ......... pagines en blanc\n)print flush  %% nobre de NULLs al mapa d'imposició
+%% sedassem el rompt amb l'anàlisi
+
+(              ) dup 12 pPDF 4 string cvs putinterval print flush ( ......... pagines del PDF d'entrada\n)print flush  %% nombre absolut de pàgines del PDF a imposar
+(              ) dup 12 Nup 2 mul 4 string cvs putinterval print flush ( ......... pagines de l'nUp\n)print flush  %% pàgines d'1 sol llibre per l'nUp triat
+(              ) dup 12 enBlanc 4 string cvs putinterval print flush ( ......... pagines en blanc\n)print flush  %% nobre de NULLs al mapa d'imposició
 
 mapaDimposicio /ARArray exch def
 /ignorades pPDF 1 add array def  %% el total de NULLs -1 que hi hagin en aquesta array serà el nombre de pàgines ignorades
@@ -532,7 +548,7 @@ ignorades
  }if
 }forall
 
-(        ) dup 2 Pignorades 4 string cvs putinterval print flush ( ......... pagines ignorades\n)print flush  %% nombre de pàgines del PDF a imposar que no figuren al mapa d'imposició, llavors les repeticiions no compten
+(              ) dup 12 Pignorades 4 string cvs putinterval print flush ( ......... pagines ignorades\n)print flush  %% nombre de pàgines del PDF a imposar que no figuren al mapa d'imposició, llavors les repeticiions no compten
 
 nqdrnt null eq
 {
@@ -541,57 +557,72 @@ nqdrnt null eq
 {
  nqdrnt
  {
-  Nllibrets 1 add
+  Nllibrets 1 add cvi
  }
  {
-  nPliegOS
+  nPliegOS cvi
  }ifelse
 }ifelse
-(        ) dup 2 4 -1 roll 4 string cvs putinterval print flush
+dup /nLlibrets exch def
+(              ) dup 12 4 -1 roll 4 string cvs putinterval print flush
 ( ......... nombre de llibrets\n)print flush  %% nombre de pliegOS (nUps) encartats o apilats
 
 nqdrnt null eq
 {
- (  1 de sol    ) print flush
+ (    un de sol ) print flush
 }
 {
  nqdrnt
  {
   Nllibrets 1 add
-  dup 1 eq
-  {
-   pop (  1 de sol    ) print flush
+  1 eq
+  { 
+   (    un de sol ) print flush
   }
   {
-   2 string cvs
-   (     encartats) dup 3 -1 roll 2 exch putinterval print flush
+   (    encartats ) print flush
   }ifelse
  }
  {
   nPliegOS
-  dup 1 eq
+  1 eq
   {
-   pop (  1 de sol    ) print flush
+   (    un de sol ) print flush
   }
   {
-   2 string cvs
-   (   apilats    ) dup 3 -1 roll 2 exch putinterval print flush
+   (      apilats ) print flush
   }ifelse
  }ifelse
 }ifelse
 
-( ......... tipus d'enquadernat final\n)print flush %% 1 sol pliegOS o més d'1, encartat o apilat
- ( ......... pagines totals de la tripa\n\n)print flush  %% pàgines sumades de tots els nUps
- ( ......... mapa d'imposicio\n\n)print flush  %% potencial array per posar al menú
- (STOP)pstack stop
+( ......... tipus d'enquadernat\n)print flush %% 1 sol pliegOS o més d'1, encartat o apilat
+
+nqdrnt null eq
+{
+ 1 Nup 2 mul muli cvi
 }
-{  %% FEM el llançat servint-nos del mapa d'imposició del menú
- %% M8 ja és cridat per l' Scripting al seu lloc
-M8
-(.....)pstack quit
+{
+ nqdrnt
+ {
+  Nllibrets 1 add Nup 2 mul mul cvi
+ }
+ {
+  nPliegOS Nup 2 mul mul cvi
+ }ifelse
 }ifelse
+(              ) dup 12 4 -1 roll 4 string cvs putinterval print flush
+( ......... pagines de tripa\n\n)print flush  %% pàgines sumades de tots els nUps
 
 
+(            mapa d'imposicio\n\n)print flush  %% potencial array per posar al menú
+mapaDimposicio ==
+(\n\n\n) print flush
+
+
+M10
+{
+ (* * * * * STOP * * * * *)pstack stop
+}if
 
 %%Scripting 3
 %false

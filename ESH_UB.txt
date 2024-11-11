@@ -24,9 +24,12 @@ true  %% true fem PDFs | false fem JPEGs
 %(C:\\Users\\Fina\\Desktop\\Marcantoni\\pliegOMaker\\babia.pdf)
 %(C:/Users/Fina/Desktop/Marcantoni/pliegOMaker/babia.pdf)
 
+%% Tuxedo
 %(/home/femfum/Documents/pliegOMakerUB/Hpdf/8CropBox_MediaBox_NOMESaLarrelPage_CropBox_QuadratsRectanglesVH_pla.pdf)
-%(/home/femfum/Documents/pliegOMakerUB/8paginesPDFnumerades.pdf)
-(/home/femfum/Documents/pliegOMakerUB/9numerades_ladarreraENfucsia.pdf)
+(/home/femfum/Documents/pliegOMakerUB/8paginesPDFnumerades.pdf)
+%(/home/femfum/Documents/pliegOMakerUB/9numerades_ladarreraENfucsia.pdf)
+%(/home/femfum/Documents/pliegOMakerUB/4re.pdf)
+%(/home/femfum/Documents/GuiaJove_EinesDT_v1_web.pdf)
 
 }
 {
@@ -63,7 +66,7 @@ true
 %% 4 llançat de 4 pàgines de PDF per plana, en vertical, en un full en dúplex horitzontal o vertical 4+4 | 8 imposicions totals | impressió 4-up | 4vUpHV
 %% 8 llançat de 8 pàgines de PDF per plana, en vertical, en un full en dúplex horitzontal 8+8 | 16 imposicions totals | impressió 8-up | 8vUpH
 
-4
+2
 
 
 
@@ -111,17 +114,26 @@ true
 
 
 %%M8 MAPA D'IMPOSICIÓ
-%% una array buida significa que no s'aplicaran canvis en l'ordre original de lectura del PDF a imposar
-%% posarem un enter del número de pàgina a imposar seguint l'ordre de lectura (ho mana la seqüència d'índex de l'array)
+%% una array buida significa que no s'aplicaran canvis en l'ordre original de lectura del PDF a imposar i fins a esgotar les pàgines
+%% seguint l'ordre de lectura (ho mana la seqüència d'índex de l'array) posarem un enter del número de pàgina a imposar
 %% o sigui, que podem fer qualsevol mena de repetició de pàgines i/o canvi d'ordre en la distribucció de les pàgines a imposar
 %% posarem un null en el punt de l'ordre de lectura on hi hagi d'haver una pàgina en blanc
-%% el nombre d'enters + null de l'array ha de ser igual o més petit al nombre de pàgines de l'nUp triat (en manual filtrarem aquest possible error)
+%% si el nombre d'enters + null de l'array és més petit que el nombre de pàgines de l'nUp triat ara dóna Error: /rangecheck in --get-- 
+%% si el nombre de pàgines de l'nUp triat és ídem al nombre d'enters + null de l'array (o una array buida) i el PDF té igual o més pàgines, va bé
+%% si el nombre de pàgines de l'nUp triat és ídem al nombre d'enters + null de l'array (o una array buida) i el PDF té menys pàgines dóna Error: /undefined in --get-- 
 %% ara es permet que tot siguin pàgines en blanc (sembla no tenir massa sentit però ho mantenim)
 
-% [ 8    2    1    4    5    1    7    1 ]
-  [null  null null null null null 9    null]
-% [  ]
+%%TEST
+[ [1 1 1 1 ] [ 8 8 8 8] ]
 
+%% això no pot anar a nUp...?
+iLlibret get
+dup ==
+
+
+%[ 8    2    1    4    5    1    7    1 ]
+%  [null  null null null null null 9    null]
+% [  ]
 
 
 %%M9 ENQUADERNAT
@@ -139,4 +151,7 @@ true
 
 true
 
+
+%%M11 NOMBRE DE LLIBRETS A GENERAR (útil per quan el PDF d'entrada sigui molt gran i volguem dossificar la feina)
+%%M12 PÀGINA D'INICI DE L'ASSAIG (normalment seria la 1 però podem marcar l'inici cap endavant en una altra pàgina)
 

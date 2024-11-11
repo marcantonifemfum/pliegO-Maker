@@ -745,6 +745,10 @@ dup /CddVf exch def
     true  %% r2:3
     null  %% r3:4
    ]
+
+%%TEST
+%2 copy
+
   ]
 
   [  %% 1 ordre seqüencial seguit de pàgines, anvers + revers, per no aturar el componedor aleatori
@@ -817,6 +821,10 @@ dup /CddVf exch def
      /00imp true  %% som a la pàgina del llançat que toca a l'orígen 0,0 de l'espai de coordenades de la plana?
    >>
    %% ja no cal que BeginPage cridi un darrer diccionari extra, doncs hem filtrat el darrer índex sobrer amb stopBP
+
+%%TEST
+%8 copy
+
   ]
 
 %%MENÚ M1 donar la possibilitat de fer visible la vora de la pàgina d'imposició, sigui o no dins una capa i com?
@@ -1599,7 +1607,6 @@ dup 1 get dup
 %dup dup 4 get dup /T_R null put 4 exch put
 %%Això tampoc soluciona el fet que sempre s'apliqui el blanc a la posició de la pàgina 1
 
-
 /_ordre exch def  %% ordre seqüencial de pàgines a imposar amb les intruccions de posicionat i rotació
 length /stopBP exch def  %% índex on aturem les crides de BeginPage
 
@@ -1728,7 +1735,7 @@ dup
 {  %% invoca 1 valor a l'stack: l'índex del nombre de vegades que s'ha cridat showpage i no retorna res
 
 %%UBESH anellem el valor que invoca?
-dup 1 array astore ==
+%dup 1 array astore ==
 
  %% lògica anterior parell/senar de 2vUpHV
  %% 2 mod 1 eq  %% detectem la pàgina senar (ep! el comptador que comença per 0)
@@ -1763,7 +1770,7 @@ dup
   %% page device to be activated»
 
 %%UBESH anellem els 2 valors que invoca?
-2 copy 2 array astore ==
+%2 copy 2 array astore ==
 
  0 ne  %% avaluem el primer valor: no és showpage qui crida EndPage?
  {
@@ -1783,7 +1790,20 @@ dup
 
   %% generem (true) o no generem (false) la plana? (impresa o al pdf)
   %% fent que el showpage (que sempre hi és) es faci o no efectiu
-  _ordre exch get /FEMshowpage get
+
+%%TEST
+%{
+  _ordre
+  exch get
+
+%%TEST
+%}stopped
+%{
+% 8 sub get
+% (||||||)pstack quit
+%}if
+
+  /FEMshowpage get
 
  }ifelse
 }put
@@ -1810,12 +1830,31 @@ aNpgn
 
 /ar true def  %% gatell d'anvers/revers
 /iSeq 0 def  %% índex seqüencial per tota la sèrie de pàgines del full (anvers+revers)
-/nomesUNAvegada true def  %% obrim el gatell d'execució única
 
-{  %% stopped
+%%TEST
+%/nomesUNAvegada true def  %% obrim el gatell d'execució única
 
+%{  %% stopped
+
+%M8 (!!!!)pstack quit
+%%UBESH és aquí on hi hauria d'anar el forall d'arrays amb els mapes d'imposició ordenats anvers/revers de cadscun dels llibrets planificats?
+%%TEST
+%2 {  %% repeat
+%[
 
 _anversrevers
+
+
+%%TEST
+%dup
+%]
+%M8 (sedassem?)pstack quit
+%{  %% forall +d'1 llibret?
+%/ar true def  %% gatell d'anvers/revers
+%/iSeq 0 def  %% índex seqüencial per tota la sèrie de pàgines del full (anvers+revers)
+%/nomesUNAvegada true def  %% obrim el gatell d'execució única
+
+
 {  %% forall per l'anvers i el revers del full (planes)
 
  /iPln 0 def  %% índex seqüencial de pàgines a cada plana
@@ -1858,7 +1897,6 @@ dup M8 dup length 0 eq
  pop pop
 }
 {
-%%CAL veure com solucionar el fet que provoca l'Error: /undefined in aMESaMES degut a que el mètode que tenim per detectar la primera execució ara aquí NO va
  exch 1 sub get null eq  %% el mapa d'imposició ens diu si la pàgina és en blanc?
  {  %% l'índex de la pàgina del llançat serà en blanc
   /noNULL false def  %% desactivem l'algorisme del componedor 
@@ -1868,7 +1906,7 @@ dup M8 dup length 0 eq
     == 3 string cvs /Npgn exch def
    }
    {  %% false=pàgina en blanc: la maquinària d'imposició NO treballa
-    /compON false def  %% l'algorisme componedor NO treballa
+    /compON false def  %% la maquinària d'imposició NO treballa
     (pàgina en blanc --    #\n) print flush
    }ifelse
   }ifelse
@@ -1953,11 +1991,17 @@ dup M8 dup length 0 eq
 
 }forall  %% per l'anvers i el revers del full (2 planes)
 
-}stopped
-{
- (\b\n >>> Hi ha moltes possibilitats que l'error vingui de l'algorisme... ) print flush M6 3 string cvs print flush (\n\n)print flush
- (G E N E R A L F A I L U R E) pstack stop
-}if
+%%TEST
+%}forall  %% +d'1 llibret?
+% currentpagedevice stopBP (!!!!)pstack quit
+%stopBP 2 mul /stopBP exch def
+%}repeat
+
+%}stopped
+%{
+% (\b\n >>> Hi ha moltes possibilitats que l'error vingui de l'algorisme... ) print flush M6 3 string cvs print flush (\n\n)print flush
+% (G E N E R A L F A I L U R E) pstack stop
+%}if
 
 %% per la farcidora de PDFs caldria tancar la instància en memòria runpdfend ?
 M6 9 eq
@@ -2017,6 +2061,6 @@ dup length araVa add string dup 4 -1 roll 0 exch putinterval dup 3 -1 roll araVa
 /DOCINFO pdfmark
 %% podríem generar un camp privat per desar-hi tots els paràmetres clau de les variables aleatòries que han fet el PDF
 
-%(////*fi*////)pstack  %% brossa a l'stack?
+(////*fi*////)pstack  %% brossa a l'stack?
 %% mentre gs no deixa brossa a l'stack, pstopdf deixa dos índex a l'stack (per què?)
 
