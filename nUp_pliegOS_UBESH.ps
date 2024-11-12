@@ -393,7 +393,7 @@ dup /CddVf exch def
 %% (\n Ghostscript no pot capturar aquesta variable d'entorn!\n\n)print flush
 }ifelse
 
-%%UNESH
+%%UBESH
 %%M10 ASSAGEM EL MAPA D'IMPOSICIÓ?
 %% capturem la variable d'entorn generada amb PHP com a PHP2PS2PHPgeneracioicapturadunavariabledentorn.php
 (MRCT_Xdefinir) getenv  %% la variable d'entorn existeix?
@@ -435,6 +435,12 @@ dup /CddVf exch def
  }ifelse
 }
 {  %% la variable d'entorn NO existeix perquè executem l'applet en local via Terminal per línia de comanda
+ CddVf
+ {  %% UBESH interfície TXT
+ }
+ {
+
+
 %%RELLEVANT: si volem reflectir un error PS al prompt de la interfície necessitem sortir amb exit
 %% llavors surt del GS, doncs sinó sempre fa un pdf buit
 %(nnnn)pstack exit  
@@ -496,10 +502,59 @@ dup /CddVf exch def
 %Quand tu voudras
 %Ramasse-moi
 %Quand tu voudras)
-
+ }ifelse
 }ifelse
 
+%%UBESH
+%%M12 PÀGINA D'INICI DE L'ASSAIG (normalment seria la 1 però podem marcar l'inici cap endavant en una altra pàgina)
+%% capturem la variable d'entorn generada amb PHP com a PHP2PS2PHPgeneracioicapturadunavariabledentorn.php
+(MRCT_Xdefinir) getenv  %% la variable d'entorn existeix?
+{
+ dup length 0 eq 
+ {  %% arriba buida perquè executem via URL amb pliegOmaker.php sense paràmetres (mètode $_GET)
+  pop 1  %% si l'eliminem del menú via mètode $_POST també
+ }
+ {  %% té dades perquè executem via URL amb index_##.php (mètode $_POST) o amb pliegOmaker.php amb paràmetres (mètode $_GET)
+  cvx exec  %% és una string!
+ }ifelse
+}
+{  %% la variable d'entorn NO existeix perquè executem l'applet en local via Terminal per línia de comanda
+ CddVf
+ {  %% UBESH interfície TXT
+ }
+ {
+  1
+ }ifelse
+%% (\n Ghostscript no pot capturar aquesta variable d'entorn!\n\n)print flush
+}ifelse
+
+%%UBESH
+%%M13 NOMBRE MÀXIM DE LLIBRETS A GENERAR (útil per quan el PDF d'entrada sigui molt gran i volguem dossificar la feina)
+%% capturem la variable d'entorn generada amb PHP com a PHP2PS2PHPgeneracioicapturadunavariabledentorn.php
+(MRCT_Xdefinir) getenv  %% la variable d'entorn existeix?
+{
+ dup length 0 eq 
+ {  %% arriba buida perquè executem via URL amb pliegOmaker.php sense paràmetres (mètode $_GET)
+  pop 0  %% si l'eliminem del menú via mètode $_POST també
+ }
+ {  %% té dades perquè executem via URL amb index_##.php (mètode $_POST) o amb pliegOmaker.php amb paràmetres (mètode $_GET)
+  cvx exec  %% és una string!
+ }ifelse
+}
+{  %% la variable d'entorn NO existeix perquè executem l'applet en local via Terminal per línia de comanda
+ CddVf
+ {  %% UBESH interfície TXT
+ }
+ {
+  0
+ }ifelse
+%% (\n Ghostscript no pot capturar aquesta variable d'entorn!\n\n)print flush
+}ifelse
+
+
 %% fi de MENÚ de capçalera
+/M13 exch def  %% NOMBRE MÀXIM DE LLIBRETS A GENERAR
+/M12 exch def  %% PÀGINA D'INICI DE L'ASSAIG
 /M11 exch def  %% text a compondre
 
 %%UBESH noves funcions
@@ -1893,10 +1948,13 @@ _anversrevers
 %%UBESH és aquí on hauríem de redefinir noNULL en base al mapa d'imposició?
 %%UBESH una estratègia ELEGANT per les pàgines en blanc, però és obligatori fer la crida al gs amb -dAutoRotatePages=/None perquè sino capgira el full ! 
 dup M8 dup length 0 eq
-{
+{  %% amb el mapa d'imposició buit fem 1 sol llibret respectant l'ordre seqüencial del PDF a imposar
  pop pop
 }
-{
+{  %% triem seqüencialment quin dels llibrets fem el llançat dins del mapa d'imposició que ja ve preparat per l'encartat o l'apilat
+ iLlibret get dup /araLlibret exch def
+
+%(- - - - - )pstack quit
  exch 1 sub get null eq  %% el mapa d'imposició ens diu si la pàgina és en blanc?
  {  %% l'índex de la pàgina del llançat serà en blanc
   /noNULL false def  %% desactivem l'algorisme del componedor 

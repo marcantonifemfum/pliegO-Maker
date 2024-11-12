@@ -563,7 +563,7 @@ pOM: modifiqueu el mapa d'imposició […] si voleu un altre comportament per aq
 
 
     11.11.2024
-- - - - - - - - HT
+- - - - - - - - HT 6.25
 
 %%H: de 09h30 a 11h30
 %%H: de 12h15 a 13h15
@@ -572,14 +572,75 @@ pOM: modifiqueu el mapa d'imposició […] si voleu un altre comportament per aq
 
 
 
-+ hem d'aconseguit generar el llibret múltiple començant per l'exemple més senzill: un nUp 2+2 sobre un PDF de 8 pàgines, la qual cosa genera 2 llibrets apilats, o sigui un pliegOS resultant de 4 pàgines amb: anvers/revers | anvers/revers
-+ tenim un mètode estable per executar n vegades… nUp_pliegOS_UBESH.ps …canviant l'array amb el mapa d'imposició (hi haurà un altre solució més elegant?)
-+ el mètode és el següent: executem per línia de comanda… altravolta.ps …que inicialitza 2 variables i duu un repetidor de les vegades que s'ha d'executar… nUp_pliegOS_UBESH.ps …tantes com el nombre de llibrets necessaris per generar el PDF de sortida
-+ el gatell… /altravolta true def …per tibar un o altre array de pàgines a… ESH_UB.txt …hauria de ser un índex en comptes d'un booleni
-@ESTEMFENT
-+ hem de solucionar la captura d'M8 i els nous paràmetres M11 i M12
-+ hem d'unificar les adreces de treball en un fitxer de configuració
+    12.11.2024
+- - - - - - - - HT
 
+%%H: de 07h00 a 08h30
+%%H: de 11h45 a 13h00
+%%H: de 14h45 a 15h15
+%%H: de 15h30 a 16h30
+%%H: de 16h45 a 17h30
+
+
+
++ hem d'aconseguit generar el llibret múltiple començant per l'exemple més senzill: un nUp 2+2 sobre un PDF de 8 pàgines, la qual cosa genera 2 llibrets apilats, o sigui un pliegOS resultant de 4 pàgines amb: anvers/revers | anvers/revers
++ tenim un mètode estable per executar n vegades… nUp_pliegOS_UBESH.ps …cridant cada array dins el mapa d'imposició (hi haurà un altre solució més elegant?)
++ el mètode és el següent: executem per línia de comanda… altravolta.ps …que inicialitza 2 variables i duu un repetidor de les vegades que s'ha d'executar… nUp_pliegOS_UBESH.ps …tantes com el nombre de llibrets necessaris per generar el PDF de sortida
++ per tibar un o altre array de pàgines a… ESH_UB.txt …ho fem amb l'índex /iLlibret dins un loop (això a dins nUp_pliegOS_UBESH.ps) per desar-la a /araLlibret
+
++ fem un mapa de la veritat de tots els gatells que intervenen en la imposició:
+
+%%M8 MAPA D'IMPOSICIÓ   %%M9 ENQUADERNAT    %%M10 ASSAGEM ?     farceixPDFs_pseudoPDFX5_UBESH.ps    nUp_pliegOS_UBESH.ps            QUÈ FA?
+
+[[1 2 7 8] [3 4 5 6]]   true (encartat)     false               mana M8 i descriu l'assaig          ja s'ha capturat /araLlibret    BÉ ídem M8
+[[1 2 3 4] [5 6 7 8]]   false (apilat)      false                                                                                   BÉ ídem M8
+[ ]                     null (1 llibret)    false                                                                                   BÉ 1 sol llibret segons l'nUp per ordre d'inici
+
+[[1 2 7 8] [3 4 5 6]]   true                true                                                                                    BÉ
+[[1 2 3 4] [5 6 7 8]]   false               true                                                                                    BÉ
+[ ]                     null                true                                                                                    BÉ
+
+[ ]                     true                true                                                                                    BÉ
+[ ]                     false               true                                                                                    BÉ
+[ ]                     null                true                                                                                    BÉ
+
+[ ]                     true                false               no hauria de fer 2 llibrets encartats?                              MMM Repeteix 2 cops el llibret inicial
+[ ]                     false               false               no hauria de fer 2 llibrets apilats?                                MMM Repeteix 2 cops el llibret inicial
+[ ]                     null                false                                                                                   BÉ 1 sol llibret segons l'nUp per ordre d'inici
+
+
++ hem d'adaptar els mapes d'imposició tal i com els necessita M8
+@FET
+
++ hem de solucionar els nous paràmetres M11 i M12
++ els hem configurat al menú i ara només cal donar-lis vida!
+@ESTEMFENT
+
++ com es criden ara els fitxers de pliegOS entre ells?
+
+     GS
+     |
+     |
+     v
+altravolta.ps <----> (7up_pliegOS_UBESH.ps)
+     ^
+     |
+     |
+     v
+nUp_pliegOS_UBESH.ps <----> ESH_UB.txt <----> PDF d'entrada a imposar
+     |                      www                     |
+     |                                              |
+     v                                              v
+farceixPDFs_pseudoPDFX5_UBESH.ps <----> FemFum_CaLi2CoPi_042_pliegOMakerUBESH.ps
+     |
+     |
+     v
+     PDF pliegOS
+
+
+
++ hem d'unificar les adreces de treball en un fitxer de configuració
+@URGENT
 
 + fem un duplicat de l'aplicació …/REpublica/plec_ca.html …traduïda al català per una urgència de l'Enric a…
 https://pliegos.net/maker/plec/plec_ca.html

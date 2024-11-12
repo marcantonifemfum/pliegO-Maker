@@ -233,7 +233,6 @@ grestore
 %%URLUBESH
 %% com ho fem perquè els noms dels PDFs 1 o + arribin dins una array?
 bateiG
-%(UUUIIII)pstack quit
    /pedeefa exch def
 
 %%UBESH
@@ -279,7 +278,6 @@ M10
 {  %% FEM el llançat servint-nos del mapa d'imposició del menú
  %% M8 ja és cridat per l' Scripting al seu lloc
 %M8
-%(.....)pstack quit
 (\n\n - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n)print flush
 (\n                     f e m   p l i e g O S\n\n)print flush
 ( - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n\n)print flush
@@ -515,7 +513,7 @@ M10
 
 mapaDimposicio /ARArray exch def
 /ignorades pPDF 1 add array def  %% el total de NULLs -1 que hi hagin en aquesta array serà el nombre de pàgines ignorades
-{
+{  %% loop
  /sorTim true def
  ARArray
  {  %% forall
@@ -580,7 +578,7 @@ nqdrnt null eq
    (    un de sol ) print flush
   }
   {
-   (    encartats ) print flush
+   (     encartat ) print flush
   }ifelse
  }
  {
@@ -590,7 +588,7 @@ nqdrnt null eq
    (    un de sol ) print flush
   }
   {
-   (      apilats ) print flush
+   (       apilat ) print flush
   }ifelse
  }ifelse
 }ifelse
@@ -599,7 +597,7 @@ nqdrnt null eq
 
 nqdrnt null eq
 {
- 1 Nup 2 mul muli cvi
+ 1 Nup 2 mul mul cvi
 }
 {
  nqdrnt
@@ -615,14 +613,64 @@ nqdrnt null eq
 
 
 (            mapa d'imposicio\n\n)print flush  %% potencial array per posar al menú
-mapaDimposicio ==
-(\n\n\n) print flush
 
 
+%% només desencartem si assagem?
 M10
 {
- (* * * * * STOP * * * * *)pstack stop
-}if
+ mapaDimposicio  %% aquest mapa d'imposició encara no té el format que necessita pliegO'Maker tret que M9 sigui null
+M9 null ne
+{  %% o és encartat o és apilat
+ M9
+ {  %% endrecem l'encartat
+  %% per tal de generar d'una forma continuada l'ordre del dúplex anvers/revers que hauria de tenir el PDF resultant
+  /aDesencartar exch def  %% array que desencartem
+  [
+   {  %% loop
+    /NOhiHAarray true def  %% gatell per saber si hi ha un nou array aniuat, quan torni a ser true sortirem del loop
+    [
+     aDesencartar
+     {  %% forall
+      dup type /arraytype eq
+      {
+       /aDesencartar exch def
+       /NOhiHAarray false def  %% n'hi ha 1 a dins!
+      }
+      {  %% no fem res i deixem l'element a l'stack
+      }ifelse
+     }forall
+    ]  %% quedarà a l'stack una array desencartada darrera l'altre
+
+    NOhiHAarray
+    {  %% sortim quan no n'hagi trobat cap
+     exit
+    }if
+   }loop
+  ]  %% aquesta array duu un llibret (array) al costat de l'altre
+ }
+ {  %% endrecem l'aplilat
+  /Arrangem exch def
+  /i 0 def
+  [
+   nLlibrets
+   {
+    Arrangem i Nup 2 mul getinterval
+    i Nup 2 mul add /i exch def
+   }repeat
+  ]
+ }ifelse
+}if  %% si és null no cal endreçar res
+
+ ==  %% l'apuntem al prompt
+
+% (* * * * * STOP * * * * *)pstack
+ stop
+}
+{  %% el mapa d'imposició aquí ja ha de venir endreçat
+ M8  ==
+}ifelse  %%només desencartem si assagem?
+
+(\n\n\n) print flush
 
 %%Scripting 3
 %false
@@ -762,7 +810,6 @@ M7
 % (!!!!)pstack quit
 }ifelse
 
-%(<<<<?)pstack quit
 /araMediaBox exch def
 
 %%TEST
@@ -874,7 +921,10 @@ pop pop
    }
    {
 
-    M8 exch get  %% tibem pel núm. de pàgina
+    araLlibret  %% array del llibret, extret de M8, que ara toca imposar
+
+    exch get  %% tibem pel núm. de pàgina del PDF d'entrada que imposarem ara
+
     %% si ens arriba un null equival a una pàgina en blanc i evitem el .PDFDrawPage
     dup null eq
     {

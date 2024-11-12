@@ -123,26 +123,29 @@ true
 %% si el nombre de pàgines de l'nUp triat és ídem al nombre d'enters + null de l'array (o una array buida) i el PDF té menys pàgines dóna Error: /undefined in --get-- 
 %% ara es permet que tot siguin pàgines en blanc (sembla no tenir massa sentit però ho mantenim)
 
-%%TEST
-[ [1 1 1 1 ] [ 8 8 8 8] ]
-
-%% això no pot anar a nUp...?
-iLlibret get
-dup ==
+%%AQUÍ HI HA D'ANAR UNA ARRAY AMB ELS LLIBRETS (ARRAYS) ENDREÇATS PER ORDRE D'ENQUADERNAT
 
 
+%[[1 2 7 8] [3 4 5 6]]  %% ENCARTAT
+%[[1 2 3 4] [5 6 7 8]]  %% APILAT
+[ ]                    %% 1 DE SOL
+
+%[ [1 1 1 1 ] [ 8 8 8 8] ]
 %[ 8    2    1    4    5    1    7    1 ]
 %  [null  null null null null null 9    null]
-% [  ]
+
 
 
 %%M9 ENQUADERNAT
 %% podem triar entre tres tipus d'enquadernat:
-%% null = 1 sol llibret, fins que s'esgoti el llançat (si falten pàgines s'omplen amb buides i si en sobren es talla)
+%% EP! quan M10 és a false aquest paràmetre fa que només es faci el primer llibret (la primera array de M8)
+%% null = (és l'opció lògica quan M8 és una array buida) 1 sol llibret, fins que s'esgoti el llançat (si falten pàgines s'omplen amb buides i si en sobren es talla)
+%% EP! quan M10 és a false aquests dos paràmetres no són rellevants doncs mana M8 !
 %% true = encartat, amb diversos llibrets (fins que s'esgotin les pàgines del PDF i si falten pàgines s'afegeixen en blanc a la cua del llançat)
 %% false = apilat, amb diversos llibrets (fins que s'esgotin les pàgines del PDF i si falten pàgines s'afegeixen en blanc a la cua del llançat)
 
 true
+
 
 
 %%M10 ASSAGEM EL MAPA D'IMPOSICIÓ?
@@ -152,6 +155,19 @@ true
 true
 
 
-%%M11 NOMBRE DE LLIBRETS A GENERAR (útil per quan el PDF d'entrada sigui molt gran i volguem dossificar la feina)
+
+%%M11 IRRELLEVANT ARA!
+()
+
+
+
 %%M12 PÀGINA D'INICI DE L'ASSAIG (normalment seria la 1 però podem marcar l'inici cap endavant en una altra pàgina)
+1
+
+
+
+%%M13 NOMBRE MÀXIM DE LLIBRETS A GENERAR (útil per quan el PDF d'entrada sigui molt gran i volguem dossificar la feina)
+%% zero podria equivaldre a enquadernar TOT el PDF d'entrada
+0
+
 
