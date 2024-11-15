@@ -26,10 +26,10 @@ true  %% true fem PDFs | false fem JPEGs
 
 %% Tuxedo
 %(/home/femfum/Documents/pliegOMakerUB/Hpdf/8CropBox_MediaBox_NOMESaLarrelPage_CropBox_QuadratsRectanglesVH_pla.pdf)
-(/home/femfum/Documents/pliegOMakerUB/8paginesPDFnumerades.pdf)
+%(/home/femfum/Documents/pliegOMakerUB/8paginesPDFnumerades.pdf)
 %(/home/femfum/Documents/pliegOMakerUB/9numerades_ladarreraENfucsia.pdf)
 %(/home/femfum/Documents/pliegOMakerUB/4re.pdf)
-%(/home/femfum/Documents/GuiaJove_EinesDT_v1_web.pdf)
+(/home/femfum/Documents/GuiaJove_EinesDT_v1_web.pdf)
 
 }
 {
@@ -66,7 +66,7 @@ true
 %% 4 llançat de 4 pàgines de PDF per plana, en vertical, en un full en dúplex horitzontal o vertical 4+4 | 8 imposicions totals | impressió 4-up | 4vUpHV
 %% 8 llançat de 8 pàgines de PDF per plana, en vertical, en un full en dúplex horitzontal 8+8 | 16 imposicions totals | impressió 8-up | 8vUpH
 
-2
+8
 
 
 
@@ -127,47 +127,63 @@ true
 
 
 %[[1 2 7 8] [3 4 5 6]]  %% ENCARTAT
-%[[1 2 3 4] [5 6 7 8]]  %% APILAT
-[ ]                    %% 1 DE SOL
 
-%[ [1 1 1 1 ] [ 8 8 8 8] ]
-%[ 8    2    1    4    5    1    7    1 ]
+%[[1 2 3 4] [5 6 7 8]]  %% APILAT
+
+%[ ]                    %% 1 DE SOL o TOT SI M13 ÉS ZERO?
+
+[[47 1 2 1 4 null 6 7 8 9 10 11 -12 13 14 ]]
+%% array un cop revisada i corregida [[40 1 2 1 4 null 6 7 8 9 10 11 1 13 14 40]]
+
+
+% [[][]]  %%EP! aquest format d'array NO es pot fer servir doncs dóna Error: /rangecheck in --get--
+
+%[ [null 1 1 1 ] [ true 8 8 8] ]
+%[ 1    2    1    4    5    1    7    1 ]
 %  [null  null null null null null 9    null]
 
 
 
 %%M9 ENQUADERNAT
 %% podem triar entre tres tipus d'enquadernat:
-%% EP! quan M10 és a false aquest paràmetre fa que només es faci el primer llibret (la primera array de M8)
-%% null = (és l'opció lògica quan M8 és una array buida) 1 sol llibret, fins que s'esgoti el llançat (si falten pàgines s'omplen amb buides i si en sobren es talla)
-%% EP! quan M10 és a false aquests dos paràmetres no són rellevants doncs mana M8 !
+%% null = 1 sol llibret apilat (quan M8 és una array buida) fins que s'esgoti el llançat nUp (si falten pàgines s'omplen amb buides i si en sobren es talla)
 %% true = encartat, amb diversos llibrets (fins que s'esgotin les pàgines del PDF i si falten pàgines s'afegeixen en blanc a la cua del llançat)
 %% false = apilat, amb diversos llibrets (fins que s'esgotin les pàgines del PDF i si falten pàgines s'afegeixen en blanc a la cua del llançat)
+%% EP! quan M10 és a false tenir M9 a true o false no fa canviar res, doncs és M8 qui mana!
+%% EP! quan M10 és a false tenir M9 a null fa que només es crei el primer llibret (la primera array de M8)
 
-true
+false
 
 
 
 %%M10 ASSAGEM EL MAPA D'IMPOSICIÓ?
-%% true = si assagem el mapa d'imposició no crearem el PDF amb el pliegOS i només donarem com a resultat una matriu per a M8
-%% false = aplicarem el mapa d'imposició definit a M8 i generarem el PDF amb el pliegOS
+%% true = si assagem el mapa d'imposició no crearem el PDF i només donarem com a resultat la matriu que defineix M8 amb una anàlisi de la feina segons el triat a M12 i M13
+%% false = farem l'anàlisi de la feina i generarem el PDF de sortida amb el pliegOS aplicant el mapa d'imposició definit a M8
 
 true
 
 
 
-%%M11 IRRELLEVANT ARA!
+%%M11 TEXT A COMPONDRE
+%% si M6 és 9, 12 o 0, s'ignora
+
 ()
 
 
 
-%%M12 PÀGINA D'INICI DE L'ASSAIG (normalment seria la 1 però podem marcar l'inici cap endavant en una altra pàgina)
+%%M12 PÀGINA D'INICI i FINAL DE L'ASSAIG
+%% 0 0 significa generar el mapa d'imposició de la primera a la darrera pàgina del PDF d'entrada
+%% aquest paràmetre només s'aplica en la creació del mapa d'imposició per a M8, o sigui només a l'assaig (M10 a true)
+
+0 0
+
+
+
+%%M13 NOMBRE MÀXIM DE LLIBRETS A GENERAR (útil per quan el PDF d'entrada sigui molt gran i volguem acotar la feina)
+%% aquest paràmetre només s'aplica en la creació del mapa d'imposició M8, o sigui només a l'assaig (M10 a true)
+%% zero hauria d'equivaldre a generar el mapa d'imposició per enquadernar TOT el PDF d'entrada (tret que M9 sigui null)
+%% aquí M8 no hi pinta res
+
 1
-
-
-
-%%M13 NOMBRE MÀXIM DE LLIBRETS A GENERAR (útil per quan el PDF d'entrada sigui molt gran i volguem dossificar la feina)
-%% zero podria equivaldre a enquadernar TOT el PDF d'entrada
-0
 
 

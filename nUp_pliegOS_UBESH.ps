@@ -553,8 +553,11 @@ dup /CddVf exch def
 
 
 %% fi de MENÚ de capçalera
+
+%%UBESH noves funcions
 /M13 exch def  %% NOMBRE MÀXIM DE LLIBRETS A GENERAR
-/M12 exch def  %% PÀGINA D'INICI DE L'ASSAIG
+2 array astore /M12 exch def  %% PÀGINA D'INICI I FINAL DE L'ASSAIG
+
 /M11 exch def  %% text a compondre
 
 %%UBESH noves funcions
@@ -1947,19 +1950,19 @@ _anversrevers
 
 %%UBESH és aquí on hauríem de redefinir noNULL en base al mapa d'imposició?
 %%UBESH una estratègia ELEGANT per les pàgines en blanc, però és obligatori fer la crida al gs amb -dAutoRotatePages=/None perquè sino capgira el full ! 
-dup M8 dup length 0 eq
-{  %% amb el mapa d'imposició buit fem 1 sol llibret respectant l'ordre seqüencial del PDF a imposar
- pop pop
-}
-{  %% triem seqüencialment quin dels llibrets fem el llançat dins del mapa d'imposició que ja ve preparat per l'encartat o l'apilat
- iLlibret get dup /araLlibret exch def
+    dup M8 dup length 0 eq
+    {  %% amb el mapa d'imposició buit fem 1 sol llibret respectant l'ordre seqüencial del PDF a imposar
+     pop pop
+    }
+    {  %% triem seqüencialment quin dels llibrets fem el llançat dins del mapa d'imposició que ja ve preparat per l'encartat o l'apilat
+     iLlibret get dup /araLlibret exch def
 
 %(- - - - - )pstack quit
- exch 1 sub get null eq  %% el mapa d'imposició ens diu si la pàgina és en blanc?
- {  %% l'índex de la pàgina del llançat serà en blanc
-  /noNULL false def  %% desactivem l'algorisme del componedor 
- }if
-}ifelse
+     exch 1 sub get null eq  %% el mapa d'imposició ens diu si la pàgina és en blanc?
+     {  %% l'índex de la pàgina del llançat serà en blanc
+      /noNULL false def  %% desactivem l'algorisme del componedor 
+     }if
+    }ifelse
 
     == 3 string cvs /Npgn exch def
    }

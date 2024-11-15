@@ -573,7 +573,7 @@ pOM: modifiqueu el mapa d'imposició […] si voleu un altre comportament per aq
 
 
     12.11.2024
-- - - - - - - - HT
+- - - - - - - - HT 5
 
 %%H: de 07h00 a 08h30
 %%H: de 11h45 a 13h00
@@ -583,9 +583,39 @@ pOM: modifiqueu el mapa d'imposició […] si voleu un altre comportament per aq
 
 
 
-+ hem d'aconseguit generar el llibret múltiple començant per l'exemple més senzill: un nUp 2+2 sobre un PDF de 8 pàgines, la qual cosa genera 2 llibrets apilats, o sigui un pliegOS resultant de 4 pàgines amb: anvers/revers | anvers/revers
+    13.11.2024
+- - - - - - - - HT 4.25
+
+%%H: de 07h45 a 08h15
+%%H: de 12h15 a 13h15
+%%H: de 15h15 a 16h15
+%%H: de 16h45 a 18h30
+
+
+
+
+    14.11.2024
+- - - - - - - - HT 3.5
+
+%%H: de 10h30 a 13h00
+%%H: de 17h30 a 18h30
+
+
+
+    15.11.2024
+- - - - - - - - HT 9
+
+%%H: de 05h15 a 07h15
+%%H: de 09h45 a 12h45
+%%H: de 14h15 a 15h45
+%%H: de 17h15 a 18h45
+%%H: de 21h00 a 22h00
+
+
+
++ hem aconseguit generar el llibret múltiple començant per l'exemple més senzill: un nUp 2+2 sobre un PDF de 8 pàgines, la qual cosa genera 2 llibrets apilats, o sigui un pliegOS resultant de 4 pàgines amb: anvers/revers | anvers/revers
 + tenim un mètode estable per executar n vegades… nUp_pliegOS_UBESH.ps …cridant cada array dins el mapa d'imposició (hi haurà un altre solució més elegant?)
-+ el mètode és el següent: executem per línia de comanda… altravolta.ps …que inicialitza 2 variables i duu un repetidor de les vegades que s'ha d'executar… nUp_pliegOS_UBESH.ps …tantes com el nombre de llibrets necessaris per generar el PDF de sortida
++ el mètode és el següent: executem per línia de comanda… altravolta.ps …que inicialitza 2 variables i duu un loop que gira les n vegades que s'ha d'executar… nUp_pliegOS_UBESH.ps …tantes com el nombre de /nLlibrets (variable que definim dins farceixPDFs_pseudoPDFX5_UBESH.ps) necessaris per generar el PDF de sortida
 + per tibar un o altre array de pàgines a… ESH_UB.txt …ho fem amb l'índex /iLlibret dins un loop (això a dins nUp_pliegOS_UBESH.ps) per desar-la a /araLlibret
 
 + fem un mapa de la veritat de tots els gatells que intervenen en la imposició:
@@ -604,16 +634,216 @@ pOM: modifiqueu el mapa d'imposició […] si voleu un altre comportament per aq
 [ ]                     false               true                                                                                    BÉ
 [ ]                     null                true                                                                                    BÉ
 
-[ ]                     true                false               no hauria de fer 2 llibrets encartats?                              MMM Repeteix 2 cops el llibret inicial
-[ ]                     false               false               no hauria de fer 2 llibrets apilats?                                MMM Repeteix 2 cops el llibret inicial
+[ ]                     true                false               CORREGIR: no hauria de fer 2 llibrets encartats?                    MMM Repeteix 2 cops el llibret inicial
+[ ]                     false               false               CORREGIR: no hauria de fer 2 llibrets apilats?                      MMM Repeteix 2 cops el llibret inicial
 [ ]                     null                false                                                                                   BÉ 1 sol llibret segons l'nUp per ordre d'inici
 
-
-+ hem d'adaptar els mapes d'imposició tal i com els necessita M8
++ [8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23] una array plena a M8 NO pot anar mai amb null a M9?
++ ara l'execució del PDF (M10 a false) amb M8 a [] i M9 a null, encara peta pels canvis que hem det núm. de pàgina d'inici i final
++ revisió de la rutina que detecta pàgines ignorades dins d'un determinat tram que pot ser correlatiu o no, amb salts, omisions i pàgines repetides
 @FET
 
-+ hem de solucionar els nous paràmetres M11 i M12
-+ els hem configurat al menú i ara només cal donar-lis vida!
++ hem adaptat els mapes d'imposició tal i com els necessita M8
+@FET
+
++ ara ja fem l'anàlisi exhaustiu de l'array d'imposició M8 quan generem el PDF amb el llançat dels llibrets
++ i el rectifiquem afegint, traient i canviant els elements que calguin de l'array M8
+@FET
+
++ també cal fer jugar M13 a l'assaig (i només a l'assaig! M10 a true)
++ el nombre màxim de llibrets que volem fer: 0 tots fins a esgotar el PDF o n
++ tenim a mig fer les apilades i mancara totes les encartades
+@URGENT
+
++ només si M9 és null passem d'avaliuar M13
++ hi ha un error amb aquests valors: %%M2 QUIN LLANÇAT 8 | %%M9 ENQUADERNAT null | %%M10 ASSAGEM EL MAPA D'IMPOSICIÓ? true | %%M12 PÀGINA D'INICI i FINAL DE L'ASSAIG 8 24
++ el mapa d'imposició no és correcte… [8 9 10 11 12 13 14 15 16i]
+@FET
+
++ ATENCIÓ amb la variable… /araLlibret …definida a… nUp_pliegOS_UBESH.ps …l'hem deixat de fer servir a… farceixPDFs_pseudoPDFX5_UBESH.ps
+@VIST
+
++ tenint 1 sol llibret a M8, fent el llançat, tant si a M9 ho fem amb 1 de sol (null) apilat (false) com encartat (true) ja rutlla
+@FET
+
+
++ fem un assaig exhaustiu d'enquadernats i nUps sobre l'exemple de 40 pàgines… /home/femfum/Documents/GuiaJove_EinesDT_v1_web.pdf …per polir detalls:
+
+#1 M2 1 | M8 [] | M9 null | M10 true >>> assaig per fer 1 sol llibret apilat 1+1 nUp
+            40 ......... pagines del PDF d'entrada
+            2  ......... pagines de l'nUp
+            0  ......... pagines en blanc
+            38 ......... pagines ignorades
+            1  ......... nombre de llibrets
+    un de sol1 ......... tipus d'enquadernat
+            2  ......... pagines de tripa
+
+            mapa d'imposicio [1 2]
+
+#2 M2 2 | M8 [] | M9 null | M10 true >>> assaig per fer 1 sol llibret apilat 2+2 nUp
+            40 ......... pagines del PDF d'entrada
+            4  ......... pagines de l'nUp
+            0  ......... pagines en blanc
+            36 ......... pagines ignorades
+            1  ......... nombre de llibrets
+    un de sol1 ......... tipus d'enquadernat
+            4  ......... pagines de tripa
+
+            mapa d'imposicio [1 2 3 4]
+
+#3 M2 4 | M8 [] | M9 null | M10 true >>> assaig per fer 1 sol llibret apilat 4+4 nUp
+            40 ......... pagines del PDF d'entrada
+            8  ......... pagines de l'nUp
+            0  ......... pagines en blanc
+            32 ......... pagines ignorades
+            1  ......... nombre de llibrets
+    un de sol1 ......... tipus d'enquadernat
+            8  ......... pagines de tripa
+
+            mapa d'imposicio [1 2 3 4 5 6 7 8]
+
+#4 M2 8 | M8 [] | M9 null | M10 true >>> assaig per fer 1 sol llibret apilat 8+8 nUp
+            40 ......... pagines del PDF d'entrada
+            16 ......... pagines de l'nUp
+            0  ......... pagines en blanc
+            24 ......... pagines ignorades
+            1  ......... nombre de llibrets
+    un de sol1 ......... tipus d'enquadernat  <<< HI HAURÍEM D'AFEGIR 1 DE SOL APILAT?
+            16 ......... pagines de tripa
+
+            mapa d'imposicio [1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16]
+
+#5 M2 1 | M8 [] | M9 false | M10 true >>> assaig per tots els llibrets apilats 1+1 nUp
+            40 ......... pagines del PDF d'entrada
+            2  ......... pagines de l'nUp
+            0  ......... pagines en blanc
+            0  ......... pagines ignorades
+            20 ......... nombre de llibrets
+       apilat  ......... tipus d'enquadernat
+            40 ......... pagines de tripa
+
+            mapa d'imposicio [[1 2] [3 4] [5 6] [7 8] [9 10] [11 12] [13 14] [15 16] [17 18] [19 20] [21 22] [23 24] [25 26] [27 28] [29 30] [31 32] [33 34] [35 36] [37 38] [39 40]]
+
+#6 M2 2 | M8 [] | M9 false | M10 true >>> assaig per fer tots els llibrets apilats 2+2
+            40 ......... pagines del PDF d'entrada
+            4  ......... pagines de l'nUp
+            0  ......... pagines en blanc
+            0  ......... pagines ignorades
+            10 ......... nombre de llibrets
+       apilat  ......... tipus d'enquadernat
+            40 ......... pagines de tripa
+
+            mapa d'imposicio [[1 2 3 4] [5 6 7 8] [9 10 11 12] [13 14 15 16] [17 18 19 20] [21 22 23 24] [25 26 27 28] [29 30 31 32] [33 34 35 36] [37 38 39 40]]
+
+#7 M2 4 | M8 [] | M9 false | M10 true >>> assaig per fer tots els llibrets apilats 4+4
+            40 ......... pagines del PDF d'entrada
+            8  ......... pagines de l'nUp
+            0  ......... pagines en blanc
+            0  ......... pagines ignorades
+            5  ......... nombre de llibrets
+       apilat  ......... tipus d'enquadernat
+            40 ......... pagines de tripa
+
+            mapa d'imposicio [[1 2 3 4 5 6 7 8] [9 10 11 12 13 14 15 16] [17 18 19 20 21 22 23 24] [25 26 27 28 29 30 31 32] [33 34 35 36 37 38 39 40]]
+
+#8 M2 8 | M8 [] | M9 false | M10 true >>> assaig que fa NOMÉS tots els llibrets MÚLTIPLES! apilats 8+8
+            40 ......... pagines del PDF d'entrada
+            16 ......... pagines de l'nUp
+            0  ......... pagines en blanc
+            0  ......... pagines ignorades  <<<< MENTIDA! SÓN 8
+            2  ......... nombre de llibrets <<<< HAURIEN DE SER 3
+       apilat  ......... tipus d'enquadernat
+            40 ......... pagines de tripa   <<<< MENTIDA! NOMÉS N'HI HAN 32 DONCS S'ATURA AL MÚLTIPLE EXACTE I NO FARCEIX AMB PÀGINES BLANQUES PER EXHAURIR TOTES LES PÀGINES DEL PDF D'ENTRADA
+>>>> QUE M8 SIGUI A [] NO HI TÉ RES A VEURE, DONCS AQUESTA ARRAY AMB M10 A true NO SE LA MIRA
+            mapa d'imposicio [[1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16] [17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32]]
+@FET
+            40 ......... pagines del PDF d'entrada
+            16 ......... pagines de l'nUp
+            8  ......... pagines en blanc
+            0  ......... pagines ignorades
+            3  ......... nombre de llibrets
+       apilat  ......... tipus d'enquadernat
+            48 ......... pagines de tripa
+>>>> CORRECTE!
+            mapa d'imposicio [[1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16] [17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32] [33 34 35 36 37 38 39 40 null null null null null null null null]]
+
+#9 M2 8 | M8 [] | M9 true | M10 true >>> assaig que fa NOMÉS tots els llibrets MÚLTIPLES! encartats 8+8
+            40 ......... pagines del PDF d'entrada
+            16 ......... pagines de l'nUp
+            8  ......... pagines en blanc   <<<< VEUREM QUANTES SERAN QUAN EXHAUREIXI TOTES LES PÀGINES DEL PDF D'ENTRADA
+            0  ......... pagines ignorades  <<<< MENTIDA! SÓN 8
+            3  ......... nombre de llibrets <<<< SÍ, PERÒ FENT TOTES LES PÀGINES LA DISTRIBUCIÓ SERIA DIFERENT
+     encartat  ......... tipus d'enquadernat
+            48 ......... pagines de tripa   <<<< CORRECTE PERÒ MENTIDA! DONCS COM QUE S'ATURA AL MÚLTIPLE EXACTE NO EXHAUREIX LES PÀGINES DEL PDF D'ENTRADA
+>>>> AQUEST ÉS EL PRIMER PROBLEMA QUE HEM DE SOLUCIONAR ARA: QUE EN TOTS ELS CASOS, COM #8 I #9, ENCARA QUE EL NOMBRE DE PÀGINES DEL PDF D'ENTRADA NO SIGUI MÚLTIPLE DE L'NUP, AIXÒ NO PRIVI DE FER TOTES LES PÀGINES, DE MANERA QUE S'AFEGEIXIN LES PÀGINES EN BLANC (null) QUE CALGUIN A LA CUA
+            mapa d'imposicio [[1 2 3 4 5 6 7 8 null null null null null null null null] [9 10 11 12 13 14 15 16 33 34 35 36 37 38 39 40] [17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32]]
+@FET
+            40 ......... pagines del PDF d'entrada
+            16 ......... pagines de l'nUp
+            8  ......... pagines en blanc
+            0  ......... pagines ignorades
+            3  ......... nombre de llibrets
+     encartat  ......... tipus d'enquadernat
+            48 ......... pagines de tripa
+>>>> CORRECTE!
+            mapa d'imposicio [[1 2 3 4 5 6 7 8 null null null null null null null null] [9 10 11 12 13 14 15 16 33 34 35 36 37 38 39 40] [17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32]]
+
+
+#10 M2 4 | M8 [] | M9 true | M10 true >>> assaig que fa tots els llibrets encartats 4+4
+            40 ......... pagines del PDF d'entrada
+            8  ......... pagines de l'nUp
+            0  ......... pagines en blanc
+            0  ......... pagines ignorades
+            5  ......... nombre de llibrets
+     encartat  ......... tipus d'enquadernat
+            40 ......... pagines de tripa
+
+            mapa d'imposicio [[1 2 3 4 37 38 39 40] [5 6 7 8 33 34 35 36] [9 10 11 12 29 30 31 32] [13 14 15 16 25 26 27 28] [17 18 19 20 21 22 23 24]]
+
+#11 M2 2 | M8 [] | M9 true | M10 true >>> assaig que fa tots els llibrets encartats 2+2
+            40 ......... pagines del PDF d'entrada
+            4  ......... pagines de l'nUp
+            0  ......... pagines en blanc
+            0  ......... pagines ignorades
+            10 ......... nombre de llibrets
+     encartat  ......... tipus d'enquadernat
+            40 ......... pagines de tripa
+
+            mapa d'imposicio [[1 2 39 40] [3 4 37 38] [5 6 35 36] [7 8 33 34] [9 10 31 32] [11 12 29 30] [13 14 27 28] [15 16 25 26] [17 18 23 24] [19 20 21 22]]
+
+#12 M2 1 | M8 [] | M9 true | M10 true >>> assaig que fa tots els llibrets encartats 1+1
+            40 ......... pagines del PDF d'entrada
+            2  ......... pagines de l'nUp
+            0  ......... pagines en blanc
+            0  ......... pagines ignorades
+            20 ......... nombre de llibrets
+     encartat  ......... tipus d'enquadernat
+            40 ......... pagines de tripa
+>>>> CALDRIA POTSER ENSENYAR PEL PROMPT L'ESTRUCTURA MÉS LÓGICA DE LES ARRAYS ENCAIXADES DEL MAPA D'IMPOSICIÓ? (I QUE DESPRÉS DESENCAIXEM I TORNEM A ENSENYAR)
+            mapa d'imposicio [[1 40] [2 39] [3 38] [4 37] [5 36] [6 35] [7 34] [8 33] [9 32] [10 31] [11 30] [12 29] [13 28] [14 27] [15 26] [16 25] [17 24] [18 23] [19 22] [20 21]]
+
+
+
+
++ documentem el recurs dels packedarray que podríem fer servir per identificar i definir els nous objectes dins els mapes d'imposició que apuntin externament a fitxers/pàgines/posicions
+GS>true setpacking
+GS>{1 2 3} type ==
+packedarraytype
+GS>false setpacking
+GS>{1 2 3} type ==
+arraytype
+
+
++ hem de solucionar els nous paràmetres M11 i M12: han d'actuar només a l'assaig! …hem ampliat M12 perquè contempli també el núm. de pàgina on volguem finalitzar la imposició
+
++ hem de provar a fons tota mena d'enquadernats en tota mena de PDFs
+
++ hem afegit un filtre per comprovar, quan fem la imposició de debò, M10 a false, que l'estructura de les arrays d'imposició és correcte, fent:
+# assegurar-nos que totes les arrays tinguin el mateix length
+# assegurar-nos que tots els elements de les array o són enters o són null
+
++ hi ha d'altres combinacions de menú que ens donen errors i hem de veure com blindar-les
+# M8 [] | M9 false | M10 false  Error: /rangecheck in --get--
 @ESTEMFENT
 
 + com es criden ara els fitxers de pliegOS entre ells?
@@ -642,7 +872,7 @@ farceixPDFs_pseudoPDFX5_UBESH.ps <----> FemFum_CaLi2CoPi_042_pliegOMakerUBESH.ps
 + hem d'unificar les adreces de treball en un fitxer de configuració
 @URGENT
 
-+ fem un duplicat de l'aplicació …/REpublica/plec_ca.html …traduïda al català per una urgència de l'Enric a…
++ fem un duplicat de l'aplicació …/REpublica/plec_ca.html …traduïda al català per una urgència didàctica de l'Enric a…
 https://pliegos.net/maker/plec/plec_ca.html
 @FET
 
@@ -803,6 +1033,7 @@ Error: /undefinedfilename in --file-- Operand stack: (/var/www/wordpress/maker/S
 + Niraleatori | https://ja.cat/canvidemirada >> https://www.pliegos.net/maker/Niraleatori/pliegOmaker_Niraleatori.php?vp=true&nup=8&hv=false&full=4&r=false&lab=16 | >>> ERROR d'execució de l'algorisme <<<
 @VIST
 
++ cal traslladar al Tuxedo tot el que hi hagi de significatiu al Dynabook i Lenovo de la Fina i de la tauleta
 + cal traslladar tot el que hi hagi al nou servidor al localhost del Tuxedo
 + traslladem tot el contingut del directori del servidor… /var/www/html/maker/REpublica …al localhost… /var/www/html/www.pliegos.net/maker/REpublica
 + ens cal corregir crides gs i paths de tots els algorismes del nou servidor de SomNúvol, doncs no en va cap (gs 9.55 i han canviat directoris absoluts!)

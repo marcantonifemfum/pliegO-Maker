@@ -239,9 +239,11 @@ bateiG
 %% Ara treballem amb 1 sol PDF d'entrada que generarà 1 sol PDF de sortida (cada 2 planes del PDF resultant, anvers/revers, serà 1 pliegOS)
 %%+1 cal saber quantes pàgines té el PDF d'entrada a imposar
 aPmaker  %% aquest paquet desat per CaLi2CoPi duu tantes arrays com pàgines amb els valors del CropBox, en cas d'existir, i si no del MediaBox
-length /pPDF exch def
+length /poPDF exch def  %% és el nombre total de pàgines originals del PDF d'entrada i sempre serà així
+
 %%+2 cal saber quin nUp hem triat
 M2 /Nup exch def
+
 %%+3 cal saber quin enquadernat hem triat
 M9  %% null = fem 1 sol llibret de pàgines seguides fins a esgotar l'nUp (si falten pàgines s'omplen amb buides a la cua i si en sobren es talla)
        %% true = encartem amb tants llibrets com pàgines tingui el PDF i l'nUp triat (si falten pàgines s'omplen amb buides a la cua)
@@ -249,10 +251,65 @@ M9  %% null = fem 1 sol llibret de pàgines seguides fins a esgotar l'nUp (si fal
 /nqdrnt exch def
 
 %%UBESH
+%% tant si fem totes les pàgines del PDF d'entrada (poPDF) com si hem acotat un determinat rang de pàgines (M12), mirem si és un múltiple exacte de l'Nup triat
+%% si no fos així, farciríem amb pàgines en blanc la cua del llançat fins a quadrar-lo (ja ho fem en determinats casos)
+M12 0 get 0 eq
+{  %% si el primer valor és zero és que comencem per la pàgina 1
+ /iLlançat 1 def
+}
+{  %% si és un altra xifra mirem que no estigui fora de rang
+ M12 0 get /iLlançat exch def
+ iLlançat 0 lt
+ {  %% no fos que hi hagi un nombre negatiu!
+  (\n\n >>>> rectifiquem el valor negatiu d'inici de la primera pagina\n\n)print flush
+  /iLlançat 1 def
+ }
+ {
+  iLlançat poPDF gt
+  {  %% no fos que hi hagi un nombre més gran que el de pàgines del PDF d'entrada!
+   (\n\n >>>> rectifiquem el valor d'inici de pagina per superar el maxim permes\n\n)print flush
+   /iLlançat poPDF def  %% qui sap si més endavant tindrà sentit gestionar enquadernats que capgirin l'ordre de les pàgines?
+  }if
+ }ifelse
+}ifelse
+
+M12 1 get 0 eq
+{  %% si el segon valor és zero és que acabarem per la pàgina final del PDF d'entrada
+ /fLlançat poPDF def
+}
+{  %% si és un altra xifra mirem que no estigui fora de rang
+ M12 1 get /fLlançat exch def
+ fLlançat 0 lt
+ {  %% no fos que hi hagi un nombre negatiu!
+  (\n\n >>>> rectifiquem el valor negatiu de final de la darrera pagina\n\n)print flush
+  /fLlançat poPDF def
+ }
+ {
+  fLlançat poPDF gt
+  {  %% no fos que hi hagi un nombre més gran que el de pàgines del PDF d'entrada!
+   (\n\n >>>> rectifiquem el valor de final de pagina per superar el maxim permes\n\n)print flush
+   /fLlançat poPDF def  %% qui sap si més endavant tindrà sentit gestionar enquadernats que capgirin l'ordre de les pàgines?
+  }if
+ }ifelse
+}ifelse
+
+%% tornem a avaluar el nombre de pàgines del PDF d'entrada que imposarem
+%%ATENCIÓ: ara pPDF és el nombre de pàgines del PDF d'entrada que imposarem i poPDF és el nombre total de pàgines originals del PDF d'entrada
+fLlançat iLlançat sub 1 add /pPDF exch def  %% com que beu de M12 sempre seran pàgines seguides doncs no hi ha risc que hi hagi ni pagines repetides ni null
+
+%%UBESH
 %%M10 ASSAGEM EL MAPA D'IMPOSICIÓ?
+
 %% true = si assagem el mapa d'imposició no crearem el PDF amb el pliegOS i només donarem com a resultat una matriu per a M8
+%% i l'anàlisi que mostrarem estarà basat en el resultat d'aquesta matriu
+%% SÓN rellevants els valors de:
+%% NO són rellevants els valors de:
+
 %% false = aplicarem el mapa d'imposició definit a M8 i generarem el PDF amb el pliegOS
-%% un cop generat l'array del mapa d'imposició automàticament, haurà de ser l'usuari de pliegOS qui l'ajusti manualment si li cal
+%% el mapa d'imposició podrà ser l'usuari de pliegOS qui l'ajusti manualment i l'anàlisi que mostrarem estarà basat en aquesta matriu
+%% SÓN rellevants els valors de:
+%% NO són rellevants els valors de:
+
 M10
 {  %% NO fem el llançat i només generem el mapa d'imposició en base al nombre de pàgines del PDF i l'enquadernat triat
 
@@ -274,36 +331,26 @@ M10
 ( - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n\n)print flush
 %( | | | | | | | | | | | | | | | | | | | | | | | | | | | | | |\n\n)print flush
 
-}
-{  %% FEM el llançat servint-nos del mapa d'imposició del menú
- %% M8 ja és cridat per l' Scripting al seu lloc
-%M8
-(\n\n - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n)print flush
-(\n                     f e m   p l i e g O S\n\n)print flush
-( - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n\n)print flush
-
-}ifelse
-
  %% aquesta rutina genera mapes d'imposició en els 3 tipus d'enquadernat:
  nqdrnt null eq
- {  %% 1 sol llibret de pàgines seguides fins que s'esgoti l'nUp (si falten pàgines s'omplen amb buides a la cua i si en sobren es talla)
+ {  %% 1 sol llibret de pàgines seguides (apilat) fins que s'esgoti l'nUp (si falten pàgines s'omplen amb buides a la cua i si en sobren es talla)
   [
-   1 1  %% comencem per la 1 sumant 1
+   iLlançat 1  %% comencem per iLlançat sumant 1 fins a fLlançat
    Nup 2 mul pPDF sub
    dup 0 eq
-   {  %% el PDF d'entrada quadra exactament amb el nombre de pàgines de l'nUp triat
-    pop pPDF
+   {  %% les pàgines escollides del PDF d'entrada quadren exactament amb el nombre de pàgines de l'nUp triat
+    pop fLlançat
     /enBlanc 0 def
    }
    {
     dup 0 gt
-    {  %% el PDF d'entrada té MENYS pàgines que l'nUp triat
-     /enBlanc exch def
-     pPDF
+    {  %% les pàgines escollides del PDF d'entrada són MENYS que l'nUp triat
+     /enBlanc exch def  %% llavors en farcirem en blanc
+     fLlançat
     }
-    {  %% el PDF d'entrada té MÉS pàgines que l'nUp triat
+    {  %% les pàgines escollides del PDF d'entrada són MÉS que l'nUp triat
      pop /enBlanc 0 def
-     Nup 2 mul
+     iLlançat Nup 2 mul add 1 sub  %% llavors tallarem fins a omplir nUp
     }ifelse
    }ifelse
 
@@ -325,10 +372,13 @@ M10
    dup 0 eq
    {  %% no hi haurà encartat perquè només dóna per 1 llibret exacte
     pop
-    1 1 pPDF
+%    1 1 pPDF
+    iLlançat 1 fLlançat
     {
     }for
     ]  %% fi de l'array d'imposició
+    /enBlanc 0 def
+    /Nllibrets 0 def  %% és el nombre de llibrets (arrays) que envolten al llibret central
    }
    {
     dup 0 lt
@@ -476,77 +526,269 @@ M10
 %== (matrius aniuades) ==  %pstack quit
   }
   {  %% apilem els pliegOS
-   %% fem tants llibrets (nUps) de pàgines seguides fins que s'esgotin les pàgines de PDF a imposar (si falten pàgines s'omplen amb buides)
+   %% fem tants llibrets (nUps) de pàgines seguides fins que s'esgoti el rang de pàgines de PDF a imposar (si falten pàgines s'omplen amb buides)
    %% calculem quants pliegOS ens surten i si hi ha pàgines en blanc (que ara deixarem a la cua)
-   pPDF Nup mod 0 eq
+   pPDF Nup 2 mul mod 0 eq
    {  %% si la divisió és exacte voldrà dir que NO hi ha pàgines en blanc
-    pPDF Nup 2 mul div /nPliegOS exch def  %% nombre de pliegOS
+    pPDF Nup 2 mul div cvi /nPliegOS exch def  %% nombre de pliegOS (llibrets)
     /enBlanc 0 def
    }
    {  %% hi haurà pàgines en blanc
-    pPDF Nup 2 mul div ceiling /nPliegOS exch def  %% nombre de pliegOS que generem
+    pPDF Nup 2 mul div ceiling cvi /nPliegOS exch def  %% nombre de pliegOS que generem
     %% pels pliegOS que generem comptem quantes pàgines en blanc necessitarem fins a completar el darrer nUp
     Nup 2 mul nPliegOS mul pPDF sub  %% restem les pàgines del PDF del nombre total de pàgines de l'nUp triat
     cvi /enBlanc exch def
    }ifelse
 
    [  %% com que els pliegOS van seguits ara posem totes les pàgines en 1 sol array
-    1 1 pPDF  %%
+    iLlançat 1 fLlançat  %% de pàgina d'origen a pàgina de final
     {
     }for
- 
+
     enBlanc  %% si n'hi han, farcim la cua de pàgines en blanc per quadrar l'nUp
     {
      null
     }repeat
    ]
+   M13 0 ne
+   {  %% aquí un nombre que potser inferior, igual o superior al nombre de pliegos per fer totes les pàgines
+    M13 nPliegOS ge
+    {  %% si és igual o superior, només avisem que res no canviarà i que es faran totes les pàgines de PDF
+(RESnoCANVIA)pstack quit
+    }
+    {  %% es demanen menys llibrets dels totals que enquadernarien totes les pàgines
+     %% com que el rang de pàgines M11 ja s'ha aplicat
+     0 Nup 2 mul M13 mul getinterval  %% extraiem des del principi
+%%CAL redefinir /nPliegOS i /enBlanc i cal veure si alguna altra variable més com /fLlançat i /pPDF i cal veure si la rutina de Pignorades treballarà bé
+(MENYSllibrets)pstack quit
+    }ifelse
+   }if
    /mapaDimposicio exch def
    %(APILEM)pstack quit
   }ifelse
  }ifelse
 
-%% sedassem el rompt amb l'anàlisi
+ /rEpEtIcIons 0 def  %% en un assaig de nou en nou no es produiran mai repeticions de pàgines
+}
+{  %% FEM el llançat servint-nos del mapa d'imposició del menú M8
+ (\n\n - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n)print flush
+ (\n                     f e m   p l i e g O S\n\n)print flush
+ ( - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n\n)print flush
 
-(              ) dup 12 pPDF 4 string cvs putinterval print flush ( ......... pagines del PDF d'entrada\n)print flush  %% nombre absolut de pàgines del PDF a imposar
-(              ) dup 12 Nup 2 mul 4 string cvs putinterval print flush ( ......... pagines de l'nUp\n)print flush  %% pàgines d'1 sol llibre per l'nUp triat
-(              ) dup 12 enBlanc 4 string cvs putinterval print flush ( ......... pagines en blanc\n)print flush  %% nobre de NULLs al mapa d'imposició
+ %% comencem filtrant si quadren el nombre d'elements a les arrays en relació a l' nUp triat (avisem de les correccions i continuem)
+ [
+  M8
+  {  %% forall
+   dup length Nup 2 mul ne
+   {  %% el nombre de pàgines d'1 llibret no coincideix amb el nombre de pàgines de l'array del mapa d'imposició?
+    dup length Nup 2 mul exch sub dup 0 lt
+    {  %% en negatiu vol dir que hi ha més pàgines del compte i hem d'escapçar l'array
+     abs 4 string cvs /elm exch def 0 Nup 2 mul getinterval  %% i ho fem per la cua
+     (\n\n >>>> escurcem... ) print flush elm print flush ( ...pagines d'un dels llibrets doncs supera el maxim de l'enquadernat que heu triat\n\n)print flush
+    }
+    {  %% si és positiu, és el nombre de pàgines en blanc (null) que hi hem d'afegir
+     dup 4 string cvs /apeb exch def 1 index length add array dup 3 -1 roll 0 exch putinterval  %% també per la cua
+     (\n\n >>>> afegim... ) print flush apeb print flush
+     ( ...pagines en blanc en un dels llibrets doncs no arriba al nombre de pagines de l'enquadernat que heu triat\n\n)print flush
+    }ifelse
+   }if
+  }forall
+ ] /M8 exch def
 
-mapaDimposicio /ARArray exch def
-/ignorades pPDF 1 add array def  %% el total de NULLs -1 que hi hagin en aquesta array serà el nombre de pàgines ignorades
-{  %% loop
- /sorTim true def
- ARArray
- {  %% forall
-  dup type /nulltype eq
-  {
-   pop
-  }
-  {
-   dup type /arraytype eq
+ %% filtrem dos valors que necessitem pel llançat
+ M8 length /nPliegOS exch def  %% nombre d'arrays dins M8
+ M9  %% si encartem
+ {  %% definim el nombre de llibrets (arrays) que envolten al llibret central
+  nPliegOS 1 sub /Nllibrets exch def
+ }if
+
+ M8
+ /p+xica 10000 def
+ /p+gran 0 def
+ {  %% forall on deduïm quina és la pàgina més petita i quina la més gran
+  {  %% forall
+   dup type /integertype eq
    {
-    /ARArray exch def
-    /sorTim false def
+    dup p+xica lt
+    {
+     dup /p+xica exch def
+     dup p+gran gt
+     {
+      /p+gran exch def
+     }
+     {
+      pop
+     }ifelse
+    }
+    {
+     dup p+gran gt
+     {
+      /p+gran exch def
+     }
+     {
+      pop
+     }ifelse
+    }ifelse
    }
    {
-    dup ignorades 3 1 roll put
+    pop
    }ifelse
+  }forall
+ }forall
+
+ %% filtrem possibles desviacions dels límits
+ p+xica dup 0 lt
+ {
+  pop /iLlançat 1 def
+ }
+ {
+  /iLlançat exch def
+ }ifelse
+ p+gran dup poPDF gt
+ {
+  pop /fLlançat poPDF def
+ }
+ {
+  /fLlançat exch def
+ }ifelse
+
+ %iLlançat fLlançat
+
+%% aquí pPDF ja no beu de M12 (les pàgines poden no ser correlatives) i llavors cal descomptar les repeticions i els null de pàgines en blanc que hi pugui haver entremig
+ /d_pPDF
+ <<  %% en aquest diccionari hi desarem com a claus (amb valor zero) els enters dels números de pàgina i quan hi hagi repeticions hi anirem sumant 1 al seu valor
+   /NULL 0  %% comptador de les pàgines en blanc
+ >> def
+ [
+  M8
+  {  %% forall
+   [ exch
+    {  %% forall
+     dup type /integertype eq
+     {
+      %% corregim i avisem de les correccions
+      dup 0 lt
+      {%% filtrem els números de pàgina negatius
+       pop 1  %% hi posem la pàgina 1
+       (\n\n >>>> rectifiquem el valor negatiu d'inici de la primera pagina\n\n)print flush
+      }if
+      %% filtrem els números de pàgina més enllà de poPDF
+      dup poPDF gt
+      {
+       pop poPDF  %% hi posem el valor de la darrera pàgina del PDF
+       (\n\n >>>> rectifiquem el valor de final de pagina per superar el maxim permes\n\n)print flush
+      }if
+      dup  %% i en deixem una còpia a l'stack
+      6 string cvs dup d_pPDF exch known
+      {  %% si el núm. de pàgina ja existeix és que és una repetició
+       dup d_pPDF exch get 1 add d_pPDF 3 1 roll put  %% el desem de nou augmentant el comptador
+       (\n\n >>>> teniu una pagina repetida\n\n)print flush
+      }
+      {  %% el núm. de pàgina NO existeix
+       d_pPDF exch 0 put
+      }ifelse
+     }
+     {  %% aquí no filtrem errors encara i donem per fet que és un null
+      d_pPDF dup /NULL get 1 add /NULL exch put
+     }ifelse
+    }forall
+   ]
+  }forall
+ ]
+
+ d_pPDF length 1 sub /pPDF exch def  %% total de pàgines a imposar del PDF d'origen
+ d_pPDF /NULL get /enBlanc exch def
+ /rEpEtIcIons 0 def
+ d_pPDF
+ {
+  exch /NULL ne
+  {  %% és un número de pàgina
+   rEpEtIcIons add /rEpEtIcIons exch def
+  }
+  {  %% és el valor de NULL
+   pop
   }ifelse
  }forall
- sorTim
- {
-  exit
- }if
-}loop
-/Pignorades -1 def
-ignorades
-{
- null eq
- {
-  Pignorades 1 add /Pignorades exch def
- }if
-}forall
+ /M8 exch def
+ /mapaDimposicio M8 def
+}ifelse
 
-(              ) dup 12 Pignorades 4 string cvs putinterval print flush ( ......... pagines ignorades\n)print flush  %% nombre de pàgines del PDF a imposar que no figuren al mapa d'imposició, llavors les repeticiions no compten
+
+%% sedassem el prompt amb l'anàlisi
+
+%% nombre de pàgines que té el PDF d'origen
+(              ) dup 12 poPDF 4 string cvs putinterval print flush ( ......... nombre de pagines del PDF d'origen\n)print flush
+%% núm. de pàgina a iniciar el llançat al PDF d'entrada
+(              ) dup 12 iLlançat 4 string cvs putinterval print flush ( ......... pagina del PDF d'origen on iniciarem la imposicio\n)print flush
+%% núm. de pàgina a finalitzar el llançat al PDF d'entrada
+(              ) dup 12 fLlançat 4 string cvs putinterval print flush ( ......... pagina del PDF d'origen on finalitzarem la imposicio\n)print flush
+%% nombre absolut de pàgines del PDF a imposar (no compten ni les repeticions ni les blanques)
+(              ) dup 12 pPDF 4 string cvs putinterval print flush ( ......... total de pagines a imposar del PDF d'origen\n)print flush
+%% pàgines d'1 sol llibre per l'nUp triat
+(              ) dup 12 Nup 2 mul 4 string cvs putinterval print flush ( ......... pagines per llibret\n)print flush
+%% nobre de NULLs al mapa d'imposició
+(              ) dup 12 enBlanc 4 string cvs putinterval print flush ( ......... pagines en blanc dels llibrets\n)print flush
+
+M10
+{  %% NO fem el llançat i només generem el mapa d'imposició en base al nombre de pàgines del PDF i l'enquadernat triat
+ mapaDimposicio /ARArray exch def
+ nqdrnt null eq
+ {  %% 1 sol llibret de pàgines seguides (apilat) fins que s'esgoti l'nUp
+  poPDF Nup 2 mul sub
+  dup 0 lt  %% el nombre de pàgines del PDF d'origen és més petit que el nombre de pàgines d'1 nUp?
+  {  %% evitem negatius quan hi ha menys pàgines que el total d'1 nUp
+   pop 0
+  }if
+  /Pignorades exch def
+ }
+ {
+  /ignorades poPDF 1 add array def  %% el total de NULLs -1 que hi hagin en aquesta array serà el nombre de pàgines ignorades
+  {  %% loop
+   /sorTim true def
+   ARArray  %% explorem la còpia del mapa d'imposició que ha estat generat per la rutina que treballa els 3 tipus d'enquadernat
+%% el fet que en aquesta array hi pot haver una numeració de pàgines que ja no comenci per 1 i que pot ser de qualsevol tram correlatiu
+%% fa que ens haguem de plantejar una nova estratègia per detectar possibles pàgines ignorades
+%% l'estratègia seria fondre ARArray dins de la carcassa matriu possible de totes les pàgines del PDF i a partir d'aquí comptar NULLs
+%  (IEPALA)pstack quit
+   {  %% forall
+    dup type /nulltype eq
+    {
+     pop
+    }
+    {
+     dup type /arraytype eq
+     {
+      /ARArray exch def
+      /sorTim false def
+     }
+     {  %% filtrem les repeticions
+      dup ignorades 3 1 roll put
+     }ifelse
+    }ifelse
+   }forall
+   sorTim
+   {
+    exit
+   }if
+  }loop
+  /Pignorades -1 def
+  ignorades
+  {  %% comptem null
+   null eq
+   {
+    Pignorades 1 add /Pignorades exch def
+   }if
+  }forall
+ }ifelse
+}
+{  %% com que no és un assaig i ja fem el llançat del PDF, el número de pàgines ignorades és
+ poPDF pPDF sub /Pignorades exch def
+}ifelse
+%% nombre de pàgines del PDF a imposar que no figuren al mapa d'imposició, llavors les repeticions no compten
+(              ) dup 12 Pignorades 4 string cvs putinterval print flush ( ......... pagines ignorades del PDF d'origen\n)print flush
+
+%% cal descriure les pàgines repetides?
+(              ) dup 12 rEpEtIcIons 4 string cvs putinterval print flush ( ......... pagines repetides del PDF d'origen\n)print flush
 
 nqdrnt null eq
 {
@@ -563,7 +805,8 @@ nqdrnt null eq
 }ifelse
 dup /nLlibrets exch def
 (              ) dup 12 4 -1 roll 4 string cvs putinterval print flush
-( ......... nombre de llibrets\n)print flush  %% nombre de pliegOS (nUps) encartats o apilats
+%% nombre de pliegOS (nUps) encartats o apilats
+( ......... nombre de llibrets del PDF resultant\n)print flush
 
 nqdrnt null eq
 {
@@ -593,7 +836,8 @@ nqdrnt null eq
  }ifelse
 }ifelse
 
-( ......... tipus d'enquadernat\n)print flush %% 1 sol pliegOS o més d'1, encartat o apilat
+%% 1 sol pliegOS o més d'1, encartat o apilat
+( ......... tipus d'enquadernat dels llibrets\n)print flush
 
 nqdrnt null eq
 {
@@ -609,11 +853,14 @@ nqdrnt null eq
  }ifelse
 }ifelse
 (              ) dup 12 4 -1 roll 4 string cvs putinterval print flush
-( ......... pagines de tripa\n\n)print flush  %% pàgines sumades de tots els nUps
+%% pàgines sumades de tots els nUps
+( ......... pagines de tripa dels llibrets\n\n)print flush
 
+%% potencial array per posar al menú
+(            mapa d'imposicio\n\n)print flush
 
-(            mapa d'imposicio\n\n)print flush  %% potencial array per posar al menú
-
+%%(ANALITZEM i CORREGIM LA MATRIU)pstack quit
+%% potser convindrà farcir un HTML quan construïm la interfície web
 
 %% només desencartem si assagem?
 M10
@@ -622,7 +869,11 @@ M10
 M9 null ne
 {  %% o és encartat o és apilat
  M9
- {  %% endrecem l'encartat
+ {  %% endrecem l'encartat desenciaxant les arrays
+
+%% Malgrat NO sigui l'estructura de treball que necessita pliegO'Maker: el mapa d'imposició quan és encartat s'entén millor encaixat?
+%dup ==
+
   %% per tal de generar d'una forma continuada l'ordre del dúplex anvers/revers que hauria de tenir el PDF resultant
   /aDesencartar exch def  %% array que desencartem
   [
@@ -648,7 +899,11 @@ M9 null ne
    }loop
   ]  %% aquesta array duu un llibret (array) al costat de l'altre
  }
- {  %% endrecem l'aplilat
+ {  %% endrecem l'aplilat agrupant per ordre en arrays els llibrets
+
+%% Malgrat NO sigui l'estructura de treball que necessita pliegO'Maker: el mapa d'imposició quan és apilat tampoc no s'entén millor mostrant les pàgines seguides
+%dup ==
+
   /Arrangem exch def
   /i 0 def
   [
@@ -661,13 +916,43 @@ M9 null ne
  }ifelse
 }if  %% si és null no cal endreçar res
 
- ==  %% l'apuntem al prompt
+ ==  %% apuntem al prompt l'array que hauríem de posar a M8 quan fem la imposició de debò
 
 % (* * * * * STOP * * * * *)pstack
+%% potser convindrà farcir un HTML quan construïm la interfície web
  stop
 }
 {  %% el mapa d'imposició aquí ja ha de venir endreçat
  M8  ==
+
+ %% fem una darrera comprovació per filtrar possibles errors estructurals als arrays:
+ %% assegurar-nos que totes les arrays tinguin el mateix length
+ M8 dup 0 get length /aralength exch def
+ {
+  length aralength ne
+  {
+   (\n\n >>>> TENIU ERRORS ESTRUCTURALS AL MAPA D'IMPOSICIO: teniu arrays de mides diferents!\n\n)print flush stop
+  }if
+ }forall
+ %% assegurar-nos que tots els elements de les array o són enters o són null
+ M8
+ {
+  {
+   dup type /nulltype eq
+   {
+    pop
+   }
+   {
+    type /integertype ne
+    {
+   (\n\n >>>> TENIU ERRORS ESTRUCTURALS AL MAPA D'IMPOSICIO: dins les arrays hi teniu elements que no son ni enters ni null!\n\n)print flush stop
+    }if
+   }ifelse
+  }forall
+ }forall
+%% assegurar-nos que no hi ha números de pàgina negatius i cap que superi poPDFi?
+
+ %% potser convindrà farcir un HTML quan construïm la interfície web
 }ifelse  %%només desencartem si assagem?
 
 (\n\n\n) print flush
@@ -921,7 +1206,9 @@ pop pop
    }
    {
 
-    araLlibret  %% array del llibret, extret de M8, que ara toca imposar
+    %% araLlibret  %% array del llibret, extret de M8, que ara toca imposar
+    M8 iLlibret get  %% vía índex (que es defineix i s'alimenta a nUp_pliegOS_UBESH.ps) tibem de M8 el llibret que ara toca imposar
+%(MATRIUcorregida?)pstack quit
 
     exch get  %% tibem pel núm. de pàgina del PDF d'entrada que imposarem ara
 
