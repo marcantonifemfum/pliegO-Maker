@@ -32,11 +32,11 @@ findfont /dTipus exch def
 
 %% Aquí treballem amb 1 sol PDF d'entrada que generarà 1 sol PDF de sortida (cada 2 planes del PDF resultant, anvers/revers, serà 1 pliegOS)
 %%+1 cal saber quantes pàgines té el PDF d'entrada a imposar
-7 /pPDF exch def
+10 /pPDF exch def
 %%+2 cal saber quin nUp hem triat
 2 /Nup exch def
 %%+3 cal saber quin enquadernat hem triat
-false  %% null = fem 1 sol llibret de pàgines seguides fins a esgotar l'nUp (si falten pàgines s'omplen amb buides a la cua i si en sobren es talla)
+true  %% null = fem 1 sol llibret de pàgines seguides fins a esgotar l'nUp (si falten pàgines s'omplen amb buides a la cua i si en sobren es talla)
        %% true = encartem amb tants llibrets com pàgines tingui el PDF i l'nUp triat (si falten pàgines s'omplen amb buides a la cua)
        %% false = apilem amb tants llibrets com pàgines tingui el PDF i l'nUp triat (si falten pàgines s'omplen amb buides a la cua)
 /nqdrnt exch def
@@ -229,7 +229,7 @@ nqdrnt null eq
    }ifelse
   }ifelse
 
-== (matrius aniuades) ==  %pstack quit
+  dup == (matrius aniuades) ==  %pstack quit
  }
  {  %% apilem els pliegOS
   %% fem tants llibrets (nUps) de pàgines seguides fins que s'esgotin les pàgines de PDF a imposar (si falten pàgines s'omplen amb buides)
@@ -256,8 +256,8 @@ nqdrnt null eq
     null
    }repeat
   ]
-  (APILEM)pstack quit
 
+  dup ==  (APILEM)==  %pstack quit
 
  }ifelse
 }ifelse
@@ -265,7 +265,7 @@ nqdrnt null eq
 
 %%+ segurament ens serà útil una rutina que desenganxi l'estructura de les arrays aniuades d'un pliegOS encartat i les posi una al darrera de l'altre
 %% per tal de generar d'una forma continuada l'ordre del dúplex anvers/revers que hauria de tenir el PDF resultant
-[1 2 [3 4 [5 6 [7 8 [9 10 [11 12 13 14] 15 16] 17 18] 19 20] 21 null] null null]
+%[1 2 [3 4 [5 6 [7 8 [9 10 [11 12 13 14] 15 16] 17 18] 19 20] 21 null] null null]
 /aDesencartar exch def  %% array que desencartem cada vegada
 [
  {  %% loop
@@ -290,7 +290,7 @@ nqdrnt null eq
  }loop
 ]
 
-(DESENCARTEM!)pstack quit
+dup == (DESENCARTEM!)==  %pstack quit
 
 
 %%+ CAL REDUÏR EL DIÀLEG AL MÍNIM ens guia la filosofia del #NOinterface

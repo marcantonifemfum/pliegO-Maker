@@ -613,6 +613,24 @@ pOM: modifiqueu el mapa d'imposició […] si voleu un altre comportament per aq
 
 
 
+    16.11.2024
+- - - - - - - - HT 4.25
+
+%%H: de 10h30 a 12h15
+%%H: de 17h45 a 19h15
+%%H: de 21h30 a 22h30
+
+
+
+    17.11.2024
+- - - - - - - - HT
+
+%%H: de 07h15 a 08h15
+%%H: de 09h30 a 11h00
+%%H: de 12h30 a 13h15
+%%H: de 17h15 a 17h45
+
+
 + hem aconseguit generar el llibret múltiple començant per l'exemple més senzill: un nUp 2+2 sobre un PDF de 8 pàgines, la qual cosa genera 2 llibrets apilats, o sigui un pliegOS resultant de 4 pàgines amb: anvers/revers | anvers/revers
 + tenim un mètode estable per executar n vegades… nUp_pliegOS_UBESH.ps …cridant cada array dins el mapa d'imposició (hi haurà un altre solució més elegant?)
 + el mètode és el següent: executem per línia de comanda… altravolta.ps …que inicialitza 2 variables i duu un loop que gira les n vegades que s'ha d'executar… nUp_pliegOS_UBESH.ps …tantes com el nombre de /nLlibrets (variable que definim dins farceixPDFs_pseudoPDFX5_UBESH.ps) necessaris per generar el PDF de sortida
@@ -650,10 +668,27 @@ pOM: modifiqueu el mapa d'imposició […] si voleu un altre comportament per aq
 + i el rectifiquem afegint, traient i canviant els elements que calguin de l'array M8
 @FET
 
-+ també cal fer jugar M13 a l'assaig (i només a l'assaig! M10 a true)
-+ el nombre màxim de llibrets que volem fer: 0 tots fins a esgotar el PDF o n
-+ tenim a mig fer les apilades i mancara totes les encartades
++ donem per solucionada tota la casuística de l'assaig (M10 true) en mode apilat (M9 false) en tota mena de combinacions de M12 i M13
+@FET
+
++ mancara el control de casuístiques de M12 i M13 en totes les encartades:
++ sembla que hem resolt totes les casuístiques de quan les apilades fan 1 sol llibret?
++ causístiques que estem resolent en l'enquadernat encartat:
++ ara cal resoldre 2 casos:
++ M13 a 1 i M12 a 0 0
++ M13 a 2 i M12 a 0 0
++ M13 a 0 1 M12 a 6 0
+@FET
+
++ tinguem en compte… faPDFnumerat.ps …que ens permet generar PDFs d'n pàgines amb uns numeradors de colors que poden ajudar a quadrar exemples preparats per veure si s'enquadernen correctament després amb el pliegO'Maker
+@FET
+
++ ens cal generar una bateria de proves impreses (numeradors de colors) amb arrays i casuístiques singulars per veure que tenim:
++ un enquadernador per a 1 sol PDF d'entrada (i 1 sol PDF de sortida) de forma encartada o apilada que contempla tota mena de combinatòries i anàlisi
 @URGENT
+
++ ens cal fer treballar… espiapaq_fura3_pliegOS.ps … amb una nova versió que generi un fitxer de sortida a string per tal de poder ensenyar pel prompt/HTML el contingut de les arrays d'imposició en qualsevoll dels dos formats (matrioixca o endreçat per generar el pliegOS)
+@ESTEMFENT
 
 + només si M9 és null passem d'avaliuar M13
 + hi ha un error amb aquests valors: %%M2 QUIN LLANÇAT 8 | %%M9 ENQUADERNAT null | %%M10 ASSAGEM EL MAPA D'IMPOSICIÓ? true | %%M12 PÀGINA D'INICI i FINAL DE L'ASSAIG 8 24

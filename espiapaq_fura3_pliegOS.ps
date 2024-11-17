@@ -89,8 +89,8 @@
     256 string cvs
 
 %%UBESH
-dup == iPaq ==
-mColors iPaq get cvx exec
+dup == iColors ==
+mColors iColors get cvx exec
 dTipus yPagina 2 div scalefont setfont  %% numeració ponderada a mida de pàgina i centrada
 dup dup stringwidth pop 2 div xPagina 2 div exch sub yPagina 4 div moveto show
 showpage
@@ -473,6 +473,10 @@ showpage
      %% aquí la cua del paquet
      Objected'Ara  %% dup
      (]) writestring  %% flushfile  % escrivim la cua del paquet
+
+%%UBESH
+iColors 1 add /iColors exch def
+
     }
     {
      exit
@@ -486,6 +490,7 @@ showpage
   salva'm restore
   %% counttomark 0 eq {pop exit}if  % sortim quan ja no hi hagi cap paquet a l'stack
   %% dup type /arraytype ne {exit}if
+
  } repeat  %% ARA NO loop  % 0 NOOOOOUUUUUU
  Objected'Ara  %%dup dup
  (]\012) writestring  %%EOL writestring flushfile  % escrivim el final del paquet

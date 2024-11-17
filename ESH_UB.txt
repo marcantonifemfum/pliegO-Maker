@@ -29,7 +29,8 @@ true  %% true fem PDFs | false fem JPEGs
 %(/home/femfum/Documents/pliegOMakerUB/8paginesPDFnumerades.pdf)
 %(/home/femfum/Documents/pliegOMakerUB/9numerades_ladarreraENfucsia.pdf)
 %(/home/femfum/Documents/pliegOMakerUB/4re.pdf)
-(/home/femfum/Documents/GuiaJove_EinesDT_v1_web.pdf)
+%(/home/femfum/Documents/GuiaJove_EinesDT_v1_web.pdf)
+(/home/femfum/Documents/pliegOMakerUB/10paginesAMBanotacions.pdf)
 
 }
 {
@@ -66,7 +67,7 @@ true
 %% 4 llançat de 4 pàgines de PDF per plana, en vertical, en un full en dúplex horitzontal o vertical 4+4 | 8 imposicions totals | impressió 4-up | 4vUpHV
 %% 8 llançat de 8 pàgines de PDF per plana, en vertical, en un full en dúplex horitzontal 8+8 | 16 imposicions totals | impressió 8-up | 8vUpH
 
-8
+2
 
 
 
@@ -132,8 +133,10 @@ true
 
 %[ ]                    %% 1 DE SOL o TOT SI M13 ÉS ZERO?
 
-[[47 1 2 1 4 null 6 7 8 9 10 11 -12 13 14 ]]
+%[[47 1 2 1 4 null 6 7 8 9 10 11 -12 13 14 ]]
 %% array un cop revisada i corregida [[40 1 2 1 4 null 6 7 8 9 10 11 1 13 14 40]]
+
+[[6 7 null null] [8 9 10 null]]
 
 
 % [[][]]  %%EP! aquest format d'array NO es pot fer servir doncs dóna Error: /rangecheck in --get--
@@ -152,7 +155,7 @@ true
 %% EP! quan M10 és a false tenir M9 a true o false no fa canviar res, doncs és M8 qui mana!
 %% EP! quan M10 és a false tenir M9 a null fa que només es crei el primer llibret (la primera array de M8)
 
-false
+true
 
 
 
@@ -160,7 +163,7 @@ false
 %% true = si assagem el mapa d'imposició no crearem el PDF i només donarem com a resultat la matriu que defineix M8 amb una anàlisi de la feina segons el triat a M12 i M13
 %% false = farem l'anàlisi de la feina i generarem el PDF de sortida amb el pliegOS aplicant el mapa d'imposició definit a M8
 
-true
+false
 
 
 
@@ -172,18 +175,19 @@ true
 
 
 %%M12 PÀGINA D'INICI i FINAL DE L'ASSAIG
+%% aquest paràmetre només s'aplica a l'assaig (M10 a true) per la creació del mapa d'imposició per a M8
 %% 0 0 significa generar el mapa d'imposició de la primera a la darrera pàgina del PDF d'entrada
-%% aquest paràmetre només s'aplica en la creació del mapa d'imposició per a M8, o sigui només a l'assaig (M10 a true)
+%% malgrat M13 estigui a zero o tingui un nombre de llibrets superior al rang descrit, el rang marcat sempre és el que mana
 
-0 0
+6 0
 
 
 
 %%M13 NOMBRE MÀXIM DE LLIBRETS A GENERAR (útil per quan el PDF d'entrada sigui molt gran i volguem acotar la feina)
-%% aquest paràmetre només s'aplica en la creació del mapa d'imposició M8, o sigui només a l'assaig (M10 a true)
-%% zero hauria d'equivaldre a generar el mapa d'imposició per enquadernar TOT el PDF d'entrada (tret que M9 sigui null)
-%% aquí M8 no hi pinta res
+%% aquest paràmetre només s'aplica a l'assaig (M10 a true) per la creació del mapa d'imposició M8
+%% zero hauria d'equivaldre a generar el mapa d'imposició per enquadernar TOT el PDF d'entrada (tret que M9 sigui null i tret que M12 NO SIGUI 0 0)
+%% aquest paràmetre només mana quan el nombre de llibrets que li demanem és inferior als que surten enquadernant el rang establert a M12
 
-1
+0
 
 
