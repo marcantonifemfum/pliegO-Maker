@@ -224,8 +224,11 @@ nomesunAvegada  %% sigui una pàgina en blanc o sigui o no la pàgina 1
 gsave
 %%URLREpublica amb un path absolut
 %(/var/www/wordpress/maker/REpublica/FemFum_CaLi2CoPi_042_REpublica.ps)
+
 %%URLUBESH
-(/home/femfum/Documents/pliegOMakerUB/FemFum_CaLi2CoPi_042_pliegOMakerUBESH.ps)
+%% (/home/femfum/Documents/pliegOMakerUB/FemFum_CaLi2CoPi_042_pliegOMakerUBESH.ps)
+7up_pliegOMaker_UBESH 4 get
+
 (r) file cvx exec
 grestore
 
@@ -1434,7 +1437,7 @@ M9 null ne
    /Context1 <<>> .PDFInit def
    pedeefa Context1 .PDFFile
 
-%%URLUBESH
+%%URLUBESH (ara no ho fem servir)
 %% per què el text/tipografia dóna recursos a .PDFDRawPage per situar-se en el lloc correcte i una imatge o un vectorial NO?
    (/home/femfum/Documents/pliegOMakerUB/1paginaDINbuida.pdf) dup (r) file runpdfbegin
    /Context2 <<>> .PDFInit def

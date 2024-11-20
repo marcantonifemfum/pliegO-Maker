@@ -2,6 +2,7 @@
 %% executem nLlibrets vegades nUp_pliegOS_UBESH.ps
 %% aquest fitxer ha canviat de nom (de altravolta.ps a pliegOMaker_UBESH.ps)
 
+%%URLUBESH
 %% captura de les adreces que necessitem siguin absolutes per l'execució via Terminal/Localhost/www
 (7up_pliegOMaker_UBESH.ps)  %% Terminal
 
@@ -14,9 +15,9 @@
 /iLlibret 0 def  %% pel laboratori d'algorismes M6 a 9, índex comptador per tibar seqüencialment les arrays del mapa d'imposició M8 a ESH_UB.txt
 
 {  %% loop
-%%ATENCIÓ cal tenir en compte si ens convé o no (en funció de l'algoritme de composició) de cridar cada vegada la capçalera de varibles del menú o no
- %(nUp_pliegOS_UBESH.ps)
- 7up_pliegOMaker_UBESH 0 get
+%%ATENCIÓ cal tenir en compte si ens convé o no (en funció de l'algoritme de composició) de cridar cada vegada la capçalera de variables del menú
+%% per exemple a farceixPDFs_pseudoPDFX5_UBESH.ps no li convé i cal només cridar les dades del TXT/WWW 1 cop
+ 7up_pliegOMaker_UBESH 0 get  %% (nUp_pliegOS_UBESH.ps)
  (r) file cvx exec
 
  iLlibret 1 add /iLlibret exch def

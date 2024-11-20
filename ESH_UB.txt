@@ -29,12 +29,12 @@ true  %% true fem PDFs | false fem JPEGs
 %(/home/femfum/Documents/pliegOMakerUB/8paginesPDFnumerades.pdf)
 %(/home/femfum/Documents/pliegOMakerUB/9numerades_ladarreraENfucsia.pdf)
 %(/home/femfum/Documents/pliegOMakerUB/4re.pdf)
-(/home/femfum/Documents/GuiaJove_EinesDT_v1_web.pdf)
+%(/home/femfum/Documents/GuiaJove_EinesDT_v1_web.pdf)
 %(/home/femfum/Documents/pliegOMakerUB/10paginesAMBanotacions.pdf)
 
 %(/home/femfum/Documents/Quim/JOL_1d2_desencriptat.pdf)
 
-%(/home/femfum/Documents/pliegOMakerUB/16pagines_acoloridesApilat4up.pdf)
+(/home/femfum/Documents/pliegOMakerUB/16pagines_acoloridesApilat4up.pdf)
 %(/home/femfum/Documents/pliegOMakerUB/16pagines_acoloridesEncartat4up.pdf)
 }
 {

@@ -1,14 +1,44 @@
 %!
-%% configuració d'adreces directes o indirectes de la constel·lació de fitxers de pliegO'Maker
-%% segons el seu context d'execució al Terminal/localhost/www
+%% configuració d'adreces absolutes o relatives de la constel·lació de fitxers de pliegO'Maker marcades al codi amb el comentari %%URLUBESH
+%% segons el seu context d'execució al Terminal / localhost / commonscloud.coop
 
 [
- (nUp_pliegOS_UBESH.ps)  %% 0 Terminal
+ %% dins pliegOMaker_UBESH.ps
+ (nUp_pliegOS_UBESH.ps)  %% 0 Terminal Tuxedo (relativa!)
    %% 0 localhost
-   %% 0 www SomNúvol
+   %% 0 commonscloud.coop
 
-   %% 1 Terminal
+ %% dins nUp_pliegOS_UBESH.ps
+ (/home/femfum/Documents/pliegOMakerUB/ESH_UB.txt)  %% 1 Terminal Tuxedo (pot ser relativa?)
    %% 1 localhost
-   %% 1 www SomNúvol
+   %% 1 commonscloud.coop
+
+ %% dins nUp_pliegOS_UBESH.ps
+ (/home/femfum/Documents/pliegOMakerUB/farceixPDFs_pseudoPDFX5_UBESH.ps)  %% 2 Terminal Tuxedo
+   %% 2 localhost
+   %% 2 commonscloud.coop
+
+ %% dins farceixPDFs_pseudoPDFX5_UBESH.ps
+ null  %% 3 Terminal Tuxedo (no la necessita)
+   %% variable /serverPath  %% 3 localhost
+   %% variable /serverPath  %% 3 commonscloud.coop
+
+ %% dins farceixPDFs_pseudoPDFX5_UBESH.ps
+ (/home/femfum/Documents/pliegOMakerUB/FemFum_CaLi2CoPi_042_pliegOMakerUBESH.ps)  %% 4 Terminal Tuxedo
+   %% 4 localhost
+   %% 4 commonscloud.coop
+
+ %% dins FemFum_CaLi2CoPi_042_pliegOMakerUBESH.ps
+ (Hpdf/XRay_042_)  %% 5 Terminal
+   %% 5 localhost
+   %% 5 commonscloud.coop
+
+ %% dins FemFum_CaLi2CoPi_042_pliegOMakerUBESH.ps
+ (tmp/)  %% 6 Terminal Tuxedo
+   %% 6 localhost
+   %% 6 commonscloud.coop
+
+ %% 7 possiblement hi haurà alguna adreça relacionada al PHP a pliegOmaker_plec.php | $pujali $somaPS $somaPDF que no podem mantenir per aquí
 
 ] /7up_pliegOMaker_UBESH exch def
+

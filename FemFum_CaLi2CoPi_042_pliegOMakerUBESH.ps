@@ -60,7 +60,7 @@
 %# gs -q -dNOSAFER -sstdout=aviam.log -o re.pdf -sDEVICE=pdfwrite -f FemFum_CaLi2CoPi_042.ps 
 %% /home/users/m/ma/marcantoni/userweb/persistent/gs860/bin/gs ... crida al gs de sourceforge
 
-%%UBESHpliegOMaker
+%%UBESH
 %% etiquetem el nou codi o modificacions de la versió de CaLi2CoPi ajustada al desenvolupament de pliegOMaker
 
 %#%00% Normes d'escriptura a seguir dins el codi per a una gestió de codiPSnetiplanxat_html.ps
@@ -728,7 +728,7 @@
 %(/Users/femfum/PliegOS/gigapliegos/re.pdf)
 
 %%IN
-%%UBESHpliegOMaker
+%%UBESH
 %% exemple de PDF signat digitalment
 %(/home/femfum/Documents/UB/pressupostUB_10_2024_MarcantoniMalagarrigaPicas_signat.pdf)
 %% exemples de PDFs encriptats
@@ -1024,7 +1024,7 @@ aCaLi2CoPi
 
 %%OUT
 %%URLREpublica
-%%UBESHpliegOMaker
+%%UBESH
 
 dup dup length dup /araVa exch def 8 add string dup 3 -1 roll 0 exch putinterval dup araVa (_pla.pdf) putinterval
 
@@ -1586,10 +1586,10 @@ false{
 %%(C:/MaRCanToni/FemFum/taller_d'applets/aramateix/WebProof/CALi2COPi/XRay_034_)
 %%(C:/Documents and Settings/L'amo/Escritorio/+PDFs/Logs/)
 
-%%UBESHpliegOS
-%%URLREpublica de moment amb un path indirecte
-(Hpdf/XRay_042_)
-
+%%URLUBESH
+%%URLREpublica de moment amb un path relatiu
+%% (Hpdf/XRay_042_)
+7up_pliegOMaker_UBESH 5 get
 
 %%% GS MacOSX/Unix/Linux %%%
 %(/Users/femfum/enfony/CaLi2CoPi/XRay_042_)
@@ -1620,10 +1620,10 @@ false{
 %%(C:/MaRCanToni/FemFum/taller_d'applets/aramateix/DiBa/Institutd'Edicions/Coromines/tmp/)
 %%(C:/MaRCanToni/FemFum/taller_d'applets/aramateix/WebProof/CALi2COPi/tmp/)
 
-%%UBESHpliegOS
-%%URLREpublica de moment amb un path indirecte
-(tmp/)
-
+%%URLUBESH
+%%URLREpublica de moment amb un path relatiu
+%% (tmp/)
+7up_pliegOMaker_UBESH 6 get
 
 %%% GS MacOSX/Unix/Linux %%%
 %(/Users/femfum/enfony/CaLi2CoPi/tmp/)
@@ -2412,7 +2412,7 @@ dup 1 get
 } stopped
 {
  BaBeL 13 get print flush stop
-%%UBESHpliegOMaker
+%%UBESH
 } if
 
 %% inici del missatge d'execució de l'Applet
@@ -2696,7 +2696,7 @@ status
 }  %% bytes totals del fitxer pel trillador ...
 {
  BaBeL 4 get print flush stop
-%%UBESHpliegOMaker
+%%UBESH
 }ifelse
 
 %#%09% aquí posem un detector de si compleix la convenció dels 1024 del cap i la cua
@@ -2713,7 +2713,7 @@ dup length 0 eq  %% i si duu brossa
  dup length 1025 eq
  {
   BaBeL 26 get print flush pop stop %%quit
-%%UBESHpliegOMaker
+%%UBESH
  }
  {
   dup (%!PS-Adobe-) search
@@ -2737,7 +2737,7 @@ byteCapNet 0 eq
  {elCAP cvx exec} stopped
  {  %% sortim si duu caracters que donen error a l'interpret ...
   BaBeL 27 get print flush stop %quit
-%%UBESHpliegOMaker
+%%UBESH
  } if  %% la donem x bona si es formada per caracters inofensius x l'interpret (CRs, espais, nulls, etc)
 }ifelse
 
@@ -2765,7 +2765,7 @@ darrers1024 setfileposition  %% ens posicionem als darrers 1024
 laCUA length CUAfa eq
 {  %% si es idem es que no ha trobat %%EOF dins els darrers 1024 bytes del fitxer
  BaBeL 28 get print flush stop %quit
-%%UBESHpliegOMaker
+%%UBESH
 }
 {  %%EOF existeix
  {  %% executem la cadena que hi ha despres del darrer %%EOF x saber-ne la validesa
@@ -2773,7 +2773,7 @@ laCUA length CUAfa eq
  } stopped
  {  %% ens aturem si es formada per caracters que donen error a l'interpret
   BaBeL 29 get print flush stop %quit
-%%UBESHpliegOMaker
+%%UBESH
  } if  %% la donem x bona si es formada per caracters inofensius x l'interpret (CRs, espais, nulls, etc)
 }ifelse
 
@@ -3868,7 +3868,7 @@ pAth length /faPath exch def
        %%supera el 65535 i descartem repara-lo de forma simple
       (\n\n ... Length incorrecte i excessiu ... ara NO el repararem ... SORTIM!\n\n)
       BaBeL 39 get print flush pstack clear stop  %%quit
-%%UBESHpliegOMaker
+%%UBESH
      }
      {
       dup length 4 -1 roll add 3 1 roll   %% aqui la activar els sumadors del Length
@@ -3882,7 +3882,7 @@ pAth length /faPath exch def
        %%supera el 65535 i descartem repara-lo de forma simple
        (\n\n ... Length incorrecte i excessiu ... ara NO el repararem ... SORTIM!\n\n)
        BaBeL 39 get print flush pstack clear stop  %%quit
-%%UBESHpliegOMaker
+%%UBESH
       }
       {
        dup length
@@ -3985,7 +3985,7 @@ pAth length /faPath exch def
           %% supera el 65535 i no ens deixa repara-lo de forma simple dins una cadena
         (\n\n ... Length incorrecte i excessiu ... ara NO el podem reparar ... SORTIM!\n\n)
         BaBeL 39 get print flush pstack clear stop  %%quit
-%%UBESHpliegOMaker
+%%UBESH
        }
        {
         scriu exch dup length
@@ -4059,7 +4059,7 @@ pAth length /faPath exch def
       {  %% aqui donarem un error fatal, doncs a part que el Length segur estara malament, supera el 65535 i no ens deixa repara-lo de forma simple dins una cadena
        %%(\n\n ... Length incorrecte i excessiu ... ara NO el podem reparar ... SORTIM!\n\n)
        BaBeL 39 get print flush pstack clear stop  %%quit
-%%UBESHpliegOMaker
+%%UBESH
       }
       {
        dup length
@@ -4194,7 +4194,7 @@ pAth length /faPath exch def
   %% informem dels fitxers del tmp
   BaBeL 50 get print flush
   stop  %%quit
-%%UBESHpliegOMaker
+%%UBESH
  }ifelse
  %%} stopped {(\n\n   >>> ERROR d'estructura a ... stream\n   >>> l'objecte ... ) print Nom print (\n\n) print flush quit} if  % stopped optatiu
 }bind def
@@ -4519,7 +4519,7 @@ TAUxREF
     %% esborrat dels fitxers del tmp
     BaBeL 50 get print flush
 %%URLREpublica
-%%UBESHpliegOMaker
+%%UBESH
     %stop  %%quit
     CRACK ENCRIPTAT  %% de moment abortem l'execucio a sac per tal s'activi el prompt de la interficie web d'errors
    }stopped {stop}if
@@ -4530,7 +4530,7 @@ TAUxREF
     %% esborrat dels fitxers del tmp
     BaBeL 50 get print flush
 %%URLREpublica
-%%UBESHpliegOMaker
+%%UBESH
     %  stop
     ENCRIPTAT  %% de moment abortem l'execucio a sac per tal s'activi el prompt de la interficie web d'errors
    }stopped {stop}if
@@ -5055,7 +5055,7 @@ dup /XRefStm known
    %% informem dels fitxers del tmp
    BaBeL 50 get print flush
 %%URLREpublica
-%%UBESHpliegOMaker
+%%UBESH
    %stop  %%quit
    SIGNAT  %% de moment abortem l'execucio a sac per tal s'activi el prompt de la interficie web d'errors
   }stopped {stop}if
@@ -5081,7 +5081,7 @@ dup /XRefStm known
     %% informem dels fitxers del tmp
     BaBeL 50 get print flush
 %%URLREpublica
-%%UBESHpliegOMaker
+%%UBESH
     %stop  %%quit
     SIGNAT  %% de moment abortem l'execucio a sac per tal s'activi el prompt de la interficie web d'errors
    }stopped {stop}if
@@ -5426,7 +5426,7 @@ l'arrel null eq
  %% informem dels fitxers del tmp
  BaBeL 50 get print flush
  clear stop  %%quit
-%%UBESHpliegOMaker
+%%UBESH
 }if
 
 %#%19% desem l'arbre de pàgines del document dins el diccionari quinaPlana
@@ -5714,7 +5714,7 @@ QueLiFemFer 1 eq  %:01 SEPARACIÓ DE TINTES
   XRay /PeDeEfa get /Errades get /Pages ( Exceed the maximum allowed) put
   BaBeL 38 get print flush
   (\n\n) print flush stop  %%quit
-%%UBESHpliegOMaker
+%%UBESH
  } if
 }if  %/01 SEPARACIÓ DE TINTES
 
@@ -10485,7 +10485,7 @@ actGina == (1)==
      %% informem dels fitxers del tmp
      BaBeL 50 get print flush
      clear stop  %%quit
-%%UBESHpliegOMaker
+%%UBESH
     }ifelse
    }ifelse
   }loop
@@ -16904,7 +16904,7 @@ Asinus Acosinus atan /anglES exch def
      }
      {
       pop BaBeL 42 get print flush stop  %%quit
-%%UBESHpliegOMaker
+%%UBESH
      }ifelse
     } repeat
     /i3o 2 def  %% inicialitzem de forma fixa l'index pel farcidor de l'array evaluador 3octets 
@@ -16934,7 +16934,7 @@ Asinus Acosinus atan /anglES exch def
      3Bytes 2 1B put  %% posem el byte al darrer lloc de l'array enretirada
      Toctets 1 add /Toctets exch def  %% total d'octets llegits
      Toctets maxB gt {pop BaBeL 41 get print flush stop}if
-%%UBESHpliegOMaker
+%%UBESH
      dup read
      {
       /1B exch def
@@ -16942,7 +16942,7 @@ Asinus Acosinus atan /anglES exch def
      }
      {
       pop BaBeL 42 get print flush stop  %%quit
-%%UBESHpliegOMaker
+%%UBESH
      }ifelse
     }loop
     iBuffer closefile
@@ -29893,7 +29893,7 @@ dup ==
      %% informem dels fitxers del tmp
      BaBeL 50 get print flush
      clear stop  %%quit
-%%UBESHpliegOMaker
+%%UBESH
     } if                        
     1 sub /aFora exch def
     dup 0 get /ToTen1 exch def  %% triem a l'atzar el primer objecte de l'array x desar l'stream dels Contents unificats en 1 sol objecte
@@ -30526,7 +30526,7 @@ dup ==
     %% informem dels fitxers del tmp
     BaBeL 50 get print flush
     clear stop  %%quit
-%%UBESHpliegOMaker
+%%UBESH
    } if
    1 sub /aFora exch def
    dup 0 get /ToTen1 exch def  %% triem a l'atzar el primer objecte de l'array x desar l'stream dels Contents unificats en 1 sol objecte
@@ -32246,7 +32246,7 @@ actGina == (2)==
       %% informem dels fitxers del tmp
       BaBeL 50 get print flush
       clear stop  %%quit
-%%UBESHpliegOMaker
+%%UBESH
      }ifelse
     }ifelse
    }loop
@@ -32489,7 +32489,7 @@ actGina == (3)==
     exit
 %%    BaBeL 50 get print flush
 %%    clear stop  %%quit
-%%UBESHpliegOMaker
+%%UBESH
    }ifelse
   }ifelse
  }loop
@@ -32763,12 +32763,12 @@ QueLiFemFer 17 eq
       }
       {  %% seria una altra cosa sense control i donaríem error
        == == BaBeL 8 get print flush BaBeL 71 get print flush stop
-%%UBESHpliegOMaker
+%%UBESH
      }ifelse
      }
      {  %% seria una altra cosa sense control i donaríem error
       == == BaBeL 8 get print flush BaBeL 71 get print flush stop
-%%UBESHpliegOMaker
+%%UBESH
     }ifelse
     }ifelse
    }ifelse
@@ -61780,7 +61780,7 @@ novaDADAv
      }
      {  %% si no tingues stream donariem un nou error MRCT
       BaBeL 35 get print flush stop  %%quit
-%%UBESHpliegOMaker
+%%UBESH
      }ifelse
      %%%***%%% fi d'afegit x generar streams sense comprimir
     }ifelse  %% Form o image XObject ?
@@ -65220,7 +65220,7 @@ actGina == (4)==
         %% informem dels fitxers del tmp
         BaBeL 50 get print flush
         clear stop  %%quit
-%%UBESHpliegOMaker
+%%UBESH
        }ifelse
       }ifelse
      }loop
@@ -65485,7 +65485,7 @@ actGina == (5)==
      %% informem dels fitxers del tmp
      BaBeL 50 get print flush
      clear stop  %%quit
-%%UBESHpliegOMaker
+%%UBESH
     }ifelse
    }ifelse
   }loop
@@ -65654,7 +65654,7 @@ actGina == (5)==
        %% informem dels fitxers del tmp
        BaBeL 50 get print flush
        clear stop  %%quit
-%%UBESHpliegOMaker
+%%UBESH
       }ifelse
      }ifelse
     }loop
@@ -67007,7 +67007,7 @@ actGina == (6)==
      %% informem dels fitxers del tmp
      BaBeL 50 get print flush
      clear stop  %%quit
-%%UBESHpliegOMaker
+%%UBESH
     }ifelse
    }ifelse
   }loop
@@ -67391,7 +67391,7 @@ QueLiFemFer 12 eq  %:12 arbre jeràrquic
         %% informem dels fitxers del tmp
         BaBeL 50 get print flush
         clear stop  %%quit
-%%UBESHpliegOMaker
+%%UBESH
        }if                        
        1 sub /aFora exch def
        dup 0 get /ToTen1 exch def  %% triem a l'atzar el primer objecte de l'array x desar l'stream dels Contents unificats en 1 sol objecte
@@ -67767,7 +67767,7 @@ QueLiFemFer 12 eq  %:12 arbre jeràrquic
        %% informem dels fitxers del tmp
        BaBeL 50 get print flush
        clear stop  %%quit
-%%UBESHpliegOMaker
+%%UBESH
       }if
       1 sub /aFora exch def
       dup 0 get /ToTen1 exch def  %% triem a l'atzar el primer objecte de l'array x desar l'stream dels Contents unificats en 1 sol objecte

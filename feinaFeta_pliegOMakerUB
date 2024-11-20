@@ -2,6 +2,8 @@ DESCRIPCIÓ DE FEINA FETA
 
 + el PAD de treball on hi han les valoracions temporals és a:
 https://pad.femprocomuns.coop/pressUBpliegOS_ESH
++ document +endreçat però resumit per la UB:
+file:///home/femfum/Downloads/Fitxer%20adjunt%20per%20comanda4200373200.pdf
 
 + etiquetem els paràgrafs dels registres de feina segons el seu estat:
 @VIST | @FET (comentaris) | @PENDENT | @ESTEMFENT | @URGENT
@@ -10,13 +12,14 @@ https://pad.femprocomuns.coop/pressUBpliegOS_ESH
 #    A1 >> RI: FemFum_CaLi2CoPi_042_*.ps / farceixPDFs_pseudoPDFX5_ReferenceXObjects_EnricSenabre.ps
 #    AR: #4h
 #    EC: #16h
+@FET
 
 + tant a Tuxedo (/home/femfum/Documents/pliegOMakerU / localhost /var/www/html/pliegOMakerUB) com a somNúvol (?) treballem amb GPL Ghostscript 9.55.0 (2021-09-27)
 + etiquetem amb %%UBESHpliegOMaker o %%UBESH els canvis i novetats de codi en els algorismes que ja tenim desenvolupats
 @FET
 
 #    A1.1 ~ Detecció de PDFs erronis, protegits per encriptació i signats digitalment, determinant el tipus de missatge que donarem a l'ususari per continuar treballant
-
+@FET
 
 
     21.10.2024
@@ -130,6 +133,7 @@ https://pad.femprocomuns.coop/pressUBpliegOS_ESH
 
 
 #    A1.2 ~ Detecció de PDFs amb anotacions, bookmarks i capes, determinant el tipus de missatge que donarem a l'ususari per continuar treballant
+@FET
 
 + què passa quan passem a pliegOS un PDF amb capes?
 + segons el comportament que veiem amb PDFs que tinguin capes un cop passat a pliegOS, tenim el gatell 15 ELIMINA LLEIXES
@@ -179,6 +183,7 @@ gs -q -dNOSAFER -o re.pdf -sDEVICE=pdfwrite -f nUp_pliegOS_UBESH.ps
 
 
 #    A1.3 ~ Detecció d'àrees de retall de pàgines (CropBox), determinant prèviament de com les tractarem: sigui per eliminar-les (interfereixen l'algorisme pristí) o sigui per adaptar el retall a la pàgina del llançat
+@FET
 
 + experimentem amb l'exemple… 8CropBox.pdf …on cadascuna de les 8 pàgines té un /CropBox activat diferent
 + com que aquí els 8 CropBox són quadrats, en fem un on hi ha també rectangles verticals i horitzontals… 8CropBox_MediaBox_NOMESaLarrelPage_CropBox_QuadratsRectanglesVH_pla.pdf …per tal de verificar que el llançat sobre el format de pàgina d'imposició és correcte
@@ -212,10 +217,12 @@ gs -q -dNOSAFER -o re.pdf -sDEVICE=pdfwrite -f nUp_pliegOS_UBESH.ps
 
 + afinem millor la captura d'errors dels algorismes de composició, afegint un indicador a l'stopped general de… nUp_pliegOS_UBESH.ps …que ens diu l'índex de l'algorisme componedor que estem executant PERÒ ALERTA PERQUÈ AQUEST AVÍS HAURIA DE SORTIR DESPRÉS DE…  ...FET (certa morralla al /tmp pot ser de profit) …i/o hauriem de marcar l'inici de la rutina 9: farceix…
 + cal tenir en compte que CaLi2CoPi s'executa dins el context de nUp_pliegOS_UBESH
-@PENDENT?
++ quan fem la interfície www caldrà gestionar millor tots aquesta categoria de missatges d'error
+@PENDENT
 
 
 #    A1.4 ~ Detecció del nombre de pàgines
+@FET
 
 + a CaLi2CoPi la variable /maxPlana és la que emmagatzema aquest valor en tota mena de gatells
 + el valor final de /araPlana també
@@ -247,9 +254,6 @@ gs -q -dNOSAFER -o re.pdf -sDEVICE=pdfwrite -f nUp_pliegOS_UBESH.ps
 + li canviem el nom a… ESH_UB.txt
 @FET
 
-+ hauríem de tenir un mapa d'on hi ha paths de treball sensibles a canvis per veure si ho podriem unificar en un sol fitxer de configuració, doncs ajudaria molt al manteniment en entorns i plataformes diferents
-@PENDENT
-
 
 
     25.10.2024
@@ -271,39 +275,48 @@ gs -q -dNOSAFER -o re.pdf -sDEVICE=pdfwrite -f nUp_pliegOS_UBESH.ps
     A2 >> RI: nUp_pliegOS_*.ps / farceixPDFs_pseudoPDFX5_ReferenceXObjects_EnricSenabre.ps
     AR: #4h
     EC: #24h
+@FET
 
 #   A2.1 ~ Determinar si deixem que sigui l'aplicació qui ens faci una proposta (en base a l'anàlisi previ), de quines i quantes imposicions podem fer (en base al PDF o PDFs triats) i quina distribució de pàgines proposa
+@FET
 
 #   A2.2 ~ Fixar d'entrada una proposta d'imposició: nombre de llibrets, suma o encartament,
 comportament de les pàgines en blanc
+@FET
 
 #   A2.3 ~ Un o altre assaig (2.1 o 2.2) ens ha de donar una o més opcions per triar
 definitivament la feina a fer
+@FET
 
 #   A2.4 ~ Complementàriament a 2.3 podrem intervenir dins l'array numèric de distribució de
 pàgines per fer-hi canvis: determinar quines pàgines seran en blanc i/o canviar-ne l'ordre o
 ignorar per qualsevol criteri
+@FET
 
 
 #A3     Pàgines d'excepció per incloure-hi continguts fixos
     A3 >> RI: nUp_pliegOS_*.ps / FemFum_CaLi2CoPi_042_*.ps / farceixPDFs_pseudoPDFX5_ReferenceXObjects_EnricSenabre.ps
     AR: #4h
     EC: #8h
+@FET
 
 #A4     Aplicable als llançats actuals (nUp)
     A4 >> RI: nUp_pliegOS_*.ps
     AR: #2h
     EC: #6h
+@FET
 
 #A5     Aplicable a nous models llançat
     A5 >> RI: nUp_pliegOS_*.ps
     AR: #2h
     EC: #6h
+@PENDENT
 
 #A6     Funcionalitats aplicables només a nivell d'algorisme intern
     A6 >> RI: ESH_Canodrom.txt / URL
     AR: #2h
     EC: #6h
+@FET
 
 
 + cal generar un mapa/array d'imposició que guiarà el comportament del llançat de pàgines del PDF (o PDFs) a llegir, en funció de l'nUp triat i del sistema de plegat (llibrets múltiples, de costat o encartats, etc.)
@@ -332,7 +345,7 @@ ignorar per qualsevol criteri
 + casuístiques PDFs d'entrada/PDFs de sortida:
     1 PDF d'entrada > 1 pliegOS de sortida (en 1 sol PDF)
     1 PDF d'entrada > 2 o+ pliegOS de sortida (en 1 sol PDF)
-@ESTEMFENT
+@FET
 
     2 o+ PDFs d'entrada > 1 o+ pliegOS de sortida (en 1 sol PDF)
 @PENDENT
@@ -341,7 +354,7 @@ ignorar per qualsevol criteri
 (1) el length de l'array (i les aniuades també) equival al length de l'nUp o múltiple = pàgines en blanc?
 (2) si el nombre d'elements de l'array que NO són null és igual o més petit que el nombre de pàgines del PDF a imposar
 (3) si el número de pàgina més gran que hi hagi a l'array és igual o més petit que el número de pàgines del PDF a imposar
-@ESTEMFENT
+@FET
 
 + processant/pujant només 1 sol PDF, aquestes serien les 2 arrays d'1 PDF de 8 pàgines fet amb 2 pliegOS 2+2 encartats: [1 2 [3 4 5 6] 7 8]
 + i aquesta la d'1 PDF de 12 pàgines amb 3 pliegOS 2+2 encartats [1 2 [3 4 [5 6 7 8] 9 10] 11 12]
@@ -353,8 +366,9 @@ ignorar per qualsevol criteri
 + cal decidir molt bé on les posem doncs ha de ser després que CaLi2CoPi hagi analitzat el PDF
 @FET
 
-+ quan hi hagi més d'1 PDF a imposar haurem de replicar el protocol afegint el comportament específic pel segon PDF pujat (i màxim un tercer)
-+ una altra qüestió seran els segons o tercers PDFs/JPEGs a pujar al servidor que s'hagin d'utilitzar per incrustar continguts dins de l'nUp triat
++ quan hi hagi més d'1 PDF a imposar haurem de replicar el protocol afegint el comportament específic pel segon o+ PDFs pujats?
++ una altra qüestió seran els segons o+ PDFs/JPEGs a pujar al servidor que s'hagin d'utilitzar per incrustar continguts dins de l'nUp triat?
++ cal veure si d'una forma senzilla podem pujar més d'1 PDF fent 1 sol submit?
 @PENDENT
 
 
@@ -656,7 +670,8 @@ pOM: modifiqueu el mapa d'imposició […] si voleu un altre comportament per aq
 
 %%H: de 07h00 a 08h30
 %%H: de 10h00 a 11h30
-
+%%H: de 19h00 a 20h15
+%%H: de 21h30 a 22h30
 
 
 + hem aconseguit generar el llibret múltiple començant per l'exemple més senzill: un nUp 2+2 sobre un PDF de 8 pàgines, la qual cosa genera 2 llibrets apilats, o sigui un pliegOS resultant de 4 pàgines amb: anvers/revers | anvers/revers
@@ -716,19 +731,31 @@ pOM: modifiqueu el mapa d'imposició […] si voleu un altre comportament per aq
 + ara podem gestionar un PDF fins 9999 pàgines
 @FET
 
-+ tenim un error a filtrar de quan fem el PDF i el mapa d'imposició és buit (que hauria de manar!)
-+ el queara ens passa és que només repeteix la primera array de pàgines tant si és encartat com si és apilat????
++ quan el mapa d'imposició és buit ja manar i fa, segons haguem triat l'enquadernat M9: (null) 1 sol nUp de pàgines seguides | (true) (false) tot el PDF amb l'nUp triat encartat/apilat
++ el problema de que només repetia la primera array de pàgines (tant si era encartat com apilat) venir de cridar cada vegada les dades del menú (ara via TXT), ara fem que es cridin només 1 vegada
+@FET
 
 + ens cal generar una bateria de proves impreses (numeradors de colors) amb arrays i casuístiques singulars per veure que tenim:
 + cal escriure un protocol bàsic d'ús amb exemples:
-+ un enquadernador (al fitxer de capçalera… altravolta.ps …li hem de canviar el nom a pliegOMaker_UBESH.ps) per a 1 sol PDF d'entrada (i 1 sol PDF de sortida) de forma encartada o apilada que contempla tota mena de combinatòries i anàlisi
+@ESTEMFENT
 
-+ hem comprovat que poder desencriptar un PDF fent una impressió a PDF (disc) des d'Okular (veure JOL_1d2_desencriptat.pdf)
-+ ens cal adaptar el DOCinfo altra cop a la nova versió
++ al fitxer de capçalera… altravolta.ps …li hem de canviat el nom a pliegOMaker_UBESH.ps
++ hem comprovat que poder desencriptar un PDF fent una impressió a PDF (disc) des d'Okular (veure JOL_1d2_desencriptat.pdf vs 01.JOL_1de2.pdf)
+@FET
 
-@URGENT
++ hem unificat les adreces de treball al fitxer de configuració 7up_pliegOMaker_UBESH.ps
++ tenim a l'array /7up_pliegOMaker_UBESH un mapa d'on hi ha paths de treball sensibles a canvis que ara queden unificats en un sol fitxer de configuració, doncs ajuda molt al manteniment en entorns i plataformes diferents
+@FET
 
-+ ens cal fer treballar… espiapaq_fura3_pliegOS.ps … amb una nova versió que generi un fitxer de sortida a string per tal de poder ensenyar pel prompt/HTML el contingut de les arrays d'imposició en qualsevoll dels dos formats (matrioixca o endreçat per generar el pliegOS)
++ només ens cal veure, en cadascun dels entorns quines adreces poden ser relatives i quines no hi ha més remei que siguin absolutes
+@PENDENT
+
++ hem de parlat amb l'Enric per si ens cal adaptar el DOCinfo de nUp_pliegOS_UBESH.ps
++ tant aquest com el /DOCVIEW via pdfmark convindria que portessin el gatell d'1 única execució
+@ESTEMFENT
+
+
++ quan fem la interfície www ens cal fer treballar… espiapaq_fura3_pliegOS.ps … amb una nova versió que generi un fitxer de sortida a string per tal de poder ensenyar pel prompt/HTML el contingut de les arrays d'imposició en qualsevoll dels dos formats (matrioixca o endreçat per generar el pliegOS)
 @ESTEMFENT
 
 + només si M9 és null passem d'avaliuar M13
@@ -742,7 +769,7 @@ pOM: modifiqueu el mapa d'imposició […] si voleu un altre comportament per aq
 
 + fem un assaig exhaustiu d'enquadernats i nUps sobre l'exemple de 40 pàgines… /home/femfum/Documents/GuiaJove_EinesDT_v1_web.pdf …per polir detalls:
 
-#1 M2 1 | M8 [] | M9 null | M10 true >>> assaig per fer 1 sol llibret apilat 1+1 nUp
+ 1 M2 1 | M8 [] | M9 null | M10 true >>> assaig per fer 1 sol llibret apilat 1+1 nUp
             40 ......... pagines del PDF d'entrada
             2  ......... pagines de l'nUp
             0  ......... pagines en blanc
@@ -753,7 +780,7 @@ pOM: modifiqueu el mapa d'imposició […] si voleu un altre comportament per aq
 
             mapa d'imposicio [1 2]
 
-#2 M2 2 | M8 [] | M9 null | M10 true >>> assaig per fer 1 sol llibret apilat 2+2 nUp
+ 2 M2 2 | M8 [] | M9 null | M10 true >>> assaig per fer 1 sol llibret apilat 2+2 nUp
             40 ......... pagines del PDF d'entrada
             4  ......... pagines de l'nUp
             0  ......... pagines en blanc
@@ -764,7 +791,7 @@ pOM: modifiqueu el mapa d'imposició […] si voleu un altre comportament per aq
 
             mapa d'imposicio [1 2 3 4]
 
-#3 M2 4 | M8 [] | M9 null | M10 true >>> assaig per fer 1 sol llibret apilat 4+4 nUp
+ 3 M2 4 | M8 [] | M9 null | M10 true >>> assaig per fer 1 sol llibret apilat 4+4 nUp
             40 ......... pagines del PDF d'entrada
             8  ......... pagines de l'nUp
             0  ......... pagines en blanc
@@ -775,7 +802,7 @@ pOM: modifiqueu el mapa d'imposició […] si voleu un altre comportament per aq
 
             mapa d'imposicio [1 2 3 4 5 6 7 8]
 
-#4 M2 8 | M8 [] | M9 null | M10 true >>> assaig per fer 1 sol llibret apilat 8+8 nUp
+ 4 M2 8 | M8 [] | M9 null | M10 true >>> assaig per fer 1 sol llibret apilat 8+8 nUp
             40 ......... pagines del PDF d'entrada
             16 ......... pagines de l'nUp
             0  ......... pagines en blanc
@@ -786,7 +813,7 @@ pOM: modifiqueu el mapa d'imposició […] si voleu un altre comportament per aq
 
             mapa d'imposicio [1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16]
 
-#5 M2 1 | M8 [] | M9 false | M10 true >>> assaig per tots els llibrets apilats 1+1 nUp
+ 5 M2 1 | M8 [] | M9 false | M10 true >>> assaig per tots els llibrets apilats 1+1 nUp
             40 ......... pagines del PDF d'entrada
             2  ......... pagines de l'nUp
             0  ......... pagines en blanc
@@ -797,7 +824,7 @@ pOM: modifiqueu el mapa d'imposició […] si voleu un altre comportament per aq
 
             mapa d'imposicio [[1 2] [3 4] [5 6] [7 8] [9 10] [11 12] [13 14] [15 16] [17 18] [19 20] [21 22] [23 24] [25 26] [27 28] [29 30] [31 32] [33 34] [35 36] [37 38] [39 40]]
 
-#6 M2 2 | M8 [] | M9 false | M10 true >>> assaig per fer tots els llibrets apilats 2+2
+ 6 M2 2 | M8 [] | M9 false | M10 true >>> assaig per fer tots els llibrets apilats 2+2
             40 ......... pagines del PDF d'entrada
             4  ......... pagines de l'nUp
             0  ......... pagines en blanc
@@ -808,7 +835,7 @@ pOM: modifiqueu el mapa d'imposició […] si voleu un altre comportament per aq
 
             mapa d'imposicio [[1 2 3 4] [5 6 7 8] [9 10 11 12] [13 14 15 16] [17 18 19 20] [21 22 23 24] [25 26 27 28] [29 30 31 32] [33 34 35 36] [37 38 39 40]]
 
-#7 M2 4 | M8 [] | M9 false | M10 true >>> assaig per fer tots els llibrets apilats 4+4
+ 7 M2 4 | M8 [] | M9 false | M10 true >>> assaig per fer tots els llibrets apilats 4+4
             40 ......... pagines del PDF d'entrada
             8  ......... pagines de l'nUp
             0  ......... pagines en blanc
@@ -819,7 +846,7 @@ pOM: modifiqueu el mapa d'imposició […] si voleu un altre comportament per aq
 
             mapa d'imposicio [[1 2 3 4 5 6 7 8] [9 10 11 12 13 14 15 16] [17 18 19 20 21 22 23 24] [25 26 27 28 29 30 31 32] [33 34 35 36 37 38 39 40]]
 
-#8 M2 8 | M8 [] | M9 false | M10 true >>> assaig que fa NOMÉS tots els llibrets MÚLTIPLES! apilats 8+8
+ 8 M2 8 | M8 [] | M9 false | M10 true >>> assaig que fa NOMÉS tots els llibrets MÚLTIPLES! apilats 8+8
             40 ......... pagines del PDF d'entrada
             16 ......... pagines de l'nUp
             0  ......... pagines en blanc
@@ -840,7 +867,7 @@ pOM: modifiqueu el mapa d'imposició […] si voleu un altre comportament per aq
 >>>> CORRECTE!
             mapa d'imposicio [[1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16] [17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32] [33 34 35 36 37 38 39 40 null null null null null null null null]]
 
-#9 M2 8 | M8 [] | M9 true | M10 true >>> assaig que fa NOMÉS tots els llibrets MÚLTIPLES! encartats 8+8
+ 9 M2 8 | M8 [] | M9 true | M10 true >>> assaig que fa NOMÉS tots els llibrets MÚLTIPLES! encartats 8+8
             40 ......... pagines del PDF d'entrada
             16 ......... pagines de l'nUp
             8  ......... pagines en blanc   <<<< VEUREM QUANTES SERAN QUAN EXHAUREIXI TOTES LES PÀGINES DEL PDF D'ENTRADA
@@ -848,7 +875,7 @@ pOM: modifiqueu el mapa d'imposició […] si voleu un altre comportament per aq
             3  ......... nombre de llibrets <<<< SÍ, PERÒ FENT TOTES LES PÀGINES LA DISTRIBUCIÓ SERIA DIFERENT
      encartat  ......... tipus d'enquadernat
             48 ......... pagines de tripa   <<<< CORRECTE PERÒ MENTIDA! DONCS COM QUE S'ATURA AL MÚLTIPLE EXACTE NO EXHAUREIX LES PÀGINES DEL PDF D'ENTRADA
->>>> AQUEST ÉS EL PRIMER PROBLEMA QUE HEM DE SOLUCIONAR ARA: QUE EN TOTS ELS CASOS, COM #8 I #9, ENCARA QUE EL NOMBRE DE PÀGINES DEL PDF D'ENTRADA NO SIGUI MÚLTIPLE DE L'NUP, AIXÒ NO PRIVI DE FER TOTES LES PÀGINES, DE MANERA QUE S'AFEGEIXIN LES PÀGINES EN BLANC (null) QUE CALGUIN A LA CUA
+>>>> AQUEST ÉS EL PRIMER PROBLEMA QUE HEM DE SOLUCIONAR ARA: QUE EN TOTS ELS CASOS, COM  8 I  9, ENCARA QUE EL NOMBRE DE PÀGINES DEL PDF D'ENTRADA NO SIGUI MÚLTIPLE DE L'NUP, AIXÒ NO PRIVI DE FER TOTES LES PÀGINES, DE MANERA QUE S'AFEGEIXIN LES PÀGINES EN BLANC (null) QUE CALGUIN A LA CUA
             mapa d'imposicio [[1 2 3 4 5 6 7 8 null null null null null null null null] [9 10 11 12 13 14 15 16 33 34 35 36 37 38 39 40] [17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32]]
 @FET
             40 ......... pagines del PDF d'entrada
@@ -862,7 +889,7 @@ pOM: modifiqueu el mapa d'imposició […] si voleu un altre comportament per aq
             mapa d'imposicio [[1 2 3 4 5 6 7 8 null null null null null null null null] [9 10 11 12 13 14 15 16 33 34 35 36 37 38 39 40] [17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32]]
 
 
-#10 M2 4 | M8 [] | M9 true | M10 true >>> assaig que fa tots els llibrets encartats 4+4
+ 10 M2 4 | M8 [] | M9 true | M10 true >>> assaig que fa tots els llibrets encartats 4+4
             40 ......... pagines del PDF d'entrada
             8  ......... pagines de l'nUp
             0  ......... pagines en blanc
@@ -873,7 +900,7 @@ pOM: modifiqueu el mapa d'imposició […] si voleu un altre comportament per aq
 
             mapa d'imposicio [[1 2 3 4 37 38 39 40] [5 6 7 8 33 34 35 36] [9 10 11 12 29 30 31 32] [13 14 15 16 25 26 27 28] [17 18 19 20 21 22 23 24]]
 
-#11 M2 2 | M8 [] | M9 true | M10 true >>> assaig que fa tots els llibrets encartats 2+2
+ 11 M2 2 | M8 [] | M9 true | M10 true >>> assaig que fa tots els llibrets encartats 2+2
             40 ......... pagines del PDF d'entrada
             4  ......... pagines de l'nUp
             0  ......... pagines en blanc
@@ -884,7 +911,7 @@ pOM: modifiqueu el mapa d'imposició […] si voleu un altre comportament per aq
 
             mapa d'imposicio [[1 2 39 40] [3 4 37 38] [5 6 35 36] [7 8 33 34] [9 10 31 32] [11 12 29 30] [13 14 27 28] [15 16 25 26] [17 18 23 24] [19 20 21 22]]
 
-#12 M2 1 | M8 [] | M9 true | M10 true >>> assaig que fa tots els llibrets encartats 1+1
+ 12 M2 1 | M8 [] | M9 true | M10 true >>> assaig que fa tots els llibrets encartats 1+1
             40 ......... pagines del PDF d'entrada
             2  ......... pagines de l'nUp
             0  ......... pagines en blanc
@@ -908,15 +935,15 @@ arraytype
 
 
 + hem de solucionar els nous paràmetres M11 i M12: han d'actuar només a l'assaig! …hem ampliat M12 perquè contempli també el núm. de pàgina on volguem finalitzar la imposició
-
-+ hem de provar a fons tota mena d'enquadernats en tota mena de PDFs
+@FET
 
 + hem afegit un filtre per comprovar, quan fem la imposició de debò, M10 a false, que l'estructura de les arrays d'imposició és correcte, fent:
-# assegurar-nos que totes les arrays tinguin el mateix length
-# assegurar-nos que tots els elements de les array o són enters o són null
+ assegurar-nos que totes les arrays tinguin el mateix length
+ assegurar-nos que tots els elements de les array o són enters o són null
+@FET
 
-+ hi ha d'altres combinacions de menú que ens donen errors i hem de veure com blindar-les
-# M8 [] | M9 false | M10 false  Error: /rangecheck in --get--
++ hem de provar a fons tota mena d'enquadernats en tota mena de PDFs
++ de moment no hem detectat més errors en tota mena de combinacions i protocols del menú
 @ESTEMFENT
 
 + com es criden ara els fitxers de pliegOS entre ells?
@@ -940,12 +967,10 @@ farceixPDFs_pseudoPDFX5_UBESH.ps <----> FemFum_CaLi2CoPi_042_pliegOMakerUBESH.ps
      |
      |
      v
-     PDF sw sortida (pliegOS)
+     PDF de sortida (pliegOS)
 
+@FET
 
-
-+ hem d'unificar les adreces de treball en un fitxer de configuració
-@URGENT
 
 + fem un duplicat de l'aplicació …/REpublica/plec_ca.html …traduïda al català per una urgència didàctica de l'Enric a…
 https://pliegos.net/maker/plec/plec_ca.html
@@ -985,9 +1010,11 @@ https://pliegos.net/maker/plec/plec_ca.html
 + el mètode que ara hem implementat per la gestió de pàgines en blanc i/o el canvi d'ordre o repetició de les pàgines del llançat, s'aprofita d'un curiós comportament de les crides d'Scripting que encara no hem acabat d'entendre (fent una crida a un altre fitxer PDF en blanc) i això ens fa sospitar que hi ha d'haver un altre mètode més elegant d'arribar al mateix resultat
 + segurament és un malentès visual que ens capgira les pàgines al no fer servir el gatell -dAutoRotatePages=/None a la línia de comanda d'execució del gs
 + ara hem trobat el lloc… a nUp_pliegOS_UBESH.ps …on podem activar aquest control sense necessitat de fer una crida a un altre fitxer PDF en blanc per fer pàgines en blanc a la imposició final, ho hem etiquetat amb ELEGANT
-@ESTEMFENT
+@FET
+
 + fem un generador de PDF amb n pàgines numerades de prova (faPDFnumerat.ps) per veure com es comporta farceixPDFs_#.ps i l'estratègia de pàgines en blanc (xafa/enretira)
 @FET
+
 + analitzem l'execució d'un 4+4 per veure de com procedir amb l'array /mapaDimposicio tant per les pagines en blanc com pel canvi d'ordre
 @FET
 

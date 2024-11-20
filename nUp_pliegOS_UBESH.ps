@@ -139,8 +139,12 @@ true
 
 dup /CddVf exch def
 {
-% (/Users/femfum/PliegOS/codi_pliegOS/ESH_Canodrom.txt)
- (/home/femfum/Documents/pliegOMakerUB/ESH_UB.txt)
+ % (/Users/femfum/PliegOS/codi_pliegOS/ESH_Canodrom.txt)
+
+%%URLUBESH
+ %% (/home/femfum/Documents/pliegOMakerUB/ESH_UB.txt)
+ 7up_pliegOMaker_UBESH 1 get 
+
  (r) file cvx exec
 }if
 
@@ -353,7 +357,7 @@ dup /CddVf exch def
 %% (\n Ghostscript no pot capturar aquesta variable d'entorn!\n\n)print flush
 }ifelse
 
-%%UNESH
+%%UBESH
 %%M8 MAPA D'IMPOSICIÓ
 %% capturem la variable d'entorn generada amb PHP com a PHP2PS2PHPgeneracioicapturadunavariabledentorn.php
 (MRCT_Xdefinir) getenv  %% la variable d'entorn existeix?
@@ -616,8 +620,11 @@ dup /CddVf exch def
 %%URLREpublica
 % (/var/www/wordpress/maker/REpublica/farceixPDFs_pseudoPDFX5_ReferenceXObjects_EnricSenabre.ps)
 % (/var/www/wordpress/maker/REpublica/farceixPDFs_pseudoPDFX5_REpublica.ps)
+
 %%URLUBESH
- (/home/femfum/Documents/pliegOMakerUB/farceixPDFs_pseudoPDFX5_UBESH.ps)  %% Terminal Tuxedo
+ % (/home/femfum/Documents/pliegOMakerUB/farceixPDFs_pseudoPDFX5_UBESH.ps)  %% Terminal Tuxedo
+ 7up_pliegOMaker_UBESH 2 get 
+
 
  %% 10 sonar+PAPER
  (/Users/femfum/PliegOS/sonarD2023_paper/sonarD2023_paper.ps)  %% Terminal
