@@ -128,6 +128,12 @@
 %% si la ràtio no és ídem i no la forcem, treballarem amb el nou format adaptat
 %% l'algorisme componedor s'executarà dues vegades (una per plana) per tal sigui possible treballar amb l'aleatori
 
+%%UBESH
+%% captura única de les dades del menú, sobretot pensant quan actua el loop a pliegOMaker_UBESH.ps
+noMesunavegada
+{
+ /noMesunavegada false def
+
 %%Captura de dades via fitxer d'interfície TXT?
 true
 
@@ -574,6 +580,8 @@ dup /CddVf exch def
 /M1 exch def  %% fem visible la vora de la pàgina d'imposició? (llançat)
 %%/M0 exch def  %% capturem la llengua del navegador
 %%/M? exch def  %% donar la possibilitat de triar pàgines en blanc? (false) sobre l'esquema del desplegat de planes
+
+}if  %% captura única de les dades del menú, sobretot pensant quan actua el loop a pliegOMaker_UBESH.ps
 
 /compOnedors
 %%URLsnr és absolutament necessari posar el path sencer als algorismes executats via php al localhost i a servidors
@@ -1889,28 +1897,9 @@ aNpgn
 /ar true def  %% gatell d'anvers/revers
 /iSeq 0 def  %% índex seqüencial per tota la sèrie de pàgines del full (anvers+revers)
 
-%%TEST
-%/nomesUNAvegada true def  %% obrim el gatell d'execució única
-
 %{  %% stopped
 
-%M8 (!!!!)pstack quit
-%%UBESH és aquí on hi hauria d'anar el forall d'arrays amb els mapes d'imposició ordenats anvers/revers de cadscun dels llibrets planificats?
-%%TEST
-%2 {  %% repeat
-%[
-
 _anversrevers
-
-
-%%TEST
-%dup
-%]
-%M8 (sedassem?)pstack quit
-%{  %% forall +d'1 llibret?
-%/ar true def  %% gatell d'anvers/revers
-%/iSeq 0 def  %% índex seqüencial per tota la sèrie de pàgines del full (anvers+revers)
-%/nomesUNAvegada true def  %% obrim el gatell d'execució única
 
 
 {  %% forall per l'anvers i el revers del full (planes)
@@ -1950,17 +1939,18 @@ _anversrevers
 
 %%UBESH és aquí on hauríem de redefinir noNULL en base al mapa d'imposició?
 %%UBESH una estratègia ELEGANT per les pàgines en blanc, però és obligatori fer la crida al gs amb -dAutoRotatePages=/None perquè sino capgira el full ! 
-    dup M8 dup length 0 eq
+    dup M8
+    dup
+    length 0 eq
     {  %% amb el mapa d'imposició buit fem 1 sol llibret respectant l'ordre seqüencial del PDF a imposar
-     pop pop
+     pop
+     pop
     }
     {  %% triem seqüencialment quin dels llibrets fem el llançat dins del mapa d'imposició que ja ve preparat per l'encartat o l'apilat
-     iLlibret get dup /araLlibret exch def
-
-%(- - - - - )pstack quit
+     iLlibret get dup /arallibret exch def  %% hem deixat de fer servir aquesta variable
      exch 1 sub get null eq  %% el mapa d'imposició ens diu si la pàgina és en blanc?
      {  %% l'índex de la pàgina del llançat serà en blanc
-      /noNULL false def  %% desactivem l'algorisme del componedor 
+      /nonull false def  %% desactivem l'algorisme del componedor 
      }if
     }ifelse
 
@@ -1979,6 +1969,13 @@ _anversrevers
      %% pel fet que el componedor ha de ser dinàmic, necessitarà que no s'aturi la imposició malgrat no pinti (noNULL)
      %% i necessitarà poder treballar en base a valors aleatoris per calcular (que desarà) o als valors ja calculats (desats)
      %% ha de beure d'algunes dades del format de pàgina, com: noNULL, Npgn, Hrtzntl, xPagina, yPagina, etc.
+
+%%UBESH
+%    M8 iLlibret get  %dup /arallibret exch def  %% hem deixat de fer servir aquesta variable
+%    exch 1 sub get null eq  %% el mapa d'imposició ens diu si la pàgina és en blanc?
+%    {  %% l'índex de la pàgina del llançat serà en blanc
+%     /nonull false def  %% desactivem l'algorisme del componedor 
+%    }if
 
    %% componedor (layoutLíquid) 
    %% treballem amb les mides sense escalar doncs l'aplica BeginPage
@@ -2052,12 +2049,6 @@ _anversrevers
 
 }forall  %% per l'anvers i el revers del full (2 planes)
 
-%%TEST
-%}forall  %% +d'1 llibret?
-% currentpagedevice stopBP (!!!!)pstack quit
-%stopBP 2 mul /stopBP exch def
-%}repeat
-
 %}stopped
 %{
 % (\b\n >>> Hi ha moltes possibilitats que l'error vingui de l'algorisme... ) print flush M6 3 string cvs print flush (\n\n)print flush
@@ -2122,6 +2113,6 @@ dup length araVa add string dup 4 -1 roll 0 exch putinterval dup 3 -1 roll araVa
 /DOCINFO pdfmark
 %% podríem generar un camp privat per desar-hi tots els paràmetres clau de les variables aleatòries que han fet el PDF
 
-(////*fi*////)pstack  %% brossa a l'stack?
+%(////*fi*////)pstack  %% brossa a l'stack?
 %% mentre gs no deixa brossa a l'stack, pstopdf deixa dos índex a l'stack (per què?)
 

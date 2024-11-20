@@ -32,9 +32,9 @@ findfont /dTipus exch def
 
 %% Aquí treballem amb 1 sol PDF d'entrada que generarà 1 sol PDF de sortida (cada 2 planes del PDF resultant, anvers/revers, serà 1 pliegOS)
 %%+1 cal saber quantes pàgines té el PDF d'entrada a imposar
-10 /pPDF exch def
+16 /pPDF exch def
 %%+2 cal saber quin nUp hem triat
-2 /Nup exch def
+4 /Nup exch def
 %%+3 cal saber quin enquadernat hem triat
 true  %% null = fem 1 sol llibret de pàgines seguides fins a esgotar l'nUp (si falten pàgines s'omplen amb buides a la cua i si en sobren es talla)
        %% true = encartem amb tants llibrets com pàgines tingui el PDF i l'nUp triat (si falten pàgines s'omplen amb buides a la cua)

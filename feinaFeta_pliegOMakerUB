@@ -357,8 +357,6 @@ ignorar per qualsevol criteri
 + una altra qüestió seran els segons o tercers PDFs/JPEGs a pujar al servidor que s'hagin d'utilitzar per incrustar continguts dins de l'nUp triat
 @PENDENT
 
-+ hauríem de fer treballar l'algorisme de reglatge2.ps de la mateixa manera? NO!
-
 
 
     26.10.2024
@@ -418,8 +416,9 @@ pOM: modifiqueu el mapa d'imposició […] si voleu un altre comportament per aq
 
 
 + mirem de corregir l'algorisme de reglatge.ps perquè també sigui útil de cara a controlar els marges de seguretat de la impressora
-+ fem el nou reglatge2.ps
-@FET (manca fer proves impreses i establir el mètode de calibrat)
++ fem el nou reglatge2.ps amb els nous marcadors de vores i origen de plana
++ fem les primeres proves impreses d'un 4+4 dúplex (long-edge) al 100% d'escala, de manera que cal establir un protocol per saber, en funció de l'orientació de la pàgina (doncs ara marquem quin és l'origen 0,0 a amb la numeració en vermell), quantes ratlles negres (filets) veiem en cadascuna de les 4 vores, tant a l'anvers com al revers del full imprès. Aquestes 8 dades (que seran sempre diferents en funció de cada impressora) en haurien de servir per entrar-les en un fitxer de configuració del pliegO'Maker per tal que, treballant al 100% d'escala ens permetés quadrar a la perfecció el dúplex de les 2 planes (sobretot en impressores no professionals)
+@FET
 
 
 
@@ -623,12 +622,41 @@ pOM: modifiqueu el mapa d'imposició […] si voleu un altre comportament per aq
 
 
     17.11.2024
-- - - - - - - - HT
+- - - - - - - - HT 3.75
 
 %%H: de 07h15 a 08h15
 %%H: de 09h30 a 11h00
 %%H: de 12h30 a 13h15
 %%H: de 17h15 a 17h45
+
+
+
+- - - - - - - - SETMANA 4 36
+
+
+
+    18.11.2024
+- - - - - - - - HT 1
+
+%%H: de 21h00 a 22h00
+
+
+
+    19.11.2024
+- - - - - - - - HT 5
+
+%%H: de 11h45 a 13h15
+%%H: de 16h00 a 17h30
+%%H: de 21h00 a 23h00
+
+
+
+    20.11.2024
+- - - - - - - - HT
+
+%%H: de 07h00 a 08h30
+%%H: de 10h00 a 11h30
+
 
 
 + hem aconseguit generar el llibret múltiple començant per l'exemple més senzill: un nUp 2+2 sobre un PDF de 8 pàgines, la qual cosa genera 2 llibrets apilats, o sigui un pliegOS resultant de 4 pàgines amb: anvers/revers | anvers/revers
@@ -683,8 +711,21 @@ pOM: modifiqueu el mapa d'imposició […] si voleu un altre comportament per aq
 + tinguem en compte… faPDFnumerat.ps …que ens permet generar PDFs d'n pàgines amb uns numeradors de colors que poden ajudar a quadrar exemples preparats per veure si s'enquadernen correctament després amb el pliegO'Maker
 @FET
 
+
++ Error: /rangecheck in --putinterval-- | Operand stack:   (            )   (              )   12   (369)
++ ara podem gestionar un PDF fins 9999 pàgines
+@FET
+
++ tenim un error a filtrar de quan fem el PDF i el mapa d'imposició és buit (que hauria de manar!)
++ el queara ens passa és que només repeteix la primera array de pàgines tant si és encartat com si és apilat????
+
 + ens cal generar una bateria de proves impreses (numeradors de colors) amb arrays i casuístiques singulars per veure que tenim:
-+ un enquadernador per a 1 sol PDF d'entrada (i 1 sol PDF de sortida) de forma encartada o apilada que contempla tota mena de combinatòries i anàlisi
++ cal escriure un protocol bàsic d'ús amb exemples:
++ un enquadernador (al fitxer de capçalera… altravolta.ps …li hem de canviar el nom a pliegOMaker_UBESH.ps) per a 1 sol PDF d'entrada (i 1 sol PDF de sortida) de forma encartada o apilada que contempla tota mena de combinatòries i anàlisi
+
++ hem comprovat que poder desencriptar un PDF fent una impressió a PDF (disc) des d'Okular (veure JOL_1d2_desencriptat.pdf)
++ ens cal adaptar el DOCinfo altra cop a la nova versió
+
 @URGENT
 
 + ens cal fer treballar… espiapaq_fura3_pliegOS.ps … amb una nova versió que generi un fitxer de sortida a string per tal de poder ensenyar pel prompt/HTML el contingut de les arrays d'imposició en qualsevoll dels dos formats (matrioixca o endreçat per generar el pliegOS)
@@ -694,9 +735,6 @@ pOM: modifiqueu el mapa d'imposició […] si voleu un altre comportament per aq
 + hi ha un error amb aquests valors: %%M2 QUIN LLANÇAT 8 | %%M9 ENQUADERNAT null | %%M10 ASSAGEM EL MAPA D'IMPOSICIÓ? true | %%M12 PÀGINA D'INICI i FINAL DE L'ASSAIG 8 24
 + el mapa d'imposició no és correcte… [8 9 10 11 12 13 14 15 16i]
 @FET
-
-+ ATENCIÓ amb la variable… /araLlibret …definida a… nUp_pliegOS_UBESH.ps …l'hem deixat de fer servir a… farceixPDFs_pseudoPDFX5_UBESH.ps
-@VIST
 
 + tenint 1 sol llibret a M8, fent el llançat, tant si a M9 ho fem amb 1 de sol (null) apilat (false) com encartat (true) ja rutlla
 @FET
@@ -884,23 +922,25 @@ arraytype
 + com es criden ara els fitxers de pliegOS entre ells?
 
      GS
-     |
-     |
-     v
-altravolta.ps <----> (7up_pliegOS_UBESH.ps)
      ^
      |
      |
      v
-nUp_pliegOS_UBESH.ps <----> ESH_UB.txt <----> PDF d'entrada a imposar
-     |                      www                     |
+pliegOMaker_UBESH.ps <----> (7up_pliegOMaker_UBESH.ps)
+     ^
+     |
+     |
+     v
+nUp_pliegOS_UBESH.ps <----> ESH_UB.txt -----> PDF d'entrada a imposar
+     ^                      www                     ^
+     |                                              |
      |                                              |
      v                                              v
 farceixPDFs_pseudoPDFX5_UBESH.ps <----> FemFum_CaLi2CoPi_042_pliegOMakerUBESH.ps
      |
      |
      v
-     PDF pliegOS
+     PDF sw sortida (pliegOS)
 
 
 

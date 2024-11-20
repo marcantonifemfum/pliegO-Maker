@@ -1,0 +1,28 @@
+%!
+%% executem nLlibrets vegades nUp_pliegOS_UBESH.ps
+%% aquest fitxer ha canviat de nom (de altravolta.ps a pliegOMaker_UBESH.ps)
+
+%% captura de les adreces que necessitem siguin absolutes per l'execució via Terminal/Localhost/www
+(7up_pliegOMaker_UBESH.ps)  %% Terminal
+
+(r) file cvx exec  %% posa en memòria la variable /7up_pliegOMaker_UBESH
+
+/nomesunAvegada true def  %% obrim el gatell d'execució única de certs paràmetres del laboratori d'algorismes M6 a 9
+
+/noMesunavegada true def  %% obrim el gatell de captura única de paràmetres a ESH_UB.txt pel laboratori d'algorismes M6 a 9
+
+/iLlibret 0 def  %% pel laboratori d'algorismes M6 a 9, índex comptador per tibar seqüencialment les arrays del mapa d'imposició M8 a ESH_UB.txt
+
+{  %% loop
+%%ATENCIÓ cal tenir en compte si ens convé o no (en funció de l'algoritme de composició) de cridar cada vegada la capçalera de varibles del menú o no
+ %(nUp_pliegOS_UBESH.ps)
+ 7up_pliegOMaker_UBESH 0 get
+ (r) file cvx exec
+
+ iLlibret 1 add /iLlibret exch def
+ iLlibret nLlibrets eq
+ {  %% hem fet tots els llibrets
+  exit
+ }if
+}loop
+
