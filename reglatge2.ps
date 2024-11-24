@@ -1,8 +1,13 @@
 %% algorisme de reglatge de cadascuna de les pàgines del llançat (imposició) de pliegOS
 %% indiquem l'orígen de l'eix de coordenades (xamfrà ll), la dimensió de pàgina (xamfrà ur) i la seva numeració
 
+%%UBESH
+%% com ens comportem dins el loop de pliegOMaker_UBESH.ps
+/llibreter false def  %% NO fem el loop de l'algorisme d'imposició de pàgines farceixPDFs_pseudoPDFX5_UBESH.ps
+
 noNULL  %% pinta el contingut de pàgina?
 {  %% comportament null: el componedor ha de tenir anellat el codi que pinta contingut de pàgina
+
 
  %% aquí li fem abraçar tot l'algorisme doncs no hi ha cap tipus de composició dinàmica/aleatòria
  gsave
@@ -10,6 +15,16 @@ noNULL  %% pinta el contingut de pàgina?
 %%+ color
 %.4 .5 .6 setrgbcolor
 % 0 0 xPagina yPagina rectfill
+
+%%UBESH personalització d'escales de llançat
+ M2 0 eq
+ {  %% hem triat el llançat Handbook (un tall sense desbarbar) amb la segona plana en blanc o a pàgina completa?
+  iPln 9 eq  %% aquesta és la primera pàgina del revers
+  {  %% en aquest cas la pàgina del llançat té el mateix format que el full d'impressió
+   xFull /xPagina exch def
+   yFull /yPagina exch def
+  }if
+ }if
 
 %%+ color
 %gsave
@@ -68,7 +83,8 @@ noNULL  %% pinta el contingut de pàgina?
  0 0 qdrt dup rectfill  %% LL
 
  1 setgray
- %% 20 filets blancs horitzontals i verticals de 0.5? punts per mesurar els 4 marges de protecció de tinta en impressores de full
+ %% 20 filets blancs horitzontals i verticals de 0.5 punt per mesurar els 4 marges de protecció de tinta en impressores de full
+ %% són 19 filets negres del mateix gruix que, segons com, són més fàcils de comptar a ull? ...quin serà el protocol de recompte a l'hora de calibrar?
  %% quan funcioni aquest algorisme, hauríem de desactivar automàticament la funció de marcar les vores de les pàgines del llançat
  .5  %% gruix del filet blanc 
  dup /gruixF exch def
@@ -116,7 +132,9 @@ noNULL  %% pinta el contingut de pàgina?
   1 setgray
  }ifelse
 
- /Courier yPagina 2 div selectfont  %% numeració de pàgina centrada
+ %% /Courier
+ (/usr/share/fonts/truetype/hack/Hack-Regular.ttf)
+ yPagina 2 div selectfont  %% numeració de pàgina centrada
 
 %%UBESH ara encara no hem fet res però, per la gestió de les pàgines en blanc (xafant o enretirant), haurem d'incidir aquí o al algorisme de llançat?
  Npgn

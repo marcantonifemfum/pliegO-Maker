@@ -4,7 +4,10 @@
 
 %%URLUBESH
 %% captura de les adreces que necessitem siguin absolutes per l'execució via Terminal/Localhost/www
-(7up_pliegOMaker_UBESH.ps)  %% Terminal
+(7up_pliegOMaker_UBESH.ps)  %% Terminal Tuxedo
+   %% localhost
+   %% commonscloud.coop
+
 
 (r) file cvx exec  %% posa en memòria la variable /7up_pliegOMaker_UBESH
 
@@ -14,16 +17,23 @@
 
 /iLlibret 0 def  %% pel laboratori d'algorismes M6 a 9, índex comptador per tibar seqüencialment les arrays del mapa d'imposició M8 a ESH_UB.txt
 
-{  %% loop
+{  %% loop generador de llibrets
 %%ATENCIÓ cal tenir en compte si ens convé o no (en funció de l'algoritme de composició) de cridar cada vegada la capçalera de variables del menú
 %% per exemple a farceixPDFs_pseudoPDFX5_UBESH.ps no li convé i cal només cridar les dades del TXT/WWW 1 cop
  7up_pliegOMaker_UBESH 0 get  %% (nUp_pliegOS_UBESH.ps)
  (r) file cvx exec
 
- iLlibret 1 add /iLlibret exch def
- iLlibret nLlibrets eq
- {  %% hem fet tots els llibrets
+ llibreter  %% només fem el loop per l'algorisme d'imposició de pàgines farceixPDFs_pseudoPDFX5_UBESH.ps ?
+ {
+  iLlibret 1 add /iLlibret exch def
+  iLlibret nLlibrets eq
+  {  %% hem fet tots els llibrets
+   exit
+  }if
+ }
+ {
   exit
- }if
-}loop
+ }ifelse
+
+}loop  %% generador de llibrets
 

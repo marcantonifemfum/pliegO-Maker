@@ -46,9 +46,13 @@
 %% de 9.55 fins a 10.0
 %% ?
 
-%%REpublica hem integrat FemFum_CaLi2CoPi_042.ps per tal d'eliminar (de moment a sac) la clau /CropBox
-%% i filtrar PDFs amb signatura digital, encriptacio de seguretat i etc.
-%%UBESH hem afinat l'anàlisi i comportament per eliminar /CropBox
+%%UBESH
+%% com ens comportem dins el loop de pliegOMaker_UBESH.ps
+/llibreter true def  %% FEM el loop d'aquest algorisme d'imposició de pàgines
+
+%%REpublica hem integrat FemFum_CaLi2CoPi_042.ps per tal d'eliminar capturant la clau /CropBox
+%%UBESH hem afinat l'anàlisi i comportament per capturar i eliminar /CropBox
+%% i filtrar PDFs amb signatura digital, encriptacio, obertura de seguretat i etc.
 
  %%Dos mètodes de lectura que posem fora de l'anellat noNULL per tal de fer possible un mapa d'imposició buit (tot NULLs)
  false
@@ -56,6 +60,16 @@
 
 noNULL  %% pinta el contingut de pàgina?
 { %% anellem el codi sencer perquè no és aleatori
+
+%%UBESH personalització d'escales de llançat
+ M2 0 eq
+ {  %% hem triat el llançat Handbook (un tall sense desbarbar) amb la segona plana en blanc o a pàgina completa?
+  iPln 9 eq  %% aquesta és la primera pàgina del revers
+  {  %% en aquest cas la pàgina del llançat té el mateix format que el full d'impressió
+   xFull /xPagina exch def
+   yFull /yPagina exch def
+  }if
+ }if
 
 
  MdL
@@ -1570,7 +1584,7 @@ M7
  %% el costat més gran de la pàgina del llançat
  xPagina yPagina gt
  {  %% l'orientació del llançat és horitzontal
-(oH CAL afinar l'escala com %%+)pstack stop
+(oH CAL afinar l'escala com %%+ PLEGUEM!)pstack stop
   Odivisor
   {  %% però l'orientació de la pàgina a imposar és vertical
    exch pop yPagina exch div  %% escala de treball

@@ -587,6 +587,7 @@ dup /CddVf exch def
 
 }if  %% captura única de les dades del menú, sobretot pensant quan actua el loop a pliegOMaker_UBESH.ps
 
+
 /compOnedors
 %%URLsnr és absolutament necessari posar el path sencer als algorismes executats via php al localhost i a servidors
 [
@@ -662,7 +663,314 @@ dup /CddVf exch def
 
 /pliegOS_nUpS
 [  %% en cadascun dels nUpS la distribució de les pàgines dins la plana és independent a l'orientació H/V del full (MediaBox)
- null  %% 0 ?
+ [  %% 0 Handbook: un tall sense desbarbar: 8 pàgines a l'anvers i 1 (o cap) al revers
+  [  %% 0 desplegat de planes al full (MediaBox) on a cada plana (anvers/revers) hi ha tota la sèrie sencera de pàgines del full
+   %% true = la pàgina es compon / false = pàgina en blanc (s'enretira a la següent) / null = la pàgina no toca en aquesta plana
+   [  %% anvers (a#índex:#númDpàgina)
+    true  %% a0:1 aquesta pàgina pot compondres's (true) o ser en blanc (false)
+    true  %% a1:2
+    true  %% a2:3
+    true  %% a3:4
+    true  %% a4:5
+    true  %% a5:6
+    true  %% a6:7
+    true  %% a7:8
+    null  %% a8:9 la pàgina a null forma part de l'estructura d'aquest nUp (pliegO) i per tant és fixa
+    null  %% a9:10
+    null  %% a10:11
+    null  %% a11:12
+    null  %% a12:13
+    null  %% a13:14
+    null  %% a14:15
+    null  %% a15:16
+   ]
+
+   [  %% revers (r#índex:#númDpàgina)
+    null  %% r0:1
+    null  %% r1:2
+    null  %% r2:3
+    null  %% r3:4
+    null  %% r4:5
+    null  %% r5:6
+    null  %% r6:7
+    null  %% r7:8
+    true  %% r8:9
+    false %% r9:10
+    false %% r10:11
+    false %% r11:12
+    false %% r12:13
+    false %% r13:14
+    false %% r14:15
+    false %% r15:16
+   ]
+  ]
+
+  [  %% 1 ordre seqüencial seguit de pàgines, anvers + revers, per no aturar el componedor aleatori
+   %% anvers
+   <<  %% a0:1
+     /T_R  %% translate i rotate de la pàgina a imposar
+     {
+      xFull 4 div 3 mul 0 translate
+     }
+     /FEMshowpage false  %% NO imprimeix el full
+     /00imp false  %% som a la pàgina del llançat que toca a l'orígen 0,0 de l'espai de coordenades de la plana?
+   >>
+   <<  %% a1:2
+     /T_R
+     {
+      xFull yFull translate 180 rotate
+     }
+     /FEMshowpage false
+     /00imp false  %% som a la pàgina del llançat que toca a l'orígen 0,0 de l'espai de coordenades de la plana?
+   >>
+   <<  %% a2:3
+     /T_R
+     {
+      xFull 4 div 3 mul yFull translate 180 rotate
+     }
+     /FEMshowpage false
+     /00imp false  %% som a la pàgina del llançat que toca a l'orígen 0,0 de l'espai de coordenades de la plana?
+   >>
+   <<  %% a3:4
+     /T_R
+     {
+      xFull 4 div 2 mul yFull translate 180 rotate
+     }
+     /FEMshowpage false
+     /00imp false  %% som a la pàgina del llançat que toca a l'orígen 0,0 de l'espai de coordenades de la plana?
+   >>
+   <<  %% a4:5
+     /T_R
+     {
+      xFull 4 div yFull translate 180 rotate
+     }
+     /FEMshowpage false
+     /00imp false  %% som a la pàgina del llançat que toca a l'orígen 0,0 de l'espai de coordenades de la plana?
+   >>
+   <<  %% a5:6
+     /T_R
+     {
+     }
+     /FEMshowpage false
+     /00imp true  %% som a la pàgina del llançat que toca a l'orígen 0,0 de l'espai de coordenades de la plana?
+   >>
+   <<  %% a6:7
+     /T_R
+     {
+      xFull 4 div 0 translate
+     }
+     /FEMshowpage false
+     /00imp false  %% som a la pàgina del llançat que toca a l'orígen 0,0 de l'espai de coordenades de la plana?
+   >>
+   <<  %% a7:8
+     /T_R
+     {
+      xFull 4 div 2 mul 0 translate
+     }
+     /FEMshowpage true  %% IMPRIMEIX el full
+     /00imp false  %% som a la pàgina del llançat que toca a l'orígen 0,0 de l'espai de coordenades de la plana?
+   >>
+   <<  %% a8:9
+     /T_R null
+     /FEMshowpage false
+     /00imp false  %% som a la pàgina del llançat que toca a l'orígen 0,0 de l'espai de coordenades de la plana?
+   >>
+   <<  %% a9:10
+     /T_R null
+     /FEMshowpage false
+     /00imp false  %% som a la pàgina del llançat que toca a l'orígen 0,0 de l'espai de coordenades de la plana?
+   >>
+   <<  %% a10:11
+     /T_R null
+     /FEMshowpage false
+     /00imp false  %% som a la pàgina del llançat que toca a l'orígen 0,0 de l'espai de coordenades de la plana?
+   >>
+   <<  %% a11:12
+     /T_R null
+     /FEMshowpage false
+     /00imp false  %% som a la pàgina del llançat que toca a l'orígen 0,0 de l'espai de coordenades de la plana?
+   >>
+   <<  %% a12:13
+     /T_R null
+     /FEMshowpage false
+     /00imp false  %% som a la pàgina del llançat que toca a l'orígen 0,0 de l'espai de coordenades de la plana?
+   >>
+   <<  %% a13:14
+     /T_R null
+     /FEMshowpage false
+     /00imp false  %% som a la pàgina del llançat que toca a l'orígen 0,0 de l'espai de coordenades de la plana?
+   >>
+   <<  %% a14:15
+     /T_R null
+     /FEMshowpage false
+     /00imp false  %% som a la pàgina del llançat que toca a l'orígen 0,0 de l'espai de coordenades de la plana?
+   >>
+   <<  %% a15:16
+     /T_R null
+     /FEMshowpage false
+     /00imp false  %% som a la pàgina del llançat que toca a l'orígen 0,0 de l'espai de coordenades de la plana?
+   >>
+
+   %% final de l'anvers i inici del revers
+   <<  %% r0:1
+     /T_R null 
+     /FEMshowpage false
+     /00imp false  %% som a la pàgina del llançat que toca a l'orígen 0,0 de l'espai de coordenades de la plana?
+   >>
+   <<  %% r1:2
+     /T_R null
+     /FEMshowpage false
+     /00imp false  %% som a la pàgina del llançat que toca a l'orígen 0,0 de l'espai de coordenades de la plana?
+   >>
+   <<  %% r2:3
+     /T_R null
+     /FEMshowpage false
+     /00imp false  %% som a la pàgina del llançat que toca a l'orígen 0,0 de l'espai de coordenades de la plana?
+   >>
+   <<  %% r3:4
+     /T_R null
+     /FEMshowpage false
+     /00imp false  %% som a la pàgina del llançat que toca a l'orígen 0,0 de l'espai de coordenades de la plana?
+   >>
+   <<  %% r4:5
+     /T_R null
+     /FEMshowpage false
+     /00imp false  %% som a la pàgina del llançat que toca a l'orígen 0,0 de l'espai de coordenades de la plana?
+   >>
+   <<  %% r5:6
+     /T_R null
+     /FEMshowpage false
+     /00imp false  %% som a la pàgina del llançat que toca a l'orígen 0,0 de l'espai de coordenades de la plana?
+   >>
+   <<  %% r6:7
+     /T_R null
+     /FEMshowpage false
+     /00imp false  %% som a la pàgina del llançat que toca a l'orígen 0,0 de l'espai de coordenades de la plana?
+   >>
+   <<  %% r7:8
+     /T_R null
+     /FEMshowpage false
+     /00imp false  %% som a la pàgina del llançat que toca a l'orígen 0,0 de l'espai de coordenades de la plana?
+   >>
+   <<  %% r8:9
+     /T_R {}
+     /FEMshowpage true  %% IMPRIMEIX la pàgina
+     /00imp true  %% som a la pàgina del llançat que toca a l'orígen 0,0 de l'espai de coordenades de la plana?
+   >>
+   <<  %% r9:10
+     /T_R null
+     /FEMshowpage false
+     /00imp false  %% som a la pàgina del llançat que toca a l'orígen 0,0 de l'espai de coordenades de la plana?
+   >>
+   <<  %% r10:11
+     /T_R null
+     /FEMshowpage false
+     /00imp false  %% som a la pàgina del llançat que toca a l'orígen 0,0 de l'espai de coordenades de la plana?
+   >>
+   <<  %% r11:12
+     /T_R null
+     /FEMshowpage false
+     /00imp false  %% som a la pàgina del llançat que toca a l'orígen 0,0 de l'espai de coordenades de la plana?
+   >>
+   <<  %% r12:13
+     /T_R null
+     /FEMshowpage false
+     /00imp false  %% som a la pàgina del llançat que toca a l'orígen 0,0 de l'espai de coordenades de la plana?
+   >>
+   <<  %% r13:14
+     /T_R null
+     /FEMshowpage false
+     /00imp false  %% som a la pàgina del llançat que toca a l'orígen 0,0 de l'espai de coordenades de la plana?
+   >>
+   <<  %% r14:15
+     /T_R null
+     /FEMshowpage false
+     /00imp false  %% som a la pàgina del llançat que toca a l'orígen 0,0 de l'espai de coordenades de la plana?
+   >>
+   <<  %% r15:16
+     /T_R null
+     /FEMshowpage false
+     /00imp false  %% som a la pàgina del llançat que toca a l'orígen 0,0 de l'espai de coordenades de la plana?
+   >>
+  ]
+
+%%MENÚ M1 donar la possibilitat de fer visible la vora de la pàgina d'imposició, sigui o no dins una capa i com?
+  {  %% 2 TrimBox fix de la pàgina d'imposició?
+   M1  %% pintem la vora de les pàgines del llançat?
+   {
+    %% capturem la matriu per situar i pintar el rectangle net de retall de la pàgina del llançat
+    matrix currentmatrix /xirtam exch def
+
+    [0 0 xPagina yPagina]
+    rectclip  %% retallem la vora de la pàgina (equivalent a TrimBox)
+
+    %% transparència que trepitja encara que estigui a sota de tot
+%%NOUgs9.55 obliga a incloure -dALLOWPSTRANSPARENCY a la línia d'execució
+%gsave
+%    /Overlay .setblendmode true .setalphaisshape 1 .setstrokeconstantalpha
+
+%    1 0 1 setrgbcolor  %% magenta? gris? vermell? blanc? negre?
+%    1 setlinewidth  %% gruix per tal vessi mig punt als marges del full
+%    [2] 1 setdash  %% discontínua
+%    rectstroke  %% pintem la vora de la pàgina (equivalent a TrimBox)
+%grestore
+   }
+   {
+    [0 0 xPagina yPagina]
+    rectclip  %% retallem la vora de la pàgina (equivalent a TrimBox)
+   }ifelse
+  }  %% en cas que l'haguéssim de personalitzar per cada pàgina, l'hauríem d'imcloure a l'índex 1
+
+  {  %% 3 àrees de pàgina, comportament i càlcul de l'escala/ràtio
+   %% cal veure com juguem amb les àrees: MediaBox(full), CropBox(?), TrimBox(pàgina), ArtBox(taca), BleedBox(àrea impresa)
+   %% si les volem definir com a tals (només 1 per cada pàgina PDF al diccionari /Type/Page) com que som obligats a duplicar-les
+
+   %% desambigüitat amb la ràtio:
+   %% Malgrat es diu que els formats DiN treballen amb una ràtio vertical equivalent al valor de l'arrel quadrada de 2
+   %% aquesta és una dada aproximada (certa només fins al 2n decimal), doncs considerant fins al 8è decimal significatiu
+   %% cap format DiN, d'A0 fins a A6, té exactament la mateixa ràtio i cap RATioVe és tampoc idèntica a l'arrel de dos
+   %% per exemple: l'A5 és el DiN que s'acosta més al valor de 2 sqrt 1.41421354 vs 1.41428566 fins al 4rt decimal
+   %% Consideració important: treballant només amb els 2 primers decimals significatius, ràtios idèntiques poden tolerar
+   %% diferències de format fins a 33 punts!, llavors només treballarem amb els dos primers decimals per avaluar si dues ràtios
+   %% les considerem idèntiques (RATioH vs pRATio), doncs pels càlculs de format treballarem amb tots els decimals via fS
+   %% RATioV: s'obté dividint el costat gran pel petit, de manera que multiplicant el costat petit per RATioV s'obté el gran
+   %% RATioH: s'obté dividint el costat petit pel gran, de manera que multiplicant el costat gran per RATioH s'obté el petit
+   %% una altra opció seria treballar via regla de tres
+
+   %% calculem la raó del full (MediaBox) en vertical i en horitzontal
+   yFull xFull div  %% dividint l'alt per l'ample:
+   dup /RATioHo exch def  %% amb tots els decimals
+   100 mul cvi 100 div  %% deixem només els 2 primers decimals com a significatius per descartar diferències irrellevants
+   /RATioH exch def  %% ràtio horitzontal
+
+   xFull yFull div  %% dividim l'ample per l'alt:
+   dup /RATioVe exch def  %% amb tots els decimals
+   100 mul cvi 100 div  %% i deixant només els 2 primers decimals com a significatius per descartar diferències irrellevants
+   /RATioV exch def  %% ràtio vertical
+
+   %% abandonem l'opció d'incloure la tria de si volem la pàgina d'imposició en vertical (com ara) o en horitzontal (x fer)?
+   %% les pàgines del 2vUpHV tenen la mateixa ràtio que el full?
+   xFull 4 div dup currentdict exch /xPagina exch put
+   yFull 2 div dup /yPagina exch def div 100 mul cvi 100 div /pRATio exch def
+
+   %% comportament?
+   RATioH pRATio eq
+   {  %% ràtio ídem
+    yPagina xFull div /fS exch def  %% el factor d'escala és ídem a la ràtio però no retallem els decimals
+   }
+   {  %% diferent ràtio, què fem?
+    fRATio  %% forcem la ràtio?
+    {  %% mantenim la ràtio deduïnt el factor d'escala
+(\n <<<<<< tenim un problema!\n\n)print flush quit
+    }
+    {  %% aprofitem el 100% la nova àrea deduint el factor d'escala
+     yPagina xFull div /fS exch def  %% factor d'escala SENSE mantenir la ràtio
+    }ifelse
+   }ifelse
+  }
+
+  (Handbook | un tall sense desbarbar)  %% 4 nom o ID únic?
+ ]
 
  [  %% 1 1hvUpHV una pàgina (en dúplex), horitzontal o vertical, imposada en un full horitzontal o vertical
 
@@ -1013,7 +1321,7 @@ dup /CddVf exch def
   (2vUpHV)  %% 4 nom o ID únic? dues pàgines verticals (en dúplex) imposades DE COSTAT en un full horitzontal o vertical
  ]
 
- null  %% 3 2hUpV
+ null  %% 3 2hUpV?
 
  [  %% 4 4vUpHV quatre pàgines verticals (en dúplex) imposades de costat, 2+2, en un full horitzontal o vertical
 
@@ -1025,12 +1333,7 @@ dup /CddVf exch def
     null  %% a1:2 la pàgina a null forma part de l'estructura d'aquest nUp (pliegO) i per tant és fixa
     null  %% a2:3
     true  %% a3:4
-
-%%UBESH
-%null
-%    false
     true  %% a4:5
-
     null  %% a5:6
     null  %% a6:7
     true  %% a7:8
@@ -1041,12 +1344,7 @@ dup /CddVf exch def
     true  %% r2:3
     null  %% r3:4
     null  %% r4:5
-
-%%UBESH
-%null
-%    false
     true  %% r5:6
-
     true  %% r6:7
     null  %% r7:8
    ]
@@ -1079,9 +1377,6 @@ dup /CddVf exch def
    >>
    <<  %% a4:5
      /T_R
-
-%%UBESH
-%null
      {
       xFull 2 div 0 translate
      }
@@ -1136,8 +1431,6 @@ dup /CddVf exch def
    >>
    <<  %% r5:6
      /T_R
-%%UBESH
-%null
      {
      }
      /FEMshowpage false
@@ -1318,6 +1611,7 @@ dup /CddVf exch def
     null  %% r15:16
    ]
   ]
+
   [  %% 1 ordre seqüencial seguit de pàgines, anvers + revers, per no aturar el componedor aleatori
    %% anvers
    <<  %% a0:1
@@ -1528,6 +1822,7 @@ dup /CddVf exch def
      /00imp false  %% som a la pàgina del llançat que toca a l'orígen 0,0 de l'espai de coordenades de la plana?
    >>
   ]
+
 %%MENÚ M1 donar la possibilitat de fer visible la vora de la pàgina d'imposició, sigui o no dins una capa i com?
   {  %% 2 TrimBox fix de la pàgina d'imposició?
    M1  %% pintem la vora de les pàgines del llançat?
@@ -1554,6 +1849,7 @@ dup /CddVf exch def
     rectclip  %% retallem la vora de la pàgina (equivalent a TrimBox)
    }ifelse
   }  %% en cas que l'haguéssim de personalitzar per cada pàgina, l'hauríem d'imcloure a l'índex 1
+
   {  %% 3 àrees de pàgina, comportament i càlcul de l'escala/ràtio
    %% cal veure com juguem amb les àrees: MediaBox(full), CropBox(?), TrimBox(pàgina), ArtBox(taca), BleedBox(àrea impresa)
    %% si les volem definir com a tals (només 1 per cada pàgina PDF al diccionari /Type/Page) com que som obligats a duplicar-les
@@ -1601,6 +1897,7 @@ dup /CddVf exch def
     }ifelse
    }ifelse
   }
+
   (8vUpH) %% 4 nom o ID únic? vuit pàgines verticals (en dúplex) imposades de costat, 4+4, en un full horitzontal
  ]
 ] def
@@ -1782,8 +2079,8 @@ exch 3 get exec  %% càlcul d'escala/ràtio
 
 %%+ no va a pstopdf
 %% nova proposta pels missatges del prompt dins {...} salpassem el xifrat i ens permet treballar amb Immediately Evaluated Names
-{ --ràtio H full vs pàgina: //RATioH vs //pRATio } ==
-{ --ràtio vertical del full: //RATioVe } ==
+{ --ratio H full vs pagina: //RATioH vs //pRATio } ==
+{ --ratio vertical del full: //RATioVe } ==
 { --factor d'escala: //fS } ==
 %% les ràtios no són iguals?
 RATioH pRATio ne
@@ -1791,24 +2088,41 @@ RATioH pRATio ne
  fRATio
  {
 %%+ no va a pstopdf
-  { --malgrat els ràtios diferents, mantenim el del full a la pàgina a imposar-- } ==
+  { --malgrat els ratios diferents, mantenim el del full a la pagina a imposar-- } ==
  }
  {
 %%+ no va a pstopdf
-  { --pels ràtios diferents, aprofitem tot l'espai de pàgina a imposar-- } ==
+  { --pels ratios diferents, aprofitem tot l'espai de pagina a imposar-- } ==
  }ifelse
 }if
 %% informem de la mida (en punts) de les pàgines (TrimBox/ArtBox) de l'nUp
 %%+ no va a pstopdf
-{ --les pàgines d'imposició del //NpliegOS fan: //xPagina x //yPagina punts } ==
+{ --les pagines d'imposicio del //NpliegOS fan: //xPagina x //yPagina punts } ==
 
 dup
 
 /BeginPage
 {  %% invoca 1 valor a l'stack: l'índex del nombre de vegades que s'ha cridat showpage i no retorna res
 
-%%UBESH anellem el valor que invoca?
+%%UBESH invoca el valor de l'índex total (anvers+revers) de pàgina que imposem
+%(BeginPage!)==
 %dup 1 array astore ==
+
+%%UBESH personalització d'escales de llançat
+ %% pel llançat Handbook
+ M2 0 eq
+ {  %% hem triat el llançat Handbook (un tall sense desbarbar) amb la segona plana en blanc o a pàgina completa?
+  dup 24 eq  %% activem un gatell a l'índex 24 corresponent a la pàgina 9 del revers de la imposició (16 pàgines de l'anvers + 9 del revers = 25 -1 = 24)
+  {
+   /aTOTAplana true def
+  }
+  {
+   /aTOTAplana false def
+  }ifelse
+ }
+ {  %% qualsevol altre llançat
+  /aTOTAplana false def
+ }ifelse
 
  %% lògica anterior parell/senar de 2vUpHV
  %% 2 mod 1 eq  %% detectem la pàgina senar (ep! el comptador que comença per 0)
@@ -1820,11 +2134,21 @@ dup
  {
   %% valor que hem definit al procediment 1 de /pliegOS_nUpS
 
-
   _ordre exch get /T_R get cvx exec  %% ordre seqüencial de pàgines a imposar amb les intruccions de posicionat i rotació
+
+aTOTAplana
+{
+ %% capturem la matriu per situar i pintar el rectangle net de retall de la pàgina del llançat
+ matrix currentmatrix /xirtam exch def
+
+ [0 0 xFull yFull] rectclip
+}
+{
 
   %% valor que hem definit al procediment 2 de /pliegOS_nUpS
   pTrimBox  %% retallem el virtual TrimBox de la pàgina a imposar
+
+}ifelse 
 
   %% valor que hem definit al procediment 3 de /pliegOS_nUpS
   %% cal escalar, via ràtio, un cop posicionades les pàgines (clip+vora)
@@ -1908,6 +2232,7 @@ aNpgn
 
 _anversrevers
 
+%(AVEUREsiVAS)pstack quit
 
 {  %% forall per l'anvers i el revers del full (planes)
 
@@ -1965,7 +2290,7 @@ _anversrevers
    }
    {  %% false=pàgina en blanc: la maquinària d'imposició NO treballa
     /compON false def  %% la maquinària d'imposició NO treballa
-    (pàgina en blanc --    #\n) print flush
+    (pagina en blanc --    #\n) print flush
    }ifelse
   }ifelse
   iSeq 1 add /iSeq exch def

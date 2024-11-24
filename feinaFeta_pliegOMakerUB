@@ -434,6 +434,9 @@ pOM: modifiqueu el mapa d'imposició […] si voleu un altre comportament per aq
 + fem les primeres proves impreses d'un 4+4 dúplex (long-edge) al 100% d'escala, de manera que cal establir un protocol per saber, en funció de l'orientació de la pàgina (doncs ara marquem quin és l'origen 0,0 a amb la numeració en vermell), quantes ratlles negres (filets) veiem en cadascuna de les 4 vores, tant a l'anvers com al revers del full imprès. Aquestes 8 dades (que seran sempre diferents en funció de cada impressora) en haurien de servir per entrar-les en un fitxer de configuració del pliegO'Maker per tal que, treballant al 100% d'escala ens permetés quadrar a la perfecció el dúplex de les 2 planes (sobretot en impressores no professionals)
 @FET
 
++ al fitxer de reglatge2.ps se li haurien d'afegir unes dades importants més: una A per marcar quina plana és l'anvers i una R per marcar quina és el revers, també hauriem de foradar amb una rodona blanca determinats quadrats dels extrems que duen les ratlletes de mesura per tal de facilitar omplir a mà, un cop imprès el dúplex de reglatge, la quantitat de ratlletes que es veuen en cadascun dels 4 marges. Amb aquestes dades d'orientació (0,0|A/R|4 mesures) es podria omplir una formulari que automàticament calibrés l'àrea de treball que, imprimint al 100%, quadrés al màxim vores i cavalcat d'ambdós costats (planes) del full imprès.
++ amb aquestes dades generariem un segon fitxer de reglatge que hauria de comprovar la correcta calibració: un senzill filet(s) rectangular ajustat al màxim a l'àrea d'impressió i unes creus en diversos punts de la pàgina per acabar de comprovar la correcció del registre, perfecte o no del dúplex
+@ESTEMFENT
 
 
     29.10.2024
@@ -666,7 +669,7 @@ pOM: modifiqueu el mapa d'imposició […] si voleu un altre comportament per aq
 
 
     20.11.2024
-- - - - - - - - HT
+- - - - - - - - HT 5.25
 
 %%H: de 07h00 a 08h30
 %%H: de 10h00 a 11h30
@@ -674,10 +677,85 @@ pOM: modifiqueu el mapa d'imposició […] si voleu un altre comportament per aq
 %%H: de 21h30 a 22h30
 
 
+
+    21.11.2024
+- - - - - - - - HT 4.25
+
+%%H: de 09h45 a 12h30
+%%H: de 16h00 a 17h30
+
+
+
+    22.11.2024
+- - - - - - - - HT 2.75
+
+%%H: de 12h15 a 15h00
+
+
+
+    23.11.2024
+- - - - - - - - HT 6.5
+
+%%H: de 09h30 a 13h00
+%%H: de 17h30 a 20h00
+%%H: de 21h00 a 21h30
+
+
+
+    24.11.2024
+- - - - - - - - HT
+
+%%H de 08h15 a 09h15
+%%H de 10h30 a 13h00
+%%H de 15h30 a 17h30
+%%H de
+
+
+
+- - - - - - - - SETMANA 5
+
+
++ analitzem la incorporació a pliegOS del format «handbook» (el llibret plegat amb el tall al mig) i tenim diversos exemples a:
+https://tarde.info/brochure/ | …/pliegOMakerUB/exemples/Handbook
++ ara els hem imprès i ens cal estudiar els possibles recorreguts de lectura per tal de generar dins a… nUp_pliegOS_UBESH.ps …un nou element de compaginació a… /pliegOS_nUpS
++ fem una o+ maquetes en blanc amb les pàgines numerades en base a un possible recorregut de lectura (pel què veiem als exemples de Tarde.info n'hi pot haver més d'un). No sembla que aquest format tingui un recorregut tancat com el llibret estàndard
++ hem d'establir les 2 o tres variants possibles del format Handbook amb el tall al mig de: 8 pàgines a 1 sola cara, amb la segona cara a imposar-hi 1 sola pàgina o 16 pàgines
++ hem d'experimentar combinacions de numeració amb les maquetes en blanc que hem fet del llibret de tall no desbarbat (format Handbook de Tarde)
++ hem localitzat aquell PDF, aquí paginat… https://www.nuvol.com/app/uploads/2016/06/Antihomenatge-Hac-Mor-BO.pdf …que estava muntat com un pliegOS per l'Elena Sixto i que n'hauríem de tenir un exemplar en paper a casa. L'Elena ens en donarà un en paper. Cal saber si és un format nou o un handbook
++ cal veure si aquesta opció d'imposar a la segona cara 1 sola pàgina del PDF d'entrada l'afegim de forma fixa dins l'estructura i només ens caldria blocar-la o no amb un booleni opcional
+@ESTEMFENT
+
++ tenim tots els nUps fets en PDF i impresos amb el nou reglatge2.ps per tal de valorar coses
++ hem reajustat nUp_pliegOS_UBESH.ps/pliegOMaker_UBESH.ps per tal de poder cridar els altres algoritmes que no siguin el 9 d'imposició i no surtin errors
+@FET
+
++ cal revisar l'avís… (oH CAL afinar l'escala com %%+) …que atura la feina quan fem un 4Up orientant horitzontalment el llançat
++ cal revisar el cas de la imposició de… 8CropBox.pdf …en un 4Up on la pàgina 3 de l'original NO s'imposa i queda en blanc dins el llançat (no importa que M9 sigui null true o false)
+@URGENT
+
+
++ hem resolt el millor mètode per manipular l'escala de determinades pàgines dins la imposició. Podem individualitzar la mida (i posició) del llançat (respectant la ràtio) de manera dinàmica per cadascuna de les pàgines dins la plana, i això ens obre la porta a imposicions complexes. La més senzilla és la de l'nUp 0, Handbook, que només necessita que la pàgina 9 que va al revers del llançat ocupi tota la plana. Aquest és el mètode:
++ el codi de l'etiqueta… %%UBESH personalització d'escales de llançat …el tenim dins:
+    nUp_pliegOS_UBESH.ps
++ si hem triat el llançat Handbook, dins del procediment /BeginPage activem un gatell a l'índex 24 corresponent a la pàgina 9 del revers de la imposició que redefineix l'àrea de retall de la pàgina del llançat, en aquest cas a tota plana
+…i…
+    reglatge2.ps
++ si hem triat el llançat Handbook, a la capçalera de l'algorisme redefinim les variables /xPagina /yPagina perquè a la pàgina 9 tinguin la mida que que correspon a la desva nova dimensió, que en aquest cas és tota la plana (xFull yFull)
+@FET
+
+…i…
+    farceixPDFs_pseudoPDFX5_UBESH.ps
++ raonament ídem a reglatge2.ps
++ però ara ens dona un error de dades a l'assajar el mapa d'imposició amb l'enquadernat a null on les dades i el mapa proposat no quadren
++ i un error d'assaig amb l'enquadernat apilat… 0 40 Error: /undefinedresult in --mod--
++ i encartat… 0 40 40 -mark- Error: /undefinedresult in --div--
+@URGENT
+
 + hem aconseguit generar el llibret múltiple començant per l'exemple més senzill: un nUp 2+2 sobre un PDF de 8 pàgines, la qual cosa genera 2 llibrets apilats, o sigui un pliegOS resultant de 4 pàgines amb: anvers/revers | anvers/revers
 + tenim un mètode estable per executar n vegades… nUp_pliegOS_UBESH.ps …cridant cada array dins el mapa d'imposició (hi haurà un altre solució més elegant?)
 + el mètode és el següent: executem per línia de comanda… altravolta.ps …que inicialitza 2 variables i duu un loop que gira les n vegades que s'ha d'executar… nUp_pliegOS_UBESH.ps …tantes com el nombre de /nLlibrets (variable que definim dins farceixPDFs_pseudoPDFX5_UBESH.ps) necessaris per generar el PDF de sortida
 + per tibar un o altre array de pàgines a… ESH_UB.txt …ho fem amb l'índex /iLlibret dins un loop (això a dins nUp_pliegOS_UBESH.ps) per desar-la a /araLlibret
+@FET
 
 + fem un mapa de la veritat de tots els gatells que intervenen en la imposició:
 
@@ -726,7 +804,6 @@ pOM: modifiqueu el mapa d'imposició […] si voleu un altre comportament per aq
 + tinguem en compte… faPDFnumerat.ps …que ens permet generar PDFs d'n pàgines amb uns numeradors de colors que poden ajudar a quadrar exemples preparats per veure si s'enquadernen correctament després amb el pliegO'Maker
 @FET
 
-
 + Error: /rangecheck in --putinterval-- | Operand stack:   (            )   (              )   12   (369)
 + ara podem gestionar un PDF fins 9999 pàgines
 @FET
@@ -752,8 +829,8 @@ pOM: modifiqueu el mapa d'imposició […] si voleu un altre comportament per aq
 
 + hem de parlat amb l'Enric per si ens cal adaptar el DOCinfo de nUp_pliegOS_UBESH.ps
 + tant aquest com el /DOCVIEW via pdfmark convindria que portessin el gatell d'1 única execució
++ ho resoldrem a la reunió de dilluns 25 al migdia amb l'Enric
 @ESTEMFENT
-
 
 + quan fem la interfície www ens cal fer treballar… espiapaq_fura3_pliegOS.ps … amb una nova versió que generi un fitxer de sortida a string per tal de poder ensenyar pel prompt/HTML el contingut de les arrays d'imposició en qualsevoll dels dos formats (matrioixca o endreçat per generar el pliegOS)
 @ESTEMFENT
@@ -932,7 +1009,12 @@ packedarraytype
 GS>false setpacking
 GS>{1 2 3} type ==
 arraytype
-
++ un primer format senzill d'aquestes packedarrays podria ser:
+{ (adreça al PDF o JPEG) #pàgina on comença l'incrustat #pàgina on acaba l'incrustat }
++ la detecció de si tracttem un JPEG o un PDF podria fer-se amb l'extensió o una petita lectura de la capçalera
++ si la pàgina on comença (que hauria de ser la mateixa on estroba la {} i que fins i tot es podria ometre) és la mateixa d'on acaba (aquesta sí que no es pot ometre), l'adaptarem a 1 sola pàgina del llançat, si no és així la meitat esquerra del PDF/JPEG vinculat aniria a la pàgina actual i la meitat dreta a l'altra on acaba
++ si calen més paràmetres a {…} ja els hi anirem afegint a mida que sofistiquem la cosa
+@ESTEMFENT
 
 + hem de solucionar els nous paràmetres M11 i M12: han d'actuar només a l'assaig! …hem ampliat M12 perquè contempli també el núm. de pàgina on volguem finalitzar la imposició
 @FET
@@ -946,14 +1028,15 @@ arraytype
 + de moment no hem detectat més errors en tota mena de combinacions i protocols del menú
 @ESTEMFENT
 
-+ com es criden ara els fitxers de pliegOS entre ells?
++ com es criden ara els fitxers del pliegO'Maker entre ells?
 
-     GS
+   Ghostscript
+(intèrpret PostScript)
      ^
      |
      |
      v
-pliegOMaker_UBESH.ps <----> (7up_pliegOMaker_UBESH.ps)
+pliegOMaker_UBESH.ps <----> 7up_pliegOMaker_UBESH.ps
      ^
      |
      |

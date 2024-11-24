@@ -29,12 +29,14 @@ true  %% true fem PDFs | false fem JPEGs
 %(/home/femfum/Documents/pliegOMakerUB/8paginesPDFnumerades.pdf)
 %(/home/femfum/Documents/pliegOMakerUB/9numerades_ladarreraENfucsia.pdf)
 %(/home/femfum/Documents/pliegOMakerUB/4re.pdf)
-%(/home/femfum/Documents/GuiaJove_EinesDT_v1_web.pdf)
+(/home/femfum/Documents/GuiaJove_EinesDT_v1_web.pdf)
 %(/home/femfum/Documents/pliegOMakerUB/10paginesAMBanotacions.pdf)
 
 %(/home/femfum/Documents/Quim/JOL_1d2_desencriptat.pdf)
 
-(/home/femfum/Documents/pliegOMakerUB/16pagines_acoloridesApilat4up.pdf)
+%(/home/femfum/Documents/pliegOMakerUB/exemples/8CropBox.pdf)
+
+%(/home/femfum/Documents/pliegOMakerUB/16pagines_acoloridesApilat4up.pdf)
 %(/home/femfum/Documents/pliegOMakerUB/16pagines_acoloridesEncartat4up.pdf)
 }
 {
@@ -66,18 +68,19 @@ true
 %% Un full de paper de dues planes (cares en dúplex) on s'hi imposen n pàgines d'un PDF en un ordre determinat
 %% https://en.wikipedia.org/wiki/N-up
 
+%% 0 llançat de 8 pàgines de PDF a 1 sola plana, en vertical, del nou format Handbook (un tall sense desbarbar)
 %% 1 llançat d'1 pàgina de PDF per plana, en vertical o horitzontal en un full en dúplex horitzontal o vertical 1+1 | 2 imposicions totals | impressió 1-up | 1hvUpHV
 %% 2 llançat de 2 pàgines de PDF per plana, en vertical, en un full en dúplex horitzontal o vertical 2+2 | 4 imposicions totals | impressió 2-up | 2vUpHV
 %% 4 llançat de 4 pàgines de PDF per plana, en vertical, en un full en dúplex horitzontal o vertical 4+4 | 8 imposicions totals | impressió 4-up | 4vUpHV
 %% 8 llançat de 8 pàgines de PDF per plana, en vertical, en un full en dúplex horitzontal 8+8 | 16 imposicions totals | impressió 8-up | 8vUpH
 
-8
+0
 
 
 
 %%M3 ORIENTACIÓ DEL FULL D'IMPRESSIÓ ?
 
-false  %% true horitzontal | false vertical
+true  %% true horitzontal | false vertical
 
 
 
@@ -92,6 +95,7 @@ false  %% true horitzontal | false vertical
 
 %%M5 FORCEM LA RÀTIO
 %% adaptar la ràtio de les pàgines del PDF a les del llançat
+
 false
 
 
@@ -148,7 +152,7 @@ true
 %[[1 2 3 4 5 6 7 8] [9 10 11 12 13 14 15 16] [17 18 19 20 21 22 23 24] [25 26 27 28 29 30 31 32] [33 34 35 36 37 38 39 40]]
 
 %% acolorides
-[]
+[[1 2 3 4 5 6 7 8 9 null null null null null null null]]
 
 %% sintagma i paradigma
 %[]
@@ -179,7 +183,7 @@ true
 %% true = si assagem el mapa d'imposició no crearem el PDF i només donarem com a resultat la matriu que defineix M8 amb una anàlisi de la feina segons el triat a M12 i M13
 %% false = generarem el PDF de sortida aplicant el mapa d'imposició definit a M8 i també fem l'anàlisi de la feina
 
-false
+true
 
 
 
