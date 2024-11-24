@@ -68,7 +68,7 @@ true
 %% Un full de paper de dues planes (cares en dúplex) on s'hi imposen n pàgines d'un PDF en un ordre determinat
 %% https://en.wikipedia.org/wiki/N-up
 
-%% 0 llançat de 8 pàgines de PDF a 1 sola plana, en vertical, del nou format Handbook (un tall sense desbarbar)
+%% 0 llançat vertical de 8 pàgines de PDF a 1 sola plana horitzontal (anvers) i 1 pàgina al revers (nou format Tarde Handbook --un tall sense desbarbar)
 %% 1 llançat d'1 pàgina de PDF per plana, en vertical o horitzontal en un full en dúplex horitzontal o vertical 1+1 | 2 imposicions totals | impressió 1-up | 1hvUpHV
 %% 2 llançat de 2 pàgines de PDF per plana, en vertical, en un full en dúplex horitzontal o vertical 2+2 | 4 imposicions totals | impressió 2-up | 2vUpHV
 %% 4 llançat de 4 pàgines de PDF per plana, en vertical, en un full en dúplex horitzontal o vertical 4+4 | 8 imposicions totals | impressió 4-up | 4vUpHV
@@ -152,7 +152,10 @@ true
 %[[1 2 3 4 5 6 7 8] [9 10 11 12 13 14 15 16] [17 18 19 20 21 22 23 24] [25 26 27 28 29 30 31 32] [33 34 35 36 37 38 39 40]]
 
 %% acolorides
-[[1 2 3 4 5 6 7 8 9 null null null null null null null]]
+%[]
+
+%% Tarde Handbook
+[[1 2 3 4 5 6 7 8 null null null null null null null null]]
 
 %% sintagma i paradigma
 %[]
@@ -170,12 +173,13 @@ true
 %%M9 ENQUADERNAT
 %% podem triar entre tres tipus d'enquadernat:
 %% null = 1 sol llibret apilat (quan M8 és una array buida) fins que s'esgoti el llançat nUp (si falten pàgines s'omplen amb buides i si en sobren es talla)
+%% a null sembla absurd que fem un assaig? (surt una array simple!)
 %% true = encartat, amb diversos llibrets (fins que s'esgotin les pàgines del PDF i si falten pàgines s'afegeixen en blanc a la cua del llançat)
 %% false = apilat, amb diversos llibrets (fins que s'esgotin les pàgines del PDF i si falten pàgines s'afegeixen en blanc a la cua del llançat)
 %% EP! quan M10 és a false tenir M9 a true o false no fa canviar res, doncs és M8 qui mana!
 %% EP! quan M10 és a false tenir M9 a null fa que només es crei el primer llibret (la primera array de M8)
 
-true
+false
 
 
 
@@ -183,7 +187,7 @@ true
 %% true = si assagem el mapa d'imposició no crearem el PDF i només donarem com a resultat la matriu que defineix M8 amb una anàlisi de la feina segons el triat a M12 i M13
 %% false = generarem el PDF de sortida aplicant el mapa d'imposició definit a M8 i també fem l'anàlisi de la feina
 
-true
+false
 
 
 

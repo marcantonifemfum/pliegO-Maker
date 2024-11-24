@@ -259,7 +259,11 @@ aPmaker  %% aquest paquet desat per CaLi2CoPi duu tantes arrays com pàgines amb 
 length /poPDF exch def  %% és el nombre total de pàgines originals del PDF d'entrada i sempre serà així
 
 %%+2 cal saber quin nUp hem triat
-M2 /Nup exch def
+M2 dup 0 eq
+{
+ pop 8
+}if
+/Nup exch def
 
 %%+3 cal saber quin enquadernat hem triat
 M9     %% null = fem 1 sol llibret de pàgines seguides fins a esgotar l'nUp (si falten pàgines s'omplen amb buides a la cua i si en sobren es talla)
@@ -1584,7 +1588,8 @@ M7
  %% el costat més gran de la pàgina del llançat
  xPagina yPagina gt
  {  %% l'orientació del llançat és horitzontal
-(oH CAL afinar l'escala com %%+ PLEGUEM!)pstack stop
+%%UBESH escala
+%(oH CAL afinar l'escala com %%+ PLEGUEM!)pstack stop
   Odivisor
   {  %% però l'orientació de la pàgina a imposar és vertical
    exch pop yPagina exch div  %% escala de treball

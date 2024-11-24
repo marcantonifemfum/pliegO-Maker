@@ -708,7 +708,7 @@ pOM: modifiqueu el mapa d'imposició […] si voleu un altre comportament per aq
 %%H de 08h15 a 09h15
 %%H de 10h30 a 13h00
 %%H de 15h30 a 17h30
-%%H de
+%%H de 20h30 a
 
 
 
@@ -729,7 +729,6 @@ https://tarde.info/brochure/ | …/pliegOMakerUB/exemples/Handbook
 + hem reajustat nUp_pliegOS_UBESH.ps/pliegOMaker_UBESH.ps per tal de poder cridar els altres algoritmes que no siguin el 9 d'imposició i no surtin errors
 @FET
 
-+ cal revisar l'avís… (oH CAL afinar l'escala com %%+) …que atura la feina quan fem un 4Up orientant horitzontalment el llançat
 + cal revisar el cas de la imposició de… 8CropBox.pdf …en un 4Up on la pàgina 3 de l'original NO s'imposa i queda en blanc dins el llançat (no importa que M9 sigui null true o false)
 @URGENT
 
@@ -746,9 +745,11 @@ https://tarde.info/brochure/ | …/pliegOMakerUB/exemples/Handbook
 …i…
     farceixPDFs_pseudoPDFX5_UBESH.ps
 + raonament ídem a reglatge2.ps
-+ però ara ens dona un error de dades a l'assajar el mapa d'imposició amb l'enquadernat a null on les dades i el mapa proposat no quadren
-+ i un error d'assaig amb l'enquadernat apilat… 0 40 Error: /undefinedresult in --mod--
-+ i encartat… 0 40 40 -mark- Error: /undefinedresult in --div--
++ per evitar errors com que el valor del llançat/imposició escollida, M2, és l'enter del nombre de pàgines per plana, hem filtrat el zero per que treballi com un 8 a /Nup
++ cal revisar l'avís… (oH CAL afinar l'escala com %%+) …(ara ja no atura la feina) quan fem un 4Up orientant horitzontalment el llançat
++ a null sembla absurd que fem un assaig? (surt una array simple!)
++ cal polir els missatges de l'anàlisi quan fem el llançat 0 del Handbook per ajustar uns quants valors
++ potser hauríem de sortir de la feina i no fer el revers quan només hi hagin les 8 pàgines de l'anvers?
 @URGENT
 
 + hem aconseguit generar el llibret múltiple començant per l'exemple més senzill: un nUp 2+2 sobre un PDF de 8 pàgines, la qual cosa genera 2 llibrets apilats, o sigui un pliegOS resultant de 4 pàgines amb: anvers/revers | anvers/revers
