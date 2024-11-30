@@ -1485,6 +1485,9 @@ M9 null ne
 %%UBESH el número de pàgina que processem ja ens arriba com una string
   Npgn  % cvx exec
 
+%%ATENCIÓ: perquè el número de pàgina que ara ens ve NO ES CORRESPON al número de pàgina real del PDF que estem imposant (és el seqüencial d'imposició!)
+dup ==
+
 %%Un truc per començar més enllà de la pàgina 1 del PDF
 %4 add
 
@@ -1521,7 +1524,14 @@ M7
 {  %% respectem els valors del /CropBox
  aMESaMES 0 eq
  {  %% explorem  els valors de les àrees desades
-  XRay /PeDeEfa get exch get
+  XRay /PeDeEfa get
+
+%%UBESH EP!
+  M8 iLlibret get  %% vía índex (que es defineix i s'alimenta a nUp_pliegOS_UBESH.ps) tibem de M8 l'array del llibret que ara toca imposar
+  3 -1 roll cvx exec 1 sub get  %% tibem, via índex del mapa d'imposició, el núm. de pàgina del PDF d'entrada que imposarem ara
+%%EP! hem de contemplar el null de les pàgines en blanc! ...i què passa si treballem amb una array buida?
+  6 string cvs get
+
   %% segon ens cal saber si CropBox existeix
   dup /CropBox known
   {  %% si CropBox existeix
@@ -1561,10 +1571,22 @@ M7
  }ifelse
 }
 {  %% com que no hem de respectar el /CropBox extraiem el valor del MediaBox per treballar
- XRay /PeDeEfa get exch get /MediaBox get
+%%UBESH EP!
+ XRay /PeDeEfa get
+
+%%UBESH EP!
+ M8 iLlibret get  %% vía índex (que es defineix i s'alimenta a nUp_pliegOS_UBESH.ps) tibem de M8 l'array del llibret que ara toca imposar
+ 3 -1 roll cvx exec 1 sub get  %% tibem, via índex del mapa d'imposició, el núm. de pàgina del PDF d'entrada que imposarem ara
+%%EP! hem de contemplar el null de les pàgines en blanc! ...i què passa si treballem amb una array buida?
+ 6 string cvs get
+
+ /MediaBox get
  /enQuadra false def
-% (!!!!)pstack quit
 }ifelse
+
+% (!!!!)pstack quit
+%%DaquiPLORAlaCRIATURA!
+dup ==
 
 /araMediaBox exch def
 
@@ -1664,6 +1686,7 @@ pop pop
 %4 add
    1 sub
 
+
 %%Scripting 3
 %false
 %{
@@ -1678,12 +1701,15 @@ pop pop
     /llançat true def
    }
    {
-
     %% araLlibret  %% array del llibret, extret de M8, que ara toca imposar
-    M8 iLlibret get  %% vía índex (que es defineix i s'alimenta a nUp_pliegOS_UBESH.ps) tibem de M8 el llibret que ara toca imposar
+    %% ATENCIÓ: òbviament l'índex de l'array del llibret i el número de pàgina del PDF d'entrada no tenen perquè coincidir!
+    M8 iLlibret get  %% vía índex (que es defineix i s'alimenta a nUp_pliegOS_UBESH.ps) tibem de M8 l'array del llibret que ara toca imposar
 %(MATRIUcorregida?)pstack quit
 
-    exch get  %% tibem pel núm. de pàgina del PDF d'entrada que imposarem ara
+    exch get  %% tibem, via índex del mapa d'imposició, el núm. de pàgina del PDF d'entrada que imposarem ara
+
+%%UBESH EP!
+dup ==
 
     %% si ens arriba un null equival a una pàgina en blanc i evitem el .PDFDrawPage
     dup null eq

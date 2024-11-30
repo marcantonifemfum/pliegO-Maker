@@ -703,17 +703,91 @@ pOM: modifiqueu el mapa d'imposició […] si voleu un altre comportament per aq
 
 
     24.11.2024
-- - - - - - - - HT
+- - - - - - - - HT 6.75
 
 %%H de 08h15 a 09h15
 %%H de 10h30 a 13h00
 %%H de 15h30 a 17h30
-%%H de 20h30 a
+%%H de 20h30 a 21h45
 
 
 
-- - - - - - - - SETMANA 5
+- - - - - - - - SETMANA 5 31.5
 
+
+
+    25.11.2024
+- - - - - - - - HT 5
+
+%%H de 13h00 a 18h00
+
+
+
+    26.11.2024
+- - - - - - - - HT 0
+
+
+
+    27.11.2024
+- - - - - - - - HT 2.75
+
+%%H de 07h45 a 08h30
+%%H de 12h15 a 13h00
+%%H de 18h45 a 19h30
+%%H de 21h45 a 22h15
+
+
+
+
+    28.11.2024
+- - - - - - - - HT 4.25
+
+%%H de 11h45 a 13h00
+%%H de 15h00 a 16h45
+%%H de 19h15 a 20h30
+
+
+
+    29.11.2024
+- - - - - - - - HT
+
+%%H de 08h00 a 08h30
+%%H de 12h15 a 13h15
+
+
+@justiciagob @justiciacat @Mart_Grijalba @eneko70 @rafabanyon @mmpastorbravo @ANDRESS27988216
+
+
++ cal llegir cadascun dels formats de pàgina del PDF d'entrada per assegurar-nos que adaptem correctament l'escala del llançat en PDFs on cada pàgina tingui una mida diferent: tenim un exemple on sembla que això NO és així (surten pàgines estranyament tallades), fent 4+4 apilat original_desproporcions_mides_pdf.pdf (enviat per Telegram)
++ analitzem les pàgines que es tallen un cop imposades a /home/femfum/Documents/pliegOMakerUB/exemples/errors/original_desproporcions_mides_pdf.pdf
++ la pàgina 20 [24 0 obj] queda lleugerament més petita (té un Crop?) / la pàgina 10 [14 0 obj], 16 [20 0 obj], 18 [22 0 obj] queden tallades! /
++ cal revisar l'algorisme que avalua els formats de pàgina doncs no deu tenir en compte (ho ho fa malament) els 2 primers valors del /MediaBox, per exemple en aquest cas documentat:
+/MediaBox [ 0.0 7.8299813 595.5 850.07996 ] ens cal muntar un exemple per avaluar totes les possbiles variacions en aquest àmbit per tal que les rutines d'escala/posició del llançat treballin bé
++ fem a través de… testMediaBoxCropBox.ps …un PDF retocat manualment… testMediaBoxCropBox.pdf …per avaluar la correcta interpretació de tota mena de formats i retalls
+    apel_testMediaBoxCropBox.pdf
+pàg.1 Rotate 90
+pàg.2 MediaBox arran de negre
+pàg.3 Rotate -180 i MediaBox sense filets
+pàg.4 ídem
+pàg.5 CropBox al verd
+pàg.6 CropBox al magenta
+pàg.7 CropBox al blau
+pàg.8 ídem
+pàg.9 MediaBox arran de cubs
++ analitzem el fitxer… (/home/femfum/Documents/pliegOMakerUB/exemples/errors/original_desproporcions_mides_pdf.pdf) …i mirem quines pàgines són les que no s'adapten bé a la imposició:
++ queden tallades les pàgs: 10 / 16 / 18 | no s'adapten del tot al llançat les pàgs: 20 / 12 …de la 9 a la 20 tenen un MediaBox no típic… [0.0 7.8299 595.5 850.08 ]
++ és només en unes determinades posicions que el llançat no treballa bé les proporcions
+[[1 2 3 4 5 6 7 8] [9 10 11 12 13 14 15 16] [17 18 19 20 null null null null]]
+
+
++ lectura del cos més petit del PDF d'entrada per tal d'avisar (hauria d'emetre un missatge) que amb la presumible reducció d'escala serà difícil que es llegeixi
++ cal provar el gatell 4 d'anàlisi textual fet per JBC (en un CaLi2CoPi no vinculat a pliegO'Maker) que no repica el PDF on en ha d'enumerar tots els rengs de text amb caracterśitiques tipogràfiques diferents: l'estem analitzant i veiem que potser només ens cal capturar els diccionaris /Champollion o /CalaixDeTipus per tenir la dada del cos que necessitem?
++ NO: hem de trobar el punt on queda completat el diccionari… yRENGS …on hi tenim el detall pàgina a pàgina i línia a línia del text escrit al PDF i que podem explorar via coordenades verticals amb… {{== ==}forall ==}forall …concretament ens interessa l'índex 3 de l'array de cada línia que és on hi han els cossos de cadascun dels glifs:
+[[[10.0 20.836 10.0 40.0 20.836 40.0] [20.836 31.672 20.836 40.0 31.672 40.0] [31.672 42.5080032 31.672 40.0 42.5080032 40.0] [42.5080032 53.344 42.5080032 40.0 53.344 40.0] [53.344 64.18 53.344 40.0 64.18 40.0] [64.18 75.016 64.18 40.0 75.016 40.0] [75.016 85.852 75.016 40.0 85.852 40.0] [85.852 96.6879959 85.852 40.0 96.6879959 40.0] [96.6879959 107.523994 96.6879959 40.0 107.523994 40.0] [107.523994 118.359993 107.523994 40.0 118.359993 40.0] [118.359993 129.196 118.359993 40.0 129.196 40.0] [129.196 140.032 129.196 40.0 140.032 40.0] [140.032 150.868 140.032 40.0 150.868 40.0]] [/T /e /x /t /space /a /space /c /o /s /space /one /eight] [/R7 /R7 /R7 /R7 /R7 /R7 /R7 /R7 /R7 /R7 /R7 /R7 /R7] [18.0 18.0 18.0 18.0 18.0 18.0 18.0 18.0 18.0 18.0 18.0 18.0 18.0] null]
+…cal executar… BeSSo …per tal entrin en joc les redefinicions dels operadors tipogràfics i de composició de text que escriuen el detall de dades de l'array anterior
+
+
+@SESSIO_ESH
 
 + analitzem la incorporació a pliegOS del format «handbook» (el llibret plegat amb el tall al mig) i tenim diversos exemples a:
 https://tarde.info/brochure/ | …/pliegOMakerUB/exemples/Handbook
@@ -739,7 +813,7 @@ https://tarde.info/brochure/ | …/pliegOMakerUB/exemples/Handbook
 + si hem triat el llançat Handbook, dins del procediment /BeginPage activem un gatell a l'índex 24 corresponent a la pàgina 9 del revers de la imposició que redefineix l'àrea de retall de la pàgina del llançat, en aquest cas a tota plana
 …i…
     reglatge2.ps
-+ si hem triat el llançat Handbook, a la capçalera de l'algorisme redefinim les variables /xPagina /yPagina perquè a la pàgina 9 tinguin la mida que que correspon a la desva nova dimensió, que en aquest cas és tota la plana (xFull yFull)
++ si hem triat el llançat Handbook, a la capçalera de l'algorisme redefinim les variables /xPagina /yPagina perquè a la pàgina 9 tinguin la mida que que correspon a la seva nova dimensió, que en aquest cas és tota la plana (xFull yFull)
 @FET
 
 …i…

@@ -29,8 +29,13 @@ true  %% true fem PDFs | false fem JPEGs
 %(/home/femfum/Documents/pliegOMakerUB/8paginesPDFnumerades.pdf)
 %(/home/femfum/Documents/pliegOMakerUB/9numerades_ladarreraENfucsia.pdf)
 %(/home/femfum/Documents/pliegOMakerUB/4re.pdf)
-(/home/femfum/Documents/GuiaJove_EinesDT_v1_web.pdf)
+%(/home/femfum/Documents/GuiaJove_EinesDT_v1_web.pdf)
 %(/home/femfum/Documents/pliegOMakerUB/10paginesAMBanotacions.pdf)
+
+%%UBESH ERROR
+%(/home/femfum/Documents/pliegOMakerUB/apel_testMediaBoxCropBox.pdf_pla.pdf)
+%(/home/femfum/Documents/pliegOMakerUB/testMediaBoxCropBox.pdf)
+(/home/femfum/Documents/pliegOMakerUB/exemples/errors/original_desproporcions_mides_pdf.pdf)
 
 %(/home/femfum/Documents/Quim/JOL_1d2_desencriptat.pdf)
 
@@ -74,13 +79,14 @@ true
 %% 4 llançat de 4 pàgines de PDF per plana, en vertical, en un full en dúplex horitzontal o vertical 4+4 | 8 imposicions totals | impressió 4-up | 4vUpHV
 %% 8 llançat de 8 pàgines de PDF per plana, en vertical, en un full en dúplex horitzontal 8+8 | 16 imposicions totals | impressió 8-up | 8vUpH
 
-0
+1
 
 
 
 %%M3 ORIENTACIÓ DEL FULL D'IMPRESSIÓ ?
+%% true horitzontal | false vertical
 
-true  %% true horitzontal | false vertical
+false
 
 
 
@@ -118,7 +124,7 @@ false
 %% true respectem el /CropBox per a tot el document
 %% false ignorem el /CropBox i treballem amb el /MediaBox per a tot el document
 
-true
+false
 
 
 
@@ -155,7 +161,7 @@ true
 %[]
 
 %% Tarde Handbook
-[[1 2 3 4 5 6 7 8 null null null null null null null null]]
+%[[1 2 3 4 5 6 7 8 9 null null null null null null null]]
 
 %% sintagma i paradigma
 %[]
@@ -164,9 +170,13 @@ true
 
 % [[][]]  %%EP! aquest format d'array NO es pot fer servir doncs dóna Error: /rangecheck in --get--
 
-%[ [null 1 1 1 ] [ true 8 8 8] ]
-%[ 1    2    1    4    5    1    7    1 ]
-%  [null  null null null null null 9    null]
+%%UBESH ERRORS
+%[[1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16] [17 18 19 20 null null null null null null null null null null null null]]
+%[[10 20 18 16]]
+[[20 null ]]
+%[[1 2 3 4 5 6 7 8] [9 10 11 12 13 14 15 16] [17 18 19 20 null null null null]]
+%[]
+%[[1 2 3 4 5 6 7 8] [9 null null null null null null null]]
 
 
 
