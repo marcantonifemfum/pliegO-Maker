@@ -1530,44 +1530,54 @@ M7
   M8 iLlibret get  %% vía índex (que es defineix i s'alimenta a nUp_pliegOS_UBESH.ps) tibem de M8 l'array del llibret que ara toca imposar
   3 -1 roll cvx exec 1 sub get  %% tibem, via índex del mapa d'imposició, el núm. de pàgina del PDF d'entrada que imposarem ara
 %%EP! hem de contemplar el null de les pàgines en blanc! ...i què passa si treballem amb una array buida?
-  6 string cvs get
-
-  %% segon ens cal saber si CropBox existeix
-  dup /CropBox known
-  {  %% si CropBox existeix
-   %% tercer ens cal saber si MediaBox i CropBox són idèntics
-   dup /CropBox get /_CB exch def
-   /MediaBox get /_MB exch def
-   /MBCBidem true def
-   0 1 3
-   {
-    dup _CB exch get
-    exch _MB exch get
-    ne
-    {
-     /MBCBidem false def
-     exit
-    }if
-   }for
-
-   MBCBidem
-   {  %% si ho són no fem res i ja és bo el valor de /MediaBox
-    _MB
-    /enQuadra false def
-   }
-   {  %% si NO ho són hem d'engegar l'operativa per moure i retallar l'àrea del /CropBox que ha de fer de /araMediaBox 
-    _CB  %% el valor del CropBox ja ens serveix de nou MediaBox i només mancarà moure'l i retallar
-    /enQuadra true def
-%(vvvvvv) ==  %pstack quit
-   }ifelse
+  dup null eq
+  {  %% eliminem el null i el diccionari de pàgina per desactivar el gatell Simposa
+   pop pop
+   /Simposa false def
   }
-  {  %% si CropBox no existeix no fem res i extraiem el valor del MediaBox per treballar
-   /MediaBox get
-   /enQuadra false def
+  {
+   /Simposa true def
+   6 string cvs get
+
+   %% segon ens cal saber si CropBox existeix
+   dup /CropBox known
+   {  %% si CropBox existeix
+    %% tercer ens cal saber si MediaBox i CropBox són idèntics
+    dup /CropBox get /_CB exch def
+    /MediaBox get /_MB exch def
+    /MBCBidem true def
+    0 1 3
+    {
+     dup _CB exch get
+     exch _MB exch get
+     ne
+     {
+      /MBCBidem false def
+      exit
+     }if
+    }for
+
+    MBCBidem
+    {  %% si ho són no fem res i ja és bo el valor de /MediaBox
+     _MB
+     /enQuadra false def
+    }
+    {  %% si NO ho són hem d'engegar l'operativa per moure i retallar l'àrea del /CropBox que ha de fer de /araMediaBox 
+     _CB  %% el valor del CropBox ja ens serveix de nou MediaBox i només mancarà moure'l i retallar
+     /enQuadra true def
+%(vvvvvv) ==  %pstack quit
+    }ifelse
+    /araMediaBox exch def
+   }
+   {  %% si CropBox no existeix no fem res i extraiem el valor del MediaBox per treballar
+    /MediaBox get
+    /enQuadra false def
+    /araMediaBox exch def
+   }ifelse
   }ifelse
  }
  {
-  (\n\n >>> COMPORTAMENT NO PROGRAMAT ...sortim!\n\n)print flush stop
+  (\n\n >>> el gatell de CaLi2CoPi NO es l'adequat  ...sortim!\n\n)print flush stop
  }ifelse
 }
 {  %% com que no hem de respectar el /CropBox extraiem el valor del MediaBox per treballar
@@ -1578,17 +1588,23 @@ M7
  M8 iLlibret get  %% vía índex (que es defineix i s'alimenta a nUp_pliegOS_UBESH.ps) tibem de M8 l'array del llibret que ara toca imposar
  3 -1 roll cvx exec 1 sub get  %% tibem, via índex del mapa d'imposició, el núm. de pàgina del PDF d'entrada que imposarem ara
 %%EP! hem de contemplar el null de les pàgines en blanc! ...i què passa si treballem amb una array buida?
- 6 string cvs get
-
- /MediaBox get
- /enQuadra false def
+ dup null eq
+ {  %% eliminem el null i el diccionari de pàgina per desactivar el gatell Simposa
+  pop pop
+  /Simposa false def
+ }
+ {
+  /Simposa true def
+  6 string cvs get
+  /MediaBox get
+  /enQuadra false def
+  /araMediaBox exch def
+ }ifelse
 }ifelse
 
-% (!!!!)pstack quit
 %%DaquiPLORAlaCRIATURA!
-dup ==
-
-/araMediaBox exch def
+Simposa
+{  %% el mapa d'imposició no ens torna un null (en blanc) o sigui que la imposem
 
 %%TEST
 %/Rotate get 0 ne
@@ -1659,6 +1675,9 @@ pop pop
   %Npgn cvx exec 6 eq {araMediaBox (***)pstack quit}if
   rectclip
  }if
+
+}if  %% Simposa ?
+
 
  MdL
  {

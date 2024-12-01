@@ -749,15 +749,28 @@ pOM: modifiqueu el mapa d'imposició […] si voleu un altre comportament per aq
 
 
     29.11.2024
-- - - - - - - - HT
+- - - - - - - -  HT 1.5
 
 %%H de 08h00 a 08h30
 %%H de 12h15 a 13h15
 
 
-@justiciagob @justiciacat @Mart_Grijalba @eneko70 @rafabanyon @mmpastorbravo @ANDRESS27988216
+
+    30.11.2024
+- - - - - - - - HT 1
+
+%%H de 16h00 a 17h00
 
 
+
+    01.12.2024
+- - - - - - - - HT
+
+%%H de 10h00 a
+
+
+
+@SESSIO_ESH:
 + cal llegir cadascun dels formats de pàgina del PDF d'entrada per assegurar-nos que adaptem correctament l'escala del llançat en PDFs on cada pàgina tingui una mida diferent: tenim un exemple on sembla que això NO és així (surten pàgines estranyament tallades), fent 4+4 apilat original_desproporcions_mides_pdf.pdf (enviat per Telegram)
 + analitzem les pàgines que es tallen un cop imposades a /home/femfum/Documents/pliegOMakerUB/exemples/errors/original_desproporcions_mides_pdf.pdf
 + la pàgina 20 [24 0 obj] queda lleugerament més petita (té un Crop?) / la pàgina 10 [14 0 obj], 16 [20 0 obj], 18 [22 0 obj] queden tallades! /
@@ -778,26 +791,34 @@ pàg.9 MediaBox arran de cubs
 + queden tallades les pàgs: 10 / 16 / 18 | no s'adapten del tot al llançat les pàgs: 20 / 12 …de la 9 a la 20 tenen un MediaBox no típic… [0.0 7.8299 595.5 850.08 ]
 + és només en unes determinades posicions que el llançat no treballa bé les proporcions
 [[1 2 3 4 5 6 7 8] [9 10 11 12 13 14 15 16] [17 18 19 20 null null null null]]
++ HEM TROBAT EL FORAT QUE GENERAVA AQUESTA PROBLEMÀTICA: no estavem avaluant els valors de MediaBox/CropBox pel número de pàgina del PDF d'entrada, sinó que erròniament els cridavem per l'índex de l'ordre de lectura. Per exemple, si al mapa d'imposició havíem programat lllegir primer la pàgina 20, llegia els valors de la pàgina 1. Tampoc havíem detectat un segon error en relació a la lectura dels valors de les pàgines en blanc (que no s'han de llegir!). Ara ha quedat creiem que completament corregit.
+@FET
 
++ queda pendent avaluar correctament les instruccions /Rotate de les pàgines del PDF d'entrada, de manera que respectem el que ens marquin
++ cal fer un seguit de PDFs de test per veure com ho solucionem i tractem
++ podríem aprofitar aquesta funció per orientar la imposició de la plana del revers (a tot format del full) en el pliegOS de tall sense desbarbar?
 
 + lectura del cos més petit del PDF d'entrada per tal d'avisar (hauria d'emetre un missatge) que amb la presumible reducció d'escala serà difícil que es llegeixi
 + cal provar el gatell 4 d'anàlisi textual fet per JBC (en un CaLi2CoPi no vinculat a pliegO'Maker) que no repica el PDF on en ha d'enumerar tots els rengs de text amb caracterśitiques tipogràfiques diferents: l'estem analitzant i veiem que potser només ens cal capturar els diccionaris /Champollion o /CalaixDeTipus per tenir la dada del cos que necessitem?
 + NO: hem de trobar el punt on queda completat el diccionari… yRENGS …on hi tenim el detall pàgina a pàgina i línia a línia del text escrit al PDF i que podem explorar via coordenades verticals amb… {{== ==}forall ==}forall …concretament ens interessa l'índex 3 de l'array de cada línia que és on hi han els cossos de cadascun dels glifs:
 [[[10.0 20.836 10.0 40.0 20.836 40.0] [20.836 31.672 20.836 40.0 31.672 40.0] [31.672 42.5080032 31.672 40.0 42.5080032 40.0] [42.5080032 53.344 42.5080032 40.0 53.344 40.0] [53.344 64.18 53.344 40.0 64.18 40.0] [64.18 75.016 64.18 40.0 75.016 40.0] [75.016 85.852 75.016 40.0 85.852 40.0] [85.852 96.6879959 85.852 40.0 96.6879959 40.0] [96.6879959 107.523994 96.6879959 40.0 107.523994 40.0] [107.523994 118.359993 107.523994 40.0 118.359993 40.0] [118.359993 129.196 118.359993 40.0 129.196 40.0] [129.196 140.032 129.196 40.0 140.032 40.0] [140.032 150.868 140.032 40.0 150.868 40.0]] [/T /e /x /t /space /a /space /c /o /s /space /one /eight] [/R7 /R7 /R7 /R7 /R7 /R7 /R7 /R7 /R7 /R7 /R7 /R7 /R7] [18.0 18.0 18.0 18.0 18.0 18.0 18.0 18.0 18.0 18.0 18.0 18.0 18.0] null]
 …cal executar… BeSSo …per tal entrin en joc les redefinicions dels operadors tipogràfics i de composició de text que escriuen el detall de dades de l'array anterior
+@ESTEMFENT
 
-
-@SESSIO_ESH
-
+@SESSIO_ESH:
 + analitzem la incorporació a pliegOS del format «handbook» (el llibret plegat amb el tall al mig) i tenim diversos exemples a:
 https://tarde.info/brochure/ | …/pliegOMakerUB/exemples/Handbook
 + ara els hem imprès i ens cal estudiar els possibles recorreguts de lectura per tal de generar dins a… nUp_pliegOS_UBESH.ps …un nou element de compaginació a… /pliegOS_nUpS
 + fem una o+ maquetes en blanc amb les pàgines numerades en base a un possible recorregut de lectura (pel què veiem als exemples de Tarde.info n'hi pot haver més d'un). No sembla que aquest format tingui un recorregut tancat com el llibret estàndard
 + hem d'establir les 2 o tres variants possibles del format Handbook amb el tall al mig de: 8 pàgines a 1 sola cara, amb la segona cara a imposar-hi 1 sola pàgina o 16 pàgines
 + hem d'experimentar combinacions de numeració amb les maquetes en blanc que hem fet del llibret de tall no desbarbat (format Handbook de Tarde)
-+ hem localitzat aquell PDF, aquí paginat… https://www.nuvol.com/app/uploads/2016/06/Antihomenatge-Hac-Mor-BO.pdf …que estava muntat com un pliegOS per l'Elena Sixto i que n'hauríem de tenir un exemplar en paper a casa. L'Elena ens en donarà un en paper. Cal saber si és un format nou o un handbook
 + cal veure si aquesta opció d'imposar a la segona cara 1 sola pàgina del PDF d'entrada l'afegim de forma fixa dins l'estructura i només ens caldria blocar-la o no amb un booleni opcional
 @ESTEMFENT
+
++ hem localitzat aquell PDF, aquí paginat… https://www.nuvol.com/app/uploads/2016/06/Antihomenatge-Hac-Mor-BO.pdf …que estava muntat com un pliegOS per l'Elena Sixto i que n'hauríem de
+tenir un exemplar en paper a casa. L'Elena ens en donarà un en paper. Cal saber si és un format nou o un handbook
+@FET
+
 
 + tenim tots els nUps fets en PDF i impresos amb el nou reglatge2.ps per tal de valorar coses
 + hem reajustat nUp_pliegOS_UBESH.ps/pliegOMaker_UBESH.ps per tal de poder cridar els altres algoritmes que no siguin el 9 d'imposició i no surtin errors
