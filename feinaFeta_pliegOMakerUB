@@ -764,9 +764,34 @@ pOM: modifiqueu el mapa d'imposició […] si voleu un altre comportament per aq
 
 
     01.12.2024
+- - - - - - - - HT 2
+
+%%H de 10h00 a 12h00
+
+
+
+- - - - - - - - SETMANA 6 16.50
+
+
+
+    02.12.2024
+- - - - - - - - HT 7.25
+
+%%H de 08h00 a 08h45
+%%H de 09h45 a 10h45
+%%H de 12h00 a 13h00
+%%H de 15h00 a 16h30
+%%H de 17h00 a 18h45
+%%H de 19h30 a 20h00
+%%H de 21h00 a 21h45
+
+
+
+    03.12.2024
 - - - - - - - - HT
 
-%%H de 10h00 a
+%%H de 12h15 a 13h00
+%%H de 16h00 a 17h30
 
 
 
@@ -815,16 +840,31 @@ https://tarde.info/brochure/ | …/pliegOMakerUB/exemples/Handbook
 + cal veure si aquesta opció d'imposar a la segona cara 1 sola pàgina del PDF d'entrada l'afegim de forma fixa dins l'estructura i només ens caldria blocar-la o no amb un booleni opcional
 @ESTEMFENT
 
++ valorem la possibilitat d'afegir claus d'error o sortida d'execució dels algorismes de composició dins el diccionari /$error (s'hi pot escriure) a systemdict de manera que poguem informar millor de quin algorisme peta o si només és una aturada p.e. informativa sense generar el PDF
+@ESTEMFENT
+
 + hem localitzat aquell PDF, aquí paginat… https://www.nuvol.com/app/uploads/2016/06/Antihomenatge-Hac-Mor-BO.pdf …que estava muntat com un pliegOS per l'Elena Sixto i que n'hauríem de
 tenir un exemplar en paper a casa. L'Elena ens en donarà un en paper. Cal saber si és un format nou o un handbook
 @FET
-
 
 + tenim tots els nUps fets en PDF i impresos amb el nou reglatge2.ps per tal de valorar coses
 + hem reajustat nUp_pliegOS_UBESH.ps/pliegOMaker_UBESH.ps per tal de poder cridar els altres algoritmes que no siguin el 9 d'imposició i no surtin errors
 @FET
 
-+ cal revisar el cas de la imposició de… 8CropBox.pdf …en un 4Up on la pàgina 3 de l'original NO s'imposa i queda en blanc dins el llançat (no importa que M9 sigui null true o false)
++ ens cal controlar el paràmetre /Rotate a l'arrel /Pages o /Page (és heretable!), per la qual cosa hem vist que ens cal crear a CaLi2CoPi un loop recursiu per trobar si hi ha /Rotate fins l'arrel /Pages si cal, idèntic als que ja tenim fets pel MediaBox i CropBox
++ hem fet unes pàgines de prototip/assaig amb /Rotate diversos… PDFsAMBrotacions.pdf
+@ESTEMFENT
+
++ cal revisar el cas de la imposició de… 8CropBox.pdf …en un 4Up on la pàgina 3 de l'original NO s'imposa i queda en blanc dins el llançat (no importa que M9 sigui null true o false):
++ hem implementat totes les orientacions pòssibles en un CropBox… SO/NE NO/SE NE/SO SE/NO …per tal que el retallador de… farceixPDFs_pseudoPDFX5_UBESH.ps …treballi correctament
++ però ara hem vist que això només és estable mentre el MediaBox tingui una orientació SO/NE, perquè amb la resta treballa malament: llavors hem de creat 2 PDFs d'assaig
++ (/home/femfum/Documents/pliegOMakerUB/4CropBox4orientacions_a3x3_MediaBox2orientacions_NOSE_SENO_pla.pdf) …surten tots malament a l'imposar (MediaBoxCropBox_NOSE_SENO.pdf)
++ (/home/femfum/Documents/pliegOMakerUB/4CropBox4orientacions_a3x3_MediaBox2orientacions_SONE-NESO_pla.pdf) …només en surten 4 de bé (MediaBoxCropBox_SONE_NESO.pdf)
++ quan NO respectem els valors de /CropBox (M7 a false) les 4 orientacions de /MediaBox s'imposen correctament!
++ llavors el problema rau en que dins a CaLi2CoPi hi havia un conflicte de lectura i comparació de les àrees del MediaBox vs CropBox que erròniament s'assignaven al gatell 0 de /QueLiFemFer però en realitat corresponien exclusivament al gatell 2 de les marques de tall, la qual cosa clonava els valors de MediaBox cap a CropBox dins el diccionari de consulta XRay /PeDeEfa utilitzat per… farceixPDFs_pseudoPDFX5_UBESH.ps
+@FET
+
++ amb 1Up amb l'orientació del full d'impressió en horitzontal no quadren correctament les escales en vertical QUAN ÉS QUADRAT (processant 8CropBox.pdf / testMediaBoxCropBox.pdf) ho fa quadrar d'ample i l'alt es talla
 @URGENT
 
 
@@ -901,11 +941,11 @@ tenir un exemplar en paper a casa. L'Elena ens en donarà un en paper. Cal saber
 @FET
 
 + Error: /rangecheck in --putinterval-- | Operand stack:   (            )   (              )   12   (369)
-+ ara podem gestionar un PDF fins 9999 pàgines
++ ara podem gestionar un PDF fins 99999 pàgines
 @FET
 
-+ quan el mapa d'imposició és buit ja manar i fa, segons haguem triat l'enquadernat M9: (null) 1 sol nUp de pàgines seguides | (true) (false) tot el PDF amb l'nUp triat encartat/apilat
-+ el problema de que només repetia la primera array de pàgines (tant si era encartat com apilat) venir de cridar cada vegada les dades del menú (ara via TXT), ara fem que es cridin només 1 vegada
++ quan el mapa d'imposició és buit, segons haguem triat l'enquadernat M9: (null) 1 sol nUp de pàgines seguides | (true) (false) tot el PDF amb l'nUp triat encartat/apilat
++ el problema de que només repetia la primera array de pàgines (tant si era encartat com apilat) venia de cridar cada vegada les dades del menú (ara via TXT), ara fem que les dades del menú es cridin només 1 vegada
 @FET
 
 + ens cal generar una bateria de proves impreses (numeradors de colors) amb arrays i casuístiques singulars per veure que tenim:
@@ -920,8 +960,9 @@ tenir un exemplar en paper a casa. L'Elena ens en donarà un en paper. Cal saber
 + tenim a l'array /7up_pliegOMaker_UBESH un mapa d'on hi ha paths de treball sensibles a canvis que ara queden unificats en un sol fitxer de configuració, doncs ajuda molt al manteniment en entorns i plataformes diferents
 @FET
 
-+ només ens cal veure, en cadascun dels entorns quines adreces poden ser relatives i quines no hi ha més remei que siguin absolutes
-@PENDENT
++ només ens cal veure, en cadascun dels entorns quines adreces poden ser relatives i quines no hi ha més remei que siguin absolutes:
++ treballant amb el Terminal i la interfície TXT a… 7up_pliegOMaker_UBESH.ps …TOTES les adreces poden ser relatives
+@FET
 
 + hem de parlat amb l'Enric per si ens cal adaptar el DOCinfo de nUp_pliegOS_UBESH.ps
 + tant aquest com el /DOCVIEW via pdfmark convindria que portessin el gatell d'1 única execució

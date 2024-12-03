@@ -35,11 +35,18 @@ true  %% true fem PDFs | false fem JPEGs
 %%UBESH ERROR
 %(/home/femfum/Documents/pliegOMakerUB/apel_testMediaBoxCropBox.pdf_pla.pdf)
 %(/home/femfum/Documents/pliegOMakerUB/testMediaBoxCropBox.pdf)
-(/home/femfum/Documents/pliegOMakerUB/exemples/errors/original_desproporcions_mides_pdf.pdf)
+%(/home/femfum/Documents/pliegOMakerUB/exemples/errors/original_desproporcions_mides_pdf.pdf)
+%(/home/femfum/Documents/pliegOMakerUB/PDFsAMBrotacions.pdf)
 
 %(/home/femfum/Documents/Quim/JOL_1d2_desencriptat.pdf)
 
 %(/home/femfum/Documents/pliegOMakerUB/exemples/8CropBox.pdf)
+%(/home/femfum/Documents/pliegOMakerUB/8CropBox_a3x3.pdf)
+
+%% MediaBox | CropBox
+(/home/femfum/Documents/pliegOMakerUB/4CropBox4orientacions_a3x3_MediaBox2orientacions_NOSE_SENO_pla.pdf)
+%(/home/femfum/Documents/pliegOMakerUB/4CropBox4orientacions_a3x3_MediaBox2orientacions_SONE-NESO_pla.pdf)
+
 
 %(/home/femfum/Documents/pliegOMakerUB/16pagines_acoloridesApilat4up.pdf)
 %(/home/femfum/Documents/pliegOMakerUB/16pagines_acoloridesEncartat4up.pdf)
@@ -79,7 +86,7 @@ true
 %% 4 llançat de 4 pàgines de PDF per plana, en vertical, en un full en dúplex horitzontal o vertical 4+4 | 8 imposicions totals | impressió 4-up | 4vUpHV
 %% 8 llançat de 8 pàgines de PDF per plana, en vertical, en un full en dúplex horitzontal 8+8 | 16 imposicions totals | impressió 8-up | 8vUpH
 
-1
+4
 
 
 
@@ -118,13 +125,13 @@ false
 
 
 %%M7 RESPECTEM L'ENQUADRAMENT DEL PDF D'ORIGEN ?
-%% molts PDF duen uns retalladors activats (CropBox) com per exemple les publicacions que amaguen les creus de tall i creus de registre
-%% només té sentit quan activem l'algorisme 9 d'imposició de PDFs
+%% molts PDF duen uns retalladors activats (CropBox) com per exemple les publicacions que amaguen les creus de tall i de registre
+%% aquest paràmetre només té sentit quan activem l'algorisme 9 d'imposició de PDFs
 
 %% true respectem el /CropBox per a tot el document
 %% false ignorem el /CropBox i treballem amb el /MediaBox per a tot el document
 
-false
+true
 
 
 
@@ -173,11 +180,13 @@ false
 %%UBESH ERRORS
 %[[1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16] [17 18 19 20 null null null null null null null null null null null null]]
 %[[10 20 18 16]]
-[[20 null ]]
+%[[null 20]]
 %[[1 2 3 4 5 6 7 8] [9 10 11 12 13 14 15 16] [17 18 19 20 null null null null]]
 %[]
 %[[1 2 3 4 5 6 7 8] [9 null null null null null null null]]
-
+[[1 2 3 4 5 6 7 8]]
+%[[1 2 3 4 5 6 7 8 null null null null null null null null]]
+%[[1 2] [3 4] [5 6] [7 8]]
 
 
 %%M9 ENQUADERNAT
@@ -197,7 +206,7 @@ false
 %% true = si assagem el mapa d'imposició no crearem el PDF i només donarem com a resultat la matriu que defineix M8 amb una anàlisi de la feina segons el triat a M12 i M13
 %% false = generarem el PDF de sortida aplicant el mapa d'imposició definit a M8 i també fem l'anàlisi de la feina
 
-false
+true
 
 
 

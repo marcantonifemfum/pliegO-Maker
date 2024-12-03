@@ -1486,7 +1486,7 @@ M9 null ne
   Npgn  % cvx exec
 
 %%ATENCIÓ: perquè el número de pàgina que ara ens ve NO ES CORRESPON al número de pàgina real del PDF que estem imposant (és el seqüencial d'imposició!)
-dup ==
+%dup ==
 
 %%Un truc per començar més enllà de la pàgina 1 del PDF
 %4 add
@@ -1525,7 +1525,6 @@ M7
  aMESaMES 0 eq
  {  %% explorem  els valors de les àrees desades
   XRay /PeDeEfa get
-
 %%UBESH EP!
   M8 iLlibret get  %% vía índex (que es defineix i s'alimenta a nUp_pliegOS_UBESH.ps) tibem de M8 l'array del llibret que ara toca imposar
   3 -1 roll cvx exec 1 sub get  %% tibem, via índex del mapa d'imposició, el núm. de pàgina del PDF d'entrada que imposarem ara
@@ -1557,15 +1556,16 @@ M7
      }if
     }for
 
+%Npgn cvx exec 5 eq {_CB _MB MBCBidem (AveureSIvas)pstack quit}if
+
     MBCBidem
-    {  %% si ho són no fem res i ja és bo el valor de /MediaBox
+    {  %% SI ho són no fem res i ja és bo el valor de /MediaBox
      _MB
      /enQuadra false def
     }
     {  %% si NO ho són hem d'engegar l'operativa per moure i retallar l'àrea del /CropBox que ha de fer de /araMediaBox 
      _CB  %% el valor del CropBox ja ens serveix de nou MediaBox i només mancarà moure'l i retallar
      /enQuadra true def
-%(vvvvvv) ==  %pstack quit
     }ifelse
     /araMediaBox exch def
    }
@@ -1602,14 +1602,8 @@ M7
  }ifelse
 }ifelse
 
-%%DaquiPLORAlaCRIATURA!
 Simposa
 {  %% el mapa d'imposició no ens torna un null (en blanc) o sigui que la imposem
-
-%%TEST
-%/Rotate get 0 ne
-%{(<<< NOZERO)pstack quit}if
-
  %% deducció de l'escala de treball per adaptar al màxim cada pàgina del PDF que llegim a la pàgina del llançat
  %% es podria optar també per igualar els amples o alts de les pàgines que llegim al format de pàgina del llançat
  %% vegeu: igualatPerLaXmesAmplePossible.pdf i igualatPerLaYmesAltaPossible.pdf llegint 8auricsH.pdf i 8auricsV.pdf
@@ -1669,10 +1663,28 @@ pop pop
  enQuadra
  {  %% només si hi ha CropBox actiu diferent de MediaBox
   %% la translació i el retall l'hem de fer per aquest ordre
-  araMediaBox dup
-  aload pop  pop pop neg exch neg exch translate
+  araMediaBox dup aload pop
+
+  %% contemplem totes les possibles orientacions del retall SO/NE NO/SE NE/SO SE/NO
+  3 -1 roll 2 copy lt
+  {
+   pop
+  }
+  {
+   exch pop
+  }ifelse neg  %% valor Y del translate ha de ser el més petit de les dues
+  3 1 roll 2 copy lt
+  {
+   pop
+  }
+  {
+   exch pop
+  }ifelse neg  %% valor X del translate ha de ser el més petit de les dues
+  exch translate
   aload pop 2 index sub exch 3 index sub exch
-  %Npgn cvx exec 6 eq {araMediaBox (***)pstack quit}if
+
+%   Npgn cvx exec 5 eq {araMediaBox araScl (***)pstack quit}if
+
   rectclip
  }if
 
@@ -1728,7 +1740,7 @@ pop pop
     exch get  %% tibem, via índex del mapa d'imposició, el núm. de pàgina del PDF d'entrada que imposarem ara
 
 %%UBESH EP!
-dup ==
+%dup ==
 
     %% si ens arriba un null equival a una pàgina en blanc i evitem el .PDFDrawPage
     dup null eq

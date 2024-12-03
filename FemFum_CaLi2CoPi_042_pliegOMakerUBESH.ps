@@ -6003,17 +6003,23 @@ aMESaMES 0 eq
       {  %% xTrimBox
       }
      ]
+%%UBESH hem inclòs aquest bloc dins l'if de les MARQUES DE TALL
      xQuinaArea get cvx exec
+     %% si te la Xll + petita la igualem a la del MediaBox
+     ACrop 0 get AMedia 0 get lt {ACrop 4 array copy dup AMedia 0 get 0 exch put /ACrop exch def /femWARNING true def}if
+     %% si te la Yll + petita la igualem a la del MediaBox
+     ACrop 1 get AMedia 1 get lt {ACrop 4 array copy dup AMedia 1 get 1 exch put /ACrop exch def /femWARNING true def}if
+     %% si te la Xur + gran la igualem a la del MediaBox
+     ACrop 2 get AMedia 2 get gt {ACrop 4 array copy dup AMedia 2 get 2 exch put /ACrop exch def /femWARNING true def}if
+     %% si te la Yur + gran la igualem a la del MediaBox
+     ACrop 3 get AMedia 3 get gt {ACrop 4 array copy dup AMedia 3 get 3 exch put /ACrop exch def /femWARNING true def}if
+     femWARNING
+     {
+      %% escrivim el WARNING
+      wFitxerXRay dup dup (\015\012PDF:page) writestring araPlana 12 string cvs writestring (:WARNING:CropBox overflows MediaBox!) writestring
+     }if
+%%UBESH hem inclòs aquest bloc dins l'if de les MARQUES DE TALL
     }if  %/02 MARQUES DE TALL
-    ACrop 0 get AMedia 0 get lt {ACrop 4 array copy dup AMedia 0 get 0 exch put /ACrop exch def /femWARNING true def}if  %% si te la Xll + petita la igualem a la del MediaBox
-    ACrop 1 get AMedia 1 get lt {ACrop 4 array copy dup AMedia 1 get 1 exch put /ACrop exch def /femWARNING true def}if  %% si te la Yll + petita la igualem a la del MediaBox
-    ACrop 2 get AMedia 2 get gt {ACrop 4 array copy dup AMedia 2 get 2 exch put /ACrop exch def /femWARNING true def}if  %% si te la Xur + gran la igualem a la del MediaBox
-    ACrop 3 get AMedia 3 get gt {ACrop 4 array copy dup AMedia 3 get 3 exch put /ACrop exch def /femWARNING true def}if  %% si te la Yur + gran la igualem a la del MediaBox
-    femWARNING
-    {
-     %% escrivim el WARNING
-     wFitxerXRay dup dup (\015\012PDF:page) writestring araPlana 12 string cvs writestring (:WARNING:CropBox overflows MediaBox!) writestring
-    }if
    }
    {  %% NO hi ha MediaBox!
     %% fem el mateix que Acrobat: li donem el valor del CropBox tenint en compte que caldra filtra-lo tambe xq es normalitzi (si cal) ...
