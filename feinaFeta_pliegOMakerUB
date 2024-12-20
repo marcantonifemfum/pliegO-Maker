@@ -310,7 +310,7 @@ ignorar per qualsevol criteri
     A5 >> RI: nUp_pliegOS_*.ps
     AR: #2h
     EC: #6h
-@PENDENT
+@FET
 
 #A6     Funcionalitats aplicables només a nivell d'algorisme intern
     A6 >> RI: ESH_Canodrom.txt / URL
@@ -788,12 +788,200 @@ pOM: modifiqueu el mapa d'imposició […] si voleu un altre comportament per aq
 
 
     03.12.2024
-- - - - - - - - HT
+- - - - - - - - HT 3.75
 
 %%H de 12h15 a 13h00
-%%H de 16h00 a 17h30
+%%H de 16h00 a 18h00
+%%H de 21h00 a 22h00
 
 
+
+    04.12.2024
+- - - - - - - - HT 4.30
+
+%%H de 11h45 a 13h00
+%%H de 16h30 a 18h00
+%%H de 19h15 a 20h00
+%%H de 21h15 a 21h45
+%%H de 22h00 a 22h30
+
+
+
+    05.12.2024
+- - - - - - - - HT 0.75
+
+%%H de 07h15 a 08h00
+
+
+
+    06.12.2024
+- - - - - - - - HT 1
+
+%%H de 13h45 a 14h15
+%%H de 17h30 a 18h00
+
+
+
+    07.12.2024
+- - - - - - - - HT 1.5
+
+%%H de 06h30 a 07h30
+%%H de 10h00 a 10h30
+
+
+
+    08.12.2024
+- - - - - - - - HT 1
+
+%%H de 20h15 a 21h15
+
+
+
+- - - - - - - - SETMANA 7 19.75
+
+
+
+    09.12.2024
+- - - - - - - - HT 4.25
+
+%%H de 10h15 a 12h30
+%%H de 16h30 a 17h30
+%%H de 19h00 a 20h00
+
+
+
+    10.12.2024
+- - - - - - - - HT 4.75
+
+%%H de 07h15 a 08h00
+%%H de 11h30 a 13h15
+%%H de 16h15 a 18h30
+
+
+
+    11.12.2024
+- - - - - - - - HT 5
+
+%%H de 07h45 a 08h30
+%%H de 09h15 a 11h00
+%%H de 18h00 a 19h45
+%%H de 21h30 a 22h15
+
+
+
+    12.12.2024
+- - - - - - - - HT 3.5
+
+%%H de 07h15 a 08h15
+%%H de 09h00 a 10h30
+%%H de 12h00 a 13h00
+
+
+
+    13.12.2024
+- - - - - - - - HT 3
+
+%%H de 07h30 a 08h30
+%%H de 12h00 a 13h00
+%%H de 17h45 a 18h45
+
+
+
+    14.12.2024
+- - - - - - - - HT 2.25
+
+%%H de 11h15 a 12h30
+%%H de 16h30 a 17h30
+
+
+
+    15.12.2024
+- - - - - - - - HT 0
+
+
+- - - - - - - - SETMANA 8 22.75
+
+
+
+    16.12.2024
+- - - - - - - - HT 3
+
+%%H de 11h15 a 12h45
+%%H de 16h45 a 18h15
+
+
+
+    17.12.2024
+- - - - - - - - HT 3
+
+%%H de 12h00 a 13h00
+%%H de 19h15 a 20h00
+%%H de 21h30 a 22h45
+
+
+
+    18.12.2024
+- - - - - - - - HT 1.5
+
+%%H de 08h00 a 08h45
+%%H de 12h00 a 12h45
+
+
+
+    19.12.2024
+- - - - - - - - HT 1.5
+
+%%H de 12h00 a 13h00
+%%H de 21h30 a 22h00
+
+
+
+    20.12.2024
+- - - - - - - - HT
+
+%%H de 10h30 a
+
+
+
+
+
+BOPC · número 790 · dimecres 13 de març de 2024
+Projecte de llei de memòria democràtica de Catalunya
+https://www.parlament.cat/document/bopc/407468012.pdf
+
+*CUP
+consultescup_cc@parlament.cat
+Laia Estrada
+dani.cornella@parlament.cat
+150 esmenes / pàg.94 fins pàg.150
+
+*ERC
+gperc@parlament.cat
+marta.vilalta@parlament.cat
+40 esmenes / pàg.77 fins pàg.94
+
+*EnComuP
+comuns@parlament.cat
+david.cid@parlament.cat
+nuria.lozano@parlament.cat
+73 esmenes / pàg.60 fins la pàg.76
+
+*Junts
+secretariajxcat@parlament.cat
+monica.sales@parlament.cat
+83 esmenes / pàg.44 fins la pàg.60
+
+*PSC
+gppsc-units@parlament.cat
+Ferran Pedret
+alicia.romero@parlament.cat
+163 esmenes / pàg.10 fins la pàg.44
+
+
+
+_____________________________________________________________
+
+_rt_st_sRpblc2017
 
 @SESSIO_ESH:
 + cal llegir cadascun dels formats de pàgina del PDF d'entrada per assegurar-nos que adaptem correctament l'escala del llançat en PDFs on cada pàgina tingui una mida diferent: tenim un exemple on sembla que això NO és així (surten pàgines estranyament tallades), fent 4+4 apilat original_desproporcions_mides_pdf.pdf (enviat per Telegram)
@@ -822,6 +1010,7 @@ pàg.9 MediaBox arran de cubs
 + queda pendent avaluar correctament les instruccions /Rotate de les pàgines del PDF d'entrada, de manera que respectem el que ens marquin
 + cal fer un seguit de PDFs de test per veure com ho solucionem i tractem
 + podríem aprofitar aquesta funció per orientar la imposició de la plana del revers (a tot format del full) en el pliegOS de tall sense desbarbar?
+@FET
 
 + lectura del cos més petit del PDF d'entrada per tal d'avisar (hauria d'emetre un missatge) que amb la presumible reducció d'escala serà difícil que es llegeixi
 + cal provar el gatell 4 d'anàlisi textual fet per JBC (en un CaLi2CoPi no vinculat a pliegO'Maker) que no repica el PDF on en ha d'enumerar tots els rengs de text amb caracterśitiques tipogràfiques diferents: l'estem analitzant i veiem que potser només ens cal capturar els diccionaris /Champollion o /CalaixDeTipus per tenir la dada del cos que necessitem?
@@ -835,25 +1024,455 @@ pàg.9 MediaBox arran de cubs
 https://tarde.info/brochure/ | …/pliegOMakerUB/exemples/Handbook
 + ara els hem imprès i ens cal estudiar els possibles recorreguts de lectura per tal de generar dins a… nUp_pliegOS_UBESH.ps …un nou element de compaginació a… /pliegOS_nUpS
 + fem una o+ maquetes en blanc amb les pàgines numerades en base a un possible recorregut de lectura (pel què veiem als exemples de Tarde.info n'hi pot haver més d'un). No sembla que aquest format tingui un recorregut tancat com el llibret estàndard
-+ hem d'establir les 2 o tres variants possibles del format Handbook amb el tall al mig de: 8 pàgines a 1 sola cara, amb la segona cara a imposar-hi 1 sola pàgina o 16 pàgines
++ hem d'establir les 2 o tres variants possibles del format Handbook amb el tall al mig de: 8 pàgines a 1 sola cara, amb la segona cara a imposar-hi 1 sola pàgina o 8 pàgines més
 + hem d'experimentar combinacions de numeració amb les maquetes en blanc que hem fet del llibret de tall no desbarbat (format Handbook de Tarde)
-+ cal veure si aquesta opció d'imposar a la segona cara 1 sola pàgina del PDF d'entrada l'afegim de forma fixa dins l'estructura i només ens caldria blocar-la o no amb un booleni opcional
++ cal veure si aquesta opció d'imposar a la segona cara 1 sola pàgina del PDF d'entrada l'afegim de forma fixa dins l'estructura i només ens caldria retallar el mapa d'imposició a 1 sola cara (8 pàgines) i no caldria blocar-la amb un booleni opcional
 @ESTEMFENT
+
++ CAL eliminar al revers del handbook la marca de la vora de la pàgina del llançat (ara petita!) o adaptar-la a la nova dimensió de tota la plana! (execució de la variable /xirtam)
++ si fem el Handbook 0 l'hem eliminada al revers via índex de pàgina d'imposició a /BeginPage
+@FET
 
 + valorem la possibilitat d'afegir claus d'error o sortida d'execució dels algorismes de composició dins el diccionari /$error (s'hi pot escriure) a systemdict de manera que poguem informar millor de quin algorisme peta o si només és una aturada p.e. informativa sense generar el PDF
 @ESTEMFENT
 
 + hem localitzat aquell PDF, aquí paginat… https://www.nuvol.com/app/uploads/2016/06/Antihomenatge-Hac-Mor-BO.pdf …que estava muntat com un pliegOS per l'Elena Sixto i que n'hauríem de
-tenir un exemplar en paper a casa. L'Elena ens en donarà un en paper. Cal saber si és un format nou o un handbook
+tenir un exemplar en paper a casa. L'Elena ens en donarà un en paper. Cal saber si és un format nou: NO és el típic del tall al mig sense desbarbar (tipus Handbook Tarde)
 @FET
 
 + tenim tots els nUps fets en PDF i impresos amb el nou reglatge2.ps per tal de valorar coses
 + hem reajustat nUp_pliegOS_UBESH.ps/pliegOMaker_UBESH.ps per tal de poder cridar els altres algoritmes que no siguin el 9 d'imposició i no surtin errors
 @FET
 
-+ ens cal controlar el paràmetre /Rotate a l'arrel /Pages o /Page (és heretable!), per la qual cosa hem vist que ens cal crear a CaLi2CoPi un loop recursiu per trobar si hi ha /Rotate fins l'arrel /Pages si cal, idèntic als que ja tenim fets pel MediaBox i CropBox
-+ hem fet unes pàgines de prototip/assaig amb /Rotate diversos… PDFsAMBrotacions.pdf
-@ESTEMFENT
++ ens cal controlar el paràmetre /Rotate a l'arrel /Pages o /Page (és heretable!), per la qual cosa hem vist que ens cal crear a CaLi2CoPi un loop recursiu per trobar si hi ha /Rotate fins l'arrel /Pages si cal, idèntic als que ja tenim fets pel MediaBox i CropBox, per tal d'implementar-lo dins a XRay i al diccionari informatiu PeDeEfa
++ hem fet unes pàgines de prototip/assaig amb /Rotate diversos i posicions del paràmetre als nodes /PAGES i a l'arrel /PAGES a…
+    ~/Documents/pliegOMakerUB/apel_PDFsAMBrotacions.pdf
+…al ser un fitxer manipulable, a pèl, podem complicar una mica més l'arbre de rotacions a través dels 3 nodes intermitjos que pengen de l'arrel /Pages 3 0 obj (sense instruccions /Rotate) cap a 3 nodes més; /Pages 12 0 R (hi mana un /Rotate de 90 doncs les 2 pàgines que hi pengen 10 0 R 26 0 R no el duen) /Pages 16 0 R (hi mana un /Rotate 180 sobre 5 pàgines però només s'aplica a 2 doncs la resta tenen el seu propi Rotate dins a /Page) /Pages 20 0 R (no hi ha Rotate ni tampoc a la pàgina que se'n deriva)
+@FET
+
++ què passa ara quan imposem i què hauria de passar? sense tenir en compte /Rotate imposa les pàgines en base a l'orientació del MediaBox original (V H V V V H H H)
++ tenint en compte que ara podem jugar amb /Rotate les possibles combinatòries d'imposicio serien:
++ #1 imposem respectant només el MediaBox original (ignorant Rotate), o sigui que si la pàgina del PDF d'entrada és de MediaBox H i la del llançat és V no s'adaptarà el format
++ #2 imposem fent cas només del valor /Rotate, o sigui que si la pàgina del PDF d'entrada té un valor Rotate que la fa H i la del llançat és V no s'adaptarà el format
++ #3 imposem adaptant el MediaBox a la pàgina del llançat H/H V/V de manera que si ja duu un /Rotate que la fa encaixar el respectarem i si l'hem de forçar sempre a 90 en sentit horari
++ primer implementarem aquestes millores a l'Nup 0 i ja veurem com les traslladem als altres Nups
++ ens cal només fixar els valors dels translate/rotate a executar abans d'scale
+@FET
+
++ IMPORTANT: orientacions de la graella del llançat segons tinguem el full d'impressió en horitzontal o vertical
++ la graella del llançat es formada per una retícula d'elements que mesuren /xPagina /yPagina on encabir les pàgines del PDF d'entrada a imposar
++ aquestes mesures es defineixen dins l'algorisme… nUp_pliegOS_UBESH.ps …al procediment d'índex 3 de cadascun dels nUps definits a /pliegOS_nUpS
+    en els fulls d'impressió en HORITZONTAL quina és l'orientació de la graella del llançat?
+        *1+1 la graella del llançat és en horitzontal
+        *2+2 la graella del llançat és en vertical
+        *4+4 la graella del llançat és horitzontal
+        *8+8 la graella del llançat és en vertical
+        *8+1 la graella del llançat és en vertical
+    en els fulls d'impressió en VERTICAL quina és l'orientació de la graella del llançat?
+        *1+1 la graella del llançat és en vertical
+        *2+2 la graella del llançat és en vertical
+        *4+4 la graella del llançat és en vertical
+        *8+8 ---es força sempre al full en horitzontal
+        *8+1 la graella del llançat és en vertical
++ s'han establert i resolt tots els recorreguts d'imposició pels casos que combinen l'orientació de la graella del llançat amb l'orientació de la pàgina sencera o el seu retall
+* en totes tres opcions a M14: null (mana MediaBox) | true (adapta a la graella del llançat) | false (mana Rotate)
+@FET
+
++ cal repassar pel mapa d'imposició M8:
+%% si el nombre d'enters + null de l'array és més petit que el nombre de pàgines de l'nUp triat ara dóna Error: /rangecheck in --get--
++ solucionat amb missatge informatiu inclòs:
+ >>>> afegim... 2 ...pagines en blanc en un dels llibrets doncs no arriba al nombre de pagines de l'enquadernat que heu triat
+%% si el nombre de pàgines de l'nUp triat és ídem al nombre d'enters + null de l'array (o una array buida) i el PDF té igual o més pàgines, va bé
+** si el nombre de pàgines de l'nUp triat és ídem al nombre d'enters + null de l'array (o una array buida) i el PDF té menys pàgines dóna Error: /undefined in --get--
++ solucionat afegint com a substitut la repetició de la darrera pàgina del PDF a imposar, de manera que si es criden pàgines que no existeixen queden substituides per aquesta darrera
+@FET
+
++ queda encara un petit detall en aquest cas estrany ** on el missatge informatiu del nombre de pàgines en blanc no es correspon al resultat:
+            7     ......... pagines en blanc dels llibrets
++ cal veure si es replica en altres casos?
+@PENDENT
+
+%% ara es permet que tot siguin pàgines en blanc (sembla no tenir massa sentit però ho mantenim)
++ tot plegat són casos de mala praxi, però que almenys fan que no peti l'aplicació
+@FET
+
++ ENCARA fallen 2 paràmetres de l'assaig de l'nUp 1+1 amb null:
+            9     ......... pagina on finalitzarem la imposicio al PDF d'origen
+            9     ......... total de pagines a imposar del PDF d'origen
+@FET
+
++ a l'assaig de l'nUp 1+1, 2+2, 4+4 i 8+8 treballant a null hem corregit 2 paràmetres de l'anàlisi inicial… fLlançat i pPDF
++ afegim per test una novena pàgina horitzontal sense /Rotate a… apel_PDFsAMBrotacions.pdf_pla.pdf_pla.pdf
+@FET
+
++ fem uns arrays tabuladors /ATmi per cada nUp per presentar millor de forma esglaonada les pàgines dobles
++ ja tenim la representació de l'encartat per encarar millor la tabulació i saber quines pàgines poden ser dobles
++ exemple de mapa d'imposició pel llançat 0 (PDF d'entrada 16 pàgines) amb un tall al mig sense desbarbar (Tarde Handbook) …aquí els enquadernats null/encartat/apilat són equivalents
+[
+ [
+  1
+   2
+   3
+    4
+    5
+   6
+   7
+  8
+% - - - revers - - -
+  9
+  null
+  null
+  null
+  null
+  null
+  null
+  null
+ ]
+]
+
++ exemples de mapa d'imposició pel llançat 1 (PDF d'entrada 16 pàgines) de cara i dors 1+1
+
+[  %% null 1 sol full
+ [
+  1
+% - - - revers - - -
+  2
+ ]
+]
+
+[  %% true encartat (té sentit?)
+ [
+  1
+% - - - revers - - -
+  16
+ ]
+ [
+  2
+% - - - revers - - -
+  15
+ ]
+ [
+  3
+% - - - revers - - -
+  14
+ ]
+ [
+  4
+% - - - revers - - -
+  13
+ ]
+ [
+  5
+% - - - revers - - -
+  12
+ ]
+ [
+  6
+% - - - revers - - -
+  11
+ ]
+ [
+  7
+% - - - revers - - -
+  10
+ ]
+ [
+  8
+% - - - revers - - -
+  9
+ ]
+]
+
+[  %% false apilat
+ [
+  1
+% - - - revers - - -
+  2
+ ]
+ [
+  3
+% - - - revers - - -
+  4
+ ]
+ [
+  5
+% - - - revers - - -
+  6
+ ]
+ [
+  7
+% - - - revers - - -
+  8
+ ]
+ [
+  9
+% - - - revers - - -
+  10
+ ]
+ [
+  11
+% - - - revers - - -
+  12
+ ]
+ [
+  13
+% - - - revers - - -
+  14
+ ]
+ [
+  15
+% - - - revers - - -
+  16
+ ]
+]
+
++ exemples de mapa d'imposició pel llançat 2 (PDF d'entrada 16 pàgines) de llibret 2+2
+
+[  %% null 1 sol full
+ [
+  1
+   2
+% - - - revers - - -
+   3
+  4
+ ]
+]
+
+[  %% true encartat
+ [
+  1
+   2
+% - - - revers - - -
+   15
+  16
+ ]
+ [
+   3
+  4
+% - - - revers - - -
+  13
+   14
+ ]
+ [
+  5
+   6
+% - - - revers - - -
+   11
+  12
+ ]
+ [
+   7
+  8
+% - - - revers - - -
+  9
+   10
+ ]
+]
+
+[  %% false apilat
+ [
+  1
+   2
+% - - - revers - - -
+   3
+  4
+ ]
+ [
+  5
+   6
+% - - - revers - - -
+   7
+  8
+ ]
+ [
+  9
+   10
+% - - - revers - - -
+   11
+  12
+ ]
+ [
+  13
+   14
+% - - - revers - - -
+   15
+  16
+ ]
+]
+
++ exemples de mapa d'imposició pel llançat 4 (PDF d'entrada 16 pàgines) de llibret 4+4
+
+[  %% null 1 sol full
+ [
+  1
+   2
+   3
+    4
+% - - - revers - - -
+    5
+   6
+   7
+  8
+ ]
+]
+
+[  %% true encartat
+ [
+  1
+   2
+   3
+    4
+% - - - revers - - -
+    13
+   14
+   15
+  16
+ ]
+ [
+    5
+   6
+   7
+  8
+% - - - revers - - -
+  9
+   10
+   11
+    12
+ ]
+]
+
+[  %% false apilat
+ [
+  1
+   2
+   3
+    4
+% - - - revers - - -
+    5
+   6
+   7
+  8
+ ]
+ [
+  9
+   10
+   11
+    12
+% - - - revers - - -
+    13
+   14
+   15
+  16
+ ]
+]
+
++ exemples de mapa d'imposició pel llançat 8 (PDF d'entrada 32 pàgines) de llibret 8+8
+
+[  %% null 1 sol full
+ [
+  1
+   2
+   3
+    4
+    5
+     6
+     7
+      8
+% - - - revers - - -
+      9
+     10
+     11
+    12
+    13
+   14
+   15
+  16
+ ]
+]
+
+[  %% true encartat
+ [
+  1
+   2
+   3
+    4
+    5
+     6
+     7
+      8
+% - - - revers - - -
+      25
+     26
+     27
+    28
+    29
+   30
+   31
+  32
+ ]
+ [
+      9
+     10
+     11
+    12
+    13
+   14
+   15
+  16
+% - - - revers - - -
+  17
+   18
+   19
+    20
+    21
+     22
+     23
+      24
+ ]
+]
+
+[  %% false apilat
+ [
+  1
+   2
+   3
+    4
+    5
+     6
+     7
+      8
+% - - - revers - - -
+      9
+     10
+     11
+    12
+    13
+   14
+   15
+  16
+ ]
+ [
+  17
+   18
+   19
+    20
+    21
+     22
+     23
+      24
+% - - - revers - - -
+      25
+     26
+     27
+    28
+    29
+   30
+   31
+  32
+ ]
+]
+
++ malgrat que el mapa d'imposició mani molt, el tipus de llançat M2 s'ha d'avenir amb aquesta estructura
 
 + cal revisar el cas de la imposició de… 8CropBox.pdf …en un 4Up on la pàgina 3 de l'original NO s'imposa i queda en blanc dins el llançat (no importa que M9 sigui null true o false):
 + hem implementat totes les orientacions pòssibles en un CropBox… SO/NE NO/SE NE/SO SE/NO …per tal que el retallador de… farceixPDFs_pseudoPDFX5_UBESH.ps …treballi correctament
@@ -865,7 +1484,8 @@ tenir un exemplar en paper a casa. L'Elena ens en donarà un en paper. Cal saber
 @FET
 
 + amb 1Up amb l'orientació del full d'impressió en horitzontal no quadren correctament les escales en vertical QUAN ÉS QUADRAT (processant 8CropBox.pdf / testMediaBoxCropBox.pdf) ho fa quadrar d'ample i l'alt es talla
-@URGENT
++ hem ampliat la rutina que avalua el resultat de l'aplicació de l'escala en vertical (només ho teníem resolt en horitzontal dins el if de Simposa)
+@FET
 
 
 + hem resolt el millor mètode per manipular l'escala de determinades pàgines dins la imposició. Podem individualitzar la mida (i posició) del llançat (respectant la ràtio) de manera dinàmica per cadascuna de les pàgines dins la plana, i això ens obre la porta a imposicions complexes. La més senzilla és la de l'nUp 0, Handbook, que només necessita que la pàgina 9 que va al revers del llançat ocupi tota la plana. Aquest és el mètode:
@@ -874,18 +1494,22 @@ tenir un exemplar en paper a casa. L'Elena ens en donarà un en paper. Cal saber
 + si hem triat el llançat Handbook, dins del procediment /BeginPage activem un gatell a l'índex 24 corresponent a la pàgina 9 del revers de la imposició que redefineix l'àrea de retall de la pàgina del llançat, en aquest cas a tota plana
 …i…
     reglatge2.ps
-+ si hem triat el llançat Handbook, a la capçalera de l'algorisme redefinim les variables /xPagina /yPagina perquè a la pàgina 9 tinguin la mida que que correspon a la seva nova dimensió, que en aquest cas és tota la plana (xFull yFull)
++ si hem triat el llançat Handbook, a la capçalera de l'algorisme redefinim les variables /xPagina /yPagina perquè a la pàgina 9 tinguin la mida que que correspon a la seva nova dimensió, que en aquest cas és a tota la plana en hooritzontal (xFull yFull)
 @FET
 
 …i…
     farceixPDFs_pseudoPDFX5_UBESH.ps
 + raonament ídem a reglatge2.ps
-+ per evitar errors com que el valor del llançat/imposició escollida, M2, és l'enter del nombre de pàgines per plana, hem filtrat el zero per que treballi com un 8 a /Nup
++ per evitar errors com que el valor del llançat/imposició escollida, M2, és l'enter del nombre de pàgines per plana, hem filtrat el zero perquè treballi com un 8 a /Nup
 + cal revisar l'avís… (oH CAL afinar l'escala com %%+) …(ara ja no atura la feina) quan fem un 4Up orientant horitzontalment el llançat
-+ a null sembla absurd que fem un assaig? (surt una array simple!)
-+ cal polir els missatges de l'anàlisi quan fem el llançat 0 del Handbook per ajustar uns quants valors
-+ potser hauríem de sortir de la feina i no fer el revers quan només hi hagin les 8 pàgines de l'anvers?
-@URGENT
+@FET
+
++ …amb M2 a 0 si apuntem a un PDF d'entrada de més de 9 pàgines el componedor atura correctament la imposició a la pàgina 9
++ el valor M9 pel tipus d'enquadernat és irrellevant quan el tipus de llançat M2 és 0 (handbook)
++ amb el mapa d'imposició buit… [] …amb M2 a 0 també treballa bé
++ hem polit les dades dels missatges de l'anàlisi per pantalla quan fem el llançat 0 del Handbook ajustant uns quants valors
++ …amb M2 a 0 tampoc no ens cal forçar l'orientació M3 del full d'impressió (a true horitzontal que seria el típic Handbook) doncs si treballem les pàgines del llançat en vertical també queden prou bé i curioses en cas que ens fes falta
+@FET
 
 + hem aconseguit generar el llibret múltiple començant per l'exemple més senzill: un nUp 2+2 sobre un PDF de 8 pàgines, la qual cosa genera 2 llibrets apilats, o sigui un pliegOS resultant de 4 pàgines amb: anvers/revers | anvers/revers
 + tenim un mètode estable per executar n vegades… nUp_pliegOS_UBESH.ps …cridant cada array dins el mapa d'imposició (hi haurà un altre solució més elegant?)
@@ -948,7 +1572,6 @@ tenir un exemplar en paper a casa. L'Elena ens en donarà un en paper. Cal saber
 + el problema de que només repetia la primera array de pàgines (tant si era encartat com apilat) venia de cridar cada vegada les dades del menú (ara via TXT), ara fem que les dades del menú es cridin només 1 vegada
 @FET
 
-+ ens cal generar una bateria de proves impreses (numeradors de colors) amb arrays i casuístiques singulars per veure que tenim:
 + cal escriure un protocol bàsic d'ús amb exemples:
 @ESTEMFENT
 
@@ -1139,7 +1762,7 @@ tenir un exemplar en paper a casa. L'Elena ens en donarà un en paper. Cal saber
 
 
 
-+ documentem el recurs dels packedarray que podríem fer servir per identificar i definir els nous objectes dins els mapes d'imposició que apuntin externament a fitxers/pàgines/posicions
++ documentem el recurs dels packedarray que podríem fer servir per identificar i definir els nous objectes dins els mapes d'imposició que apuntin externament a fitxers/pàgines o no i tinguin comportaments determinats per adaptar-se al llançat de forma individualitzada pàgina a pàgina
 GS>true setpacking
 GS>{1 2 3} type ==
 packedarraytype
@@ -1147,10 +1770,57 @@ GS>false setpacking
 GS>{1 2 3} type ==
 arraytype
 + un primer format senzill d'aquestes packedarrays podria ser:
-{ (adreça al PDF o JPEG) #pàgina on comença l'incrustat #pàgina on acaba l'incrustat }
-+ la detecció de si tracttem un JPEG o un PDF podria fer-se amb l'extensió o una petita lectura de la capçalera
-+ si la pàgina on comença (que hauria de ser la mateixa on estroba la {} i que fins i tot es podria ometre) és la mateixa d'on acaba (aquesta sí que no es pot ometre), l'adaptarem a 1 sola pàgina del llançat, si no és així la meitat esquerra del PDF/JPEG vinculat aniria a la pàgina actual i la meitat dreta a l'altra on acaba
-+ si calen més paràmetres a {…} ja els hi anirem afegint a mida que sofistiquem la cosa
+{ (adreça al PDF) #pàgina on comença l'incrustat #pàgina on acaba l'incrustat }
++ si la pàgina on comença (pot no ser la mateixa on estroba la {} i que no podem ometre) és la mateixa d'on acaba, l'adaptarem a 1 sola pàgina del llançat, si no és així la meitat esquerra aniria a la pàgina actual i la meitat dreta a l'altra on acaba
++ si calen més paràmetres a {…} ja els hi anirem afegint a mida que sofistiquem la cosa. Com per exemple:
++ si és la mateixa pàgina del PDF d'entrada la que ha d'envair a la següent, com ho detectem i ho reflectim al mapa d'imposició?
++ cal afegir els 3 indicadors per personalitzar el comportament de la imposició (variable /Encaix?): null (mana el MediaBox/CropBox) true (s'adapta si cal sempre rotant a la dreta) false (mana el paràmetre /Rotate) …hi podem afegir un segon valor amb graus per forçar una rotació extra. Tots dos paràmetres dins una array fent… [null 0] [true 90] [false -180] …resumint, aquests serien exemples amb comportament divers:
++ {  % es detecta com un packedarray
+   null % indica que no va a buscar res externament i que imposarà la pàgina del següent dígit (treballa sobre el contingut)
+   2  % el primer dígit és la pàgina que s'imposa la primera meitat (esquerra)
+   2  % el segon dígit és la pàgina on va a parar la segona meitat (dreta) de la pàgina 2 que s'imposa
+   [null 0]  % és l'array del comportament d'encaix i rotació de la pàgina del PDF dins el llançat
+  }  % el comportament és idèntic a l'haver posat només '2' al lloc del packedarray: mana el MediaBox/CropBox amb rotació zero, imposa la pàgina 2
++ cal saber què passa quan una pàgina de PDF d'entrada s'imposa en dues, però en la roda d'imposició de l'nUp triat s'executa abans la pàgina de la dreta que la de l'esquerra o viceversa?
++ {
+   null
+   2
+   3
+   [null 0]  % mana MediaBox/CropBox sense cap rotació extra
+  }  % la pàgina 2 s'imposa en doble a la 3
++ {
+   null
+   2
+   3
+   [true 0]  % s'adapta si cal sempre rotant a la dreta, i no duu rotació extra
+  }  % la pàgina 2 s'imposa en doble a la 3
++ {
+   null
+   2
+   3
+   [false 0]  %% si duu un Rotate diferent de zero l'aplica però sense cap rotació extra
+  }  % la pàgina 2 s'imposa en doble a la 3
++ {
+   [(…/…/aimposar.pdf) 1]  % imposa la pàgina 1 del PDF que anem a buscar
+   2  % és la pàgina que s'imposa la primera meitat (esquerra) de la pàgina 1 del PDF anterior
+   3  % és la pàgina on va a parar la segona meitat (dreta) de la pàgina 1 del PDF anterior que s'imposa
+   [false -180]  %% si duu un Rotate diferent de zero l'aplica afegint una rotació extra de -180 graus
+  }  %
++ hem de posar un detector de pàgines dobles per cada nUp, o sigui: saber quines pàgines amb el llibret obert són succeptibles de posar-hi un element contigu
++ podríem posar un filtre d'avis per saber si els packedarrays tenen la seva lògica de doble pàgina?
++ exemple de mapa d'imposició 4up que ja treballi amb packedarrays:
+[
+ [  %% el tabulat indicaria pàgines dobles (que obrint el llibret són contigües) potencialment aparellables en una imposició partida
+  {[(…/…/aimposar.pdf) 1] 1 1 [true 0]}  %% portada
+   2
+   3
+    4
+    5
+   6
+   7
+  {[(…/…/aimposar.pdf) 2] 8 8 [true 0]}  %% contraportada
+ ]
+]
 @ESTEMFENT
 
 + hem de solucionar els nous paràmetres M11 i M12: han d'actuar només a l'assaig! …hem ampliat M12 perquè contempli també el núm. de pàgina on volguem finalitzar la imposició

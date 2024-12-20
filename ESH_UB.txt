@@ -2,16 +2,10 @@
 
 %% Un sol % fins a final de línia és un comentari que l'intèrpret ignora
 
-%% Exemple de línia de comanda, via Terminal, des del mateix directori on tinguem els .ps de pliegO'Maker i on també hi anirà a parar el resultat.pdf
-%% gs -q -dNOSAFER -o resultat.pdf -sDEVICE=pdfwrite -f nUp_pliegOS_UBESH.ps
-
+%% Línia de comanda, via Terminal, des del mateix directori on tinguem els .ps de pliegO'Maker i on també hi anirà a parar el resultat.pdf
+%% gs -q -dNOSAFER -o resultat.pdf -dAutoRotatePages=/None -sDEVICE=pdfwrite -f pliegOMaker_UBESH.ps
 
 %% MENÚ
-
-%% ??? cal saber a què ens referim aquí:
-%% escrivim aquí en ordre invers de com es criden les variables seqüencials dins aveurefilefor.ps
-
-
 
 %% FEM PDFs O FEM JPEGs ?
 
@@ -44,14 +38,22 @@ true  %% true fem PDFs | false fem JPEGs
 %(/home/femfum/Documents/pliegOMakerUB/8CropBox_a3x3.pdf)
 
 %% MediaBox | CropBox
-(/home/femfum/Documents/pliegOMakerUB/4CropBox4orientacions_a3x3_MediaBox2orientacions_NOSE_SENO_pla.pdf)
+%(/home/femfum/Documents/pliegOMakerUB/4CropBox4orientacions_a3x3_MediaBox2orientacions_NOSE_SENO_pla.pdf)
 %(/home/femfum/Documents/pliegOMakerUB/4CropBox4orientacions_a3x3_MediaBox2orientacions_SONE-NESO_pla.pdf)
 
-
+%% Rotate
+%(/home/femfum/Documents/pliegOMakerUB/apel_PDFsAMBrotacions.pdf)
 %(/home/femfum/Documents/pliegOMakerUB/16pagines_acoloridesApilat4up.pdf)
 %(/home/femfum/Documents/pliegOMakerUB/16pagines_acoloridesEncartat4up.pdf)
+%(/home/femfum/Documents/pliegOMakerUB/32paginesA4numerades.pdf)
+
+% ENCABIR
+(/home/femfum/Documents/pliegOMakerUB/avaluemComSadaptenLesGraellesDelLlancat.pdf)
+
+
 }
 {
+
 %% crida tots els fitxers amb extensió .jpeg que hi hagi al directori
 
 %(/Users/femfum/PliegOS/fulletsBosoms/*.jpeg)
@@ -70,30 +72,29 @@ false  %% de la cua al cap (alfabètic) de gran a petit (numèric)
 
 %%M1 MOSTREM LA VORA DE LA PÀGINA DEL LLANÇAT ?
 
-%% true sí | false no
+%% true = sí | false = no
 
 true
 
 
 
 %%M2 QUIN LLANÇAT/IMPOSICIÓ ESCOLLIM ?
-%% Un full de paper de dues planes (cares en dúplex) on s'hi imposen n pàgines d'un PDF en un ordre determinat
+%% Un full de paper d'impressió de dues planes (cares en dúplex) on s'hi imposen n pàgines d'un PDF en un ordre i encaix determinats
 %% https://en.wikipedia.org/wiki/N-up
 
-%% 0 llançat vertical de 8 pàgines de PDF a 1 sola plana horitzontal (anvers) i 1 pàgina al revers (nou format Tarde Handbook --un tall sense desbarbar)
-%% 1 llançat d'1 pàgina de PDF per plana, en vertical o horitzontal en un full en dúplex horitzontal o vertical 1+1 | 2 imposicions totals | impressió 1-up | 1hvUpHV
-%% 2 llançat de 2 pàgines de PDF per plana, en vertical, en un full en dúplex horitzontal o vertical 2+2 | 4 imposicions totals | impressió 2-up | 2vUpHV
-%% 4 llançat de 4 pàgines de PDF per plana, en vertical, en un full en dúplex horitzontal o vertical 4+4 | 8 imposicions totals | impressió 4-up | 4vUpHV
-%% 8 llançat de 8 pàgines de PDF per plana, en vertical, en un full en dúplex horitzontal 8+8 | 16 imposicions totals | impressió 8-up | 8vUpH
+%% 0 = 8+1 graella del llançat en vertical | plegat amb 1 tall al mig sense desbarbar | 8 pàgines a l'anvers i 1 al revers | impressió dúplex vertical/horitzontal
+%% 1 = 1+1 graella del llançat en vertical/horitzontal | sense plegar | 1 pàgina a l'anvers i 1 al revers | impressió dúplex vertical/horitzontal
+%% 2 = 2+2 graella del llançat en vertical | plegat en llibret desbarbat | 2 pàgines a l'anvers i 2 al revers | impressió dúplex vertical/horitzontal
+%% 4 = 4+4 graella del llançat en vertical/horitzontal | plegat en llibret desbarbat | 4 pàgines a l'anvers i 4 al revers | impressió dúplex vertical/horitzontal
+%% 8 = 8+8 graella del llançat en vertical | plegat en llibret desbarbat | 8 pàgines a l'anvers i 8 al revers | impressió en dúplex horitzontal
 
-4
-
+0
 
 
 %%M3 ORIENTACIÓ DEL FULL D'IMPRESSIÓ ?
-%% true horitzontal | false vertical
+%% true = horitzontal | false = vertical (si M2 és 8 sempre força a horitzontal/true)
 
-false
+true
 
 
 
@@ -107,7 +108,7 @@ false
 
 
 %%M5 FORCEM LA RÀTIO
-%% adaptar la ràtio de les pàgines del PDF a les del llançat
+%% adaptar la ràtio de les pàgines del PDF a les del llançat (això pot suposar deformar l'original)
 
 false
 
@@ -128,8 +129,8 @@ false
 %% molts PDF duen uns retalladors activats (CropBox) com per exemple les publicacions que amaguen les creus de tall i de registre
 %% aquest paràmetre només té sentit quan activem l'algorisme 9 d'imposició de PDFs
 
-%% true respectem el /CropBox per a tot el document
-%% false ignorem el /CropBox i treballem amb el /MediaBox per a tot el document
+%% true = respectem el /CropBox per a tot el document
+%% false = ignorem el /CropBox i treballem amb el /MediaBox per a tot el document
 
 true
 
@@ -149,9 +150,7 @@ true
 
 
 %[[1 2 7 8] [3 4 5 6]]  %% ENCARTAT
-
 %[[1 2 3 4] [5 6 7 8]]  %% APILAT
-
 %[ ]                    %% 1 DE SOL o TOT SI M13 ÉS ZERO?
 
 %[[47 1 2 1 4 null 6 7 8 9 10 11 -12 13 14 ]]
@@ -167,8 +166,22 @@ true
 %% acolorides
 %[]
 
-%% Tarde Handbook
+%% Tarde Handbook amb tall al mig sense desbarbar
 %[[1 2 3 4 5 6 7 8 9 null null null null null null null]]
+[[11 12 13 14 15 15 9 8 10 null null null null null null null]]
+%[]
+
+%% NOU TABULAT
+
+%% ENCAIX
+%[
+% [
+%  null  %% 
+%% - - - revers - - - 
+%  null
+% ]
+%]
+
 
 %% sintagma i paradigma
 %[]
@@ -178,27 +191,28 @@ true
 % [[][]]  %%EP! aquest format d'array NO es pot fer servir doncs dóna Error: /rangecheck in --get--
 
 %%UBESH ERRORS
-%[[1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16] [17 18 19 20 null null null null null null null null null null null null]]
 %[[10 20 18 16]]
 %[[null 20]]
 %[[1 2 3 4 5 6 7 8] [9 10 11 12 13 14 15 16] [17 18 19 20 null null null null]]
 %[]
 %[[1 2 3 4 5 6 7 8] [9 null null null null null null null]]
-[[1 2 3 4 5 6 7 8]]
-%[[1 2 3 4 5 6 7 8 null null null null null null null null]]
+%[[1 2 3 4 5 6 7 8]]
+%[[1 2 3 4 5 6 7 8 8 null null null null null null null]]
 %[[1 2] [3 4] [5 6] [7 8]]
+
+
 
 
 %%M9 ENQUADERNAT
 %% podem triar entre tres tipus d'enquadernat:
 %% null = 1 sol llibret apilat (quan M8 és una array buida) fins que s'esgoti el llançat nUp (si falten pàgines s'omplen amb buides i si en sobren es talla)
-%% a null sembla absurd que fem un assaig? (surt una array simple!)
 %% true = encartat, amb diversos llibrets (fins que s'esgotin les pàgines del PDF i si falten pàgines s'afegeixen en blanc a la cua del llançat)
 %% false = apilat, amb diversos llibrets (fins que s'esgotin les pàgines del PDF i si falten pàgines s'afegeixen en blanc a la cua del llançat)
 %% EP! quan M10 és a false tenir M9 a true o false no fa canviar res, doncs és M8 qui mana!
 %% EP! quan M10 és a false tenir M9 a null fa que només es crei el primer llibret (la primera array de M8)
+%% EP! el valor d'M9 és irrellevant quan el tipus de llançat M2 és 0 (tall al mig sense desbarbar/Handbook)
 
-false
+null
 
 
 
@@ -206,7 +220,7 @@ false
 %% true = si assagem el mapa d'imposició no crearem el PDF i només donarem com a resultat la matriu que defineix M8 amb una anàlisi de la feina segons el triat a M12 i M13
 %% false = generarem el PDF de sortida aplicant el mapa d'imposició definit a M8 i també fem l'anàlisi de la feina
 
-true
+false
 
 
 
@@ -228,9 +242,18 @@ true
 
 %%M13 NOMBRE MÀXIM DE LLIBRETS A GENERAR (útil per quan el PDF d'entrada sigui molt gran i volguem acotar la feina)
 %% aquest paràmetre només s'aplica a l'assaig (M10 a true) per la creació del mapa d'imposició M8
-%% zero hauria d'equivaldre a generar el mapa d'imposició per enquadernar TOT el PDF d'entrada (tret que M9 sigui null i tret que M12 NO SIGUI 0 0)
+%% zero hauria d'equivaldre a generar el mapa d'imposició per enquadernar TOT el PDF d'entrada (tret que M9 NO sigui null, M12 NO sigui 0 0 i que M2 NO sigui 0)
 %% aquest paràmetre només mana quan el nombre de llibrets que li demanem és inferior als que surten enquadernant el rang establert a M12
 
 0
+
+
+
+%%M14 DE COM S'ADAPTEN LES PÀGINES A LA GRAELLA DEL LLANÇAT (aquest paràmetre ara és genèric però es podrà personalitzar per a cada pàgina de forma més acurada)
+%% null = fem que mani el /MediaBox (el format de pàgina) de cada pàgina del PDF a imposar
+%% true = fem que s'adapti a la graella del llançat | si duu /Rotate i la fa encaixar ho respectarem i si l'hem de forçar, serà sempre a 90 en sentit horari 
+%% false = fem que mani el valor /Rotate que dugui cada pàgina del PDF a imposar (mantenim l'orientació que visualitzem en qualsevol viewer)
+
+true
 
 

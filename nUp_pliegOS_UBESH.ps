@@ -565,6 +565,7 @@ dup /CddVf exch def
 %% fi de MENÚ de capçalera
 
 %%UBESH noves funcions
+/M14 exch def  %% DE COM S'ADAPTEN LES PÀGINES AL LLANÇAT
 /M13 exch def  %% NOMBRE MÀXIM DE LLIBRETS A GENERAR
 2 array astore /M12 exch def  %% PÀGINA D'INICI I FINAL DE L'ASSAIG
 
@@ -948,6 +949,7 @@ dup /CddVf exch def
    100 mul cvi 100 div  %% i deixant només els 2 primers decimals com a significatius per descartar diferències irrellevants
    /RATioV exch def  %% ràtio vertical
 
+%%ATENCIÓ: aquí és on definim valors i orientació dels elements de la graella del llançat xPagina/yPagina on s'hi han d'encabir les pàgines a imposar
    %% abandonem l'opció d'incloure la tria de si volem la pàgina d'imposició en vertical (com ara) o en horitzontal (x fer)?
    %% les pàgines del 2vUpHV tenen la mateixa ràtio que el full?
    xFull 4 div dup currentdict exch /xPagina exch put
@@ -969,7 +971,7 @@ dup /CddVf exch def
    }ifelse
   }
 
-  (Handbook | un tall sense desbarbar)  %% 4 nom o ID únic?
+  (un tall al mig sense desbarbar \(Tarde Handbook\))  %% 4 nom o ID únic?
  ]
 
  [  %% 1 1hvUpHV una pàgina (en dúplex), horitzontal o vertical, imposada en un full horitzontal o vertical
@@ -1085,7 +1087,7 @@ dup /CddVf exch def
    100 mul cvi 100 div  %% i deixant només els 2 primers decimals com a significatius per descartar diferències irrellevants
    /RATioV exch def  %% ràtio vertical
 
-%%Tindria sentit incloure la tria de si volem la pàgina d'imposició de costat (com ara) o un a sobre l'altra (x fer)?
+%%ATENCIÓ: aquí és on definim valors i orientació dels elements de la graella del llançat xPagina/yPagina on s'hi han d'encabir les pàgines a imposar
    %% les pàgines del 1vhUpHV tenen la mateixa ràtio que el full sempre que mantinguem l'orientació
    xFull dup currentdict exch /xPagina exch put
    yFull dup /yPagina exch def div 100 mul cvi 100 div /pRATio exch def
@@ -1106,7 +1108,8 @@ dup /CddVf exch def
    }ifelse
   }
 
-  (1hvUpHV)  %% 4 nom o ID únic? una pàgina (en dúplex), horitzontal o vertical, imposada en un full horitzontal o vertical
+  %(1hvUpHV)
+  (llibret 1+1)  %% 4 nom o ID únic? una pàgina (en dúplex), horitzontal o vertical, imposada en un full horitzontal o vertical
  ]
 
  [  %% 2 2vUpHV dues pàgines verticals (en dúplex) imposades DE COSTAT en un full horitzontal o vertical
@@ -1261,6 +1264,7 @@ dup /CddVf exch def
    100 mul cvi 100 div  %% i deixant només els 2 primers decimals com a significatius per descartar diferències irrellevants
    /RATioV exch def  %% ràtio vertical
 
+%%ATENCIÓ: aquí és on definim valors i orientació dels elements de la graella del llançat xPagina/yPagina on s'hi han d'encabir les pàgines a imposar
    %% abandonem l'opció d'incloure la tria de si volem la pàgina d'imposició en vertical (com ara) o en horitzontal (x fer)?
    %% les pàgines del 2vUpHV tenen la mateixa ràtio que el full?
    xFull 2 div dup currentdict exch /xPagina exch put
@@ -1318,7 +1322,8 @@ dup /CddVf exch def
    }ifelse
   }
 
-  (2vUpHV)  %% 4 nom o ID únic? dues pàgines verticals (en dúplex) imposades DE COSTAT en un full horitzontal o vertical
+  %(2vUpHV)
+  (llibret 2+2)  %% 4 nom o ID únic? dues pàgines verticals (en dúplex) imposades DE COSTAT en un full horitzontal o vertical
  ]
 
  null  %% 3 2hUpV?
@@ -1503,6 +1508,7 @@ dup /CddVf exch def
    100 mul cvi 100 div  %% i deixant només els 2 primers decimals com a significatius per descartar diferències irrellevants
    /RATioV exch def  %% ràtio vertical
 
+%%ATENCIÓ: aquí és on definim valors i orientació dels elements de la graella del llançat xPagina/yPagina on s'hi han d'encabir les pàgines a imposar
    %% abandonem l'opció d'incloure la tria de si volem la pàgina d'imposició en vertical (com ara) o en horitzontal (x fer)?
    %% les pàgines del 2vUpHV tenen la mateixa ràtio que el full?
    xFull 2 div dup currentdict exch /xPagina exch put
@@ -1560,7 +1566,8 @@ dup /CddVf exch def
    }ifelse
   }
 
-  (4vUpHV)  %% 4 nom o ID únic? quatre pàgines verticals (en dúplex) imposades de costat, 2+2, en un full horitzontal o vertical
+  %(4vUpHV)
+  (llibret 4+4)  %% 4 nom o ID únic? quatre pàgines verticals (en dúplex) imposades de costat, 2+2, en un full horitzontal o vertical
  ]
 
  null  %% 5 nUp leporello? afegir una opció de nombre de cares? diuen que millor sempre imparelles?
@@ -1877,6 +1884,7 @@ dup /CddVf exch def
    100 mul cvi 100 div  %% i deixant només els 2 primers decimals com a significatius per descartar diferències irrellevants
    /RATioV exch def  %% ràtio vertical
 
+%%ATENCIÓ: aquí és on definim valors i orientació dels elements de la graella del llançat xPagina/yPagina on s'hi han d'encabir les pàgines a imposar
    %% abandonem l'opció d'incloure la tria de si volem la pàgina d'imposició en vertical (com ara) o en horitzontal (x fer)?
    %% les pàgines del 2vUpHV tenen la mateixa ràtio que el full?
    xFull 4 div dup currentdict exch /xPagina exch put
@@ -1898,7 +1906,8 @@ dup /CddVf exch def
    }ifelse
   }
 
-  (8vUpH) %% 4 nom o ID únic? vuit pàgines verticals (en dúplex) imposades de costat, 4+4, en un full horitzontal
+  %(8vUpH)
+  (llibret 8+8)  %% 4 nom o ID únic? vuit pàgines verticals (en dúplex) imposades de costat, 4+4, en un full horitzontal
  ]
 ] def
 
@@ -2075,6 +2084,7 @@ put  %% el format del full (MediaBox) i la seva orientació determinen moltes cos
 %%MENÚ M5
 M5 /fRATio exch def  %% en cas que el plec no sigui proporcional (ràtio full/pàgina diferent)i, forcem mantenir la ràtio?
 
+%%ATENCIÓ: és aquí on s'executa el valor i orientació dels elements de la graella del llançat xPagina/yPagina on s'hi han d'encabir les pàgines a imposar
 exch 3 get exec  %% càlcul d'escala/ràtio
 
 %%+ no va a pstopdf
@@ -2112,6 +2122,11 @@ dup
  %% pel llançat Handbook
  M2 0 eq
  {  %% hem triat el llançat Handbook (un tall sense desbarbar) amb la segona plana en blanc o a pàgina completa?
+  dup 8 ge
+  {
+   /M1 false def
+  }if  %% desactivem el pintat de la vora de la pàgina al revers de la imposició
+
   dup 24 eq  %% activem un gatell a l'índex 24 corresponent a la pàgina 9 del revers de la imposició (16 pàgines de l'anvers + 9 del revers = 25 -1 = 24)
   {
    /aTOTAplana true def

@@ -137,7 +137,7 @@ noNULL  %% pinta el contingut de pàgina?
 
 %/NumPages get /pAimposar exch def  %% nombre de pàgines a imposar del PDF a incrustar
   %% aquí podem treure conclusions de si l' M2, pel pliegOS escollit, podrem fer el llançat de totes les pàgines
-  %% si en quedaran de buides a pliegOS (EP! n'hi pot haver de forçades) o si no les podrem imposar totes
+  %% si en quedaran de buides a pliegOS o si no les podrem imposar totes
  }
  {  %% un sol fitxer d'n pàgines
 %%UBESH quan el PDF NO es comença a imposar per la pàgina 1 (p.e. fem la primera en blanc o canviem l'ordre de les pàgines) la variable /iSeq ja no és fiable
@@ -149,7 +149,6 @@ nomesunAvegada  %% sigui una pàgina en blanc o sigui o no la pàgina 1
 /nomesunAvegada false def  %% tanquem el gatell d'execució única
 
    %0% adreça al pdf a incrustar
-%%EP cal saber quina bruixa o paràmetre del PDF fa que l'escala no rutlli com cal
    %(/Users/femfum/515-Book_Manuscript-1184-2-10-20221020.pdf)
    %(/Users/femfum/Downloads/Origin_of_Patterning_LU_OPT.pdf)
    %(/Users/femfum/Tipografia_organica.pdf)
@@ -287,13 +286,9 @@ M12 aload pop 2 copy gt 1 index 0 ne and  %% tret que el segon valor sigui zero 
 
 %% true = si assagem el mapa d'imposició no crearem el PDF amb el pliegOS i només donarem com a resultat una matriu per a M8
 %% i l'anàlisi que mostrarem estarà basat en el resultat d'aquesta matriu
-%% SÓN rellevants els valors de:
-%% NO són rellevants els valors de:
 
 %% false = aplicarem el mapa d'imposició definit a M8 i generarem el PDF amb el pliegOS
 %% el mapa d'imposició podrà ser l'usuari de pliegOS qui l'ajusti manualment i l'anàlisi que mostrarem estarà basat en aquesta matriu
-%% SÓN rellevants els valors de:
-%% NO són rellevants els valors de:
 
 M10
 {  %% assaig i NO fem el llançat i només generem el mapa d'imposició en base al nombre de pàgines del PDF i l'enquadernat triat
@@ -662,6 +657,33 @@ M13 0 ne
   }ifelse
  }ifelse
 
+ %% excepcions segons el tipus de llançat 
+ M2 0 eq
+ {  %% excepció pel Handbook
+  [
+   mapaDimposicio
+   {
+   }forall
+   pop pop pop pop pop pop pop
+   null null null null null null null
+  ]
+  /mapaDimposicio exch def
+  %% ajustem, si cal, el valor de fLlançat
+  fLlançat 9 gt
+  {
+   /fLlançat 9 def
+  }if
+  %% ajustem, si cal, el valor de pPDF
+  pPDF 9 gt
+  {
+   /pPDF 9 def
+  }if
+  9 /ppLl exch def  %% pàgines per llibret
+ }
+ {
+  Nup 2 mul /ppLl exch def  %% pàgines per llibret
+ }ifelse
+
  /rEpEtIcIons 0 def  %% en un assaig de nou en nou no es produiran mai repeticions de pàgines
 }
 {  %% FEM el llançat servint-nos del mapa d'imposició del menú M8
@@ -678,6 +700,33 @@ M13 0 ne
   /iLlançat 1 def
   %% pPDF és el nombre de pàgines del PDF d'entrada que imposarem i poPDF és el nombre total de pàgines originals del PDF d'entrada
   fLlançat iLlançat sub 1 add /pPDF exch def  %% com que beu de M12 sempre seran pàgines seguides doncs no hi ha risc que hi hagi ni pagines repetides ni null
+
+  %% excepcions segons el tipus de llançat 
+  M2 0 eq
+  {  %% excepció pel Handbook
+ % [
+ %  mapaDimposicio
+ %  {
+ %  }forall
+ %  pop pop pop pop pop pop pop
+ %  null null null null null null null
+ % ]
+ % /mapaDimposicio exch def
+   %% ajustem, si cal, el valor de fLlançat
+   fLlançat 9 gt
+   {
+    /fLlançat 9 def
+   }if
+   %% ajustem, si cal, el valor de pPDF
+   pPDF 9 gt
+   {
+    /pPDF 9 def
+   }if
+   /ppLl 9 def  %% pàgines per llibret
+  }
+  {
+   Nup 2 mul /ppLl exch def  %% pàgines per llibret
+  }ifelse
 
   %% aquesta rutina genera mapes d'imposició en els 3 tipus d'enquadernat:
   nqdrnt null eq
@@ -1039,7 +1088,35 @@ mapaDimposicio  %% aquest mapa d'imposició encara no té el format que necessita 
    }ifelse
    /M8 exch def
   }ifelse
- }if
+ }
+ {
+  %% excepcions segons el tipus de llançat 
+  M2 0 eq
+  {  %% excepció pel Handbook
+ % [
+ %  mapaDimposicio
+ %  {
+ %  }forall
+ %  pop pop pop pop pop pop pop
+ %  null null null null null null null
+ % ]
+ % /mapaDimposicio exch def
+   %% ajustem, si cal, el valor de fLlançat
+%   fLlançat 9 gt
+%   {
+%    /fLlançat 9 def
+%   }if
+   %% ajustem, si cal, el valor de pPDF
+%   pPDF 9 gt
+%   {
+%    /pPDF 9 def
+%   }if
+   /ppLl 9 def  %% pàgines per llibret
+  }
+  {
+   Nup 2 mul /ppLl exch def  %% pàgines per llibret
+  }ifelse
+ }ifelse
 
  %% comencem filtrant si quadren el nombre d'elements a les arrays en relació a l' nUp triat (avisem de les correccions i continuem)
  [
@@ -1108,6 +1185,12 @@ mapaDimposicio  %% aquest mapa d'imposició encara no té el format que necessita 
    }ifelse
   }forall
  }forall
+
+ %% filtrem el cas que es dóna de tenir tot nulls al mapa d'imposició
+ p+xica 10000 eq  %% i que fa que p+xica encara valgui 10000
+ {
+  /p+xica 0 def  %% la deixem a zero
+ }if
 
  %% filtrem possibles desviacions dels límits
  p+xica dup 0 lt
@@ -1183,6 +1266,7 @@ mapaDimposicio  %% aquest mapa d'imposició encara no té el format que necessita 
  }forall
  /M8 exch def
  /mapaDimposicio M8 def
+
 }ifelse
 
 %% sedassem el prompt amb l'anàlisi
@@ -1192,11 +1276,27 @@ mapaDimposicio  %% aquest mapa d'imposició encara no té el format que necessita 
 %% núm. de pàgina a iniciar el llançat al PDF d'entrada
 (                 ) dup 12 iLlançat 8 string cvs putinterval print flush ( ......... pagina on iniciarem la imposicio al PDF d'origen\n)print flush
 %% núm. de pàgina a finalitzar el llançat al PDF d'entrada
-(                 ) dup 12 fLlançat 8 string cvs putinterval print flush ( ......... pagina on finalitzarem la imposicio al PDF d'origen\n)print flush
+(                 ) dup 12
+M10 M2 0 gt and M9 null eq and
+{  %% si assagem amb l'enquadernat a null hem de rectificar, només a títol informatiu, el total de pàgines a imposar si fem llibret
+ M2 2 mul
+}
+{
+ fLlançat
+}ifelse
+8 string cvs putinterval print flush ( ......... pagina on finalitzarem la imposicio al PDF d'origen\n)print flush
 %% nombre absolut de pàgines del PDF a imposar (no compten ni les repeticions ni les blanques)
-(                 ) dup 12 pPDF 8 string cvs putinterval print flush ( ......... total de pagines a imposar del PDF d'origen\n)print flush
+(                 ) dup 12
+M10 M2 0 gt and M9 null eq and
+{  %% si assagem amb l'enquadernat a null hem de rectificar, només a títol informatiu, el total de pàgines a imposar si fem llibret
+ M2 2 mul
+}
+{
+ pPDF
+}ifelse
+8 string cvs putinterval print flush ( ......... total de pagines a imposar del PDF d'origen\n)print flush
 %% pàgines d'1 sol llibre per l'nUp triat
-(                 ) dup 12 Nup 2 mul 8 string cvs putinterval print flush ( ......... pagines per llibret\n)print flush
+(                 ) dup 12 ppLl 8 string cvs putinterval print flush ( ......... pagines per llibret\n)print flush
 %% nobre de NULLs al mapa d'imposició
 (                 ) dup 12 enBlanc 8 string cvs putinterval print flush ( ......... pagines en blanc dels llibrets\n)print flush
  
@@ -1310,17 +1410,24 @@ nqdrnt null eq
 %% 1 sol pliegOS o més d'1, encartat o apilat
 ( ......... tipus d'enquadernat dels llibrets\n)print flush
 
-nqdrnt null eq
-{
- 1 Nup 2 mul mul cvi
+%% excepcions segons el tipus de llançat 
+M2 0 eq
+{  %% excepció pel Handbook
+ 9
 }
 {
- nqdrnt
+ nqdrnt null eq
  {
-  Nllibrets 1 add Nup 2 mul mul cvi
+  1 Nup 2 mul mul cvi
  }
  {
-  nPliegOS Nup 2 mul mul cvi
+  nqdrnt
+  {
+   Nllibrets 1 add Nup 2 mul mul cvi
+  }
+  {
+   nPliegOS Nup 2 mul mul cvi
+  }ifelse
  }ifelse
 }ifelse
 (                 ) dup 12 4 -1 roll 8 string cvs putinterval print flush
@@ -1328,7 +1435,7 @@ nqdrnt null eq
 ( ......... pagines de tripa dels llibrets sumats\n\n)print flush
 
 %% potencial array per posar al menú
-(            mapa d'imposicio\n\n)print flush
+(            mapa d'imposicio amb ) print flush NpliegOS print flush (\n\n)print flush
 
 %%(ANALITZEM i CORREGIM LA MATRIU)pstack quit
 %% potser convindrà farcir un HTML quan construïm la interfície web
@@ -1337,67 +1444,259 @@ nqdrnt null eq
 M10
 {
  mapaDimposicio  %% aquest mapa d'imposició encara no té el format que necessita pliegO'Maker tret que M9 sigui null
-M9 null ne
-{  %% o és encartat o és apilat
- M9
- {  %% endrecem l'encartat desenciaxant les arrays
+ M9 null ne
+ {  %% o és encartat o és apilat
+  M9
+  {  %% endrecem l'encartat desenciaxant les arrays
 
 %% Malgrat NO sigui l'estructura de treball que necessita pliegO'Maker: el mapa d'imposició quan és encartat s'entén millor encaixat?
 %dup ==
 
-  %% per tal de generar d'una forma continuada l'ordre del dúplex anvers/revers que hauria de tenir el PDF resultant
-  /aDesencartar exch def  %% array que desencartem
-  [
-   {  %% loop
-    /NOhiHAarray true def  %% gatell per saber si hi ha un nou array aniuat, quan torni a ser true sortirem del loop
-    [
-     aDesencartar
-     {  %% forall
-      dup type /arraytype eq
-      {
-       /aDesencartar exch def
-       /NOhiHAarray false def  %% n'hi ha 1 a dins!
-      }
-      {  %% no fem res i deixem l'element a l'stack
-      }ifelse
-     }forall
-    ]  %% quedarà a l'stack una array desencartada darrera l'altre
+   %% per tal de generar d'una forma continuada l'ordre del dúplex anvers/revers que hauria de tenir el PDF resultant
+   /aDesencartar exch def  %% array que desencartem
+   [
+    {  %% loop
+     /NOhiHAarray true def  %% gatell per saber si hi ha un nou array aniuat, quan torni a ser true sortirem del loop
+     [
+      aDesencartar
+      {  %% forall
+       dup type /arraytype eq
+       {
+        /aDesencartar exch def
+        /NOhiHAarray false def  %% n'hi ha 1 a dins!
+       }
+       {  %% no fem res i deixem l'element a l'stack
+       }ifelse
+      }forall
+     ]  %% quedarà a l'stack una array desencartada darrera l'altre
 
-    NOhiHAarray
-    {  %% sortim quan no n'hagi trobat cap
-     exit
-    }if
-   }loop
-  ]  %% aquesta array duu un llibret (array) al costat de l'altre
- }
- {  %% endrecem l'aplilat agrupant per ordre en arrays els llibrets
+     NOhiHAarray
+     {  %% sortim quan no n'hagi trobat cap
+      exit
+     }if
+    }loop
+   ]  %% aquesta array duu un llibret (array) al costat de l'altre
+  }
+  {  %% endrecem l'aplilat agrupant per ordre en arrays els llibrets
 
 %% Malgrat NO sigui l'estructura de treball que necessita pliegO'Maker: el mapa d'imposició quan és apilat tampoc no s'entén millor mostrant les pàgines seguides
 %dup ==
 
-  /Arrangem exch def
-  /i 0 def
-  [
-   nLlibrets
-   {
-    Arrangem i Nup 2 mul getinterval
-    i Nup 2 mul add /i exch def
-   }repeat
-  ]
- }ifelse
-}if  %% si és null no cal endreçar res
+   /Arrangem exch def
+   /i 0 def
+   [
+    nLlibrets
+    {
+     Arrangem i Nup 2 mul getinterval
+     i Nup 2 mul add /i exch def
+    }repeat
+   ]
+  }ifelse
+ }if  %% si és null no cal endreçar res
 
- ==  %% apuntem al prompt l'array que hauríem de posar a M8 quan fem la imposició de debò
+ M9 null eq
+ {  %% com és que l'enquadernat null no ve amb la doble array?
+  [ exch ]
+ }if
+
+ %% tabulem el mapa d'imposició per tal d'orientar indicant quines pàgines treballen en doble
+ [
+  [2 3 3 4 4 3 3 2]  %% 0 un tall al mig sense desbarbar (Tarde Handbook)
+  [2 2]  %% 1 cara i dors 1+1
+  [2 3 3 2]  %% 2 llibret 2+2
+  null  %% 3
+  [2 3 3 4 4 3 3 2]  %% 4 llibret 4+4
+  null  %% 5
+  null  %% 6
+  null  %% 7
+  [2 3 3 4 4 5 5 6 6 5 5 4 4 3 3 2]  %% 8 llibret 8+8
+ ] M2 get /ATmi exch def
+
+ [  %% rutines d'escriptura i tabulació pel mapa d'imposició (mateixa tabulació equival a pàgines que poden treballar en doble)
+  {  %% 0 treiem per pantalla el mapa d'imposició tipus un tall al mig sense desbarbar (Tarde Handbook)
+   ([\n)print flush
+   {  %% forall
+    ( [\n)print flush
+    0 1 15
+    {
+     dup dup 6 le
+     {
+      ATmi exch get
+      {
+       ( )print flush
+      }repeat
+      1 index exch get ==
+     }
+     {
+      2 index exch get (  )print flush ==
+      7 eq
+      {
+       (% - - - revers - - - \n)print flush
+      }if
+     }ifelse
+    }for
+    ( ]\n)print flush
+   }forall
+   (]\n)print flush
+   pop
+  }
+
+  {  %% 1 treiem per pantalla el mapa d'imposició tipus cara i dors 1+1
+   ([\n)print flush
+   {  %% forall
+    ( [\n)print flush
+    0 1 1
+    {
+     dup dup
+     ATmi exch get
+     {
+      ( )print flush
+     }repeat
+     2 index exch get ==
+     0 eq
+     {
+      (% - - - revers - - - \n)print flush
+     }if
+    }for
+    ( ]\n)print flush
+    pop
+   }forall
+   (]\n)print flush
+  }
+
+  {  %% 2 treiem per pantalla el mapa d'imposició tipus llibret 2+2
+   ([\n)print flush
+   {  %% forall
+    ( [\n)print flush
+    0 1 3
+    {
+     dup dup
+     ATmi exch get
+     {
+      ( )print flush
+     }repeat
+     2 index exch get ==
+     1 eq
+     {
+      (% - - - revers - - - \n)print flush
+     }if
+    }for
+    ( ]\n)print flush
+    pop
+    %% invertim el tabulat de l'array ATmi per l'encartat
+    M9 null ne
+    {
+     M9
+     {
+      [
+       ATmi aload pop
+       2
+       {
+        4 -3 roll
+       }repeat
+      ] /ATmi exch def
+     }if
+    }if
+   }forall
+   (]\n)print flush
+  }
+
+  null  %% 3
+
+  {  %% 4 treiem per pantalla el mapa d'imposició tipus llibret 4+4
+   ([\n)print flush
+   {  %% forall
+    ( [\n)print flush
+    0 1 7
+    {
+     dup dup
+     ATmi exch get
+     {
+      ( )print flush
+     }repeat
+     2 index exch get ==
+     3 eq
+     {
+      (% - - - revers - - - \n)print flush
+     }if
+    }for
+    ( ]\n)print flush
+    pop
+    %% invertim el tabulat de l'array ATmi per l'encartat
+    M9 null ne
+    {
+     M9
+     {
+      [
+       ATmi aload pop
+       4
+       {
+        8 -7 roll
+       }repeat
+      ] /ATmi exch def
+     }if
+    }if
+   }forall
+   (]\n)print flush
+  }
+
+  null  %% 5
+
+  null  %% 6
+
+  null  %% 7
+
+  {  %% 8 treiem per pantalla el mapa d'imposició tipus llibret 8+8
+   ([\n)print flush
+   {  %% forall
+    ( [\n)print flush
+    0 1 15
+    {
+     dup dup
+     ATmi exch get
+     {
+      ( )print flush
+     }repeat
+     2 index exch get ==
+     7 eq
+     {
+      (% - - - revers - - - \n)print flush
+     }if
+    }for
+    ( ]\n)print flush
+    pop
+    %% invertim el tabulat de l'array ATmi per l'encartat
+    M9 null ne
+    {
+     M9
+     {
+      [
+       ATmi aload pop
+       8
+       {
+        16 -15 roll
+       }repeat
+      ] /ATmi exch def
+     }if
+    }if
+   }forall
+   (]\n)print flush
+  }
+ ] M2 get cvx exec
+ 
+% (AAAAVIAAAM)pstack quit
+ %% apuntem al prompt l'array el mapa que hauríem de posar a M8 (amb retocs o sense) quan fem la imposició de debò
 
 % (* * * * * STOP * * * * *)pstack
 %% potser convindrà farcir un HTML quan construïm la interfície web
  stop
 }
 {  %% el mapa d'imposició aquí ja ha de venir endreçat
- M8  ==
+ M8
+ ==
 %(mmmmmm)pstack quit
  %% fem una darrera comprovació per filtrar possibles errors estructurals als arrays:
- %% assegurar-nos que totes les arrays tinguin el mateix length
+ %% assegurar-nos que totes l'enquaderl'enquaderl'enquaderl'enquaderl'enquaderl'enquaderl'enquaderl'enquaderl'enquadernattttttttts arrays tinguin el mateix length
  M8 dup 0 get length /aralength exch def
  {
   length aralength ne
@@ -1458,6 +1757,7 @@ M9 null ne
 %%URLUBESH (ara no ho fem servir)
 %% per què el text/tipografia dóna recursos a .PDFDRawPage per situar-se en el lloc correcte i una imatge o un vectorial NO?
    (/home/femfum/Documents/pliegOMakerUB/1paginaDINbuida.pdf) dup (r) file runpdfbegin
+
    /Context2 <<>> .PDFInit def
    Context2 .PDFFile
 %}ifelse
@@ -1467,7 +1767,7 @@ M9 null ne
 %(???)pstack quit
 %   Context1 .PDFInfo /NumPages get /pAimposar exch def  %% nombre de pàgines a imposar del PDF a incrustar
    %% aquí podem treure conclusions de si l' M2, pel pliegOS escollit, podrem fer el llançat de totes les pàgines
-   %% si en quedaran de buides a pliegOS (EP! n'hi pot haver de forçades) o si no les podrem imposar totes
+   %% si en quedaran de buides a pliegOS o si no les podrem imposar totes
   }if  %% un cop!
 
 }ifelse  %% dos mètodes de lectura
@@ -1525,10 +1825,9 @@ M7
  aMESaMES 0 eq
  {  %% explorem  els valors de les àrees desades
   XRay /PeDeEfa get
-%%UBESH EP!
   M8 iLlibret get  %% vía índex (que es defineix i s'alimenta a nUp_pliegOS_UBESH.ps) tibem de M8 l'array del llibret que ara toca imposar
   3 -1 roll cvx exec 1 sub get  %% tibem, via índex del mapa d'imposició, el núm. de pàgina del PDF d'entrada que imposarem ara
-%%EP! hem de contemplar el null de les pàgines en blanc! ...i què passa si treballem amb una array buida?
+  %% hem de contemplar el null de les pàgines en blanc! ...i què passa si treballem amb una array buida?
   dup null eq
   {  %% eliminem el null i el diccionari de pàgina per desactivar el gatell Simposa
    pop pop
@@ -1537,6 +1836,8 @@ M7
   {
    /Simposa true def
    6 string cvs get
+
+   dup /dpXRay exch def  %% diccionari amb les dades de la pàgina explorades a l'XRay de CaLi2CoPi
 
    %% segon ens cal saber si CropBox existeix
    dup /CropBox known
@@ -1581,13 +1882,11 @@ M7
  }ifelse
 }
 {  %% com que no hem de respectar el /CropBox extraiem el valor del MediaBox per treballar
-%%UBESH EP!
  XRay /PeDeEfa get
 
-%%UBESH EP!
  M8 iLlibret get  %% vía índex (que es defineix i s'alimenta a nUp_pliegOS_UBESH.ps) tibem de M8 l'array del llibret que ara toca imposar
  3 -1 roll cvx exec 1 sub get  %% tibem, via índex del mapa d'imposició, el núm. de pàgina del PDF d'entrada que imposarem ara
-%%EP! hem de contemplar el null de les pàgines en blanc! ...i què passa si treballem amb una array buida?
+ %% hem de contemplar el null de les pàgines en blanc! ...i què passa si treballem amb una array buida?
  dup null eq
  {  %% eliminem el null i el diccionari de pàgina per desactivar el gatell Simposa
   pop pop
@@ -1596,6 +1895,7 @@ M7
  {
   /Simposa true def
   6 string cvs get
+  dup /dpXRay exch def  %% diccionari amb les dades de la pàgina explorades a l'XRay de CaLi2CoPi
   /MediaBox get
   /enQuadra false def
   /araMediaBox exch def
@@ -1604,6 +1904,13 @@ M7
 
 Simposa
 {  %% el mapa d'imposició no ens torna un null (en blanc) o sigui que la imposem
+
+ %% captura del valor Rotate per veure més endavant si cal aplicar-lo o no
+ %% doncs aquí hauríem d'establir un mecanisme que permetés la tria de com imposar les pàgines del PDF d'entrada:
+ %% amb la variable /aRaManA que capturarem de l'índex 0 de l'array del 3er índex del packedarray del mapa d'imposició, amb tres valors possibles:
+ %% 1/ fent que mani MediaBox/CropBox (null) 2/ fent que mani Rotate (false) 3/ fent que s'adaptin de la millor manera a les pàgines del llançat (true)
+ dpXRay /Rotate get /araRotate exch def  %% (HHHHH)pstack quit 
+
  %% deducció de l'escala de treball per adaptar al màxim cada pàgina del PDF que llegim a la pàgina del llançat
  %% es podria optar també per igualar els amples o alts de les pàgines que llegim al format de pàgina del llançat
  %% vegeu: igualatPerLaXmesAmplePossible.pdf i igualatPerLaYmesAltaPossible.pdf llegint 8auricsH.pdf i 8auricsV.pdf
@@ -1617,49 +1924,353 @@ Simposa
  {  %% orientació vertical de la pàgina a imposar: l' Y és el costat més gran
   /Odivisor true def
  }ifelse
- %% el costat més gran de la pàgina del llançat
+
+%%EP! a l'stack hi tenim l'x i la y de la pàgina a imposar
+
+  %% quin és el costat més gran de la pàgina del llançat?
  xPagina yPagina gt
- {  %% l'orientació del llançat és horitzontal
-%%UBESH escala
-%(oH CAL afinar l'escala com %%+ PLEGUEM!)pstack stop
+ {  %% l'orientació de la graella del llançat és horitzontal
+%(l'orientacio de la graella del llancat es horitzontal)pstack quit
+%%UBESH aquí podem veure quina mida i orientació tenen (V/H) els elements de la graella del llançat
+%xPagina yPagina 2 array astore ==
+%% aquí la mida i orientació de les pàgines a imposar
+%XaImposar YaImposar 2 array astore ==
+
+  M14 null eq  %% de com s'adapten les pàgines a la graella del llançat
+  {  %% fem que mani el /MediaBox de cada pàgina del PDF a imposar
+   (graella H del llancat / fem que mani el MediaBox)==  %pstack quit
+   /encaixT [0 0] def
+   /encaixR 0 def
+%%UEP hem de pensar que més endavant hi haurem d'afegir un possible corrector de rotació que ens vindrà quan implementem les packedarrays per pàgina
+%%UN altre element compensatori, quan algun dels 4 costats no toqui vores a la graella del llançat, seria decidir a quina de les vores on no toca l'ajustem o centrem 
+  }
+  {
+   M14
+   {  %% fem que s'adapti a la pàgina del llançat H/H V/V de manera que si duu /Rotate i encaixa, ho respectarem, i si l'hem de forçar sempre serà a 90 en sentit horari
+    %(adaptem MediaBox per la graella H)pstack quit
+    Odivisor  %% true = la pàgina a imposar del PDF d'entrada és vertical | false = horitzontal
+    {  %% si és vertical voldrà dir que només farem cas si duu Rotate 90 o -90
+     araRotate  %% valor /Rotate de la pàgina a imposar del PDF d'entrada
+     abs 90 eq
+     {
+      araRotate 0 gt
+      {
+       (graella H del llancat / pagina V amb Rotate +90 a imposar GIREM +90 contra sentit horari)==  %pstack quit
+%%UEP hem de pensar que més endavant hi haurem d'afegir un possible corrector de rotació que ens vindrà quan implementem les packedarrays per pàgina
+%%UN altre element compensatori, quan algun dels 4 costats no toqui vores a la graella del llançat, seria decidir a quina de les vores on no toca l'ajustem o centrem 
+       %% capgirem els valors XaImposar/YaImposar i Odivisor i el girem -90 sentit horari
+       exch dup /YaImposar exch def 1 index /XaImposar exch def
+       Odivisor not /Odivisor exch def
+       /encaixT [0 yPagina] def
+       /encaixR -90 def
+      }
+      {
+       (graella H del llancat / pagina V amb Rotate -90 a imposar GIREM -90 sentit horari)==  %pstack quit
+%%UEP hem de pensar que més endavant hi haurem d'afegir un possible corrector de rotació que ens vindrà quan implementem les packedarrays per pàgina
+%%UN altre element compensatori, quan algun dels 4 costats no toqui vores a la graella del llançat, seria decidir a quina de les vores on no toca l'ajustem o centrem
+       %% capgirem els valors XaImposar/YaImposar i Odivisor i el girem -90 sentit horari
+       exch dup /YaImposar exch def 1 index /XaImposar exch def
+       Odivisor not /Odivisor exch def
+       /encaixT [xPagina 0] def
+       /encaixR 90 def
+      }ifelse
+     }
+     {  %% duu Rotate 0/180/-180
+      (graella H del llancat / pagina V amb Rotate 0/180/-180 a imposar GIREM -90 sentit horari)==  %pstack quit
+%%UEP hem de pensar que més endavant hi haurem d'afegir un possible corrector de rotació que ens vindrà quan implementem les packedarrays per pàgina
+%%UN altre element compensatori, quan algun dels 4 costats no toqui vores a la graella del llançat, seria decidir a quina de les vores on no toca l'ajustem o centrem
+      %% capgirem els valors XaImposar/YaImposar i Odivisor i el girem -90 sentit horari
+      exch dup /YaImposar exch def 1 index /XaImposar exch def
+      Odivisor not /Odivisor exch def
+      /encaixT [0 yPagina] def
+      /encaixR -90 def
+     }ifelse
+    }
+    {  %% si és horitzontal voldrà dir que només farem cas d'un Rotate de 180 graus (positius o negatius) que ens capgirin la pàgina
+     araRotate  %% valor /Rotate de la pàgina a imposar del PDF d'entrada
+     abs 180 eq  %% visualment tant li fa que es capgiri 180 o -180
+     {  %% definim els valors de translate i rotate per capgirar la pàgina
+      (graella H del llancat / pagina H amb Rotate -180/180 CAPGIREM a 180)==  %pstack quit
+%%UEP hem de pensar que més endavant hi haurem d'afegir un possible corrector de rotació que ens vindrà quan implementem les packedarrays per pàgina
+%%UN altre element compensatori, quan algun dels 4 costats no toqui vores a la graella del llançat, seria decidir a quina de les vores on no toca l'ajustem o centrem
+      /encaixT [xPagina yPagina] def
+      /encaixR -180 def
+     }
+     {  %% potser duu rotate 90/-90/0, però deixem la pàgina tal i com està sense aplicar-lo
+      (graella H del llancat / pagina H amb Rotate 90/-90/0 la deixem amb Rotate 0)==  %pstack quit
+%%UEP hem de pensar que més endavant hi haurem d'afegir un possible corrector de rotació que ens vindrà quan implementem les packedarrays per pàgina
+%%UN altre element compensatori, quan algun dels 4 costats no toqui vores a la graella del llançat, seria decidir a quina de les vores on no toca l'ajustem o centrem
+      /encaixT [0 0] def
+      /encaixR 0 def
+     }ifelse
+    }ifelse
+   }
+   {  %% fem que mani el valor /Rotate de cada pàgina del PDF a imposar
+    %  (que mani Rotate per la graella H)pstack quit
+    araRotate  %% valor /Rotate de la pàgina a imposar del PDF d'entrada
+    0 eq
+    {
+(A mana Rotate a 0 per la graella del llancat H)==  %pstack quit
+%%UEP hem de pensar que més endavant hi haurem d'afegir un possible corrector de rotació que ens vindrà quan implementem les packedarrays per pàgina
+%%UN altre element compensatori, quan algun dels 4 costats no toqui vores a la graella del llançat, seria decidir a quina de les vores on no toca l'ajustem o centrem
+     /encaixT [0 0] def
+     /encaixR 0 def
+    }
+    {
+     araRotate abs 90 eq
+     {
+      araRotate 0 lt
+      {
+%%UEP hem de pensar que més endavant hi haurem d'afegir un possible corrector de rotació que ens vindrà quan implementem les packedarrays per pàgina
+%%UN altre element compensatori, quan algun dels 4 costats no toqui vores a la graella del llançat, seria decidir a quina de les vores on no toca l'ajustem o centrem
+       (B mana Rotate a -90 per la graella del llancat H)==  %pstack quit
+       %% capgirem els valors XaImposar/YaImposar i Odivisor i el girem -90 sentit horari
+       exch dup /YaImposar exch def 1 index /XaImposar exch def
+       Odivisor not /Odivisor exch def
+       /encaixT [xPagina 0] def
+       /encaixR 90 def
+      }
+      {
+%%UEP hem de pensar que més endavant hi haurem d'afegir un possible corrector de rotació que ens vindrà quan implementem les packedarrays per pàgina
+%%UN altre element compensatori, quan algun dels 4 costats no toqui vores a la graella del llançat, seria decidir a quina de les vores on no toca l'ajustem o centrem
+       (C mana Rotate a +90 per la graella del llancat H)==  %pstack quit
+       %% capgirem els valors XaImposar/YaImposar i Odivisor i el girem -90 sentit horari
+       exch dup /YaImposar exch def 1 index /XaImposar exch def
+       Odivisor not /Odivisor exch def
+       /encaixT [0 yPagina] def
+       /encaixR -90 def
+      }ifelse
+     }
+     {
+      araRotate 0 lt
+      {
+(D mana Rotate a -180 per la graella del llancat H)==  %pstack quit
+%%UEP hem de pensar que més endavant hi haurem d'afegir un possible corrector de rotació que ens vindrà quan implementem les packedarrays per pàgina
+%%UN altre element compensatori, quan algun dels 4 costats no toqui vores a la graella del llançat, seria decidir a quina de les vores on no toca l'ajustem o centrem
+       /encaixT [xPagina yPagina] def
+       /encaixR -180 def
+      }
+      {
+       (E mana Rotate a +180 per la graella del llancat H) ==  %pstack quit
+%%UEP hem de pensar que més endavant hi haurem d'afegir un possible corrector de rotació que ens vindrà quan implementem les packedarrays per pàgina
+%%UN altre element compensatori, quan algun dels 4 costats no toqui vores a la graella del llançat, seria decidir a quina de les vores on no toca l'ajustem o centrem
+       /encaixT [xPagina yPagina] def
+       /encaixR 180 def
+       %% tant si la pàgina a imposar amb la rotació és vertical o horitzontal no ens cal definir res més
+      }ifelse
+     }ifelse
+    }ifelse
+   }ifelse
+  }ifelse
+
   Odivisor
   {  %% però l'orientació de la pàgina a imposar és vertical
    exch pop yPagina exch div  %% escala de treball
   }
-  {  %% però l'orientació de la pàgina a imposar és horitzontal
+  {  %% però l'orientació de la pàgina a imposar és horitzontal o quadrada
    pop xPagina exch div  %% escala de treball
+   %% ens cal saber si aquesta escala no fa que l'alt de la pàgina a imposar superi l'alt de que disposa el llançat
+   dup YaImposar mul yPagina 2 copy gt
+   {  %% corregim l'escala, doncs l'Y de la pàgina del PDF a imposar supera la Y de la pàgina del llançat
+    YaImposar div  %% escala corregida
+    exch pop exch pop
+   }
+   {  %% (NO hem de corregir l'escala)==  %pstack quit
+    pop pop
+   }ifelse
   }ifelse
+%%EP! a l'stack hi tenim el valor de l'escala de la pàgina a imposar
  }
- {  %% l'orientació del llançat és vertical
+ {  %% l'orientació de la graella del llançat és vertical
+  %(l'orientacio de la graella del llancat es vertical)pstack quit
+
+%%UBESH aquí podem veure quina mida i orientació tenen (V/H) els elements de la graella del llançat
+  %xPagina yPagina 2 array astore ==
+  %% aquí la mida i orientació de les pàgines a imposar
+  %XaImposar YaImposar 2 array astore ==
+
+  M14 null eq  %% de com s'adapten les pàgines a la graella del llançat
+  {  %% fem que mani el /MediaBox de cada pàgina del PDF a imposar
+   (graella V del llancat / fem que mani el MediaBox)==  %pstack quit
+   /encaixT [0 0] def
+   /encaixR 0 def
+%%UEP hem de pensar que més endavant hi haurem d'afegir un possible corrector de rotació que ens vindrà quan implementem les packedarrays per pàgina
+%%UN altre element compensatori, quan algun dels 4 costats no toqui vores a la graella del llançat, seria decidir a quina de les vores on no toca l'ajustem o centrem
+  }
+  {
+   M14
+   {  %% fem que s'adapti a la pàgina del llançat H/H V/V de manera que si duu /Rotate i encaixa, ho respectarem, i si l'hem de forçar sempre serà a 90 en sentit horari
+    Odivisor  %% true = la pàgina a imposar del PDF d'entrada és vertical | false = horitzontal
+    {  %% si és vertical voldrà dir que només farem cas d'un Rotate de 180 graus (positius o negatius) que ens capgirin la pàgina
+     araRotate  %% valor /Rotate de la pàgina a imposar del PDF d'entrada
+     abs 180 eq  %% visualment tant li fa que es capgiri 180 o -180
+     {  %% definim els valors de translate i rotate per capgirar la pàgina
+      (graella V del llancat / pagina V amb Rotate -180/180 CAPGIREM a 180)==  %pstack quit
+      /encaixT [xPagina yPagina] def
+      /encaixR -180 def
+%%UEP hem de pensar que més endavant hi haurem d'afegir un possible corrector de rotació que ens vindrà quan implementem les packedarrays per pàgina
+%%UN altre element compensatori, quan algun dels 4 costats no toqui vores a la graella del llançat, seria decidir a quina de les vores on no toca l'ajustem o centrem
+     }
+     {  %% potser duu rotate 90/-90/0, però deixem la pàgina tal i com està sense aplicar-lo
+      (graella V del llancat / pagina V amb Rotate 90/-90/0 la deixem amb Rotate 0)==  %pstack quit
+%%UEP hem de pensar que més endavant hi haurem d'afegir un possible corrector de rotació que ens vindrà quan implementem les packedarrays per pàgina
+%%UN altre element compensatori, quan algun dels 4 costats no toqui vores a la graella del llançat, seria decidir a quina de les vores on no toca l'ajustem o centrem
+      /encaixT [0 0] def
+      /encaixR 0 def
+     }ifelse
+    }
+    {  %% si és horitzontal voldrà dir que només farem cas d'un Rotate de 90 positiu (doncs per defecte sempre adreçarem la pàgina en sentit horari, o sigui -90)
+     araRotate  %% valor /Rotate de la pàgina a imposar del PDF d'entrada
+     abs 90 eq
+     {
+      araRotate 0 gt
+      {
+       (graella V del llancat / pagina H amb Rotate +90 a imposar GIREM +90 contra sentit horari)==  %pstack quit
+%% capgirem els valors XaImposar/YaImposar i Odivisor i el girem -90 sentit horari
+       exch dup /YaImposar exch def 1 index /XaImposar exch def
+       Odivisor not /Odivisor exch def
+%%UEP hem de pensar que més endavant hi haurem d'afegir un possible corrector de rotació que ens vindrà quan implementem les packedarrays per pàgina
+%%UN altre element compensatori, quan algun dels 4 costats no toqui vores a la graella del llançat, seria decidir a quina de les vores on no toca l'ajustem o centrem
+       /encaixT [0 yPagina] def
+       /encaixR -90 def
+      }
+      {
+       (graella V del llancat / pagina H amb Rotate -90 a imposar GIREM -90 sentit horari)==  %pstack quit
+%% capgirem els valors XaImposar/YaImposar i Odivisor i el girem -90 sentit horari
+       exch dup /YaImposar exch def 1 index /XaImposar exch def
+       Odivisor not /Odivisor exch def
+%%UEP hem de pensar que més endavant hi haurem d'afegir un possible corrector de rotació que ens vindrà quan implementem les packedarrays per pàgina
+%%UN altre element compensatori, quan algun dels 4 costats no toqui vores a la graella del llançat, seria decidir a quina de les vores on no toca l'ajustem o centrem
+       /encaixT [xPagina 0] def
+       /encaixR 90 def
+      }ifelse
+     }
+     {  %% duu Rotate zero
+%%UEP hem de pensar que més endavant hi haurem d'afegir un possible corrector de rotació que ens vindrà quan implementem les packedarrays per pàgina
+%%UN altre element compensatori, quan algun dels 4 costats no toqui vores a la graella del llançat, seria decidir a quina de les vores on no toca l'ajustem o centrem
+      2 copy eq  %% el MediaBox o el retallador CropBox és quadrat?
+      {  %% és quadrada i llavors deixem els valors de translate, rotate, XaImposar/YaImposar i Odivisor intactes
+       /encaixT [0 0] def
+       /encaixR 0 def
+      }
+      {  %% només el girem si és horitzontal
+       XaImposar YaImposar gt
+       {  %% capgirem els valors XaImposar/YaImposar i Odivisor i el girem -90 sentit horari
+        exch dup /YaImposar exch def 1 index /XaImposar exch def
+        /encaixT [0 yPagina] def  %% quedarà arranat a la part de dalt de la pàgina
+        /encaixR -90 def
+        Odivisor not /Odivisor exch def
+        %(elGIREM)==
+       }
+       {  %% deixem els valors de translate, rotate i XaImposar/YaImposar intactes
+        /encaixT [0 0] def
+        /encaixR 0 def
+       }ifelse
+      }ifelse
+      %(graella V del llancat / pagina H amb Rotate 0 a imposar GIREM -90 sentit horari, tret que sigui quadrada i no la toquem)pstack quit
+     }ifelse
+    }ifelse
+   }
+   {  %% fem que mani el valor /Rotate de cada pàgina del PDF a imposar
+    araRotate  %% valor /Rotate de la pàgina a imposar del PDF d'entrada
+    0 eq
+    {
+%%UEP hem de pensar que més endavant hi haurem d'afegir un possible corrector de rotació que ens vindrà quan implementem les packedarrays per pàgina
+%%UN altre element compensatori, quan algun dels 4 costats no toqui vores a la graella del llançat, seria decidir a quina de les vores on no toca l'ajustem o centrem
+(1 mana Rotate a 0 per la graella del llancat V)==  %pstack quit
+     %% deixem els valors de translate, rotate i XaImposar/YaImposar intactes
+     /encaixT [0 0] def
+     /encaixR 0 def
+    }
+    {
+     araRotate abs 90 eq
+     {
+      araRotate 0 lt
+      {
+(2 mana Rotate a -90 per la graella del llancat V)==  %pstack quit
+%% capgirem els valors XaImposar/YaImposar i Odivisor i el girem -90 sentit horari
+       exch dup /YaImposar exch def 1 index /XaImposar exch def
+       Odivisor not /Odivisor exch def
+%%UEP hem de pensar que més endavant hi haurem d'afegir un possible corrector de rotació que ens vindrà quan implementem les packedarrays per pàgina
+%%UN altre element compensatori, quan algun dels 4 costats no toqui vores a la graella del llançat, seria decidir a quina de les vores on no toca l'ajustem o centrem
+       /encaixT [xPagina 0] def
+       /encaixR 90 def
+      }
+      {
+(3 mana Rotate a +90 per la graella del llancat V)==  %pstack quit
+%% capgirem els valors XaImposar/YaImposar i Odivisor i el girem -90 sentit horari
+       exch dup /YaImposar exch def 1 index /XaImposar exch def
+       Odivisor not /Odivisor exch def
+%%UEP hem de pensar que més endavant hi haurem d'afegir un possible corrector de rotació que ens vindrà quan implementem les packedarrays per pàgina
+%%UN altre element compensatori, quan algun dels 4 costats no toqui vores a la graella del llançat, seria decidir a quina de les vores on no toca l'ajustem o centrem
+       /encaixT [0 yPagina] def
+       /encaixR -90 def
+      }ifelse
+     }
+     {
+      araRotate 0 lt
+      {
+%%UEP hem de pensar que més endavant hi haurem d'afegir un possible corrector de rotació que ens vindrà quan implementem les packedarrays per pàgina
+%%UN altre element compensatori, quan algun dels 4 costats no toqui vores a la graella del llançat, seria decidir a quina de les vores on no toca l'ajustem o centrem
+(4 mana Rotate a -180 per la graella del llancat V)==  %pstack quit
+       /encaixT [xPagina yPagina] def
+       /encaixR -180 def
+      }
+      {
+%%UEP hem de pensar que més endavant hi haurem d'afegir un possible corrector de rotació que ens vindrà quan implementem les packedarrays per pàgina
+%%UN altre element compensatori, quan algun dels 4 costats no toqui vores a la graella del llançat, seria decidir a quina de les vores on no toca l'ajustem o centrem
+(5 mana Rotate a +180 per la graella del llancat V)==  %pstack quit
+       /encaixT [xPagina yPagina] def
+       /encaixR 180 def
+      }ifelse
+     }ifelse
+    }ifelse
+   }ifelse
+  }ifelse
+
   Odivisor
   {  %% i l'orientació de la pàgina a imposar també és vertical
    exch pop yPagina exch div  %% escala de treball
-%%+ ens cal saber si aquesta escala no fa que l'ample de la pàgina imposada superi encara la que disposa el llançat
+   %% ens cal saber si aquesta escala no fa que l'ample de la pàgina imposada superi encara la que disposa el llançat
    dup XaImposar mul xPagina 2 copy gt
    {  %% corregim l'escala, doncs l'X encara NO encaixa dins la pàgina del llançat
+(corregim l'escala / pagina a imposar en Vertical)==
     XaImposar div  %% escala corregida
     exch pop exch pop
    }
    {
-%(NO hem de corregir l'escala)==  %pstack quit
-pop pop
+(NO hem de corregir l'escala / pagina a imposar en Vertical)==  %pstack quit
+    pop pop
    }ifelse
   }
-  {  %% però l'orientació de la pàgina a imposar és horitzontal
+  {  %% però l'orientació de la pàgina a imposar és horitzontal o quadrada
    pop xPagina exch div  %% escala de treball
+%% ens cal saber si aquesta escala no fa que l'alt de la pàgina imposada superi encara la que disposa el llançat
+   dup YaImposar mul yPagina 2 copy gt
+   {  %% corregim l'escala, doncs l'Y encara NO encaixa dins la pàgina del llançat
+    YaImposar div  %% escala corregida
+    exch pop exch pop
+(corregim l'escala / pagina a imposar en Horitzontal)==
+   }
+   {  %% (NO hem de corregir l'escala)==  %pstack quit
+(NO hem de corregir l'escala / pagina a imposar en Horitzontal)==  %pstack quit
+    pop pop
+   }ifelse
 %%REpublica: abans activavem un error però creiem que NO ho es doncs es tractaria d'una pagina completament quadrada
-%(oV CAL afinar l'escala com %%+)pstack stop
   }ifelse
- }ifelse
+%%EP! a l'stack hi tenim el valor de l'escala de la pàgina a imposar
+ }ifelse  %%  graella del llançat horitzontal/vertical
+
+ %% fem aquí els translate/rotate que toquin abans d'escalar
+ encaixT aload pop translate encaixR rotate
 
  dup /araScl exch def
+ dup scale  %% adapta al màxim cada pàgina del PDF que llegim dins la pàgina del llançat segons M14
+ %% ídem si escalem via matriu
+ %[ exch 0 0 2 index 0 0 ] concat
 
- dup scale  %% adapta al màxim cada pàgina del PDF que llegim dins la pàgina del llançat
-%% ídem si escalem via matriu
-%[ exch 0 0 2 index 0 0 ] concat
 
 %%UBESH
-
  enQuadra
  {  %% només si hi ha CropBox actiu diferent de MediaBox
   %% la translació i el retall l'hem de fer per aquest ordre
@@ -1739,7 +2350,6 @@ pop pop
 
     exch get  %% tibem, via índex del mapa d'imposició, el núm. de pàgina del PDF d'entrada que imposarem ara
 
-%%UBESH EP!
 %dup ==
 
     %% si ens arriba un null equival a una pàgina en blanc i evitem el .PDFDrawPage
@@ -1799,8 +2409,6 @@ pop pop
 
 %}ifelse
 
-
-%(UEP!)pstack quit
 %gsave
 %1 1 1 setrgbcolor
 %0 0 xPagina yPagina rectfill
@@ -1819,7 +2427,7 @@ pop pop
 
 %  elF closefile
 
-%%EP no ajuda a millorar?
+%% no ajuda a millorar?
 %initgraphics
 %initmatrix
 %grestoreall

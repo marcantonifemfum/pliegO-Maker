@@ -6463,6 +6463,84 @@ iPmaker 1 add /iPmaker exch def
 } loop  %% fi del loop explorador d'arees pagina a pagina
 
 
+%%UBESH fem un nou loop explorador d'instruccions Rotate, doncs ens poden condicionar enormement la imposició de pàgines en funció de si les considerem o no
+%% aquí escriurem tots els Rotate definits
+/araPlana 1 def  %% valor inicial del ventador de pàgines
+{  %% loop explorador de Rotate pàgina a pàgina
+ quinaPlana araPlana 12 string cvs
+ %% els diccionaris de pàgina dins PeDeEfa ja estan creats doncs contenen tots els Bbox explorats al loop anterior
+ % dup XRay /PeDeEfa get exch 5 dict put  %% incrustem un dict descriptiu x pagina
+ get /actGina exch def  %% extraiem la ref ind de la primera pagina
+ /iDimoni 0 def
+ {  %% loop d'interrogacio dels dicts de COMdimoni
+  currentdict iDimoni 4 string cvs cvn get
+  %% el diccionari de l'objecte
+  dup actGina known {actGina get exit}{pop}ifelse 
+  iDimoni 1 add /iDimoni exch def
+  iDimoni MaxDimoni eq {exit} if
+ } loop  %% d'interrogacio dels dicts de COMdimoni
+ %% del dic de la plana interroguem /Rotate
+ dup
+ /sOrtim false def
+ /hihaParent false def
+ {  %% loop que va pujant mentre hi hagi Parent i no hi hagi Rotate (fins l'arrel /Pages)
+  /Rotate known
+  {
+   dup /Rotate get
+   %% aqui cal endrecar el valor de Rotate al dic numerat de la pagina a PeDeEfa de l'XRay xq no falli la comprovacio a la seccio seguent
+   dup /vRotate exch def  %% en desem una copia
+   XRay /PeDeEfa get araPlana 12 string cvs get /Rotate vRotate put  %% el desem al dic numerat de la pagina
+   wFitxerXRay dup dup (\015\012PDF:page) writestring araPlana 12 string cvs writestring (:Rotate:) writestring
+   %% escriu l'enter de Rotate
+   wFitxerXRay exch 6 string cvs writestring wFitxerXRay 32 write
+   /sOrtim true def
+%araPlana(HAtrobatROTATE)pstack quit
+  }
+  {  %% si no hi és pot ser que l'hereti del Parent (però no es obligatori)
+   dup /Parent known
+   {
+    hihaParent
+    {
+     /Parent get
+    }
+    {
+     dup /Parent get
+    }ifelse
+    /actParent exch def  %% extraiem la ref ind
+    /iDimoni 0 def
+    {  %% loop d'interrogacio dels dicts de COMdimoni
+     currentdict iDimoni 4 string cvs cvn get
+     %% el diccionari de l'objecte
+     dup actParent known {actParent get exit}{pop}ifelse
+     iDimoni 1 add /iDimoni exch def
+     iDimoni MaxDimoni eq {exit} if
+    } loop  %% d'interrogacio dels dicts de COMdimoni
+    %% el dic de la branca de pagines d'on penja
+    dup
+    /hihaParent true def
+   }
+   {  %% haurà esgotat tots els Parents sense trobar Rotate
+    %% no és cap error però de moment l'anotem redundant que tindrà valor zero
+    XRay /PeDeEfa get /Errades get /MissingRotatePage: araPlana 12 string cvs put
+    /sOrtim true def
+    %% desa i escriu l'enter de Rotate a zero
+    XRay /PeDeEfa get araPlana 12 string cvs get /Rotate 0 put  %% el desem al dic numerat de la pagina
+    wFitxerXRay dup dup (\015\012PDF:page) writestring araPlana 12 string cvs writestring (:Rotate:) writestring
+    wFitxerXRay (0) writestring wFitxerXRay 32 write
+%araPlana actGina actParent (noHAtrobatROTATE)pstack quit
+   }ifelse
+  }ifelse
+  sOrtim
+  {
+   hihaParent {pop}if  %% si hem tibat de Parent hi haura un dic d'entremig sobrer
+   exit
+  }if
+ }loop  %% recursiu per trobar el Rotate fins l'arrel /Pages i/o nodes intermitjos si cal
+ araPlana 1 add dup maxPlana gt {pop exit}{/araPlana exch def}ifelse
+}loop  %% fi del loop explorador de Rotate pàgina a pàgina
+
+%XRay /PeDeEfa get { dup type /dicttype eq{{== ==}forall ==}{pop pop}ifelse }forall(!)pstack quit
+
 %%Hackovid
 %% capturaríem la variable d'entorn amb la id única del pdf provinent de $PDFunic
 %% i si no hi fos?

@@ -1,18 +1,24 @@
 %!
 %% generem n pagines amb una anotació a dins (test per pliegOS)
 
-0 1 7
+1 1 7
 {
- <</PageSize[100 100]>>setpagedevice
+%% <</PageSize[100 100]>>setpagedevice
+ <</PageSize[595 842]>>setpagedevice
  4 string cvs
- /Courier 100 selectfont
- 5 5 moveto dup show
- [ %% xll yll xur yur, però la icona surt al xamfrà ul
- /Rect [ 70 70 90 90 ]
- /Open false
- /Title 7 -1 roll
- /Color [1 0 1]  %% magenta
- /ANN pdfmark
+ % /Courier
+ (/usr/share/fonts/truetype/hack/Hack-Regular.ttf)
+ 400 selectfont
+ dup stringwidth pop 595 exch sub 2 div 280 moveto show
+
+% 5 5 moveto dup show
+% [ %% xll yll xur yur, però la icona surt al xamfrà ul
+% /Rect [ 70 70 90 90 ]
+% /Open false
+% /Title 7 -1 roll
+% /Color [1 0 1]  %% magenta
+% /ANN pdfmark
+
  showpage
 }for
 

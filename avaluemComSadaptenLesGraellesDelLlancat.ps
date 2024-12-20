@@ -1,0 +1,247 @@
+%!
+%% avaluem com s'adapten les graelles del llançat
+%% generem pàgines amb orientacions i retalls diferents
+%% per jugar amb els valors M2, M7 i M14 de ESH_UB.txt executant pliegOMaker_UBESH.ps
+
+%%+1 MediaBox quadrat amb un element central sense CropBox amb Rotate -180
+<<
+  /PageSize [500 500]
+>>setpagedevice
+
+%% àrea al voltant d'un glif on hi centrarem una Q de quadrat
+(/usr/share/fonts//usr/share/fonts/type1/urw-base35/URWBookman-Demi.t1) 200 selectfont
+
+150 150 moveto (Q)
+stringwidth pop 500 exch sub 2 div 150 2 copy moveto (Q)
+true charpath pathbbox 4 array astore 3 1 roll
+moveto (Q) show
+
+1 0 0 setrgbcolor 2 setlinewidth
+dup /xferCrop exch def aload pop 2 index sub exch 3 index sub exch rectstroke
+
+%% si fem CropBox arran de filet vermell que inscriu el glif
+mark
+%/CropBox xferCrop aload pop 4 -1 roll 1 sub 4 -1 roll 1 sub 4 -1 roll 1 add 4 -1 roll 1 add 4 array astore /PAGE pdfmark
+/Rotate -180
+/PAGE pdfmark
+
+%% fem un filet blau que inscriu el format de pàgina
+0 0 1 setrgbcolor
+1 1 498 498 rectstroke
+
+showpage
+
+
+%%+2 MediaBox quadrat amb un element central amb CropBox vertical i Rotate 90
+<<
+  /PageSize [500 500]
+>>setpagedevice
+
+%% àrea al voltant d'un glif on hi centrarem una Q de quadrat
+(/usr/share/fonts//usr/share/fonts/type1/urw-base35/URWBookman-Demi.t1) 200 selectfont
+
+150 150 moveto (Q)
+stringwidth pop 500 exch sub 2 div 150 2 copy moveto (Q)
+true charpath pathbbox 4 array astore 3 1 roll
+moveto (Q) show
+
+1 0 0 setrgbcolor 2 setlinewidth
+dup /xferCrop exch def aload pop 2 index sub exch 3 index sub exch rectstroke
+
+%% si fem CropBox arran de filet vermell que inscriu el glif
+mark /CropBox xferCrop aload pop 4 -1 roll 1 sub 4 -1 roll 1 sub 4 -1 roll 1 add 4 -1 roll 1 add 4 array astore
+%% si fem Rotate
+/Rotate 90
+/PAGE pdfmark
+
+%% fem un filet blau que inscriu el format de pàgina
+0 0 1 setrgbcolor
+1 1 498 498 rectstroke
+
+showpage
+
+
+
+%%+3 MediaBox horitzontal amb un element central i Rotate 180
+<<
+  /PageSize [1000 500]
+>>setpagedevice
+
+%% àrea al voltant d'un glif on hi centrarem una Q de quadrat
+(/usr/share/fonts//usr/share/fonts/type1/urw-base35/URWBookman-Demi.t1) 200 selectfont
+
+150 150 moveto (Ho)
+stringwidth pop 1000 exch sub 2 div 150 2 copy moveto (Ho)
+true charpath pathbbox 4 array astore 3 1 roll
+moveto (Ho) show
+
+1 0 0 setrgbcolor 2 setlinewidth
+dup /xferCrop exch def aload pop 2 index sub exch 3 index sub exch rectstroke
+
+%% si fem CropBox arran de filet vermell que inscriu el glif
+mark
+%/CropBox xferCrop aload pop 4 -1 roll 1 sub 4 -1 roll 1 sub 4 -1 roll 1 add 4 -1 roll 1 add 4 array astore
+%% si fem Rotate
+/Rotate 180
+/PAGE pdfmark
+
+%% fem un filet blau que inscriu el format de pàgina
+0 0 1 setrgbcolor
+1 1 998 498 rectstroke
+
+showpage
+
+
+
+%%+4 MediaBox horitzontal amb un element central amb CropBox gairebé quadrat
+<<
+  /PageSize [1000 500]
+>>setpagedevice
+
+%% àrea al voltant d'un glif on hi centrarem una Q de quadrat
+(/usr/share/fonts//usr/share/fonts/type1/urw-base35/URWBookman-Demi.t1) 200 selectfont
+
+150 150 moveto (O)
+stringwidth pop 1000 exch sub 2 div 150 2 copy moveto (O)
+true charpath pathbbox 4 array astore 3 1 roll
+moveto (O) show
+
+1 0 0 setrgbcolor 2 setlinewidth
+dup /xferCrop exch def aload pop 2 index sub exch 3 index sub exch rectstroke
+
+%% si fem CropBox arran de filet vermell que inscriu el glif
+mark /CropBox xferCrop aload pop 4 -1 roll 1 sub 4 -1 roll 1 sub 4 -1 roll 1 add 4 -1 roll 1 add 4 array astore
+%% si fem Rotate
+%/Rotate 90
+/PAGE pdfmark
+
+%% fem un filet blau que inscriu el format de pàgina
+0 0 1 setrgbcolor
+1 1 998 498 rectstroke
+
+showpage
+
+
+
+%%+5 MediaBox vertical amb un element central i Rotate 90
+<<
+  /PageSize [500 1000]
+>>setpagedevice
+
+%% àrea al voltant d'un glif on hi centrarem una Q de quadrat
+(/usr/share/fonts//usr/share/fonts/type1/urw-base35/URWBookman-Demi.t1) 200 selectfont
+
+150 150 moveto (V)
+stringwidth pop 500 exch sub 2 div 400 2 copy moveto (V)
+true charpath pathbbox 4 array astore 3 1 roll
+moveto (V) show
+
+1 0 0 setrgbcolor 2 setlinewidth
+dup /xferCrop exch def aload pop 2 index sub exch 3 index sub exch rectstroke
+
+%% si fem CropBox arran de filet vermell que inscriu el glif
+mark
+%/CropBox xferCrop aload pop 4 -1 roll 1 sub 4 -1 roll 1 sub 4 -1 roll 1 add 4 -1 roll 1 add 4 array astore
+%% si fem Rotate
+/Rotate 90
+/PAGE pdfmark
+
+%% fem un filet blau que inscriu el format de pàgina
+0 0 1 setrgbcolor
+1 1 498 998 rectstroke
+
+showpage
+
+
+
+%%+6 MediaBox vertical amb un element central i Rotate -90
+<<
+  /PageSize [500 1000]
+>>setpagedevice
+
+%% àrea al voltant d'un glif on hi centrarem una Q de quadrat
+(/usr/share/fonts//usr/share/fonts/type1/urw-base35/URWBookman-Demi.t1) 200 selectfont
+
+150 150 moveto (R)
+stringwidth pop 500 exch sub 2 div 400 2 copy moveto (R)
+true charpath pathbbox 4 array astore 3 1 roll
+moveto (R) show
+
+1 0 0 setrgbcolor 2 setlinewidth
+dup /xferCrop exch def aload pop 2 index sub exch 3 index sub exch rectstroke
+
+%% si fem CropBox arran de filet vermell que inscriu el glif
+mark
+%/CropBox xferCrop aload pop 4 -1 roll 1 sub 4 -1 roll 1 sub 4 -1 roll 1 add 4 -1 roll 1 add 4 array astore
+%% si fem Rotate
+/Rotate -90
+/PAGE pdfmark
+
+%% fem un filet blau que inscriu el format de pàgina
+0 0 1 setrgbcolor
+1 1 498 998 rectstroke
+
+showpage
+
+
+
+%%+7 MediaBox vertical amb un element central i Rotate 180
+<<
+  /PageSize [500 1000]
+>>setpagedevice
+
+%% àrea al voltant d'un glif on hi centrarem una Q de quadrat
+(/usr/share/fonts//usr/share/fonts/type1/urw-base35/URWBookman-Demi.t1) 200 selectfont
+
+150 150 moveto (L)
+stringwidth pop 500 exch sub 2 div 400 2 copy moveto (L)
+true charpath pathbbox 4 array astore 3 1 roll
+moveto (L) show
+
+1 0 0 setrgbcolor 2 setlinewidth
+dup /xferCrop exch def aload pop 2 index sub exch 3 index sub exch rectstroke
+
+%% si fem CropBox arran de filet vermell que inscriu el glif
+mark
+%/CropBox xferCrop aload pop 4 -1 roll 1 sub 4 -1 roll 1 sub 4 -1 roll 1 add 4 -1 roll 1 add 4 array astore
+%% si fem Rotate
+/Rotate 180
+/PAGE pdfmark
+
+%% fem un filet blau que inscriu el format de pàgina
+0 0 1 setrgbcolor
+1 1 498 998 rectstroke
+
+showpage
+
+
+
+%%+8 MediaBox vertical amb un element central amb CropBox i Rotate -180
+<<
+  /PageSize [500 1000]
+>>setpagedevice
+
+%% àrea al voltant d'un glif on hi centrarem una Q de quadrat
+(/usr/share/fonts//usr/share/fonts/type1/urw-base35/URWBookman-Demi.t1) 200 selectfont
+
+150 150 moveto (L)
+stringwidth pop 500 exch sub 2 div 400 2 copy moveto (L)
+true charpath pathbbox 4 array astore 3 1 roll
+moveto (L) show
+
+1 0 0 setrgbcolor 2 setlinewidth
+dup /xferCrop exch def aload pop 2 index sub exch 3 index sub exch rectstroke
+
+%% si fem CropBox arran de filet vermell que inscriu el glif
+mark
+/CropBox xferCrop aload pop 4 -1 roll 1 sub 4 -1 roll 1 sub 4 -1 roll 1 add 4 -1 roll 1 add 4 array astore
+%% si fem Rotate
+/Rotate -180
+/PAGE pdfmark
+
+%% fem un filet blau que inscriu el format de pàgina
+0 0 1 setrgbcolor
+1 1 498 998 rectstroke
+
+showpage
+
