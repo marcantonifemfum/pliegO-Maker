@@ -1320,7 +1320,6 @@ M10
 %% el fet que en aquesta array hi pot haver una numeració de pàgines que ja no comenci per 1 i que pot ser de qualsevol tram correlatiu
 %% fa que ens haguem de plantejar una nova estratègia per detectar possibles pàgines ignorades
 %% l'estratègia seria fondre ARArray dins de la carcassa matriu possible de totes les pàgines del PDF i a partir d'aquí comptar NULLs
-%  (IEPALA)pstack quit
    {  %% forall
     dup type /nulltype eq
     {
@@ -1902,6 +1901,9 @@ M7
  }ifelse
 }ifelse
 
+%%PRESERVEM l'estat gràfic abans de cap altre canvi d'escala/translació/rotació de cara als afegits post-llançat (numeració, etc) pàgina a pàgina
+gsave
+
 Simposa
 {  %% el mapa d'imposició no ens torna un null (en blanc) o sigui que la imposem
 
@@ -2360,6 +2362,10 @@ Simposa
     }
     {
      1 sub  %% però el retornem al seu índex per fer el .PDFDrawPage
+
+%%ENUMERA pàgines
+dup /iDoE exch def  %% l'índex de pàgina en el sentit de lectura ens detectarà pàgines a dreta/esquerra en el sentit de lectura? segurament no serà valid per alguns nUps
+
      /llançat true def
     }ifelse
    }ifelse
@@ -2433,10 +2439,387 @@ Simposa
 %grestoreall
  }ifelse
 
+%%PRESERVEM l'estat gràfic abans de cap altre canvi d'escala/translació/rotació de cara als afegits post-llançat (numeració, etc) pàgina a pàgina
+grestore
+
 %}stopped
 %{
 % (\n\n >>> farceixPDFs_pseudoPDFX5_UBESH ON PETES?\n\n) print flush (- - - - - - - - - -)pstack stop
 %}if
+
+%%ENUMERA pàgines
+ %% aquest és el punt on millor podem fer aquesta feina?
+ %% que la basarem en l'estratègia de compondre el numeral que toqui en base al mapa d'imposició
+ %% doncs l'usuari podrà haver omès el dígit del número de pàgina (pàgina sense numerar) o haver-lo personalitzat o forçar a una pàgina en blanc que es numeri
+ %% gràficament jugarem amb una base geomètrica: quadrat, triangle, semicercle, amb un factor de transparència que podrà ser inicalment gris o negre
+ %% el valor del numeral el posarem inicialment en blanc opac (podríem posar tots dos elements en una capa de PDF desactivable per l'usuari a l'imprimir?)
+
+ %% per defecte NO numerem les pàgines en blanc
+ %% aquí ja no quedem afectats pels paràmetres d'escala/translació/rotació
+
+ true  %% opció de menú
+ {
+  llançat  %% la pàgina en blanc NO la numerem ara
+  {
+   iDoE  %% haurem de pescar el numèric a pintar del mapa d'imposició
+   1 add 2 mod 0 eq  %% primer ens cal saber si estem fent una pàgina de la dreta o de l'esquerra (imparells/parells?)
+   {  %% esquerra és sempre parell?
+    false
+   }
+   {  %% dreta és sempre imparell?
+    true
+   }ifelse
+   /Pesquerra exch def  %% gatell per controlar les pàgines esquerra/dreta (hem de concretar l'estratègia per detectar-les en base al mapa d'imposició segons l'nUp triat)
+   /PXV 2 def  %% 0 peu, 1 xamfrà, 2 vora, posició del numerador dins la pàgina haurà de ser una opció de menú
+   /PoT true def  %% false ple, true transparent, haurà de ser una opció de menú 
+   /QCT 1 def  %% 0 cap, 1 quadrat, 2 semicercle, 3 triangle, # dymo?: quin fons hi posem al numerador? haurà de ser una opció de menú
+   /cQCT 1 def  %% 0 cap, 1 negre, 2 gris, quin color de fons hi posem al numerador? haurà de ser una opció de menú
+
+   [  %% configurem els tres modes per situar i enumerar
+    {  %% 0 centrat al peu de pàgina
+     gsave  %% preservem la transparència, si n'hi ha, i el color de fons del numerat
+     xPagina yPagina lt
+     {
+      xPagina 15 div /cCub exch def  %% una # part del costat més petit?
+     }
+     {
+      yPagina 15 div /cCub exch def  %% una # part del costat més petit?
+     }ifelse
+
+     PoT  %% ple o transparent com a opció de menú
+     {
+      %% /Multiply .setblendmode .2 .setopacityalpha  %% han quedat obsolets des del GS 9.53
+      %% activar la transparència ens obliga a incloure el gatell -dALLOWPSTRANSPARENCY dins la línia de comanda d'execució
+      true .setalphaisshape .4 .setfillconstantalpha
+     }if
+
+     [  %% color de la forma del fons del numerador
+      {  %% 0 cap
+       %% dymo?
+      }
+      {  %% 1 negre
+       0 0 0 setrgbcolor
+      }
+      {  %% 2 gris
+       .7 .7 .7 setrgbcolor
+      }
+     ] cQCT get cvx exec  %% opció de menú?
+
+     [  %% forma del fons del numerador
+      {  %% 0 cap
+      }
+      {  %% 1 quadrat
+       xPagina 2 div cCub 2 div sub 0 cCub dup 4 copy rectfill
+       pop 2 index add 0 cCub 2 div 5 array astore /LdBiC exch def  %% línia de base i cos teòrics
+      }
+      {  %% 2 semicercle
+       xPagina 2 div 0 cCub 2 div 0 360 arc
+       pathbbox cCub 2 div 5 array astore /LdBiC exch def  %% línia de base i cos teòrics
+       fill
+      }
+      {  %% 3 triangle
+       cCub 2 sqrt mul 2 div dup dup xPagina 2 div dup dup 4 -1 roll sub 0 moveto 3 -1 roll lineto add 0 lineto closepath
+       pathbbox 2 index exch 5 array astore /LdBiC exch def  %% línia de base i cos teòrics
+       fill
+      }
+     ] QCT get cvx exec  %% opció de menú
+     grestore  %% preservem la transparència, si n'hi ha, i el color de fons del numerat
+    }  %% 0 centrat al peu de pàgina
+
+    {  %% 1 al xamfrà esquerra o dreta
+     gsave  %% preservem la transparència, si n'hi ha, i el color de fons del numerat
+     xPagina yPagina lt
+     {
+      xPagina 15 div /cCub exch def  %% una # part del costat més petit?
+     }
+     {
+      yPagina 15 div /cCub exch def  %% una # part del costat més petit?
+     }ifelse
+
+     PoT  %% ple o transparent com a opció de menú
+     {
+      %% /Multiply .setblendmode .2 .setopacityalpha  %% han quedat obsolets des del GS 9.53
+      %% activar la transparència ens obliga a incloure el gatell -dALLOWPSTRANSPARENCY dins la línia de comanda d'execució
+      true .setalphaisshape .4 .setfillconstantalpha
+     }if
+
+     [  %% color de la forma del fons del numerador
+      {  %% 0 cap
+      }
+      {  %% 1 negre
+       0 0 0 setrgbcolor
+      }
+      {  %% 2 gris
+       .7 .7 .7 setrgbcolor
+      }
+     ] cQCT get cvx exec  %% opció de menú?
+
+     [  %% forma del fons del numerador
+      {  %% 0 cap
+       %% dymo?
+      }
+      {  %% 1 quadrat
+       Pesquerra
+       {  %% pàgina dreta?
+	xPagina cCub sub 0 cCub dup 4 copy rectfill
+        pop 2 index add 0 cCub 2 div true 6 array astore /LdBiC exch def  %% línia de base i cos teòrics
+       }
+       {  %% pàgina esquerra?
+	0 0 cCub dup 4 copy rectfill
+        pop 2 index add 0 cCub 2 div false 6 array astore /LdBiC exch def  %% línia de base i cos teòrics
+       }ifelse
+      }
+      {  %% 2 semicercle
+       Pesquerra
+       {  %% pàgina dreta?
+        xPagina 0 cCub 0 360 arc
+        pathbbox cCub 2 div true 6 array astore /LdBiC exch def  %% línia de base i cos teòrics
+	fill
+       }
+       {  %% pàgina esquerra?
+        0 0 cCub 0 360 arc
+        pathbbox cCub 2 div false 6 array astore /LdBiC exch def  %% línia de base i cos teòrics
+	fill
+       }ifelse
+      }
+      {  %% 3 triangle
+       Pesquerra
+       {  %% pàgina dreta?
+        xPagina 0 moveto xPagina cCub 2 sqrt mul lineto xPagina cCub 2 sqrt mul sub 0 lineto closepath
+        pathbbox dup true 6 array astore /LdBiC exch def  %% línia de base i cos teòrics a la dreta
+	fill
+       }
+       {  %% pàgina esquerra?
+        0 0 moveto 0 cCub 2 sqrt mul lineto cCub 2 sqrt mul 0 lineto closepath
+        pathbbox dup false 6 array astore /LdBiC exch def  %% línia de base i cos teòrics a l'esquerra
+	fill
+       }ifelse
+      }
+     ] QCT get cvx exec  %% opció de menú
+     grestore  %% preservem la transparència, si n'hi ha, i el color de fons del numerat
+    }  %% 1 al xamfrà esquerra o dreta
+
+    {  %% 2 centrat verticalment a la vora esquerra o dreta
+     gsave  %% preservem la transparència, si n'hi ha, i el color de fons del numerat
+     xPagina yPagina lt
+     {
+      xPagina 15 div /cCub exch def  %% una # part del costat més petit?
+     }
+     {
+      yPagina 15 div /cCub exch def  %% una # part del costat més petit?
+     }ifelse
+
+     PoT  %% ple o transparent com a opció de menú
+     {
+      %% /Multiply .setblendmode .2 .setopacityalpha  %% han quedat obsolets des del GS 9.53
+      %% activar la transparència ens obliga a incloure el gatell -dALLOWPSTRANSPARENCY dins la línia de comanda d'execució
+      true .setalphaisshape .4 .setfillconstantalpha
+     }if
+
+     [  %% color de la forma del fons del numerador
+      {  %% 0 cap
+      }
+      {  %% 1 negre
+       0 0 0 setrgbcolor
+      }
+      {  %% 2 gris
+       .7 .7 .7 setrgbcolor
+      }
+     ] cQCT get cvx exec  %% opció de menú?
+
+     [  %% forma del fons del numerador
+      {  %% 0 cap
+       %% dymo?
+      }
+      {  %% 1 quadrat
+       Pesquerra
+       {  %% pàgina dreta?
+        xPagina cCub sub yPagina 2 div cCub 2 div sub cCub dup
+	4 copy dup true 6 array astore /LdBiC exch def  %% línia de base i cos teòrics a la dreta
+	rectfill
+       }
+       {  %% pàgina esquerra?
+        0 yPagina 2 div cCub 2 div sub cCub dup
+	4 copy dup false 6 array astore /LdBiC exch def  %% línia de base i cos teòrics a l'esquerra
+	rectfill
+       }ifelse
+      }
+      {  %% 2 semicercle
+       Pesquerra
+       {  %% pàgina dreta?
+        xPagina yPagina 2 div 2 copy cCub 2 div 0 360 arc
+	pathbbox pop true 6 array astore /LdBiC exch def  %% línia de base i cos teòrics a la dreta
+	fill
+       }
+       {  %% pàgina esquerra?
+        0 yPagina 2 div 2 copy cCub 2 div 0 360 arc
+        pathbbox pop false 6 array astore /LdBiC exch def  %% línia de base i cos teòrics a l'esquerra
+	fill
+       }ifelse
+      }
+      {  %% 3 triangle
+       Pesquerra
+       {  %% pàgina dreta?
+        xPagina cCub 2 sqrt mul 2 div sub yPagina 2 div moveto
+	xPagina yPagina 2 div cCub 2 sqrt mul 2 div sub lineto
+	xPagina yPagina 2 div cCub 2 sqrt mul 2 div add lineto closepath
+        pathbbox dup true 6 array astore /LdBiC exch def  %% línia de base i cos teòrics a la dreta
+	fill
+       }
+       {  %% pàgina esquerra?
+        0 cCub 2 sqrt mul 2 div add yPagina 2 div moveto
+	0 yPagina 2 div cCub 2 sqrt mul 2 div sub lineto
+	0 yPagina 2 div cCub 2 sqrt mul 2 div add lineto closepath
+        pathbbox dup false 6 array astore /LdBiC exch def  %% línia de base i cos teòrics a l'esquerra
+	fill
+       }ifelse
+      }
+     ] QCT get cvx exec  %% opció de menú
+     grestore  %% preservem la transparència, si n'hi ha, i el color de fons del numerat
+    }  %% 2 centrat verticalment a la vora esquerra o dreta
+   ]  %% configurem els tres modes per situar i enumerar
+
+   PXV get cvx exec  %% nova opció de menú pel posicionat del numerador dins la pàgina
+
+   %% pintem en blanc opac el numèric
+   gsave
+   0 0 0 0 setcmykcolor
+   (/usr/share/fonts/truetype/hack/Hack-Regular.ttf) findfont /dfNum exch def
+   [
+    {  %% 0 al peu
+     [
+      {  %% 0 cap
+%% dymo?
+      }
+      {  %% 1 quadrat
+       LdBiC aload pop dfNum exch scalefont setfont
+       pop 2 index sub 2 div
+       0 0 moveto Npgn stringwidth pop 2 div sub 3 -1 roll add exch pop cCub .3 mul moveto Npgn show
+      }
+      {  %% 2 semicercle
+       LdBiC aload pop dfNum exch .7 mul scalefont setfont
+       pop 2 index sub 2 div
+       0 0 moveto Npgn stringwidth pop 2 div sub 3 -1 roll add exch pop cCub .1 mul moveto Npgn show
+      }
+      {  %% 3 triangle
+       LdBiC aload pop dfNum exch .7 mul scalefont setfont
+       pop 2 index sub 2 div
+       0 0 moveto Npgn stringwidth pop 2 div sub 3 -1 roll add exch pop cCub .1 mul moveto Npgn show
+      }
+     ] QCT get cvx exec
+    }
+
+    {  %% 1 al xamfrà
+     [
+      {  %% 0 cap
+%% dymo?
+      }
+      {  %% 1 quadrat
+       LdBiC aload pop
+       {  %% xamfrà dret
+        dfNum exch scalefont setfont
+        pop 2 index sub 2 div
+        0 0 moveto Npgn stringwidth pop 2 div sub 3 -1 roll add exch pop cCub .3 mul moveto Npgn show
+       }
+       {  %% xamfrà esquerre
+        dfNum exch scalefont setfont
+        pop 2 index sub 2 div
+        0 0 moveto Npgn stringwidth pop 2 div sub 3 -1 roll add exch pop cCub .3 mul moveto Npgn show
+       }ifelse
+      }
+      {  %% 2 semicercle
+       LdBiC aload pop
+       {  %% xamfrà dret
+        dfNum exch .9 mul scalefont setfont
+        xPagina	0 translate 45 rotate
+	0 0 moveto Npgn stringwidth pop 2 div neg exch .5 mul moveto
+	Npgn show
+	pop pop pop
+       }
+       {  %% xamfrà esquerre
+        dfNum exch .9 mul scalefont setfont
+        0 0 translate -45 rotate
+	0 0 moveto Npgn stringwidth pop 2 div neg exch .5 mul moveto
+	Npgn show
+	pop pop pop
+       }ifelse
+      }
+      {  %% 3 triangle
+       LdBiC aload pop
+       {  %% xamfrà dret
+        dfNum exch .4 mul scalefont setfont
+        xPagina	0 translate 45 rotate
+	0 0 moveto Npgn stringwidth pop 2 div neg exch .3 mul moveto
+	Npgn show
+	pop pop pop
+       }
+       {  %% xamfrà esquerre
+        dfNum exch .4 mul scalefont setfont
+        0 0 translate -45 rotate
+	0 0 moveto Npgn stringwidth pop 2 div neg exch .3 mul moveto
+	Npgn show
+	pop pop pop
+       }ifelse
+      }
+     ] QCT get cvx exec
+    }
+
+    {  %% 2 a la vora
+     [
+      {  %% 0 cap
+%% dymo?
+      }
+      {  %% 1 quadrat
+       LdBiC aload pop
+       {  %% vora dreta
+        dfNum exch .5 mul dup /araCos exch def scalefont setfont
+	2 div exch 2 div 4 -1 roll add exch 3 -1 roll add exch
+	0 0 moveto Npgn stringwidth pop 2 div sub exch araCos 3 div sub
+	moveto Npgn show
+       }
+       {  %% vora esquerra
+        dfNum exch .5 mul dup /araCos exch def scalefont setfont
+	2 div exch 2 div 4 -1 roll add exch 3 -1 roll add exch
+	0 0 moveto Npgn stringwidth pop 2 div sub exch araCos 3 div sub
+	moveto Npgn show
+       }ifelse
+      }
+      {  %% 2 semicercle
+       LdBiC aload pop
+       {  %% vora dreta
+        exch pop exch sub
+	dfNum exch dup 2 div /araR exch def .3 mul scalefont setfont
+	translate araR 2 div 0 0 moveto Npgn stringwidth pop
+        2 div add neg araR .15 mul neg moveto Npgn show
+       }
+       {  %% vora esquerra
+        exch pop exch sub
+	dfNum exch dup 2 div /araR exch def .3 mul scalefont setfont
+	translate araR 2 div 0 0 moveto Npgn stringwidth pop
+        2 div sub araR .15 mul neg moveto Npgn show
+       }ifelse
+      }
+      {  %% 3 triangle
+       LdBiC aload pop
+       {  %% vora dreta
+        3 index sub dfNum exch .25 mul dup /araCos exch def scalefont setfont
+        2 index sub 2 div 3 -1 roll add exch 2 index sub 2 div 3 -1 roll add
+	0 0 moveto Npgn stringwidth pop 2 div sub exch araCos 3 div sub
+	moveto Npgn show
+       }
+       {  %% vora esquerra
+        3 index sub dfNum exch .25 mul dup /araCos exch def scalefont setfont
+        2 index sub 2 div 3 -1 roll add exch 2 index sub 2 div 3 -1 roll add
+	0 0 moveto Npgn stringwidth pop 2 div sub exch araCos 3 div sub
+	moveto Npgn show
+       }ifelse
+      }
+     ] QCT get cvx exec
+    }
+   ] PXV get cvx exec
+   grestore
+  }if  %% pàgina en blanc?
+ }if  %% enumerem les pàgines?
 
 }if  %% noNULL anellem el codi sencer perquè no és aleatori per pàgina
 

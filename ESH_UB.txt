@@ -3,7 +3,8 @@
 %% Un sol % fins a final de línia és un comentari que l'intèrpret ignora
 
 %% Línia de comanda, via Terminal, des del mateix directori on tinguem els .ps de pliegO'Maker i on també hi anirà a parar el resultat.pdf
-%% gs -q -dNOSAFER -o resultat.pdf -dAutoRotatePages=/None -sDEVICE=pdfwrite -f pliegOMaker_UBESH.ps
+%% a l'incloure transparències en la paginació és obligat afergir-hi el gatell -dALLOWPSTRANSPARENCY
+%% gs -q -dNOSAFER -o resultat.pdf -dAutoRotatePages=/None -dALLOWPSTRANSPARENCY -sDEVICE=pdfwrite -f pliegOMaker_UBESH.ps                      
 
 %% MENÚ
 
@@ -23,7 +24,6 @@ true  %% true fem PDFs | false fem JPEGs
 %(/home/femfum/Documents/pliegOMakerUB/8paginesPDFnumerades.pdf)
 %(/home/femfum/Documents/pliegOMakerUB/9numerades_ladarreraENfucsia.pdf)
 %(/home/femfum/Documents/pliegOMakerUB/4re.pdf)
-%(/home/femfum/Documents/GuiaJove_EinesDT_v1_web.pdf)
 %(/home/femfum/Documents/pliegOMakerUB/10paginesAMBanotacions.pdf)
 
 %%UBESH ERROR
@@ -47,9 +47,15 @@ true  %% true fem PDFs | false fem JPEGs
 %(/home/femfum/Documents/pliegOMakerUB/16pagines_acoloridesEncartat4up.pdf)
 %(/home/femfum/Documents/pliegOMakerUB/32paginesA4numerades.pdf)
 
-% ENCABIR
-(/home/femfum/Documents/pliegOMakerUB/avaluemComSadaptenLesGraellesDelLlancat.pdf)
+%% ENCABIR
+%(/home/femfum/Documents/pliegOMakerUB/avaluemComSadaptenLesGraellesDelLlancat.pdf)
+%(/home/femfum/Documents/Ariadna/musiquesDelSilenci_HumetVidalSunder.pdf)
 
+%% enumerem pàgines
+%(/home/femfum/Downloads/17896_Eskaera_Solicitud.pdf)
+%(/home/femfum/Documents/GuiaJove_EinesDT_v1_web.pdf)  %%PETA! amb el CaLi2CoPi de pliegO'Maker, però NO amb el de FemFum_CaLi2CoPi_042_REpublica.ps
+%% segurament és perquè té algun element extra a l'stack i l'operador SCN treballa amb un count que el fa multiplicar erròniament!
+(/home/femfum/Documents/pliegOMakerUB/16pagines_numerades.pdf)
 
 }
 {
@@ -88,13 +94,13 @@ true
 %% 4 = 4+4 graella del llançat en vertical/horitzontal | plegat en llibret desbarbat | 4 pàgines a l'anvers i 4 al revers | impressió dúplex vertical/horitzontal
 %% 8 = 8+8 graella del llançat en vertical | plegat en llibret desbarbat | 8 pàgines a l'anvers i 8 al revers | impressió en dúplex horitzontal
 
-0
+8
 
 
 %%M3 ORIENTACIÓ DEL FULL D'IMPRESSIÓ ?
 %% true = horitzontal | false = vertical (si M2 és 8 sempre força a horitzontal/true)
 
-true
+false
 
 
 
@@ -145,6 +151,7 @@ true
 %% si el nombre de pàgines de l'nUp triat és ídem al nombre d'enters + null de l'array (o una array buida) i el PDF té igual o més pàgines, va bé
 %% si el nombre de pàgines de l'nUp triat és ídem al nombre d'enters + null de l'array (o una array buida) i el PDF té menys pàgines dóna Error: /undefined in --get-- 
 %% ara es permet que tot siguin pàgines en blanc (sembla no tenir massa sentit però ho mantenim)
+%% és obligatòria una array buida [] quan executem l'algorisme de reglatge2.ps
 
 %%AQUÍ HI HA D'ANAR UNA ARRAY AMB ELS LLIBRETS (ARRAYS) ENDREÇATS PER ORDRE D'ENQUADERNAT
 
@@ -164,11 +171,14 @@ true
 %[[1 2 3 4 5 6 7 8] [9 10 11 12 13 14 15 16] [17 18 19 20 21 22 23 24] [25 26 27 28 29 30 31 32] [33 34 35 36 37 38 39 40]]
 
 %% acolorides
-%[]
+%[[null null null null]]
+
+%% enumerem pàgines
+[]
 
 %% Tarde Handbook amb tall al mig sense desbarbar
 %[[1 2 3 4 5 6 7 8 9 null null null null null null null]]
-[[11 12 13 14 15 15 9 8 10 null null null null null null null]]
+%[[11 12 13 14 15 15 9 8 10 null null null null null null null]]
 %[]
 
 %% NOU TABULAT
@@ -181,6 +191,17 @@ true
 %  null
 % ]
 %]
+
+%[
+% [
+%  1
+%   null
+%% - - - revers - - - 
+%   null
+%  1
+% ]
+%]
+
 
 
 %% sintagma i paradigma

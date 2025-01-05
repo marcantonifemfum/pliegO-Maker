@@ -11,29 +11,30 @@
 
 (r) file cvx exec  %% posa en memòria la variable /7up_pliegOMaker_UBESH
 
-/nomesunAvegada true def  %% obrim el gatell d'execució única de certs paràmetres del laboratori d'algorismes M6 a 9
 
-/noMesunavegada true def  %% obrim el gatell de captura única de paràmetres a ESH_UB.txt pel laboratori d'algorismes M6 a 9
+ /nomesunAvegada true def  %% obrim el gatell d'execució única de certs paràmetres del laboratori d'algorismes M6 a 9
 
-/iLlibret 0 def  %% pel laboratori d'algorismes M6 a 9, índex comptador per tibar seqüencialment les arrays del mapa d'imposició M8 a ESH_UB.txt
+ /noMesunavegada true def  %% obrim el gatell de captura única de paràmetres a ESH_UB.txt pel laboratori d'algorismes M6 a 9
 
-{  %% loop generador de llibrets
+ /iLlibret 0 def  %% pel laboratori d'algorismes M6 a 9, índex comptador per tibar seqüencialment les arrays del mapa d'imposició M8 a ESH_UB.txt
+
+ {  %% loop generador de llibrets
 %%ATENCIÓ cal tenir en compte si ens convé o no (en funció de l'algoritme de composició) de cridar cada vegada la capçalera de variables del menú
-%% per exemple a farceixPDFs_pseudoPDFX5_UBESH.ps no li convé i cal només cridar les dades del TXT/WWW 1 cop
- 7up_pliegOMaker_UBESH 0 get  %% (nUp_pliegOS_UBESH.ps)
- (r) file cvx exec
+  %% per exemple a farceixPDFs_pseudoPDFX5_UBESH.ps no li convé i cal només cridar les dades del TXT/WWW 1 cop
+  7up_pliegOMaker_UBESH 0 get  %% (nUp_pliegOS_UBESH.ps)
+  (r) file cvx exec
 
- llibreter  %% només fem el loop per l'algorisme d'imposició de pàgines farceixPDFs_pseudoPDFX5_UBESH.ps ?
- {
-  iLlibret 1 add /iLlibret exch def
-  iLlibret nLlibrets eq
-  {  %% hem fet tots els llibrets
+  llibreter  %% només fem el loop per l'algorisme d'imposició de pàgines farceixPDFs_pseudoPDFX5_UBESH.ps ?
+  {
+   iLlibret 1 add /iLlibret exch def
+   iLlibret nLlibrets eq
+   {  %% hem fet tots els llibrets
+    exit
+   }if
+  }
+  {
    exit
-  }if
- }
- {
-  exit
- }ifelse
+  }ifelse
 
-}loop  %% generador de llibrets
+ }loop  %% generador de llibrets
 

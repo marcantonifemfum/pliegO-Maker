@@ -135,18 +135,18 @@ noMesunavegada
  /noMesunavegada false def
 
 %%Captura de dades via fitxer d'interfície TXT?
-true
+ true
 
-dup /CddVf exch def
-{
- % (/Users/femfum/PliegOS/codi_pliegOS/ESH_Canodrom.txt)
+ dup /CddVf exch def
+ {
+  % (/Users/femfum/PliegOS/codi_pliegOS/ESH_Canodrom.txt)
 
 %%URLUBESH
- %% (/home/femfum/Documents/pliegOMakerUB/ESH_UB.txt)
- 7up_pliegOMaker_UBESH 1 get 
+  %% (/home/femfum/Documents/pliegOMakerUB/ESH_UB.txt)
+  7up_pliegOMaker_UBESH 1 get 
 
- (r) file cvx exec
-}if
+  (r) file cvx exec
+ }if
 
 %%MENÚ capçalera
 %% marca l'entrada de dades i tria d'opcions
@@ -2331,7 +2331,6 @@ _anversrevers
    %% tants showpage com pàgines totals del llançat (anvers+revers) tingui l'nUp
 
    gsave
-
 %%UBESH
    %% activem el gatell que ens diu si som a la pàgina del llançat que toca al punt 0,0 de la plana per pintar el número de pàgina en vermell quan fem el reglatge
    %% o per altres funcions que ara mateix no podem preveure
@@ -2345,12 +2344,13 @@ _anversrevers
     pop
    }ifelse
 
+
 {  %% stopped
    
    compOnedors M6 get (r) file cvx exec  %% pesquem i executem l'algorisme de composició independent del nUp triat
 
 }stopped
-{(\n\n - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n) print flush stop}if
+{(\n\n - - - - - - - - - - - - - - - E P ! - - - - - - - - - - - - -\n) print flush stop}if
 
    grestore
 
@@ -2442,7 +2442,7 @@ mark
 NpliegOS
 %%SNRD
 %(sonar+PAPER)
-/Author (copyleft 2017-2024: Marcantoni Malagarriga-Picas <marcantoni@femfum.com>)
+/Author (copyleft 2017-2025: Marcantoni Malagarriga-Picas <marcantoni@femfum.com>)
 /Keywords %(poesia, literatura, canya i cordill, fil i canya, plegaVeu, en Patufet,)
 %(pliegOS, sonar+D, chapbooks, microbooks, print, fold, cut, read, nUps, canya i cordill, en Patufet, Catalonia, Barcelona)
 (pliegOS, nUps, poesia, poetry, canya i cordill, chapbooks, plegaVeu, en Patufet)

@@ -1,12 +1,13 @@
+
 DESCRIPCIÓ DE FEINA FETA
 
-+ el PAD de treball on hi han les valoracions temporals és a:
+    + el PAD de treball on hi han les valoracions temporals és a:
 https://pad.femprocomuns.coop/pressUBpliegOS_ESH
-+ document +endreçat però resumit per la UB:
+    + document +endreçat però resumit per la UB:
 file:///home/femfum/Downloads/Fitxer%20adjunt%20per%20comanda4200373200.pdf
 
 + etiquetem els paràgrafs dels registres de feina segons el seu estat:
-@VIST | @FET (comentaris) | @PENDENT | @ESTEMFENT | @URGENT
+@VIST | @FET (comentaris) | @PENDENT | @ESTEMFENT | @URGENT | @RECLAMAT
 
 #A1    Anàlisi dels PDFs a imposar:
 #    A1 >> RI: FemFum_CaLi2CoPi_042_*.ps / farceixPDFs_pseudoPDFX5_ReferenceXObjects_EnricSenabre.ps
@@ -14,30 +15,19 @@ file:///home/femfum/Downloads/Fitxer%20adjunt%20per%20comanda4200373200.pdf
 #    EC: #16h
 @FET
 
-+ tant a Tuxedo (/home/femfum/Documents/pliegOMakerU / localhost /var/www/html/pliegOMakerUB) com a somNúvol (?) treballem amb GPL Ghostscript 9.55.0 (2021-09-27)
++ tant a Tuxedo (/home/femfum/Documents/pliegOMakerU / localhost /var/www/html/pliegOMakerUB) com a somNúvol (/var/www/html/) treballem amb GPL Ghostscript 9.55.0 (2021-09-27 | té un symlink a… /usr/bin …que apunta a… gs -> /usr/bin/ghostscript)
 + etiquetem amb %%UBESHpliegOMaker o %%UBESH els canvis i novetats de codi en els algorismes que ja tenim desenvolupats
 @FET
 
 #    A1.1 ~ Detecció de PDFs erronis, protegits per encriptació i signats digitalment, determinant el tipus de missatge que donarem a l'ususari per continuar treballant
 @FET
 
-
-    21.10.2024
-- - - - - - - - HT 4.50
-
-%%H: de 9h00 a 10h00
-%%H: de 11h00 a 13h15
-%%H: de 13h45 a 14h15
-%%H: de 22h00 a 22h45
-
-
-
 + línia de comanda Cali2CoPi_042 (reanomenat amb la cua _pliegOMakerUBESH) Tuxedo:
 + gs -q -dNOSAFER -o re.pdf -sDEVICE=pdfwrite -dAutoRotatePages=/None -f FemFum_CaLi2CoPi_042_pliegOMakerUBESH.ps
 @FET
 
 + configurat CaLi2CoPi per executar-se via prompt del Tuxedo
-+ un cop ha fet anàlisi repica el fitxer original en un nou fitxer al mteix lloc i que es diu igual però amb l'afegit… _pla.pdf
++ un cop ha fet anàlisi repica el fitxer original en un nou fitxer al mateix lloc i que es diu igual però amb l'afegit… _pla.pdf
 @FET
 
 + a l'execució via Terminal cal advertir que s'ha de ser curós amb els noms dels fitxers PDF/TXT a processar, per no tenir problemes amb el caràcters fora de l'ascii, alguns signes reservat (* ?) i l'espai en blanc
@@ -117,20 +107,13 @@ file:///home/femfum/Downloads/Fitxer%20adjunt%20per%20comanda4200373200.pdf
 + tampoc no és estrictament necessari escriure el fitxer d'anàlisi XRay
 + cal fer valoracions de temps d'execució de CaLi2CoPi jugant amb l'operador… vmthreshold …doncs per exemple el replicat (gatell 0) del manual de PDF 1.7 (pdfreference1.7old.pdf 1310 pàgs 31MB) triga més de mitja hora (Tuxedo Aura 13) a processar-se
 + cal valorar quines estratègies d'avís (CropBox, signatures, encriptats, anotacions, bookmarks, capes, etc.) podem fer servir segons s'executi via Terminal o via web: via prompt (apunt) al Terminal, via apunt (prompt) JS alert(); o via TXT (XRay) o via .log doncs hi ha una crida específica de GS que l'escriu
-+ cal definir quines noves opcions de menú hem d'afegir %MENU% dins l'àmbit de l'anàlisi/repicat que ens fa CaLi2CoPi i com les jerarquitzem dins el menú minimalista en TXT i/o usabilitat web de la interfície
 @VIST
 
++ hem vist que hi ha PDFs que venen de treballs de preimpressió i que duen creus de tall gràfiques visibles amb l'àrea descrita internament com a BleedBox… Discurs-Han-KangPremiNobel.pdf …llavors, no costaria gaire incloure el BleedBox dins l'àrea per activar-hi el retall d'enquadrament en el llançat com ho fem amb CropBox al menú TXT… %%M7 RESPECTEM L'ENQUADRAMENT DEL PDF D'ORIGEN ?
+@PENDENT
 
-
-    22.10.2024
-- - - - - - - - HT 6.75
-
-%%H: de 07h45 a 08h15
-%%H: de 09h00 a 12h30
-%%H: de 18h15 a 20h30
-%%H: de 21h00 a 21h30
-
-
++ cal definir quines noves opcions de menú hem d'afegir %MENU% dins l'àmbit de l'anàlisi/repicat que ens fa CaLi2CoPi i com les jerarquitzem dins el menú minimalista en TXT i/o usabilitat web de la interfície
+@VIST
 
 #    A1.2 ~ Detecció de PDFs amb anotacions, bookmarks i capes, determinant el tipus de missatge que donarem a l'ususari per continuar treballant
 @FET
@@ -160,7 +143,7 @@ gs -q -dNOSAFER -o re.pdf -sDEVICE=pdfwrite -f nUp_pliegOS_UBESH.ps …veiem que
 + 3 ~ descarreguem del Git REpublica: FemFum_CaLi2CoPi_042_REpublica.ps i el reanomenem FemFum_CaLi2CoPi_042_pliegOMakerUBESH.ps
 + 4 ~ actualitzem tots els path de treball i els marquem amb %%URLUBESH també els punts potencials de modificació amb %%UBESH
 + 5 ~ la línia de comanda des del directori de treball del Terminal… /home/femfum/Documents/pliegOMakerUB …és:
-gs -q -dNOSAFER -o re.pdf -sDEVICE=pdfwrite -f nUp_pliegOS_UBESH.ps
+gs -q -dNOSAFER -o re.pdf -sDEVICE=pdfwrite -dAutoRotatePages=/None -f nUp_pliegOS_UBESH.ps
 + 6 ~ a… farceixPDFs_pseudoPDFX5_UBESH.ps …mantenim l'estratègia de separar el nom de fitxer PDF a tractar amb el path absolut fix on hi posarem aquests PDFs %MENU% en paral·lel a l'estratègia seguida treballant via web. Al Tuxedo… /home/femfum/Documents/pliegOMakerUB/Hpdf/
 + 7 ~ en canvi on volem que s'escrigui el fitxer PDF imposat, resultat del pliegO'Maker, i el seu nom, només dependrà de com escrivim la línia de comanda al Terminal… gs -q -dNOSAFER -o pliegOSimposat.pdf -sDEVICE=pdfwrite -dAutoRotatePages=/None -f nUp_pliegOS_UBESH.ps
 @FET
@@ -169,18 +152,6 @@ gs -q -dNOSAFER -o re.pdf -sDEVICE=pdfwrite -f nUp_pliegOS_UBESH.ps
 + sumar PDFs un darrera l'altre (si porta capes se les poleix!) gs -q -dNOPAUSE -dBATCH -sDEVICE=pdfwrite -sOutputFile=aimposarambcapes.pdf 21700154803_cubDeNoordzij.pdf 21700154803_cubDeNoordzij.pdf 21700154803_cubDeNoordzij.pdf
 + extraure pàgines de PDF
 @VIST
-
-
-
-    23.10.2024
-- - - - - - - - HT 5.50
-
-%%H: de 11h45 a 13h15
-%%H: de 13h45 a 14h45
-%%H: de 16h00 a 18h00
-%%H: de 21h00 a 22h00
-
-
 
 #    A1.3 ~ Detecció d'àrees de retall de pàgines (CropBox), determinant prèviament de com les tractarem: sigui per eliminar-les (interfereixen l'algorisme pristí) o sigui per adaptar el retall a la pàgina del llançat
 @FET
@@ -209,7 +180,7 @@ gs -q -dNOSAFER -o re.pdf -sDEVICE=pdfwrite -f nUp_pliegOS_UBESH.ps
 + aquest tipus d'estructura fa fracassar la interrogació del MediaBox via PDFscripting
 @FET
 
-+ afegim a CaLi2CoPi un nou gatell… /aMESaMES …que és qui permet elimonar tots els Bbox menys el MediaBox
++ afegim a CaLi2CoPi un nou gatell… /aMESaMES …que és qui permet eliminar tots els Bbox menys el MediaBox
 @FET
 + fem possible que la capçalera de farceixPDFs_pseudoPDFX5_UBESH.ps actui amb la variable /nomesUNAvegada que assegura «una única i primera execució» amb qualsevol plana del PDF
 @FET
@@ -234,35 +205,12 @@ gs -q -dNOSAFER -o re.pdf -sDEVICE=pdfwrite -f nUp_pliegOS_UBESH.ps
 + també /araPlana
 @FET
 
-
-
-    24.10.2024
-- - - - - - - - HT 6.75
-
-%%H: de 07h00 a 08h30
-%%H: de 09h00 a 11h00
-%%H: de 11h45 a 12h45
-%%H: de 15h00 a 16h45
-%%H: de 22h00 a 22h30
-
-
-
 + cal explorar un sistema paral·lel de valoració de feina per mitjà dels octets escrits, sigui perquè escribim de zero un nou algorisme o sigui que restant els octets d'un d'existent els restem de com va creixent. Hauríem d'establir un valor temps/EUR per octet, considerant que se'ns escaparan aquells octets que esborrem a mida que el treball vagi avançant
 @PENDENT
 
 + hem de fer una primera adaptació de la interfície via TXT (ESH_Canodrom.txt)
 + li canviem el nom a… ESH_UB.txt
 @FET
-
-
-
-    25.10.2024
-- - - - - - - - HT 3.25
-
-%%H: de 16h00 a 18h45
-%%H: de 21h00 a 21h30
-
-
 
 + assagem l'execució via interfície TXT per veure com podem anar avançant en les noves opcions de menú que haurem d'anar afegint
 @FET
@@ -371,26 +319,14 @@ ignorar per qualsevol criteri
 + cal veure si d'una forma senzilla podem pujar més d'1 PDF fent 1 sol submit?
 @PENDENT
 
-
-
-    26.10.2024
-- - - - - - - - HT 4.75
-
-%%H: de 10h15 a 13h00
-%%H: de 15h00 a 15h30
-%%H: de 18h30 a 20h00
-
-
-
 + configurem l'accés al nou servidor de pliegOS a somNúvol:
-+ copiem les claus SFTP/SSH (email luca@femprocomuns.coop 25.10.24/19h29) privada (id_pliegosnet) i pública (id_pliegosnet.pub) a… /home/femfum/.ssh
++ copiem les claus SSH (email luca@femprocomuns.coop 25.10.24/19h29) privada (id_pliegosnet) i pública (id_pliegosnet.pub) a… /home/femfum/.ssh
 + hem hagut de canviar els permisos a chmod 600 de id_pliegosnet/id_pliegosnet.pub per blindar els fitxers (el mateix prompt ens ho ha dit)
 + sftp -P 22002 -i ~/.ssh/id_pliegosnet user@proxy.kvm2.hz.commonscloud.coop
 + dazzler-unearned-palpable (s'ha d'escriure a mà!)
 + el path local on apunta el servidor www.pliegos.net és a… /var/www/html/ …i al localhost a… /var/www/html/www.pliegos.net/maker
 + ssh -p 22002 -i ~/.ssh/id_pliegosnet user@proxy.kvm2.hz.commonscloud.coop
 @FET (cal escriure al Luca i començar a fer-ho servir)
-
 
 + quin seria el diàleg usuari/pliegO'Maker per l'anàlisi, a mida que anem imposant?
 + CAL REDUÏR EL DIÀLEG AL MÍNIM ens guia la filosofia del #NOinterface
@@ -406,47 +342,17 @@ pOM: el mapa/es d'imposició que aplicarem serà/an: […]
 pOM: farem # imposicions (encartades o disposades de costat)
 pOM: modifiqueu el mapa d'imposició […] si voleu un altre comportament per aquest llançat
 + cal situar quants i on aniran aquests missatges, valorant molt bé els seus 2 canals de sortida: el prompt del Terminal i un HTML per la web
-@ESTEMFENT (en un primer nivell)
-
-
-
-    27.10.2024
-- - - - - - - - HT 2.50
-
-%%H: de 08h30 a 11h00
-
-
-- - - - - - - - SETMANA 1 33
-
-
-
-    28.10.2024
-- - - - - - - - HT 3.75
-
-%%H: de 12h00 a 13h00
-%%H: de 17h00 a 19h00
-%%H: de 20h45 a 21h30
-
-
++ totes aquestes preguntes han quedat resoltes amb la proposta que pliegoMaker ens fa quan assagem el mapa d'imposició, doncs en base a l'estructura de l'array que ens proposa al pompt del Terminal hi podem fer tota mena de modificacions
+@FET (en un primer nivell)
 
 + mirem de corregir l'algorisme de reglatge.ps perquè també sigui útil de cara a controlar els marges de seguretat de la impressora
 + fem el nou reglatge2.ps amb els nous marcadors de vores i origen de plana
-+ fem les primeres proves impreses d'un 4+4 dúplex (long-edge) al 100% d'escala, de manera que cal establir un protocol per saber, en funció de l'orientació de la pàgina (doncs ara marquem quin és l'origen 0,0 a amb la numeració en vermell), quantes ratlles negres (filets) veiem en cadascuna de les 4 vores, tant a l'anvers com al revers del full imprès. Aquestes 8 dades (que seran sempre diferents en funció de cada impressora) en haurien de servir per entrar-les en un fitxer de configuració del pliegO'Maker per tal que, treballant al 100% d'escala ens permetés quadrar a la perfecció el dúplex de les 2 planes (sobretot en impressores no professionals)
-@FET
-
-+ al fitxer de reglatge2.ps se li haurien d'afegir unes dades importants més: una A per marcar quina plana és l'anvers i una R per marcar quina és el revers, també hauriem de foradar amb una rodona blanca determinats quadrats dels extrems que duen les ratlletes de mesura per tal de facilitar omplir a mà, un cop imprès el dúplex de reglatge, la quantitat de ratlletes que es veuen en cadascun dels 4 marges. Amb aquestes dades d'orientació (0,0|A/R|4 mesures) es podria omplir una formulari que automàticament calibrés l'àrea de treball que, imprimint al 100%, quadrés al màxim vores i cavalcat d'ambdós costats (planes) del full imprès.
-+ amb aquestes dades generariem un segon fitxer de reglatge que hauria de comprovar la correcta calibració: un senzill filet(s) rectangular ajustat al màxim a l'àrea d'impressió i unes creus en diversos punts de la pàgina per acabar de comprovar la correcció del registre, perfecte o no del dúplex
++ fem les primeres proves impreses d'un 4+4 dúplex (long-edge) al 100% d'escala, de manera que cal establir un protocol per saber, en funció de l'orientació de la pàgina (doncs ara marquem quin és l'origen 0,0 a amb la numeració en vermell), quantes ratlles negres (filets) veiem en cadascuna de les 4 vores, tant a l'anvers com al revers del full imprès. Aquestes 8 dades (que seran sempre diferents en funció de cada impressora) ens haurien de servir per entrar-les en un fitxer de configuració del pliegO'Maker per tal que, treballant al 100% d'escala ens permetés quadrar a la perfecció el dúplex de les 2 planes (sobretot en impressores no professionals)
 @ESTEMFENT
 
-
-    29.10.2024
-- - - - - - - - HT 4
-
-%%H: de 11h00 a 13h00
-%%H: de 17h00 a 18h30
-%%H: de 19h30 a 20h00
-
-
++ al fitxer de reglatge2.ps se li haurien d'afegir unes dades importants més: una A per marcar quina plana és l'anvers i una R per marcar quina és el revers, també hauriem de foradar amb una rodona blanca determinats quadrats dels extrems que duen les ratlletes de mesura per tal de facilitar omplir a mà, un cop imprès el dúplex de reglatge, la quantitat de ratlletes que es veuen en cadascun dels 4 marges. Amb aquestes dades d'orientació (0,0|A/R|4 mesures) es podria omplir una formulari que automàticament calibrés l'àrea de treball que, imprimint al 100%, quadrés al màxim vores i cavalcat d'ambdós costats (planes) del full imprès.
++ amb aquestes dades generariem un segon fitxer de reglatge que hauria de comprovar la correcta calibració: un(s) senzill(s) filet(s) rectangular(s) ajustat(s) al màxim a l'àrea d'impressió i unes creus en diversos punts de la pàgina per comprovar la correcció del registre, acurat o no del dúplex
+@ESTEMFENT
 
 + el repositori de tipografia del Tuxedo és a:
 /usr/share/fonts
@@ -454,542 +360,13 @@ pOM: modifiqueu el mapa d'imposició […] si voleu un altre comportament per aq
 /usr/share/poppler
 @VIST
 
-
-
-    30.10.2024
-- - - - - - - - HT 7.50
-
-%%H: de 07h15 a 08h15
-%%H: de 09h30 a 14h00
-%%H: de 16h00 a 17h30
-%%H: de 18h00 a 19h00
-
-
-
-    31.10.2024
-- - - - - - - - HT 6
-
-%%H: de 07h15 a 07h45
-%%H: de 12h15 a 13h15
-%%H: de 16h30 a 19h00
-%%H: de 19h30 a 20h00
-%%H: de 21h00 a 22h30
-
-
-
-    01.11.2024
-- - - - - - - - HT 3.75
-
-%%H: de 07h45 a 08h30
-%%H: de 09h15 a 10h15
-%%H: de 12h45 a 13h45
-%%H: de 19h15 a 20h15
-
-
-
-
-    02.11.2024
-- - - - - - - - HT 0
-
-
-
-    03.11.2024
-- - - - - - - - HT 5
-
-%%H: de 07h30 a 08h15
-%%H: de 09h30 a 11h45
-%%H: de 13h00 a 14h00
-%%H: de 20h00 a 21h00
-
-
-
-- - - - - - - - SETMANA 2 30
-
-
-
-    04.11.2024
-- - - - - - - - HT 4.75
-
-%%H: de 12h30 a 13h00
-%%H: de 14h15 a 15h00
-%%H: de 17h30 a 19h15
-%%H: de 19h45 a 20h30
-%%H: de 21h00 a 22h00
-
-
-
-    05.11.2024
-- - - - - - - - HT 5
-
-%%H: de 09h00 a 11h00
-%%H: de 12h00 a 13h00
-%%H: de 14h30 a 15h30
-%%H: de 16h00 a 17h00
-
-
-
-    06.11.2024
-- - - - - - - - HT 6.25
-
-%%H: de 08h00 a 09h00
-%%H: de 11h45 a 13h15
-%%H: de 14h00 a 14h30
-%%H: de 16h30 a 18h15
-%%H: de 19h30 a 20h30
-%%H: de 22h00 a 22h30
-
-
-
-    07.11.2024
-- - - - - - - - HT 5
-
-%%H: de 09h45 a 11h30
-%%H: de 17h00 a 20h15
-
-
-
-    08.11.2024
-- - - - - - - - HT 3.25
-
-%%H: de 07h45 a 08h15
-%%H: de 11h15 a 12h30
-%%H: de 19h00 a 20h30
-
-
-
-    09.11.2024
-- - - - - - - - HT 2.50
-
-%%H: de 11h30 a 13h00
-%%H: de 16h30 a 17h30
-
-
-
-    10.11.2024
-- - - - - - - - HT 4
-
-%%H: de 07h45 a 08h45
-%%H: de 10h00 a 11h15
-%%H: de 18h00 a 19h45
-
-
-
-- - - - - - - - SETMANA 3 30.75
-
-
-
-    11.11.2024
-- - - - - - - - HT 6.25
-
-%%H: de 09h30 a 11h30
-%%H: de 12h15 a 13h15
-%%H: de 16h30 a 19h00
-%%H: de 21h00 a 21h45
-
-
-
-    12.11.2024
-- - - - - - - - HT 5
-
-%%H: de 07h00 a 08h30
-%%H: de 11h45 a 13h00
-%%H: de 14h45 a 15h15
-%%H: de 15h30 a 16h30
-%%H: de 16h45 a 17h30
-
-
-
-    13.11.2024
-- - - - - - - - HT 4.25
-
-%%H: de 07h45 a 08h15
-%%H: de 12h15 a 13h15
-%%H: de 15h15 a 16h15
-%%H: de 16h45 a 18h30
-
-
-
-
-    14.11.2024
-- - - - - - - - HT 3.5
-
-%%H: de 10h30 a 13h00
-%%H: de 17h30 a 18h30
-
-
-
-    15.11.2024
-- - - - - - - - HT 9
-
-%%H: de 05h15 a 07h15
-%%H: de 09h45 a 12h45
-%%H: de 14h15 a 15h45
-%%H: de 17h15 a 18h45
-%%H: de 21h00 a 22h00
-
-
-
-    16.11.2024
-- - - - - - - - HT 4.25
-
-%%H: de 10h30 a 12h15
-%%H: de 17h45 a 19h15
-%%H: de 21h30 a 22h30
-
-
-
-    17.11.2024
-- - - - - - - - HT 3.75
-
-%%H: de 07h15 a 08h15
-%%H: de 09h30 a 11h00
-%%H: de 12h30 a 13h15
-%%H: de 17h15 a 17h45
-
-
-
-- - - - - - - - SETMANA 4 36
-
-
-
-    18.11.2024
-- - - - - - - - HT 1
-
-%%H: de 21h00 a 22h00
-
-
-
-    19.11.2024
-- - - - - - - - HT 5
-
-%%H: de 11h45 a 13h15
-%%H: de 16h00 a 17h30
-%%H: de 21h00 a 23h00
-
-
-
-    20.11.2024
-- - - - - - - - HT 5.25
-
-%%H: de 07h00 a 08h30
-%%H: de 10h00 a 11h30
-%%H: de 19h00 a 20h15
-%%H: de 21h30 a 22h30
-
-
-
-    21.11.2024
-- - - - - - - - HT 4.25
-
-%%H: de 09h45 a 12h30
-%%H: de 16h00 a 17h30
-
-
-
-    22.11.2024
-- - - - - - - - HT 2.75
-
-%%H: de 12h15 a 15h00
-
-
-
-    23.11.2024
-- - - - - - - - HT 6.5
-
-%%H: de 09h30 a 13h00
-%%H: de 17h30 a 20h00
-%%H: de 21h00 a 21h30
-
-
-
-    24.11.2024
-- - - - - - - - HT 6.75
-
-%%H de 08h15 a 09h15
-%%H de 10h30 a 13h00
-%%H de 15h30 a 17h30
-%%H de 20h30 a 21h45
-
-
-
-- - - - - - - - SETMANA 5 31.5
-
-
-
-    25.11.2024
-- - - - - - - - HT 5
-
-%%H de 13h00 a 18h00
-
-
-
-    26.11.2024
-- - - - - - - - HT 0
-
-
-
-    27.11.2024
-- - - - - - - - HT 2.75
-
-%%H de 07h45 a 08h30
-%%H de 12h15 a 13h00
-%%H de 18h45 a 19h30
-%%H de 21h45 a 22h15
-
-
-
-
-    28.11.2024
-- - - - - - - - HT 4.25
-
-%%H de 11h45 a 13h00
-%%H de 15h00 a 16h45
-%%H de 19h15 a 20h30
-
-
-
-    29.11.2024
-- - - - - - - -  HT 1.5
-
-%%H de 08h00 a 08h30
-%%H de 12h15 a 13h15
-
-
-
-    30.11.2024
-- - - - - - - - HT 1
-
-%%H de 16h00 a 17h00
-
-
-
-    01.12.2024
-- - - - - - - - HT 2
-
-%%H de 10h00 a 12h00
-
-
-
-- - - - - - - - SETMANA 6 16.50
-
-
-
-    02.12.2024
-- - - - - - - - HT 7.25
-
-%%H de 08h00 a 08h45
-%%H de 09h45 a 10h45
-%%H de 12h00 a 13h00
-%%H de 15h00 a 16h30
-%%H de 17h00 a 18h45
-%%H de 19h30 a 20h00
-%%H de 21h00 a 21h45
-
-
-
-    03.12.2024
-- - - - - - - - HT 3.75
-
-%%H de 12h15 a 13h00
-%%H de 16h00 a 18h00
-%%H de 21h00 a 22h00
-
-
-
-    04.12.2024
-- - - - - - - - HT 4.30
-
-%%H de 11h45 a 13h00
-%%H de 16h30 a 18h00
-%%H de 19h15 a 20h00
-%%H de 21h15 a 21h45
-%%H de 22h00 a 22h30
-
-
-
-    05.12.2024
-- - - - - - - - HT 0.75
-
-%%H de 07h15 a 08h00
-
-
-
-    06.12.2024
-- - - - - - - - HT 1
-
-%%H de 13h45 a 14h15
-%%H de 17h30 a 18h00
-
-
-
-    07.12.2024
-- - - - - - - - HT 1.5
-
-%%H de 06h30 a 07h30
-%%H de 10h00 a 10h30
-
-
-
-    08.12.2024
-- - - - - - - - HT 1
-
-%%H de 20h15 a 21h15
-
-
-
-- - - - - - - - SETMANA 7 19.75
-
-
-
-    09.12.2024
-- - - - - - - - HT 4.25
-
-%%H de 10h15 a 12h30
-%%H de 16h30 a 17h30
-%%H de 19h00 a 20h00
-
-
-
-    10.12.2024
-- - - - - - - - HT 4.75
-
-%%H de 07h15 a 08h00
-%%H de 11h30 a 13h15
-%%H de 16h15 a 18h30
-
-
-
-    11.12.2024
-- - - - - - - - HT 5
-
-%%H de 07h45 a 08h30
-%%H de 09h15 a 11h00
-%%H de 18h00 a 19h45
-%%H de 21h30 a 22h15
-
-
-
-    12.12.2024
-- - - - - - - - HT 3.5
-
-%%H de 07h15 a 08h15
-%%H de 09h00 a 10h30
-%%H de 12h00 a 13h00
-
-
-
-    13.12.2024
-- - - - - - - - HT 3
-
-%%H de 07h30 a 08h30
-%%H de 12h00 a 13h00
-%%H de 17h45 a 18h45
-
-
-
-    14.12.2024
-- - - - - - - - HT 2.25
-
-%%H de 11h15 a 12h30
-%%H de 16h30 a 17h30
-
-
-
-    15.12.2024
-- - - - - - - - HT 0
-
-
-- - - - - - - - SETMANA 8 22.75
-
-
-
-    16.12.2024
-- - - - - - - - HT 3
-
-%%H de 11h15 a 12h45
-%%H de 16h45 a 18h15
-
-
-
-    17.12.2024
-- - - - - - - - HT 3
-
-%%H de 12h00 a 13h00
-%%H de 19h15 a 20h00
-%%H de 21h30 a 22h45
-
-
-
-    18.12.2024
-- - - - - - - - HT 1.5
-
-%%H de 08h00 a 08h45
-%%H de 12h00 a 12h45
-
-
-
-    19.12.2024
-- - - - - - - - HT 1.5
-
-%%H de 12h00 a 13h00
-%%H de 21h30 a 22h00
-
-
-
-    20.12.2024
-- - - - - - - - HT
-
-%%H de 10h30 a
-
-
-
-
-
-BOPC · número 790 · dimecres 13 de març de 2024
-Projecte de llei de memòria democràtica de Catalunya
-https://www.parlament.cat/document/bopc/407468012.pdf
-
-*CUP
-consultescup_cc@parlament.cat
-Laia Estrada
-dani.cornella@parlament.cat
-150 esmenes / pàg.94 fins pàg.150
-
-*ERC
-gperc@parlament.cat
-marta.vilalta@parlament.cat
-40 esmenes / pàg.77 fins pàg.94
-
-*EnComuP
-comuns@parlament.cat
-david.cid@parlament.cat
-nuria.lozano@parlament.cat
-73 esmenes / pàg.60 fins la pàg.76
-
-*Junts
-secretariajxcat@parlament.cat
-monica.sales@parlament.cat
-83 esmenes / pàg.44 fins la pàg.60
-
-*PSC
-gppsc-units@parlament.cat
-Ferran Pedret
-alicia.romero@parlament.cat
-163 esmenes / pàg.10 fins la pàg.44
-
-
-
-_____________________________________________________________
-
-_rt_st_sRpblc2017
-
 @SESSIO_ESH:
 + cal llegir cadascun dels formats de pàgina del PDF d'entrada per assegurar-nos que adaptem correctament l'escala del llançat en PDFs on cada pàgina tingui una mida diferent: tenim un exemple on sembla que això NO és així (surten pàgines estranyament tallades), fent 4+4 apilat original_desproporcions_mides_pdf.pdf (enviat per Telegram)
 + analitzem les pàgines que es tallen un cop imposades a /home/femfum/Documents/pliegOMakerUB/exemples/errors/original_desproporcions_mides_pdf.pdf
 + la pàgina 20 [24 0 obj] queda lleugerament més petita (té un Crop?) / la pàgina 10 [14 0 obj], 16 [20 0 obj], 18 [22 0 obj] queden tallades! /
-+ cal revisar l'algorisme que avalua els formats de pàgina doncs no deu tenir en compte (ho ho fa malament) els 2 primers valors del /MediaBox, per exemple en aquest cas documentat:
-/MediaBox [ 0.0 7.8299813 595.5 850.07996 ] ens cal muntar un exemple per avaluar totes les possbiles variacions en aquest àmbit per tal que les rutines d'escala/posició del llançat treballin bé
-+ fem a través de… testMediaBoxCropBox.ps …un PDF retocat manualment… testMediaBoxCropBox.pdf …per avaluar la correcta interpretació de tota mena de formats i retalls
++ cal revisar l'algorisme que avalua els formats de pàgina doncs no deu tenir en compte (o ho fa malament) els 2 primers valors del /MediaBox, per exemple en aquest cas documentat:
+/MediaBox [ 0.0 7.8299813 595.5 850.07996 ] ens cal muntar un exemple per avaluar totes les possibles variacions en aquest àmbit per tal que les rutines d'escala/posició del llançat treballin bé
++ fem a través de… testMediaBoxCropBox.ps …un PDF retocat manualment per avaluar la correcta interpretació de tota mena de formats i retalls:
     apel_testMediaBoxCropBox.pdf
 pàg.1 Rotate 90
 pàg.2 MediaBox arran de negre
@@ -1004,7 +381,7 @@ pàg.9 MediaBox arran de cubs
 + queden tallades les pàgs: 10 / 16 / 18 | no s'adapten del tot al llançat les pàgs: 20 / 12 …de la 9 a la 20 tenen un MediaBox no típic… [0.0 7.8299 595.5 850.08 ]
 + és només en unes determinades posicions que el llançat no treballa bé les proporcions
 [[1 2 3 4 5 6 7 8] [9 10 11 12 13 14 15 16] [17 18 19 20 null null null null]]
-+ HEM TROBAT EL FORAT QUE GENERAVA AQUESTA PROBLEMÀTICA: no estavem avaluant els valors de MediaBox/CropBox pel número de pàgina del PDF d'entrada, sinó que erròniament els cridavem per l'índex de l'ordre de lectura. Per exemple, si al mapa d'imposició havíem programat lllegir primer la pàgina 20, llegia els valors de la pàgina 1. Tampoc havíem detectat un segon error en relació a la lectura dels valors de les pàgines en blanc (que no s'han de llegir!). Ara ha quedat creiem que completament corregit.
++ HEM TROBAT EL FORAT QUE GENERAVA AQUESTA PROBLEMÀTICA: no estavem avaluant els valors de MediaBox/CropBox pel número de pàgina del PDF d'entrada, sinó que erròniament els cridavem per l'índex de l'ordre de lectura. Per exemple, si al mapa d'imposició havíem programat llegir primer la pàgina 20, llegia els valors de la pàgina 1. Tampoc havíem detectat un segon error en relació a la lectura dels valors de les pàgines en blanc (que no s'han de llegir!). Ara ha quedat creiem que completament corregit.
 @FET
 
 + queda pendent avaluar correctament les instruccions /Rotate de les pàgines del PDF d'entrada, de manera que respectem el que ens marquin
@@ -1012,11 +389,18 @@ pàg.9 MediaBox arran de cubs
 + podríem aprofitar aquesta funció per orientar la imposició de la plana del revers (a tot format del full) en el pliegOS de tall sense desbarbar?
 @FET
 
-+ lectura del cos més petit del PDF d'entrada per tal d'avisar (hauria d'emetre un missatge) que amb la presumible reducció d'escala serà difícil que es llegeixi
-+ cal provar el gatell 4 d'anàlisi textual fet per JBC (en un CaLi2CoPi no vinculat a pliegO'Maker) que no repica el PDF on en ha d'enumerar tots els rengs de text amb caracterśitiques tipogràfiques diferents: l'estem analitzant i veiem que potser només ens cal capturar els diccionaris /Champollion o /CalaixDeTipus per tenir la dada del cos que necessitem?
++ lectura del cos més petit del PDF d'entrada per tal d'avisar (hauria d'emetre un missatge) que amb el presumible % de reducció d'escala serà difícil que es llegeixi
++ cal provar el gatell 4 d'anàlisi textual fet per JBC (en un CaLi2CoPi no vinculat a pliegO'Maker) que no repica el PDF on ens ha d'enumerar tots els rengs de text amb caracterśitiques tipogràfiques diferents: l'estem analitzant i veiem que potser només ens cal capturar els diccionaris /Champollion o /CalaixDeTipus per tenir la dada del cos que necessitem?
 + NO: hem de trobar el punt on queda completat el diccionari… yRENGS …on hi tenim el detall pàgina a pàgina i línia a línia del text escrit al PDF i que podem explorar via coordenades verticals amb… {{== ==}forall ==}forall …concretament ens interessa l'índex 3 de l'array de cada línia que és on hi han els cossos de cadascun dels glifs:
-[[[10.0 20.836 10.0 40.0 20.836 40.0] [20.836 31.672 20.836 40.0 31.672 40.0] [31.672 42.5080032 31.672 40.0 42.5080032 40.0] [42.5080032 53.344 42.5080032 40.0 53.344 40.0] [53.344 64.18 53.344 40.0 64.18 40.0] [64.18 75.016 64.18 40.0 75.016 40.0] [75.016 85.852 75.016 40.0 85.852 40.0] [85.852 96.6879959 85.852 40.0 96.6879959 40.0] [96.6879959 107.523994 96.6879959 40.0 107.523994 40.0] [107.523994 118.359993 107.523994 40.0 118.359993 40.0] [118.359993 129.196 118.359993 40.0 129.196 40.0] [129.196 140.032 129.196 40.0 140.032 40.0] [140.032 150.868 140.032 40.0 150.868 40.0]] [/T /e /x /t /space /a /space /c /o /s /space /one /eight] [/R7 /R7 /R7 /R7 /R7 /R7 /R7 /R7 /R7 /R7 /R7 /R7 /R7] [18.0 18.0 18.0 18.0 18.0 18.0 18.0 18.0 18.0 18.0 18.0 18.0 18.0] null]
+[
+ [[10.0 20.836 10.0 40.0 20.836 40.0] [20.836 31.672 20.836 40.0 31.672 40.0] [31.672 42.5080032 31.672 40.0 42.5080032 40.0] [42.5080032 53.344 42.5080032 40.0 53.344 40.0] [53.344 64.18 53.344 40.0 64.18 40.0] [64.18 75.016 64.18 40.0 75.016 40.0] [75.016 85.852 75.016 40.0 85.852 40.0] [85.852 96.6879959 85.852 40.0 96.6879959 40.0] [96.6879959 107.523994 96.6879959 40.0 107.523994 40.0] [107.523994 118.359993 107.523994 40.0 118.359993 40.0] [118.359993 129.196 118.359993 40.0 129.196 40.0] [129.196 140.032 129.196 40.0 140.032 40.0] [140.032 150.868 140.032 40.0 150.868 40.0]]
+ [/T /e /x /t /space /a /space /c /o /s /space /one /eight]
+ [/R7 /R7 /R7 /R7 /R7 /R7 /R7 /R7 /R7 /R7 /R7 /R7 /R7]
+ [18.0 18.0 18.0 18.0 18.0 18.0 18.0 18.0 18.0 18.0 18.0 18.0 18.0]
+ null
+]
 …cal executar… BeSSo …per tal entrin en joc les redefinicions dels operadors tipogràfics i de composició de text que escriuen el detall de dades de l'array anterior
++ veure també: (gatell CaLi2CoPi 43) ... Aquesta pagina no duu text, podria complementar a 1.4 quan fem l'anàlisi de pàgines
 @ESTEMFENT
 
 @SESSIO_ESH:
@@ -1036,11 +420,10 @@ https://tarde.info/brochure/ | …/pliegOMakerUB/exemples/Handbook
 + valorem la possibilitat d'afegir claus d'error o sortida d'execució dels algorismes de composició dins el diccionari /$error (s'hi pot escriure) a systemdict de manera que poguem informar millor de quin algorisme peta o si només és una aturada p.e. informativa sense generar el PDF
 @ESTEMFENT
 
-+ hem localitzat aquell PDF, aquí paginat… https://www.nuvol.com/app/uploads/2016/06/Antihomenatge-Hac-Mor-BO.pdf …que estava muntat com un pliegOS per l'Elena Sixto i que n'hauríem de
-tenir un exemplar en paper a casa. L'Elena ens en donarà un en paper. Cal saber si és un format nou: NO és el típic del tall al mig sense desbarbar (tipus Handbook Tarde)
++ hem localitzat aquell PDF, aquí paginat… https://www.nuvol.com/app/uploads/2016/06/Antihomenatge-Hac-Mor-BO.pdf …que estava muntat com un pliegOS per l'Elena Sixto i que n'hauríem de tenir un exemplar en paper a casa. L'Elena ens en donarà un en paper. Cal saber si és un format nou: doncs NO, és el típic del tall al mig sense desbarbar (tipus Handbook Tarde)
 @FET
 
-+ tenim tots els nUps fets en PDF i impresos amb el nou reglatge2.ps per tal de valorar coses
++ tenim tots els nUps fets en PDF i impresos amb el nou reglatge2.ps (inclòs el del tall al mig sense desbarbar) per tal de valorar coses
 + hem reajustat nUp_pliegOS_UBESH.ps/pliegOMaker_UBESH.ps per tal de poder cridar els altres algoritmes que no siguin el 9 d'imposició i no surtin errors
 @FET
 
@@ -1054,7 +437,7 @@ tenir un exemplar en paper a casa. L'Elena ens en donarà un en paper. Cal saber
 + tenint en compte que ara podem jugar amb /Rotate les possibles combinatòries d'imposicio serien:
 + #1 imposem respectant només el MediaBox original (ignorant Rotate), o sigui que si la pàgina del PDF d'entrada és de MediaBox H i la del llançat és V no s'adaptarà el format
 + #2 imposem fent cas només del valor /Rotate, o sigui que si la pàgina del PDF d'entrada té un valor Rotate que la fa H i la del llançat és V no s'adaptarà el format
-+ #3 imposem adaptant el MediaBox a la pàgina del llançat H/H V/V de manera que si ja duu un /Rotate que la fa encaixar el respectarem i si l'hem de forçar sempre a 90 en sentit horari
++ #3 imposem adaptant el MediaBox a la pàgina del llançat H/H V/V de manera que si ja duu un /Rotate que la fa encaixar el respectarem i si l'hem de forçar sempre ho farem a 90 en sentit horari
 + primer implementarem aquestes millores a l'Nup 0 i ja veurem com les traslladem als altres Nups
 + ens cal només fixar els valors dels translate/rotate a executar abans d'scale
 @FET
@@ -1074,8 +457,7 @@ tenir un exemplar en paper a casa. L'Elena ens en donarà un en paper. Cal saber
         *4+4 la graella del llançat és en vertical
         *8+8 ---es força sempre al full en horitzontal
         *8+1 la graella del llançat és en vertical
-+ s'han establert i resolt tots els recorreguts d'imposició pels casos que combinen l'orientació de la graella del llançat amb l'orientació de la pàgina sencera o el seu retall
-* en totes tres opcions a M14: null (mana MediaBox) | true (adapta a la graella del llançat) | false (mana Rotate)
++ s'han establert i resolt tots els recorreguts d'imposició pels casos que combinen l'orientació de la graella del llançat amb l'orientació de la pàgina sencera o el seu retall (*) en totes tres opcions a M14: null (mana MediaBox) | true (adapta a la graella del llançat) | false (mana Rotate)
 @FET
 
 + cal repassar pel mapa d'imposició M8:
@@ -1090,7 +472,7 @@ tenir un exemplar en paper a casa. L'Elena ens en donarà un en paper. Cal saber
 + queda encara un petit detall en aquest cas estrany ** on el missatge informatiu del nombre de pàgines en blanc no es correspon al resultat:
             7     ......... pagines en blanc dels llibrets
 + cal veure si es replica en altres casos?
-@PENDENT
+@FET
 
 %% ara es permet que tot siguin pàgines en blanc (sembla no tenir massa sentit però ho mantenim)
 + tot plegat són casos de mala praxi, però que almenys fan que no peti l'aplicació
@@ -1475,7 +857,7 @@ tenir un exemplar en paper a casa. L'Elena ens en donarà un en paper. Cal saber
 + malgrat que el mapa d'imposició mani molt, el tipus de llançat M2 s'ha d'avenir amb aquesta estructura
 
 + cal revisar el cas de la imposició de… 8CropBox.pdf …en un 4Up on la pàgina 3 de l'original NO s'imposa i queda en blanc dins el llançat (no importa que M9 sigui null true o false):
-+ hem implementat totes les orientacions pòssibles en un CropBox… SO/NE NO/SE NE/SO SE/NO …per tal que el retallador de… farceixPDFs_pseudoPDFX5_UBESH.ps …treballi correctament
++ hem implementat totes les orientacions possibles en un CropBox… SO/NE NO/SE NE/SO SE/NO …per tal que el retallador de… farceixPDFs_pseudoPDFX5_UBESH.ps …treballi correctament
 + però ara hem vist que això només és estable mentre el MediaBox tingui una orientació SO/NE, perquè amb la resta treballa malament: llavors hem de creat 2 PDFs d'assaig
 + (/home/femfum/Documents/pliegOMakerUB/4CropBox4orientacions_a3x3_MediaBox2orientacions_NOSE_SENO_pla.pdf) …surten tots malament a l'imposar (MediaBoxCropBox_NOSE_SENO.pdf)
 + (/home/femfum/Documents/pliegOMakerUB/4CropBox4orientacions_a3x3_MediaBox2orientacions_SONE-NESO_pla.pdf) …només en surten 4 de bé (MediaBoxCropBox_SONE_NESO.pdf)
@@ -1487,22 +869,22 @@ tenir un exemplar en paper a casa. L'Elena ens en donarà un en paper. Cal saber
 + hem ampliat la rutina que avalua el resultat de l'aplicació de l'escala en vertical (només ho teníem resolt en horitzontal dins el if de Simposa)
 @FET
 
-
 + hem resolt el millor mètode per manipular l'escala de determinades pàgines dins la imposició. Podem individualitzar la mida (i posició) del llançat (respectant la ràtio) de manera dinàmica per cadascuna de les pàgines dins la plana, i això ens obre la porta a imposicions complexes. La més senzilla és la de l'nUp 0, Handbook, que només necessita que la pàgina 9 que va al revers del llançat ocupi tota la plana. Aquest és el mètode:
 + el codi de l'etiqueta… %%UBESH personalització d'escales de llançat …el tenim dins:
     nUp_pliegOS_UBESH.ps
 + si hem triat el llançat Handbook, dins del procediment /BeginPage activem un gatell a l'índex 24 corresponent a la pàgina 9 del revers de la imposició que redefineix l'àrea de retall de la pàgina del llançat, en aquest cas a tota plana
 …i…
     reglatge2.ps
-+ si hem triat el llançat Handbook, a la capçalera de l'algorisme redefinim les variables /xPagina /yPagina perquè a la pàgina 9 tinguin la mida que que correspon a la seva nova dimensió, que en aquest cas és a tota la plana en hooritzontal (xFull yFull)
-@FET
-
++ si hem triat el llançat Handbook, a la capçalera de l'algorisme redefinim les variables /xPagina /yPagina perquè a la pàgina 9 tinguin la mida que que correspon a la seva nova dimensió, que en aquest cas és a tota la plana en horitzontal (xFull yFull)
 …i…
     farceixPDFs_pseudoPDFX5_UBESH.ps
 + raonament ídem a reglatge2.ps
 + per evitar errors com que el valor del llançat/imposició escollida, M2, és l'enter del nombre de pàgines per plana, hem filtrat el zero perquè treballi com un 8 a /Nup
 + cal revisar l'avís… (oH CAL afinar l'escala com %%+) …(ara ja no atura la feina) quan fem un 4Up orientant horitzontalment el llançat
 @FET
+
++ PETA reglatge2.ps a les imposicions 0, 4 i 8, si NO tenim el mapa d'imposició M8 a… [] …caldria forçar-ho per evitar descuits
+@PENDENT
 
 + …amb M2 a 0 si apuntem a un PDF d'entrada de més de 9 pàgines el componedor atura correctament la imposició a la pàgina 9
 + el valor M9 pel tipus d'enquadernat és irrellevant quan el tipus de llançat M2 és 0 (handbook)
@@ -1572,16 +954,21 @@ tenir un exemplar en paper a casa. L'Elena ens en donarà un en paper. Cal saber
 + el problema de que només repetia la primera array de pàgines (tant si era encartat com apilat) venia de cridar cada vegada les dades del menú (ara via TXT), ara fem que les dades del menú es cridin només 1 vegada
 @FET
 
-+ cal escriure un protocol bàsic d'ús amb exemples:
++ cal escriure un protocol bàsic d'ús amb exemples (parlar-ho amb l'Enric):
 @ESTEMFENT
 
 + al fitxer de capçalera… altravolta.ps …li hem de canviat el nom a pliegOMaker_UBESH.ps
-+ hem comprovat que poder desencriptar un PDF fent una impressió a PDF (disc) des d'Okular (veure JOL_1d2_desencriptat.pdf vs 01.JOL_1de2.pdf)
+@FET
+
++ hem comprovat que podem desencriptar un PDF fent una impressió a PDF (disc) des d'Okular (veure JOL_1d2_desencriptat.pdf vs 01.JOL_1de2.pdf)
 @FET
 
 + hem unificat les adreces de treball al fitxer de configuració 7up_pliegOMaker_UBESH.ps
 + tenim a l'array /7up_pliegOMaker_UBESH un mapa d'on hi ha paths de treball sensibles a canvis que ara queden unificats en un sol fitxer de configuració, doncs ajuda molt al manteniment en entorns i plataformes diferents
 @FET
+
++ cal afegir el path de la tipografia de treball quan cridem el reglatge2.ps dins… 7up_pliegOMaker_UBESH.ps …a l'array /7up_pliegOMaker_UBESH
+@PENDENT
 
 + només ens cal veure, en cadascun dels entorns quines adreces poden ser relatives i quines no hi ha més remei que siguin absolutes:
 + treballant amb el Terminal i la interfície TXT a… 7up_pliegOMaker_UBESH.ps …TOTES les adreces poden ser relatives
@@ -1758,9 +1145,7 @@ tenir un exemplar en paper a casa. L'Elena ens en donarà un en paper. Cal saber
             40 ......... pagines de tripa
 >>>> CALDRIA POTSER ENSENYAR PEL PROMPT L'ESTRUCTURA MÉS LÓGICA DE LES ARRAYS ENCAIXADES DEL MAPA D'IMPOSICIÓ? (I QUE DESPRÉS DESENCAIXEM I TORNEM A ENSENYAR)
             mapa d'imposicio [[1 40] [2 39] [3 38] [4 37] [5 36] [6 35] [7 34] [8 33] [9 32] [10 31] [11 30] [12 29] [13 28] [14 27] [15 26] [16 25] [17 24] [18 23] [19 22] [20 21]]
-
-
-
+@FET
 
 + documentem el recurs dels packedarray que podríem fer servir per identificar i definir els nous objectes dins els mapes d'imposició que apuntin externament a fitxers/pàgines o no i tinguin comportaments determinats per adaptar-se al llançat de forma individualitzada pàgina a pàgina
 GS>true setpacking
@@ -1776,7 +1161,7 @@ arraytype
 + si és la mateixa pàgina del PDF d'entrada la que ha d'envair a la següent, com ho detectem i ho reflectim al mapa d'imposició?
 + cal afegir els 3 indicadors per personalitzar el comportament de la imposició (variable /Encaix?): null (mana el MediaBox/CropBox) true (s'adapta si cal sempre rotant a la dreta) false (mana el paràmetre /Rotate) …hi podem afegir un segon valor amb graus per forçar una rotació extra. Tots dos paràmetres dins una array fent… [null 0] [true 90] [false -180] …resumint, aquests serien exemples amb comportament divers:
 + {  % es detecta com un packedarray
-   null % indica que no va a buscar res externament i que imposarà la pàgina del següent dígit (treballa sobre el contingut)
+   null % indica que no va a buscar res externament i que imposarà la pàgina del dígit que el segueix (treballa sobre el contingut)
    2  % el primer dígit és la pàgina que s'imposa la primera meitat (esquerra)
    2  % el segon dígit és la pàgina on va a parar la segona meitat (dreta) de la pàgina 2 que s'imposa
    [null 0]  % és l'array del comportament d'encaix i rotació de la pàgina del PDF dins el llançat
@@ -1833,11 +1218,12 @@ arraytype
 
 + hem de provar a fons tota mena d'enquadernats en tota mena de PDFs
 + de moment no hem detectat més errors en tota mena de combinacions i protocols del menú
-@ESTEMFENT
+@FET
 
 + com es criden ara els fitxers del pliegO'Maker entre ells?
 
    Ghostscript
+   gs -q -dNOSAFER -o resultat.pdf -dAutoRotatePages=/None -sDEVICE=pdfwrite -f pliegOMaker_UBESH.ps
 (intèrpret PostScript)
      ^
      |
@@ -1846,8 +1232,8 @@ arraytype
 pliegOMaker_UBESH.ps <----> 7up_pliegOMaker_UBESH.ps
      ^
      |
-     |
-     v
+     |                            ______----> PDFs complementaris d'entrada a imposar (els filtrarem amb CaLi2CoPi?)
+     v                           |
 nUp_pliegOS_UBESH.ps <----> ESH_UB.txt -----> PDF d'entrada a imposar
      ^                      www                     ^
      |                                              |
@@ -1879,14 +1265,14 @@ https://pliegos.net/maker/plec/plec_ca.html
 + hem de tornar a raonar tota la lògica nuclear que fa que pliegO'Maker pugui imposar i compondre a la vegada, amb total independència entre totes dues tasques
 + la clau de tot gira al voltant d'invocar… setpagedevice i showpage …al componedor (però no pas als algorismes de composició que ho tenen prohibit) i haver personalitzat el comportament de dos procediments… /BeginPage i /EndPage …que es defineixen dins el diccionari que crida… setpagedevice …que invoca /BeginPage una vegada i cada vegada que s'executa… showpage …invoca /EndPage i un nou /BeginPage
 
-+ intentem descriure la mecànica de l'algorisme-ànima de pliegOS i fer-nos preguntes:
++ intentem descriure la mecànica de l'algorisme(s)-ànima de pliegOS i fer-nos preguntes:
 
     · ¿com és que podem mantenir la continuitat del componedor (compaginant text/imposant pàgines) seguint l'ordre de lectura de les pàgines, si el que fem és imposar de forma discontínua les pàgines del llançat a cada una de les dues planes (anvers/revers) d'un full?
         L'ordre de composició vs l'ordre del llançat? …imposar i compondre a la vegada, amb total independència entre totes dues tasques
         L'exemple més clar que explica aquesta estratègia és la del algoritme que escriu una sola línia de text que ocupa, de punta a punta, tota la tripa del llibret. Això és:
 
     · ¿quin és el paper clau que juguen els procediments /BeginPage /EndPage, que redefinim, en relació al context de treball de setpagedevice i showpage ?
-        És el fet de poder invocar 'showpage' sense que la plana, amb les pàgines que anem imposant a dins, sigui creada fins que no haguem acabat el llançat
+        És el fet de poder invocar una mena de 'showpage' silent, sense que la plana --amb les pàgines que anem imposant a dins--, sigui creada fins que no haguem acabat tot el llançat
 
     · ¿l'algorisme componedor recorre i treballa 2 vegades el joc total de pàgines del llançat?
         Sí, però…
@@ -1894,12 +1280,16 @@ https://pliegos.net/maker/plec/plec_ca.html
     · ¿quin sentit té xafar o enretirar la composició? sigui perquè imposem PDFs o sigui perquè componem un determinat contingut de text/gràfics
         La total llibertat de composició que ens permet…
 
+    · ¿en què es fonamenta la flexibilitat d'escalar i posicionar els elements a imposar dins l'espai de la plana?
+
+    · ¿perquè és clau i obligatori el gatell -dAutoRotatePages=/None a l'executar la línia de comanda?
+
 @ESTEMFENT
 
 
 + el mètode que ara hem implementat per la gestió de pàgines en blanc i/o el canvi d'ordre o repetició de les pàgines del llançat, s'aprofita d'un curiós comportament de les crides d'Scripting que encara no hem acabat d'entendre (fent una crida a un altre fitxer PDF en blanc) i això ens fa sospitar que hi ha d'haver un altre mètode més elegant d'arribar al mateix resultat
 + segurament és un malentès visual que ens capgira les pàgines al no fer servir el gatell -dAutoRotatePages=/None a la línia de comanda d'execució del gs
-+ ara hem trobat el lloc… a nUp_pliegOS_UBESH.ps …on podem activar aquest control sense necessitat de fer una crida a un altre fitxer PDF en blanc per fer pàgines en blanc a la imposició final, ho hem etiquetat amb ELEGANT
++ finalment ara hem trobat el lloc… a nUp_pliegOS_UBESH.ps …on podem activar aquest control sense necessitat de fer una crida a un altre fitxer PDF en blanc per fer pàgines en blanc a la imposició final, ho hem etiquetat amb ELEGANT dins el forall per l'anvers i el revers del full
 @FET
 
 + fem un generador de PDF amb n pàgines numerades de prova (faPDFnumerat.ps) per veure com es comporta farceixPDFs_#.ps i l'estratègia de pàgines en blanc (xafa/enretira)
@@ -1908,14 +1298,12 @@ https://pliegos.net/maker/plec/plec_ca.html
 + analitzem l'execució d'un 4+4 per veure de com procedir amb l'array /mapaDimposicio tant per les pagines en blanc com pel canvi d'ordre
 @FET
 
-
-
 [1    null null 4    5    null null 8      null 2    3    null null 6    7    null] … /aNpgn
 
 [true null null true true null null true] [null true true null null true true null]
 … /aA                                     … /aR
 
-…descripció de l'nUp 4+4 dins de /pliegOS_nUpS
+…descripció de l'nUp 4+4 dins de /pliegOS_nUpS:
 [
 
  [ …0 /_anversrevers | en aquesta array de 2 arrays és on s'hi aplica el forall
@@ -2003,8 +1391,9 @@ https://pliegos.net/maker/plec/plec_ca.html
 
 
 + estat dels elements que hi ha al nou servidor:
-+ https://pliegos.net/ | no té l'openGraph (imatge+resum) ni el favicon (hi surt la de W)
++ https://pliegos.net/ i totes les URL que se'n deriven: no té l'openGraph (imatge+resum) ni el favicon (hi surt la de W)
 @RECLAMAT
+
 + https://pliegos.net/maker/aviamphp.php | Bé
 + https://pliegos.net/maker/siPHPcridaGS.php | Bé
 +  404: Page not found | pàgina d'URLs no trobades
@@ -2012,10 +1401,10 @@ https://pliegos.net/maker/plec/plec_ca.html
 + REpublica | https://pliegos.net/maker/REpublica/ | Forbidden
 https://pliegos.net/maker/REpublica/plec_en.html | >>> Sorry, there was an error uploading your file <<<
 @FET
+
 https://pliegos.net/maker/REpublica/trau_en.html | >>> Sorry, there was an error uploading your file <<<
 + Nira | https://pliegos.net/maker/Nira/ | Forbidden
 + 30segons | https://pliegos.net/maker/30segons/ | Forbidden
-+ sonarD2023 | https://pliegos.net/maker/sonarD2023/ | >>> ERROR d'execució de l'algorisme <<<
 + calaixdePSastre | https://pliegos.net/maker/calaixdePSastre/ | Forbidden
 + plegaVeu | https://pliegos.net/maker/plegaVeu/ | ...ERROR d'execució de l'algorisme...
 + GerritNoordzij | https://pliegos.net/maker/GerritNoordzij/cubNoordzij.php | >>> ERROR d'execució de l'algorisme <<<
@@ -2023,7 +1412,10 @@ https://pliegos.net/maker/REpublica/trau_en.html | >>> Sorry, there was an error
 https://www.pliegos.net/maker/Sonar2024Truchet/sonar24truchet5_ca.php?resol=10069.411764705883
 Error: /undefinedfilename in --file-- Operand stack: (/var/www/wordpress/maker/Sonar2024Truchet/cairoTruchet5_upath.ps)
 + Niraleatori | https://ja.cat/canvidemirada >> https://www.pliegos.net/maker/Niraleatori/pliegOmaker_Niraleatori.php?vp=true&nup=8&hv=false&full=4&r=false&lab=16 | >>> ERROR d'execució de l'algorisme <<<
-@VIST
+@URGENT
+
++ (solucionem el desviat de paths de treball) sonarD2023 | https://pliegos.net/maker/sonarD2023/ | >>> ERROR d'execució de l'algorisme <<<
+@FET
 
 + cal traslladar al Tuxedo tot el que hi hagi de significatiu al Dynabook i Lenovo de la Fina i de la tauleta
 + cal traslladar tot el que hi hagi al nou servidor al localhost del Tuxedo
@@ -2049,4 +1441,700 @@ FemFum_CaLi2CoPi_042_REpublica.ps | no hi han adreces absolutes
 + via http://localhost/ …és a… /var/www/html/index.html
 + el PHP no era instal·lat al Tuxedo, llavors instal·lem la darrera versió fent: sudo apt install php libapache2-mod-php
 + ara tenim la PHP Version 8.1.2-1ubuntu2.19
-@FET (EP! però el phpinfo.php funciona però no pas als directoris de treball a partir de localhost/www.pliegos.net)
+@FET
+
++ EP! però el phpinfo.php funciona però no pas als directoris de treball a partir de localhost/www.pliegos.net)
+@URGENT
+
+
+
+- - - - - - - - - - - - - - - - - CALENDARI
+
+
+    21.10.2024
+- - - - - - - - HT 4.50
+
+%%H: de 9h00 a 10h00
+%%H: de 11h00 a 13h15
+%%H: de 13h45 a 14h15
+%%H: de 22h00 a 22h45
+
+
+
+    22.10.2024
+- - - - - - - - HT 6.75
+
+%%H: de 07h45 a 08h15
+%%H: de 09h00 a 12h30
+%%H: de 18h15 a 20h30
+%%H: de 21h00 a 21h30
+
+
+
+    23.10.2024
+- - - - - - - - HT 5.50
+
+%%H: de 11h45 a 13h15
+%%H: de 13h45 a 14h45
+%%H: de 16h00 a 18h00
+%%H: de 21h00 a 22h00
+
+
+
+    24.10.2024
+- - - - - - - - HT 6.75
+
+%%H: de 07h00 a 08h30
+%%H: de 09h00 a 11h00
+%%H: de 11h45 a 12h45
+%%H: de 15h00 a 16h45
+%%H: de 22h00 a 22h30
+
+
+
+    25.10.2024
+- - - - - - - - HT 3.25
+
+%%H: de 16h00 a 18h45
+%%H: de 21h00 a 21h30
+
+
+
+    26.10.2024
+- - - - - - - - HT 4.75
+
+%%H: de 10h15 a 13h00
+%%H: de 15h00 a 15h30
+%%H: de 18h30 a 20h00
+
+
+
+    27.10.2024
+- - - - - - - - HT 2.50
+
+%%H: de 08h30 a 11h00
+
+
+
+- - - - - - - - SETMANA 1 33
+
+
+
+    28.10.2024
+- - - - - - - - HT 3.75
+
+%%H: de 12h00 a 13h00
+%%H: de 17h00 a 19h00
+%%H: de 20h45 a 21h30
+
+
+
+    29.10.2024
+- - - - - - - - HT 4
+
+%%H: de 11h00 a 13h00
+%%H: de 17h00 a 18h30
+%%H: de 19h30 a 20h00
+
+
+
+    30.10.2024
+- - - - - - - - HT 7.50
+
+%%H: de 07h15 a 08h15
+%%H: de 09h30 a 14h00
+%%H: de 16h00 a 17h30
+%%H: de 18h00 a 19h00
+
+
+
+    31.10.2024
+- - - - - - - - HT 6
+
+%%H: de 07h15 a 07h45
+%%H: de 12h15 a 13h15
+%%H: de 16h30 a 19h00
+%%H: de 19h30 a 20h00
+%%H: de 21h00 a 22h30
+
+
+
+    01.11.2024
+- - - - - - - - HT 3.75
+
+%%H: de 07h45 a 08h30
+%%H: de 09h15 a 10h15
+%%H: de 12h45 a 13h45
+%%H: de 19h15 a 20h15
+
+
+
+    02.11.2024
+- - - - - - - - HT 0
+
+
+
+    03.11.2024
+- - - - - - - - HT 5
+
+%%H: de 07h30 a 08h15
+%%H: de 09h30 a 11h45
+%%H: de 13h00 a 14h00
+%%H: de 20h00 a 21h00
+
+
+
+- - - - - - - - SETMANA 2 30
+
+
+
+    04.11.2024
+- - - - - - - - HT 4.75
+
+%%H: de 12h30 a 13h00
+%%H: de 14h15 a 15h00
+%%H: de 17h30 a 19h15
+%%H: de 19h45 a 20h30
+%%H: de 21h00 a 22h00
+
+
+
+    05.11.2024
+- - - - - - - - HT 5
+
+%%H: de 09h00 a 11h00
+%%H: de 12h00 a 13h00
+%%H: de 14h30 a 15h30
+%%H: de 16h00 a 17h00
+
+
+
+    06.11.2024
+- - - - - - - - HT 6.25
+
+%%H: de 08h00 a 09h00
+%%H: de 11h45 a 13h15
+%%H: de 14h00 a 14h30
+%%H: de 16h30 a 18h15
+%%H: de 19h30 a 20h30
+%%H: de 22h00 a 22h30
+
+
+
+    07.11.2024
+- - - - - - - - HT 5
+
+%%H: de 09h45 a 11h30
+%%H: de 17h00 a 20h15
+
+
+
+    08.11.2024
+- - - - - - - - HT 3.25
+
+%%H: de 07h45 a 08h15
+%%H: de 11h15 a 12h30
+%%H: de 19h00 a 20h30
+
+
+
+    09.11.2024
+- - - - - - - - HT 2.50
+
+%%H: de 11h30 a 13h00
+%%H: de 16h30 a 17h30
+
+
+
+    10.11.2024
+- - - - - - - - HT 4
+
+%%H: de 07h45 a 08h45
+%%H: de 10h00 a 11h15
+%%H: de 18h00 a 19h45
+
+
+
+- - - - - - - - SETMANA 3 30.75
+
+
+
+    11.11.2024
+- - - - - - - - HT 6.25
+
+%%H: de 09h30 a 11h30
+%%H: de 12h15 a 13h15
+%%H: de 16h30 a 19h00
+%%H: de 21h00 a 21h45
+
+
+
+    12.11.2024
+- - - - - - - - HT 5
+
+%%H: de 07h00 a 08h30
+%%H: de 11h45 a 13h00
+%%H: de 14h45 a 15h15
+%%H: de 15h30 a 16h30
+%%H: de 16h45 a 17h30
+
+
+
+    13.11.2024
+- - - - - - - - HT 4.25
+
+%%H: de 07h45 a 08h15
+%%H: de 12h15 a 13h15
+%%H: de 15h15 a 16h15
+%%H: de 16h45 a 18h30
+
+
+
+    14.11.2024
+- - - - - - - - HT 3.5
+
+%%H: de 10h30 a 13h00
+%%H: de 17h30 a 18h30
+
+
+
+    15.11.2024
+- - - - - - - - HT 9
+
+%%H: de 05h15 a 07h15
+%%H: de 09h45 a 12h45
+%%H: de 14h15 a 15h45
+%%H: de 17h15 a 18h45
+%%H: de 21h00 a 22h00
+
+
+
+    16.11.2024
+- - - - - - - - HT 4.25
+
+%%H: de 10h30 a 12h15
+%%H: de 17h45 a 19h15
+%%H: de 21h30 a 22h30
+
+
+
+    17.11.2024
+- - - - - - - - HT 3.75
+
+%%H: de 07h15 a 08h15
+%%H: de 09h30 a 11h00
+%%H: de 12h30 a 13h15
+%%H: de 17h15 a 17h45
+
+
+
+- - - - - - - - SETMANA 4 36
+
+
+
+    18.11.2024
+- - - - - - - - HT 1
+
+%%H: de 21h00 a 22h00
+
+
+
+    19.11.2024
+- - - - - - - - HT 5
+
+%%H: de 11h45 a 13h15
+%%H: de 16h00 a 17h30
+%%H: de 21h00 a 23h00
+
+
+
+    20.11.2024
+- - - - - - - - HT 5.25
+
+%%H: de 07h00 a 08h30
+%%H: de 10h00 a 11h30
+%%H: de 19h00 a 20h15
+%%H: de 21h30 a 22h30
+
+
+
+    21.11.2024
+- - - - - - - - HT 4.25
+
+%%H: de 09h45 a 12h30
+%%H: de 16h00 a 17h30
+
+
+
+    22.11.2024
+- - - - - - - - HT 2.75
+
+%%H: de 12h15 a 15h00
+
+
+
+    23.11.2024
+- - - - - - - - HT 6.5
+
+%%H: de 09h30 a 13h00
+%%H: de 17h30 a 20h00
+%%H: de 21h00 a 21h30
+
+
+
+    24.11.2024
+- - - - - - - - HT 6.75
+
+%%H de 08h15 a 09h15
+%%H de 10h30 a 13h00
+%%H de 15h30 a 17h30
+%%H de 20h30 a 21h45
+
+
+
+- - - - - - - - SETMANA 5 31.5
+
+
+
+    25.11.2024
+- - - - - - - - HT 5
+
+%%H de 13h00 a 18h00
+
+
+
+    26.11.2024
+- - - - - - - - HT 0
+
+
+
+    27.11.2024
+- - - - - - - - HT 2.75
+
+%%H de 07h45 a 08h30
+%%H de 12h15 a 13h00
+%%H de 18h45 a 19h30
+%%H de 21h45 a 22h15
+
+
+
+
+    28.11.2024
+- - - - - - - - HT 4.25
+
+%%H de 11h45 a 13h00
+%%H de 15h00 a 16h45
+%%H de 19h15 a 20h30
+
+
+
+    29.11.2024
+- - - - - - - -  HT 1.5
+
+%%H de 08h00 a 08h30
+%%H de 12h15 a 13h15
+
+
+
+    30.11.2024
+- - - - - - - - HT 1
+
+%%H de 16h00 a 17h00
+
+
+
+    01.12.2024
+- - - - - - - - HT 2
+
+%%H de 10h00 a 12h00
+
+
+
+- - - - - - - - SETMANA 6 16.50
+
+
+
+    02.12.2024
+- - - - - - - - HT 7.25
+
+%%H de 08h00 a 08h45
+%%H de 09h45 a 10h45
+%%H de 12h00 a 13h00
+%%H de 15h00 a 16h30
+%%H de 17h00 a 18h45
+%%H de 19h30 a 20h00
+%%H de 21h00 a 21h45
+
+
+
+    03.12.2024
+- - - - - - - - HT 3.75
+
+%%H de 12h15 a 13h00
+%%H de 16h00 a 18h00
+%%H de 21h00 a 22h00
+
+
+
+    04.12.2024
+- - - - - - - - HT 4.30
+
+%%H de 11h45 a 13h00
+%%H de 16h30 a 18h00
+%%H de 19h15 a 20h00
+%%H de 21h15 a 21h45
+%%H de 22h00 a 22h30
+
+
+
+    05.12.2024
+- - - - - - - - HT 0.75
+
+%%H de 07h15 a 08h00
+
+
+
+    06.12.2024
+- - - - - - - - HT 1
+
+%%H de 13h45 a 14h15
+%%H de 17h30 a 18h00
+
+
+
+    07.12.2024
+- - - - - - - - HT 1.5
+
+%%H de 06h30 a 07h30
+%%H de 10h00 a 10h30
+
+
+
+    08.12.2024
+- - - - - - - - HT 1
+
+%%H de 20h15 a 21h15
+
+
+
+- - - - - - - - SETMANA 7 19.75
+
+
+
+    09.12.2024
+- - - - - - - - HT 4.25
+
+%%H de 10h15 a 12h30
+%%H de 16h30 a 17h30
+%%H de 19h00 a 20h00
+
+
+
+    10.12.2024
+- - - - - - - - HT 4.75
+
+%%H de 07h15 a 08h00
+%%H de 11h30 a 13h15
+%%H de 16h15 a 18h30
+
+
+
+    11.12.2024
+- - - - - - - - HT 5
+
+%%H de 07h45 a 08h30
+%%H de 09h15 a 11h00
+%%H de 18h00 a 19h45
+%%H de 21h30 a 22h15
+
+
+
+    12.12.2024
+- - - - - - - - HT 3.5
+
+%%H de 07h15 a 08h15
+%%H de 09h00 a 10h30
+%%H de 12h00 a 13h00
+
+
+
+    13.12.2024
+- - - - - - - - HT 3
+
+%%H de 07h30 a 08h30
+%%H de 12h00 a 13h00
+%%H de 17h45 a 18h45
+
+
+
+    14.12.2024
+- - - - - - - - HT 2.25
+
+%%H de 11h15 a 12h30
+%%H de 16h30 a 17h30
+
+
+
+    15.12.2024
+- - - - - - - - HT 0
+
+
+
+- - - - - - - - SETMANA 8 22.75
+
+
+
+    16.12.2024
+- - - - - - - - HT 3
+
+%%H de 11h15 a 12h45
+%%H de 16h45 a 18h15
+
+
+
+    17.12.2024
+- - - - - - - - HT 3
+
+%%H de 12h00 a 13h00
+%%H de 19h15 a 20h00
+%%H de 21h30 a 22h45
+
+
+
+    18.12.2024
+- - - - - - - - HT 1.5
+
+%%H de 08h00 a 08h45
+%%H de 12h00 a 12h45
+
+
+
+    19.12.2024
+- - - - - - - - HT 1.5
+
+%%H de 12h00 a 13h00
+%%H de 21h30 a 22h00
+
+
+
+    20.12.2024
+- - - - - - - - HT 3
+
+%%H de 10h30 a 13h00
+%%H de 18h30 a 19h00
+
+
+
+    21.12.2024
+- - - - - - - - HT 0
+
+
+
+    22.12.2024
+- - - - - - - - HT 0
+
+
+
+- - - - - - - - SETMANA 9 12
+
+
+
+    23.12.2024
+- - - - - - - - HT 0
+
+
+
+    24.12.2024
+- - - - - - - - HT 0
+
+
+
+    25.12.2024
+- - - - - - - - HT 0
+
+
+
+    26.12.2024
+- - - - - - - - HT 0
+
+
+
+    27.12.2024
+- - - - - - - - HT 0
+
+
+
+    28.12.2024
+- - - - - - - - HT 0
+
+
+
+    29.12.2024
+- - - - - - - - HT 0
+
+
+
+- - - - - - - - SETMANA 10 0
+
+
+
+    30.12.2024
+- - - - - - - - HT 1.5
+
+%%H de 11h30 A 13h00
+
+
+
+    31.12.2024
+- - - - - - - - HT 0
+
+
+
+    01.01.2025
+- - - - - - - - HT 0
+
+
+
+    02.01.2025
+- - - - - - - - HT 3.5
+
+%%H de 10h30 a 13h00
+%%H de 16h30 a 17h30
+
+
+
+    03.01.2025
+- - - - - - - - HT 3
+
+%%H de 11H00 a 13h00
+%%H de 17h15 a 18h15
+
+
+
+    04.01.2025
+- - - - - - - - HT 5
+
+%%H de 08h00 a 09h00
+%%H de 10h45 a 13h15
+̣̣̣̣̣̣̣̣%%H de 15h30 a 16h00
+%%H de 16h45 a 17h15
+%%H de 22h30 a 23h00
+
+
+
+    05.01.2025
+- - - - - - - - HT 5
+
+%%H de 10h00 a 11h45
+%%H de 13h00 a 13h30
+%%H de 14h45 a 16h45
+%%H de 20h00 a 20h45
+
+
+
+- - - - - - - - SETMANA 11 18
+
+
++ + + + + + + + TOTAL 250,25h (amb 11 setmanes seguides treballades, 1 sense activitat, manquen encara 49,75h del pressupostat de 300)
+
+
