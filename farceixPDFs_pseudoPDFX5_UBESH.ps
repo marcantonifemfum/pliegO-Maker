@@ -220,8 +220,6 @@ nomesunAvegada  %% sigui una pàgina en blanc o sigui o no la pàgina 1
 %(8CropBox_MediaBox_CropBox_NOMESaLarrelPage_pla.pdf)
 (8CropBox_MediaBox_NOMESaLarrelPage_CropBox_QuadratsRectanglesVH_pla.pdf)
 
-%(- - - - - - ON SOM?)pstack quit
-
 (/home/femfum/Documents/pliegOMakerUB/Hpdf/)  %% path absolut del fitxer a processar a Tuxedo
      /serverPath exch def
      dup length serverPath length add string dup 0 serverPath putinterval dup 3 -1 roll serverPath length exch putinterval
@@ -238,9 +236,11 @@ gsave
 %%URLREpublica amb un path absolut
 %(/var/www/wordpress/maker/REpublica/FemFum_CaLi2CoPi_042_REpublica.ps)
 
-%%URLUBESH
+%%URLUBESH executem CaLi2CoPi per filtrar i repicar el PDF
 %% (/home/femfum/Documents/pliegOMakerUB/FemFum_CaLi2CoPi_042_pliegOMakerUBESH.ps)
 7up_pliegOMaker_UBESH 4 get
+
+%(- - - - - - ON SOM?)pstack quit
 
 (r) file cvx exec
 grestore
@@ -2449,15 +2449,15 @@ grestore
 
 %%ENUMERA pàgines
  %% aquest és el punt on millor podem fer aquesta feina?
- %% que la basarem en l'estratègia de compondre el numeral que toqui en base al mapa d'imposició
+ %% que la basarem en l'estratègia de compondre el numeral que toqui en base al mapa d'imposició (però ara ho fa via Npgn)
  %% doncs l'usuari podrà haver omès el dígit del número de pàgina (pàgina sense numerar) o haver-lo personalitzat o forçar a una pàgina en blanc que es numeri
  %% gràficament jugarem amb una base geomètrica: quadrat, triangle, semicercle, amb un factor de transparència que podrà ser inicalment gris o negre
  %% el valor del numeral el posarem inicialment en blanc opac (podríem posar tots dos elements en una capa de PDF desactivable per l'usuari a l'imprimir?)
 
  %% per defecte NO numerem les pàgines en blanc
- %% aquí ja no quedem afectats pels paràmetres d'escala/translació/rotació
+ %% aquí ja no quedem afectats pels paràmetres d'escala/translació/rotació particulars de cada pàgina del llançat
 
- true  %% opció de menú
+ M15 0 get  %% opció de menú
  {
   llançat  %% la pàgina en blanc NO la numerem ara
   {
@@ -2470,10 +2470,10 @@ grestore
     true
    }ifelse
    /Pesquerra exch def  %% gatell per controlar les pàgines esquerra/dreta (hem de concretar l'estratègia per detectar-les en base al mapa d'imposició segons l'nUp triat)
-   /PXV 2 def  %% 0 peu, 1 xamfrà, 2 vora, posició del numerador dins la pàgina haurà de ser una opció de menú
-   /PoT true def  %% false ple, true transparent, haurà de ser una opció de menú 
-   /QCT 1 def  %% 0 cap, 1 quadrat, 2 semicercle, 3 triangle, # dymo?: quin fons hi posem al numerador? haurà de ser una opció de menú
-   /cQCT 1 def  %% 0 cap, 1 negre, 2 gris, quin color de fons hi posem al numerador? haurà de ser una opció de menú
+   /PXV M15 1 get def  %% 0 peu, 1 xamfrà, 2 vora, posició del numerador dins la pàgina haurà de ser una opció de menú
+   /PoT M15 2 get def  %% false ple, true transparent, haurà de ser una opció de menú 
+   /QCT M15 3 get def  %% 0 cap, 1 quadrat, 2 semicercle, 3 triangle, # dymo?: quin fons hi posem al numerador? haurà de ser una opció de menú
+   /cQCT M15 4 get def  %% 0 cap, 1 negre, 2 gris, quin color de fons hi posem al numerador? haurà de ser una opció de menú
 
    [  %% configurem els tres modes per situar i enumerar
     {  %% 0 centrat al peu de pàgina

@@ -4,7 +4,7 @@ DESCRIPCIÓ DE FEINA FETA
     + el PAD de treball on hi han les valoracions temporals és a:
 https://pad.femprocomuns.coop/pressUBpliegOS_ESH
     + document +endreçat però resumit per la UB:
-file:///home/femfum/Downloads/Fitxer%20adjunt%20per%20comanda4200373200.pdf
+file:///home/femfum/Documents/UB/pressupostUB_10_2024_MarcantoniMalagarrigaPicas_signat.pdf
 
 + etiquetem els paràgrafs dels registres de feina segons el seu estat:
 @VIST | @FET (comentaris) | @PENDENT | @ESTEMFENT | @URGENT | @RECLAMAT
@@ -188,7 +188,7 @@ gs -q -dNOSAFER -o re.pdf -sDEVICE=pdfwrite -dAutoRotatePages=/None -f nUp_plieg
 
 + afinem millor la captura d'errors dels algorismes de composició, afegint un indicador a l'stopped general de… nUp_pliegOS_UBESH.ps …que ens diu l'índex de l'algorisme componedor que estem executant PERÒ ALERTA PERQUÈ AQUEST AVÍS HAURIA DE SORTIR DESPRÉS DE…  ...FET (certa morralla al /tmp pot ser de profit) …i/o hauriem de marcar l'inici de la rutina 9: farceix…
 + cal tenir en compte que CaLi2CoPi s'executa dins el context de nUp_pliegOS_UBESH
-+ quan fem la interfície www caldrà gestionar millor tots aquesta categoria de missatges d'error
++ quan fem la interfície www caldrà gestionar millor tota aquesta categoria de missatges d'error
 @PENDENT
 
 
@@ -1447,6 +1447,19 @@ FemFum_CaLi2CoPi_042_REpublica.ps | no hi han adreces absolutes
 @URGENT
 
 
++ C. Afegim l'opció de numerar les pàgines del llançat en base a un seguit de criteris: M15 a les opcions de menú TXT de capçalera
++ c1. Situació dins els marges de pàgina i xamfrans: peu de pàgina, xamfrans externs, vores externes
++ c2. Tria d'aspecte gràfic i tipografia: segons configuració
++ c3. Tria de les pàgines que la duran, escollint la pàgina d'inici i final: a l'espera d'integrar-ho al mapa d'imposició quan afegim les opcions de PDFs externs i dobles pàgines
++ c4. Funcionalitats aplicables només a nivell d'algorisme intern: funciona en tots els nUps que tenim creats
++ c4.1 ~ Configuració de les dades d'execució via fitxer ascii de capçalera: via ESH_UB.txt
+@FET
+
++ cal acabar de traslladar els paths particulars cap al 7up_pliegOMaker_UBESH (tipografies, el famós PDF buit de l'Scripting que encara no tenim clar que fa ara, etc)
++ cal assegurar que abans d'executar CaLi2CoPi dins el context de farceixPDFs_pseudoPDFX5_UBESH.ps HI HAGI l'STACK BUIT! (doncs hi han operadors, com SCN, que treballen amb un count a l'stack i els indueix a error!)
+@URGENT
+
+
 
 - - - - - - - - - - - - - - - - - CALENDARI
 
@@ -2135,6 +2148,11 @@ FemFum_CaLi2CoPi_042_REpublica.ps | no hi han adreces absolutes
 - - - - - - - - SETMANA 11 18
 
 
-+ + + + + + + + TOTAL 250,25h (amb 11 setmanes seguides treballades, 1 sense activitat, manquen encara 49,75h del pressupostat de 300)
++ + + + + + + + TOTAL PARCIAL 250,25h (amb 11 setmanes seguides treballades, 1 sense activitat, manquen encara 49,75h del pressupostat de 300h)
 
 
+    06.01.2025
+- - - - - - - - HT
+
+%%H de 07h45 a 08h45
+%%H de 10h00 a

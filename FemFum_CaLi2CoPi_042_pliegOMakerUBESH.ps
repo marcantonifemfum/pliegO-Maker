@@ -1104,7 +1104,7 @@ dup dup length dup /araVa exch def 8 add string dup 3 -1 roll 0 exch putinterval
 %# Si a %#% G triem 6, llegirem aquest dígit per saber si de la interfície d'a3copiseny ens ve
 %# el pocessat d'un sol fitxer =0  o el processat d'un directori sencer =1 (ho necessita el .log)
 
-0
+1
 
 
 
@@ -6464,6 +6464,7 @@ iPmaker 1 add /iPmaker exch def
 
 
 %%UBESH fem un nou loop explorador d'instruccions Rotate, doncs ens poden condicionar enormement la imposició de pàgines en funció de si les considerem o no
+mark  %% aquest loop pot deixar brossa de diccionaris mal tancats i l'hem d'eliminar per no produir errors més endavant en operadors que treballen amb count
 %% aquí escriurem tots els Rotate definits
 /araPlana 1 def  %% valor inicial del ventador de pàgines
 {  %% loop explorador de Rotate pàgina a pàgina
@@ -6538,6 +6539,10 @@ iPmaker 1 add /iPmaker exch def
  }loop  %% recursiu per trobar el Rotate fins l'arrel /Pages i/o nodes intermitjos si cal
  araPlana 1 add dup maxPlana gt {pop exit}{/araPlana exch def}ifelse
 }loop  %% fi del loop explorador de Rotate pàgina a pàgina
+
+cleartomark  %% aquest loop pot deixar brossa de diccionaris mal tancats i l'hem d'eliminar per no produir errors més endavant en operadors que treballen amb count
+%(::::::::::::::::::)pstack quit
+
 
 %XRay /PeDeEfa get { dup type /dicttype eq{{== ==}forall ==}{pop pop}ifelse }forall(!)pstack quit
 

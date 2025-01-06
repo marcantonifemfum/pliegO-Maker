@@ -28,7 +28,7 @@ true  %% true fem PDFs | false fem JPEGs
 
 %%UBESH ERROR
 %(/home/femfum/Documents/pliegOMakerUB/apel_testMediaBoxCropBox.pdf_pla.pdf)
-%(/home/femfum/Documents/pliegOMakerUB/testMediaBoxCropBox.pdf)
+%(/lhome/femfum/Documents/pliegOMakerUB/testMediaBoxCropBox.pdf)
 %(/home/femfum/Documents/pliegOMakerUB/exemples/errors/original_desproporcions_mides_pdf.pdf)
 %(/home/femfum/Documents/pliegOMakerUB/PDFsAMBrotacions.pdf)
 
@@ -53,9 +53,8 @@ true  %% true fem PDFs | false fem JPEGs
 
 %% enumerem pàgines
 %(/home/femfum/Downloads/17896_Eskaera_Solicitud.pdf)
-%(/home/femfum/Documents/GuiaJove_EinesDT_v1_web.pdf)  %%PETA! amb el CaLi2CoPi de pliegO'Maker, però NO amb el de FemFum_CaLi2CoPi_042_REpublica.ps
-%% segurament és perquè té algun element extra a l'stack i l'operador SCN treballa amb un count que el fa multiplicar erròniament!
-(/home/femfum/Documents/pliegOMakerUB/16pagines_numerades.pdf)
+(/home/femfum/Documents/GuiaJove_EinesDT_v1_web.pdf)  %% hem polit un loop nou a FemFum_CaLi2CoPi_042_pliegOMakerUBESH.ps que generava brossa
+%(/home/femfum/Documents/pliegOMakerUB/16pagines_numerades.pdf)
 
 }
 {
@@ -173,8 +172,21 @@ true
 %% acolorides
 %[[null null null null]]
 
+
 %% enumerem pàgines
+
 []
+
+%[
+% [
+%  16
+%   12
+%% - - - revers - - -
+%   13
+%  14
+% ]
+%]
+
 
 %% Tarde Handbook amb tall al mig sense desbarbar
 %[[1 2 3 4 5 6 7 8 9 null null null null null null null]]
@@ -276,5 +288,23 @@ false
 %% false = fem que mani el valor /Rotate que dugui cada pàgina del PDF a imposar (mantenim l'orientació que visualitzem en qualsevol viewer)
 
 true
+
+
+
+%%M15 NUMERADOR DE PÀGINES (aquest paràmetre ara és genèric però es podrà personalitzar per a cada pàgina de forma més acurada)
+
+[
+
+ true   %% numerem? true si, false no (sempre amb lletra blanca opaca)
+
+ 2      %% posició del numerador dins la pàgina: 0 peu, 1 xamfrà, 2 vora,
+
+ true   %% color ple o transparent: false ple, true transparent
+
+ 1      %% forma pel fons del numerador: 1 quadrat, 2 semicercle, 3 triangle
+
+ 2      %% color pel fons del numerador: 1 negre, 2 gris
+
+]
 
 
