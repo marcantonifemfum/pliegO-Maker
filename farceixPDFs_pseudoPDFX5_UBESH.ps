@@ -191,25 +191,27 @@ nomesunAvegada  %% sigui una pàgina en blanc o sigui o no la pàgina 1
    %(/Users/femfum/PliegOS/codi_pliegOS/PDFscripting/8auricsHV.pdf)
 
    %% capturem la variable d'entorn que porta el nom del fitxer PDF normalitzat que s'ha carregat al servidor commonscloud.coop
-   (MRCT_santSudari) getenv  %% la variable d'entorn existeix?
-   {  
+   (MRCT_planxat) getenv  %% la variable d'entorn existeix?
+   {  %% existeix perquè ve d'executar-se via html/php  
     dup length 0 eq
     {  %% arriba buida perquè executem via URL amb pliegOmaker.php sense paràmetres (mètode $_GET)
-     pop true  %% si l'eliminem del menú via mètode $_POST també
+     pop  %% si l'eliminem del menú via mètode $_POST també
+%%URLUBESH farcim el path al PDF a imposar
+     ()  %% aquí podria anar-hi un PDF d'exemple numerat per tal d'experimentar amb la resta de paràmetres
     } 
     {  %% té dades perquè executem via URL amb index_##.php (mètode $_POST) o amb pliegOmaker.php amb paràmetres (mètode $_GET)
-%%URLREpublica farcim el path absolut al PDF a imposar
-(/var/www/wordpress/maker/REpublica/Hpdf/) /serverPath exch def
-     dup length serverPath length add string dup 0 serverPath putinterval dup 3 -1 roll serverPath length exch putinterval
-     %% és una string!
+%%URLREpublica
+%%URLUBESH farcim el path al PDF a imposar
+     (Hpdf/)
     }ifelse 
+    /serverPath exch def  %% provem si podem funcionar amb adreces relatives
+    dup length serverPath length add string dup 0 serverPath putinterval dup 3 -1 roll serverPath length exch putinterval  %% és una string!
    }
    {  %% la variable d'entorn NO existeix perquè executem l'applet en local via Terminal per línia de comanda
     CddVf
-    {
+    {  %% via TXT
     }       
     {
-%    (ETSAQUIQUANEXECUTOALTERMINAL?)pstack quit	    
 %     true   
 %%URLUBESH
 %% nom del PDF que hem d'imposar
@@ -1753,12 +1755,18 @@ M10
    /Context1 <<>> .PDFInit def
    pedeefa Context1 .PDFFile
 
-%%URLUBESH (ara no ho fem servir)
-%% per què el text/tipografia dóna recursos a .PDFDRawPage per situar-se en el lloc correcte i una imatge o un vectorial NO?
-   (/home/femfum/Documents/pliegOMakerUB/1paginaDINbuida.pdf) dup (r) file runpdfbegin
-
+%%URLUBESH
+%(ETSAQUIQUANEXECUTOALTERMINAL?)pstack quit
+   %% haver de treballar amb un /Context2 sembla un mètode estrany per gestionar pàgines en blanc i que hauríem de mirar de fer marrada amb una altra estratègia
+   %% doncs haver de cridar i executar un PDF enganyosament en blanc en comptes d'ignorar una execució per un determinat llançat no sembla massa eficient
+   %% i cal esbrinar el perquè cal que hi hagi un text/tipografia en blanc per permetre a .PDFDRawPage situar-se en el lloc correcte i una imatge o un vectorial NO?
+   %% cal esbrinar perquè cal que la pàgina del PDF tigui contingut (ho haurem de preguntar a gsdevel?) i o sigui obligatori treballar amb -dAutoRotatePages=/None
+   %(/home/femfum/Documents/pliegOMakerUB/1paginaDINbuida.pdf)
+   %(1paginaDINbuida.pdf)
+   7up_pliegOMaker_UBESH 8 get dup (r) file runpdfbegin
    /Context2 <<>> .PDFInit def
    Context2 .PDFFile
+
 %}ifelse
 %}ifelse
 
@@ -2472,8 +2480,8 @@ grestore
    /Pesquerra exch def  %% gatell per controlar les pàgines esquerra/dreta (hem de concretar l'estratègia per detectar-les en base al mapa d'imposició segons l'nUp triat)
    /PXV M15 1 get def  %% 0 peu, 1 xamfrà, 2 vora, posició del numerador dins la pàgina haurà de ser una opció de menú
    /PoT M15 2 get def  %% false ple, true transparent, haurà de ser una opció de menú 
-   /QCT M15 3 get def  %% 0 cap, 1 quadrat, 2 semicercle, 3 triangle, # dymo?: quin fons hi posem al numerador? haurà de ser una opció de menú
-   /cQCT M15 4 get def  %% 0 cap, 1 negre, 2 gris, quin color de fons hi posem al numerador? haurà de ser una opció de menú
+   /QCT M15 3 get def  %% (0 cap) 1 quadrat, 2 semicercle, 3 triangle, # dymo?: quin fons hi posem al numerador? haurà de ser una opció de menú
+   /cQCT M15 4 get def  %% (0 cap, 1 negre, 2 gris) quin color de fons hi posem al numerador? haurà de ser una opció de menú
 
    [  %% configurem els tres modes per situar i enumerar
     {  %% 0 centrat al peu de pàgina
@@ -2493,17 +2501,19 @@ grestore
       true .setalphaisshape .4 .setfillconstantalpha
      }if
 
-     [  %% color de la forma del fons del numerador
-      {  %% 0 cap
-       %% dymo?
-      }
-      {  %% 1 negre
-       0 0 0 setrgbcolor
-      }
-      {  %% 2 gris
-       .7 .7 .7 setrgbcolor
-      }
-     ] cQCT get cvx exec  %% opció de menú?
+     %[  %% color de la forma del fons del numerador
+     % {  %% 0 cap
+     %  %% dymo?
+     % }
+     % {  %% 1 negre
+     %  0 0 0 setrgbcolor
+     % }
+     % {  %% 2 gris
+     %  .7 .7 .7 setrgbcolor
+     % }
+     %]
+
+     cQCT cvx exec setrgbcolor  %% opció de color per menú
 
      [  %% forma del fons del numerador
       {  %% 0 cap
@@ -2543,16 +2553,18 @@ grestore
       true .setalphaisshape .4 .setfillconstantalpha
      }if
 
-     [  %% color de la forma del fons del numerador
-      {  %% 0 cap
-      }
-      {  %% 1 negre
-       0 0 0 setrgbcolor
-      }
-      {  %% 2 gris
-       .7 .7 .7 setrgbcolor
-      }
-     ] cQCT get cvx exec  %% opció de menú?
+     %[  %% color de la forma del fons del numerador
+     % {  %% 0 cap
+     % }
+     % {  %% 1 negre
+     %  0 0 0 setrgbcolor
+     % }
+     % {  %% 2 gris
+     %  .7 .7 .7 setrgbcolor
+     % }
+     %]
+
+     cQCT cvx exec setrgbcolor  %% opció de color per menú
 
      [  %% forma del fons del numerador
       {  %% 0 cap
@@ -2616,16 +2628,18 @@ grestore
       true .setalphaisshape .4 .setfillconstantalpha
      }if
 
-     [  %% color de la forma del fons del numerador
-      {  %% 0 cap
-      }
-      {  %% 1 negre
-       0 0 0 setrgbcolor
-      }
-      {  %% 2 gris
-       .7 .7 .7 setrgbcolor
-      }
-     ] cQCT get cvx exec  %% opció de menú?
+     %[  %% color de la forma del fons del numerador
+     % {  %% 0 cap
+     % }
+     % {  %% 1 negre
+     %  0 0 0 setrgbcolor
+     % }
+     % {  %% 2 gris
+     %  .7 .7 .7 setrgbcolor
+     % }
+     %]
+
+     cQCT cvx exec setrgbcolor  %% opció de color per menú
 
      [  %% forma del fons del numerador
       {  %% 0 cap
@@ -2684,7 +2698,11 @@ grestore
    %% pintem en blanc opac el numèric
    gsave
    0 0 0 0 setcmykcolor
-   (/usr/share/fonts/truetype/hack/Hack-Regular.ttf) findfont /dfNum exch def
+
+%%URLUBESH
+   %(/usr/share/fonts/truetype/hack/Hack-Regular.ttf)
+   7up_pliegOMaker_UBESH 7 get findfont /dfNum exch def
+
    [
     {  %% 0 al peu
      [

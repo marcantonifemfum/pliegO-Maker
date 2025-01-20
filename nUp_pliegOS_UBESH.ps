@@ -6,7 +6,7 @@
 %%  Per a intèrprets `GNU GPL Ghostscript´ però també, amb ben pocs retocs, pot córrer
 %%  amb l'Adobe Acrobat Distiller o amb el PSNormalizer Framework/Apple pstopdf a MacOSX.
 %%
-%%  `Copyleft 2017-2024 :: l'Ametlla de Merola :: Marcantoni Malagarriga-Picas´
+%%  `Copyleft 2017-2025 :: l'Ametlla de Merola :: Marcantoni Malagarriga-Picas´
 %%  `<http://www.femfum.com> | <marcantoni@femfum.com>´
 %%  `https://github.com/marcantonifemfum/pliegO-Maker´
 %%  `http://pliegos.net/maker´
@@ -32,7 +32,7 @@
 %%
 %%  All the comments inside the code are in catalan [ca], we hope to add english annotations in future versions
 %%  
-%%  `Copyleft 2017-2024 :: l'Ametlla de Merola :: Marcantoni Malagarriga-Picas´
+%%  `Copyleft 2017-2025 :: l'Ametlla de Merola :: Marcantoni Malagarriga-Picas´
 %%  `<http://www.femfum.com> | <marcantoni@femfum.com>´
 %%  `https://github.com/marcantonifemfum/pliegO-Maker´
 %%  `http://pliegos.net/maker´
@@ -72,7 +72,7 @@
 %%   **** See .setfillconstantalpha/.setalphaisshape for the improved solution
 %%Canviarem tots els .setopacityalpha per .setalphaisshape
 %%NOUgs9.55 marca el que hem desactivat temporalment en relació a la transparència
-%% com que és un canvi progressiu des de la 9.53 permeten mantenir els operadors eliminats afegint -dALLOWPSTRANSPARENCY
+%% com que és un canvi progressiu des de la 9.53 permeten mantenir els operadors eliminats i usar-ne els nous afegint -dALLOWPSTRANSPARENCY
 %% gs -q -dNOSAFER -dALLOWPSTRANSPARENCY -dAutoRotatePages=/None -o surt.pdf -sDEVICE=pdfwrite -f nUp_pliegOS.ps
 
 %% control d'errors via interfície PHP
@@ -132,10 +132,11 @@
 %% captura única de les dades del menú, sobretot pensant quan actua el loop a pliegOMaker_UBESH.ps
 noMesunavegada
 {
+
  /noMesunavegada false def
 
-%%Captura de dades via fitxer d'interfície TXT?
- true
+%%EP! captura de dades via fitxer d'interfície TXT?
+ false
 
  dup /CddVf exch def
  {
@@ -152,16 +153,17 @@ noMesunavegada
 %% marca l'entrada de dades i tria d'opcions
 
 %%M? donar la possibilitat de rotació i/o mirall del contingut de determinades pàgines?
+%% quedarà resolt quan ampliem el mapa d'imposició amb packedarrays { ... } amb tot el detall paràmetres per fer coses pàgina a pàgina
 
 %%M? donar la possibilitat de triar pàgines en blanc? (false) sobre l'esquema del desplegat de planes
-%% no activarem aquesta opció encara a l'espera de com es configuri la tria a la interfície d'usuari
+%% ha quedat resolt afegint null a la plana que vulguem en blanc dins el mapa d'imposició M8
 
 %%M0 capturar quina és la llengua del navegador per tal d'activar determinades informacions en català o anglès
 
 %%M1 donar la possibilitat de fer visible la vora de la pàgina d'imposició, sigui o no dins una capa i com?
 %% capturem la variable d'entorn generada amb PHP com a PHP2PS2PHPgeneracioicapturadunavariabledentorn.php
 (MRCT_vp) getenv  %% la variable d'entorn existeix?
-{
+{  %% existeix perquè ve d'executar-se via html/php
  dup length 0 eq 
  {  %% arriba buida perquè executem via URL amb pliegOmaker.php sense paràmetres (mètode $_GET)
   pop true  %% si l'eliminem del menú via mètode $_POST també
@@ -189,7 +191,7 @@ noMesunavegada
 %% 8 8vUpH 8 pàgines verticals (en dúplex) imposades de costat, 4+4, en un full horitzontal (16 imposicions totals)
 %% capturem la variable d'entorn generada amb PHP des de PHP2PS2PHPgeneracioicapturadunavariabledentorn.php
 (MRCT_nup) getenv %% la variable d'entorn existeix?
-{
+{  %% existeix perquè ve d'executar-se via html/php
  dup length 0 eq
  {  %% arriba buida perquè executem via URL amb pliegOmaker.php sense paràmetres (mètode $_GET)
   pop 4  %% si l'eliminem del menú via mètode $_POST també
@@ -212,7 +214,7 @@ noMesunavegada
 %% false vertical
 %% true horitzontal
 (MRCT_hv) getenv  %% la variable d'entorn existeix?
-{
+{  %% existeix perquè ve d'executar-se via html/php
  dup length 0 eq
  {  %% arriba buida perquè executem via URL amb pliegOmaker.php sense paràmetres (mètode $_GET)
   pop false  %% si l'eliminem del menú via mètode $_POST també
@@ -235,7 +237,7 @@ noMesunavegada
 %%M4 format estàndard del full (d'impressora)
 %% els DiNS conserven l´índex
 (MRCT_full) getenv  %% la variable d'entorn existeix?
-{
+{  %% existeix perquè ve d'executar-se via html/php
  dup length 0 eq
  {  %% arriba buida perquè executem via URL amb pliegOmaker.php sense paràmetres (mètode $_GET)
   pop 4  %% si l'eliminem del menú via mètode $_POST també
@@ -258,10 +260,10 @@ noMesunavegada
 %% false NO forcem mantenir la ràtio (en cas que el plec no sigui proporcional!)
 %% true FORCEM mantenir la ràtio (en cas que el plec no sigui proporcional!)
 (MRCT_r) getenv  %% la variable d'entorn existeix?
-{
+{  %% existeix perquè ve d'executar-se via html/php
  dup length 0 eq
  {  %% arriba buida perquè executem via URL amb pliegOmaker.php sense paràmetres (mètode $_GET)
-  pop false  %% si l'eliminem del menú via mètode $_POST també
+  pop false  %% si l'eliminem del menú html o via mètode $_POST també
  }
  {  %% té dades perquè executem via URL amb index_##.php (mètode $_POST) o amb pliegOmaker.php amb paràmetres (mètode $_GET)
   cvx exec  %% és una string!
@@ -280,10 +282,10 @@ noMesunavegada
 
 %%M6 índex a l'algorisme de composició independent del nUp triat
 (MRCT_labal) getenv  %% la variable d'entorn existeix?
-{
+{  %% existeix perquè ve d'executar-se via html/php
  dup length 0 eq
  {  %% arriba buida perquè executem via URL amb pliegOmaker.php sense paràmetres (mètode $_GET)
-  pop 9  %% si l'eliminem del menú via mètode $_POST també (per defecte activem l'algorisme de?)
+  pop 9  %% si l'eliminem del menú html o via mètode $_POST també (per defecte activem l'algorisme de?)
  }
  {  %% té dades perquè executem via URL amb index_##.php (mètode $_POST) o amb pliegOmaker.php amb paràmetres (mètode $_GET)
   cvx exec  %% és una string!
@@ -337,8 +339,8 @@ noMesunavegada
 %%UBESH
 %%M7 RESPECTEM L'ENQUADRAMENT DEL PDF D'ORIGEN ?
 %% capturem la variable d'entorn generada amb PHP com a PHP2PS2PHPgeneracioicapturadunavariabledentorn.php
-(MRCT_Xdefinir) getenv  %% la variable d'entorn existeix?
-{
+(MRCT_bbox) getenv  %% la variable d'entorn existeix?
+{  %% existeix perquè ve d'executar-se via html/php
  dup length 0 eq 
  {  %% arriba buida perquè executem via URL amb pliegOmaker.php sense paràmetres (mètode $_GET)
   pop true  %% si l'eliminem del menú via mètode $_POST també
@@ -360,14 +362,50 @@ noMesunavegada
 %%UBESH
 %%M8 MAPA D'IMPOSICIÓ
 %% capturem la variable d'entorn generada amb PHP com a PHP2PS2PHPgeneracioicapturadunavariabledentorn.php
-(MRCT_Xdefinir) getenv  %% la variable d'entorn existeix?
-{
+(MRCT_mapai) getenv  %% la variable d'entorn existeix?
+{  %% existeix perquè ve d'executar-se via html/php
  dup length 0 eq 
  {  %% arriba buida perquè executem via URL amb pliegOmaker.php sense paràmetres (mètode $_GET)
   pop []  %% si l'eliminem del menú via mètode $_POST també
  }
  {  %% té dades perquè executem via URL amb index_##.php (mètode $_POST) o amb pliegOmaker.php amb paràmetres (mètode $_GET)
-  cvx exec  %% és una string!
+  cvx exec  %% és una string
+  dup 3 eq  %% apliquem el mapa d'imposició fent el PDF?
+  {  %% fem el PDF aplicant el mapa d'imposició
+   pop  %% el 3 aquí només és per detectar l'estat
+   /_assagemi false def  %% definim aquí aquest gatell que no el tenim al menú HTML, malgrat si que està definit al PHP
+   (MRCT_tmapai) getenv pop  %% en aquest punt la variable d'entorn sempre existeix per això popem el booleni
+   dup length 0 eq
+   {
+    pop []  %% si no s'ha escrit res al camp de text, treballem amb una array buida
+   }
+   {
+    {  %% per evitar alguns errors de sintaxi (no pas tots) editant el mapa d'imposició
+     cvx exec
+     dup type /arraytype ne
+     {  %% fem servir el mètode d'escriure un nom no definit per provocar un error de sintaxi
+      (MAPAdimposicioERRONI_1)
+      MAPAdimposicioERRONI_1
+     }if
+    }stopped
+    {
+     MAPAdimposicioERRONI_2  %% fem servir el mètode d'escriure un nom no definit per provocar un error de sintaxi
+    }if
+   }ifelse
+  }
+  {  %% només assagem sense fer el PDF
+   pop  %% hi arriba un 7 però podria se qualsevol altre nombre diferent a 3
+   /_assagemi true def  %% definim aquí aquest gatell que no el tenim al menú HTML, malgrat si que està definit al PHP
+   []
+
+   [
+    (MRCT_rang1) getenv pop cvx exec  %% en aquest punt la variable d'entorn sempre existeix per això popem el booleni
+    (MRCT_rang2) getenv pop cvx exec  %% en aquest punt la variable d'entorn sempre existeix per això popem el booleni
+   ] /_rang1_rang2 exch def  %% per a M12
+
+   (MRCT_rang3) getenv pop cvx exec  %% en aquest punt la variable d'entorn sempre existeix per això popem el booleni
+   /_rang3 exch def  %% per a M13
+  }ifelse
  }ifelse
 }
 {  %% la variable d'entorn NO existeix perquè executem l'applet en local via Terminal per línia de comanda
@@ -383,8 +421,8 @@ noMesunavegada
 %%UNESH
 %%M9 ENQUADERNAT
 %% capturem la variable d'entorn generada amb PHP com a PHP2PS2PHPgeneracioicapturadunavariabledentorn.php
-(MRCT_Xdefinir) getenv  %% la variable d'entorn existeix?
-{
+(MRCT_enqdrnt) getenv  %% la variable d'entorn existeix?
+{  %% existeix perquè ve d'executar-se via html/php
  dup length 0 eq 
  {  %% arriba buida perquè executem via URL amb pliegOmaker.php sense paràmetres (mètode $_GET)
   pop null  %% si l'eliminem del menú via mètode $_POST també
@@ -406,11 +444,12 @@ noMesunavegada
 %%UBESH
 %%M10 ASSAGEM EL MAPA D'IMPOSICIÓ?
 %% capturem la variable d'entorn generada amb PHP com a PHP2PS2PHPgeneracioicapturadunavariabledentorn.php
-(MRCT_Xdefinir) getenv  %% la variable d'entorn existeix?
-{
+(MRCT_assagemi) getenv  %% la variable d'entorn existeix?
+{  %% existeix perquè malgrat no és al menú HTML si que l'hem definit al PHP
  dup length 0 eq 
- {  %% arriba buida perquè executem via URL amb pliegOmaker.php sense paràmetres (mètode $_GET)
-  pop false  %% si l'eliminem del menú via mètode $_POST també
+ {  %% arriba buida perquè no és la menú HTML (o l'executem via URL amb pliegOmaker.php sense paràmetres per mètode $_GET)
+  pop
+  _assagemi  %% aquesta variable ha estat definida a M8
  }
  {  %% té dades perquè executem via URL amb index_##.php (mètode $_POST) o amb pliegOmaker.php amb paràmetres (mètode $_GET)
   cvx exec  %% és una string!
@@ -428,7 +467,7 @@ noMesunavegada
 
 %%M11 text a compondre
 (MRCT_tlab) getenv  %% la variable d'entorn existeix?
-{
+{  %% existeix perquè malgrat no és al manú HTML, sí que l'hem definit al PHP
  dup length 0 eq
  {  %% arriba buida perquè executem via URL amb pliegOmaker.php sense paràmetres (mètode $_GET)
   %% si l'eliminem del menú via mètode $_POST també
@@ -516,24 +555,31 @@ noMesunavegada
 }ifelse
 
 %%UBESH
-%%M12 PÀGINA D'INICI DE L'ASSAIG (normalment seria la 1 però podem marcar l'inici cap endavant en una altra pàgina)
+%%M12 PÀGINA D'INICI I FINAL DE L'ASSAIG (array amb dos valors d'inici i final)
 %% capturem la variable d'entorn generada amb PHP com a PHP2PS2PHPgeneracioicapturadunavariabledentorn.php
-(MRCT_Xdefinir) getenv  %% la variable d'entorn existeix?
-{
+(MRCT_pipfa) getenv  %% la variable d'entorn existeix?
+{  %% existeix perquè malgrat no l'hem definida com a name a l'html sí que l'hem creada al PHP
  dup length 0 eq 
- {  %% arriba buida perquè executem via URL amb pliegOmaker.php sense paràmetres (mètode $_GET)
-  pop 1  %% si l'eliminem del menú via mètode $_POST també
+ {  %% arriba buida perquè només l'hem definida al PHP
+  pop
+  _assagemi
+  {  %% sempre que assagem
+   _rang1_rang2  %% array de la variable definida a M8
+  }
+  {  %% si no assagem hi posem l'array estàndard
+   [0 0]
+  }ifelse
  }
  {  %% té dades perquè executem via URL amb index_##.php (mètode $_POST) o amb pliegOmaker.php amb paràmetres (mètode $_GET)
-  cvx exec  %% és una string!
+  cvx exec  %% cal si és una array?
  }ifelse
 }
 {  %% la variable d'entorn NO existeix perquè executem l'applet en local via Terminal per línia de comanda
  CddVf
  {  %% UBESH interfície TXT
  }
- {
-  1
+ {  %% aquí és on ens cal posar-hi el valors de MRCT_rang1 i MRCT_rang2 subordinats a
+  [0 0]
  }ifelse
 %% (\n Ghostscript no pot capturar aquesta variable d'entorn!\n\n)print flush
 }ifelse
@@ -541,11 +587,18 @@ noMesunavegada
 %%UBESH
 %%M13 NOMBRE MÀXIM DE LLIBRETS A GENERAR (útil per quan el PDF d'entrada sigui molt gran i volguem dossificar la feina)
 %% capturem la variable d'entorn generada amb PHP com a PHP2PS2PHPgeneracioicapturadunavariabledentorn.php
-(MRCT_Xdefinir) getenv  %% la variable d'entorn existeix?
-{
+(MRCT_nmdllag) getenv  %% la variable d'entorn existeix?
+{  %% existeix perquè malgrat no l'hem definida com a name a l'html sí que l'hem creada al PHP
  dup length 0 eq 
- {  %% arriba buida perquè executem via URL amb pliegOmaker.php sense paràmetres (mètode $_GET)
-  pop 0  %% si l'eliminem del menú via mètode $_POST també
+ {  %% arriba buida perquè només l'hem definida al PHP
+  pop
+  _assagemi
+  {  %% sempre que assagem
+   _rang3  %% la variable definida a M8
+  }
+  {  %% si no assagem hi posem el valor per defecte
+   0
+  }ifelse
  }
  {  %% té dades perquè executem via URL amb index_##.php (mètode $_POST) o amb pliegOmaker.php amb paràmetres (mètode $_GET)
   cvx exec  %% és una string!
@@ -561,6 +614,122 @@ noMesunavegada
 %% (\n Ghostscript no pot capturar aquesta variable d'entorn!\n\n)print flush
 }ifelse
 
+%%UBESH
+%%M14 DE COM S'ADAPTEN LES PÀGINES A LA GRAELLA DEL LLANÇAT (aquest paràmetre ara és genèric però es podrà personalitzar per a cada pàgina de forma més acurada)
+%% capturem la variable d'entorn generada amb PHP com a PHP2PS2PHPgeneracioicapturadunavariabledentorn.php
+(MRCT_agraella) getenv  %% la variable d'entorn existeix?
+{  %% existeix perquè ve d'executar-se via html/php
+ dup length 0 eq 
+ {  %% arriba buida perquè executem via URL amb pliegOmaker.php sense paràmetres (mètode $_GET)
+  pop true  %% si l'eliminem del menú via mètode $_POST també
+ }
+ {  %% té dades perquè executem via URL amb index_##.php (mètode $_POST) o amb pliegOmaker.php amb paràmetres (mètode $_GET)
+  cvx exec  %% és una string!
+ }ifelse
+}
+{  %% la variable d'entorn NO existeix perquè executem l'applet en local via Terminal per línia de comanda
+ CddVf
+ {  %% UBESH interfície TXT
+ }
+ {
+  true
+ }ifelse
+%% (\n Ghostscript no pot capturar aquesta variable d'entorn!\n\n)print flush
+}ifelse
+
+%%UBESH
+%%M15 NUMERADOR DE PÀGINES (aquest paràmetre ara és genèric però es podrà personalitzar per a cada pàgina de forma més acurada)
+%% capturem la variable d'entorn generada amb PHP com a PHP2PS2PHPgeneracioicapturadunavariabledentorn.php
+(MRCT_numera) getenv  %% la variable d'entorn existeix?
+{  %% existeix perquè ve d'executar-se via html/php
+ dup length 0 eq 
+ {  %% arriba buida perquè executem via URL amb pliegOmaker.php sense paràmetres (mètode $_GET)
+  pop [false 0 false 3 2]  %% si arriba buida no numerem
+ }
+ {  %% té dades perquè executem via URL amb index_##.php (mètode $_POST) o amb pliegOmaker.php amb paràmetres (mètode $_GET)
+  cvx exec  %% numerem?
+  {  %% sí
+   [
+    true  %% numerem!
+
+    %% posició del numerador dins la pàgina: 0 peu, 1 xamfrà, 2 vora
+    [
+     0  %% 0 triangle peu
+     1  %% 1 triangle xamfrà
+     2  %% 2 triangle vora
+     0  %% 3 semicercle peu
+     1  %% 4 semicercle xamfrà
+     2  %% 5 semicercle vora
+     0  %% 6 quadrat peu
+     1  %% 7 quadrat xamfrà
+     2  %% 8 quadrat vora
+    ]
+    (MRCT_M1513) getenv  %% posició pel fons del numerador
+    {
+     cvx exec get
+    }
+    {
+     pstack ERRORposicioNUMERADOR!
+    }ifelse
+
+    %% fons ple o transparent: false ple, true transparent
+    (MRCT_M152) getenv  %% fem transparent el fons del numerador?
+    {
+     cvx exec
+    }
+    {
+     pstack ERRORtransparenciaNUMERADOR!
+    }ifelse
+
+    %% forma pel fons del numerador: 1 quadrat, 2 semicercle, 3 triangle
+    [
+     3  %% 0 triangle peu
+     3  %% 1 triangle xamfrà
+     3  %% 2 triangle vora
+     2  %% 3 semicercle peu
+     2  %% 4 semicercle xamfrà
+     2  %% 5 semicercle vora
+     1  %% 6 quadrat peu
+     1  %% 7 quadrat xamfrà
+     1  %% 8 quadrat vora
+    ]
+    (MRCT_M1513) getenv  %% forma pel fons del numerador
+    {
+     cvx exec get
+    }
+    {
+     pstack ERRORformaNUMERADOR!
+    }ifelse
+
+    [
+     (MRCT_M154) getenv  %% color pel fons del numerador en format (#ffffff)
+     {  %% transformem el format (#ffffff) en [ 1 1 1 ]
+      1 2 6
+      {
+       1 index exch 2 getinterval (16###) dup 3 -1 roll 3 exch putinterval cvx exec 255 div exch
+      }for
+      pop
+     }
+     {
+      pstack ERRORrgbNUMERADOR!
+     }ifelse
+    ]
+   ]
+  }
+  {  %% no
+   [false 0 false 3 2]
+  }ifelse
+ }ifelse
+}
+{  %% la variable d'entorn NO existeix perquè executem l'applet en local via Terminal per línia de comanda
+ CddVf
+ {  %% UBESH interfície TXT
+ }
+ {
+  [true 0 false 3 2]
+ }ifelse
+%% (\n Ghostscript no pot capturar aquesta variable d'entorn!\n\n)print flush
+}ifelse
 
 %% fi de MENÚ de capçalera
 
@@ -568,7 +737,7 @@ noMesunavegada
 /M15 exch def  %% NUMERADOR DE PÀGINES
 /M14 exch def  %% DE COM S'ADAPTEN LES PÀGINES AL LLANÇAT
 /M13 exch def  %% NOMBRE MÀXIM DE LLIBRETS A GENERAR
-2 array astore /M12 exch def  %% PÀGINA D'INICI I FINAL DE L'ASSAIG
+/M12 exch def  %% PÀGINA D'INICI I FINAL DE L'ASSAIG
 
 /M11 exch def  %% text a compondre
 
@@ -2351,7 +2520,7 @@ _anversrevers
    compOnedors M6 get (r) file cvx exec  %% pesquem i executem l'algorisme de composició independent del nUp triat
 
 }stopped
-{(\n\n - - - - - - - - - - - - - - - E P ! - - - - - - - - - - - - -\n) print flush stop}if
+{(\n\n - - - - - - - -  E P ! peta l'algorisme d'imposicio? - - - - - - -\n) print flush stop}if
 
    grestore
 

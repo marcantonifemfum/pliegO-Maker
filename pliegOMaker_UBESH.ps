@@ -1,12 +1,31 @@
 %!
 %% executem nLlibrets vegades nUp_pliegOS_UBESH.ps
 %% aquest fitxer ha canviat de nom (de altravolta.ps a pliegOMaker_UBESH.ps)
+%% és el fitxer punter que hem de cridar amb la línia de comanda:
+%% gs -q -dNOSAFER -o resultat.pdf -dAutoRotatePages=/None -dALLOWPSTRANSPARENCY -sDEVICE=pdfwrite -f pliegOMaker_UBESH.ps
+
+%%MÈTODE DE DEBBUG per aturar l'execució en un determinat punt i veure què està passant a l'stack
+%% més barroer provocant l'error sense res més, doncs els stacks ja es llisten per defecte
+%cony!
+%% més elegant i controlat
+%{  %% context stopped
+% merda  %% provoquem l'error
+%}
+%stopped
+%{  %% canalitzem l'error
+% (:::::::::::::::::::)  %% senyalitzem
+% pstack  %% llistem l'stack
+% stop  %% obligatori aturar amb stop per tal ens ensenyi el prompt amb els missatges del GS
+ %% quit  %% amb quit ens genera un PDF amb una pàgina en blac sense informar de res
+%}if
+
 
 %%URLUBESH
 %% captura de les adreces que necessitem siguin absolutes per l'execució via Terminal/Localhost/www
 (7up_pliegOMaker_UBESH.ps)  %% Terminal Tuxedo
-   %% localhost
-   %% commonscloud.coop
+%%CAL veure quines adreces poden ser relatives i quines han de ser obligatòriament absolutes, també quines poder ser de disc i quines d'URL
+%(/var/www/html/www.pliegos.net/maker/UBESH/7up_pliegOMaker_UBESH.ps)   %% localhost Tuxedo
+%()   %% somNúvol/commonscloud.coop/www.pliegos.net
 
 
 (r) file cvx exec  %% posa en memòria la variable /7up_pliegOMaker_UBESH
