@@ -53,8 +53,8 @@ true  %% true fem PDFs | false fem JPEGs
 
 %% enumerem pàgines
 %(/home/femfum/Downloads/17896_Eskaera_Solicitud.pdf)
-(/home/femfum/Documents/GuiaJove_EinesDT_v1_web.pdf)  %% hem polit un loop nou a FemFum_CaLi2CoPi_042_pliegOMakerUBESH.ps que generava brossa
-%(/home/femfum/Documents/pliegOMakerUB/16pagines_numerades.pdf)
+%(/home/femfum/Documents/GuiaJove_EinesDT_v1_web.pdf)  %% hem polit un loop nou a FemFum_CaLi2CoPi_042_pliegOMakerUBESH.ps que generava brossa
+(/home/femfum/Documents/pliegOMakerUB/16pagines_numerades.pdf)
 
 }
 {
@@ -175,17 +175,29 @@ true
 
 %% enumerem pàgines
 
-[]
+%[]
 
-%[
-% [
-%  16
-%   12
-%% - - - revers - - -
-%   13
-%  14
-% ]
-%]
+[
+ [
+  1
+   2
+   3
+    4
+    5
+     6
+     7
+      8
+% - - - anvers/revers - - - 
+      null
+     10
+     11
+    12
+    13
+   14
+   15
+  null
+ ]
+]
 
 
 %% Tarde Handbook amb tall al mig sense desbarbar
@@ -199,7 +211,7 @@ true
 %[
 % [
 %  null  %% 
-%% - - - revers - - - 
+%% - - - anvers/revers - - - 
 %  null
 % ]
 %]
@@ -208,12 +220,11 @@ true
 % [
 %  1
 %   null
-%% - - - revers - - - 
+%% - - - anvers/revers - - - 
 %   null
 %  1
 % ]
 %]
-
 
 
 %% sintagma i paradigma
@@ -222,6 +233,7 @@ true
 
 
 % [[][]]  %%EP! aquest format d'array NO es pot fer servir doncs dóna Error: /rangecheck in --get--
+
 
 %%UBESH ERRORS
 %[[10 20 18 16]]
@@ -253,12 +265,12 @@ null
 %% true = si assagem el mapa d'imposició no crearem el PDF i només donarem com a resultat la matriu que defineix M8 amb una anàlisi de la feina segons el triat a M12 i M13
 %% false = generarem el PDF de sortida aplicant el mapa d'imposició definit a M8 i també fem l'anàlisi de la feina
 
-false
+true
 
 
 
 %%M11 TEXT A COMPONDRE
-%% si M6 és 9, 12 o 0, s'ignora
+%% ara s'ignora
 
 ()
 
@@ -269,8 +281,10 @@ false
 %% 0 0 significa generar el mapa d'imposició de la primera a la darrera pàgina del PDF d'entrada
 %% malgrat M13 estigui a zero o tingui un nombre de llibrets superior al rang descrit, el rang marcat sempre és el que mana
 
-0 0
-
+[
+ 0
+ 0
+]
 
 
 %%M13 NOMBRE MÀXIM DE LLIBRETS A GENERAR (útil per quan el PDF d'entrada sigui molt gran i volguem acotar la feina)
@@ -297,11 +311,11 @@ true
 
  true   %% numerem? true si, false no (sempre amb lletra blanca opaca)
 
- 2      %% posició del numerador dins la pàgina: 0 peu, 1 xamfrà, 2 vora,
+ 0      %% posició del numerador dins la pàgina: 0 peu, 1 xamfrà, 2 vora
 
- true   %% color ple o transparent: false ple, true transparent
+ false   %% fons ple o transparent: false ple, true transparent
 
- 1      %% forma pel fons del numerador: 1 quadrat, 2 semicercle, 3 triangle
+ 3      %% forma pel fons del numerador: 1 quadrat, 2 semicercle, 3 triangle
 
  2      %% color pel fons del numerador: 1 negre, 2 gris
 

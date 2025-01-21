@@ -2,8 +2,8 @@
 DESCRIPCIÓ DE FEINA FETA
 
     + el PAD de treball on hi han les valoracions temporals és a:
-https://pad.femprocomuns.coop/pressUBpliegOS_ESH
-    + document +endreçat però resumit per la UB:
+
+    + https://pad.femprocomuns.coop/pressUBpliegOS_ESHdocument +endreçat però resumit per la UB:
 file:///home/femfum/Documents/UB/pressupostUB_10_2024_MarcantoniMalagarrigaPicas_signat.pdf
 
 + etiquetem els paràgrafs dels registres de feina segons el seu estat:
@@ -23,7 +23,7 @@ file:///home/femfum/Documents/UB/pressupostUB_10_2024_MarcantoniMalagarrigaPicas
 @FET
 
 + línia de comanda Cali2CoPi_042 (reanomenat amb la cua _pliegOMakerUBESH) Tuxedo:
-+ gs -q -dNOSAFER -o re.pdf -sDEVICE=pdfwrite -dAutoRotatePages=/None -f FemFum_CaLi2CoPi_042_pliegOMakerUBESH.ps
++ gs -q -dNOSAFER -o re.pdf -sDEVICE=pdfwrite -dALLOWPSTRANSPARENCY -dAutoRotatePages=/None -f FemFum_CaLi2CoPi_042_pliegOMakerUBESH.ps
 @FET
 
 + configurat CaLi2CoPi per executar-se via prompt del Tuxedo
@@ -143,9 +143,9 @@ gs -q -dNOSAFER -o re.pdf -sDEVICE=pdfwrite -f nUp_pliegOS_UBESH.ps …veiem que
 + 3 ~ descarreguem del Git REpublica: FemFum_CaLi2CoPi_042_REpublica.ps i el reanomenem FemFum_CaLi2CoPi_042_pliegOMakerUBESH.ps
 + 4 ~ actualitzem tots els path de treball i els marquem amb %%URLUBESH també els punts potencials de modificació amb %%UBESH
 + 5 ~ la línia de comanda des del directori de treball del Terminal… /home/femfum/Documents/pliegOMakerUB …és:
-gs -q -dNOSAFER -o re.pdf -sDEVICE=pdfwrite -dAutoRotatePages=/None -f nUp_pliegOS_UBESH.ps
+gs -q -dNOSAFER -o re.pdf -sDEVICE=pdfwrite -dALLOWPSTRANSPARENCY -dAutoRotatePages=/None -f nUp_pliegOS_UBESH.ps
 + 6 ~ a… farceixPDFs_pseudoPDFX5_UBESH.ps …mantenim l'estratègia de separar el nom de fitxer PDF a tractar amb el path absolut fix on hi posarem aquests PDFs %MENU% en paral·lel a l'estratègia seguida treballant via web. Al Tuxedo… /home/femfum/Documents/pliegOMakerUB/Hpdf/
-+ 7 ~ en canvi on volem que s'escrigui el fitxer PDF imposat, resultat del pliegO'Maker, i el seu nom, només dependrà de com escrivim la línia de comanda al Terminal… gs -q -dNOSAFER -o pliegOSimposat.pdf -sDEVICE=pdfwrite -dAutoRotatePages=/None -f nUp_pliegOS_UBESH.ps
++ 7 ~ en canvi on volem que s'escrigui el fitxer PDF imposat, resultat del pliegO'Maker, i el seu nom, només dependrà de com escrivim la línia de comanda al Terminal… gs -q -dNOSAFER -o pliegOSimposat.pdf -sDEVICE=pdfwrite -dALLOWPSTRANSPARENCY -dAutoRotatePages=/None -f nUp_pliegOS_UBESH.ps
 @FET
 
 + operacions amb PDFs via línia de comanda GS:
@@ -1223,7 +1223,7 @@ arraytype
 + com es criden ara els fitxers del pliegO'Maker entre ells?
 
    Ghostscript
-   gs -q -dNOSAFER -o resultat.pdf -dAutoRotatePages=/None -sDEVICE=pdfwrite -f pliegOMaker_UBESH.ps
+   gs -q -dNOSAFER -o resultat.pdf -dALLOWPSTRANSPARENCY -dAutoRotatePages=/None -sDEVICE=pdfwrite -f pliegOMaker_UBESH.ps
 (intèrpret PostScript)
      ^
      |
@@ -1234,8 +1234,8 @@ pliegOMaker_UBESH.ps <----> 7up_pliegOMaker_UBESH.ps
      |
      |                            ______----> PDFs complementaris d'entrada a imposar (els filtrarem amb CaLi2CoPi?)
      v                           |
-nUp_pliegOS_UBESH.ps <----> ESH_UB.txt -----> PDF d'entrada a imposar
-     ^                      www                     ^
+nUp_pliegOS_UBESH.ps <----> ESH_UB.txt/localhost/www -----> PDF d'entrada a imposar
+     ^                                           ^
      |                                              |
      |                                              |
      v                                              v
@@ -1455,8 +1455,35 @@ FemFum_CaLi2CoPi_042_REpublica.ps | no hi han adreces absolutes
 + c4.1 ~ Configuració de les dades d'execució via fitxer ascii de capçalera: via ESH_UB.txt
 @FET
 
-+ cal acabar de traslladar els paths particulars cap al 7up_pliegOMaker_UBESH (tipografies, el famós PDF buit de l'Scripting que encara no tenim clar que fa ara, etc)
-+ cal assegurar que abans d'executar CaLi2CoPi dins el context de farceixPDFs_pseudoPDFX5_UBESH.ps HI HAGI l'STACK BUIT! (doncs hi han operadors, com SCN, que treballen amb un count a l'stack i els indueix a error!)
++ cal acabar de traslladar els paths particulars cap al 7up_pliegOMaker_UBESH.ps (tipografies, el famós PDF buit de l'Scripting que encara no tenim clar que fa ara, etc)
+@FET
+
++ a… FemFum_CaLi2CoPi_042_pliegOMakerUBESH.ps …hem afegit un netejador de l'stack… mark/cleartomark …dins un del nou loop explorador d'instruccions Rotate (doncs hi han operadors, com SCN, que treballen amb un count a l'stack i els indueix a error!)
+@FET
+
++ haver de treballar amb un /Context2 sembla un mètode estrany per gestionar pàgines en blanc i que hauríem de mirar de fer marrada amb una altra estratègia, doncs haver de cridar i executar un PDF enganyosament en blanc en comptes d'ignorar una execució per un determinat llançat no sembla massa eficient i cal esbrinar el perquè cal que hi hagi un text/tipografia en blanc per permetre a .PDFDRawPage situar-se en el lloc correcte i una imatge o un vectorial NO?
++ cal esbrinar perquè cal que la pàgina del PDF tigui contingut (ho haurem de preguntar a gsdevel?) i o sigui obligatori treballar amb -dAutoRotatePages=/None
++ (/home/femfum/Documents/pliegOMakerUB/1paginaDINbuida.pdf)
+@PENDENT
+
+
+
+    e
+Interfície web per facilitar la usabilitat de l'eina pliegO'Maker en paral·lel a la seva execució via fitxer ascii de capçalera:
+
+    e.1 Treballaríem inicialment només en local (localhost)
+
+        e1.1 ~ Per alliberar-nos de certes problemàtiques sobretot derivades de la càrrega de fitxers individuals i múltiples al servidor --que per la seva complexitat requereixen un tractament a banda-- treballaríem amb adreces locals (paths apuntant a directoris/fitxers de la mateixa màquina de treball) per la càrrega de documents PDF/JPEG a processar, via camp de text
+
+    e2. Usabilitat per facilitar la tria d'opcions d'execució de pliegO'Maker
+        e2.1 ~ Simplificació de les opcions de menú (paral·leles al mètode del fitxer ascii de capçalera) via desplegables, checkbox, combobox, radiobuttons i camps de text
+        e2.2 ~ Programació en HTML5, Javascript i PHP
+
+    e3. Simplificació de l'execució via URL (local) amb totes les opcions de menú dins l'adreça
+        e3.1 ~ Un altre mètode d'execució que pot facilitar certes dinàmiques de treball on la repetició sigui una de les prioritats. En posteriors projectes de desenvolupament aquest mètode també seria traslladable a execucions en un servidor a www (connectats a Internet
+
+
++ tenim un error al sistema de numeració quan fem més d'1 llibret (apilats o encartats), doncs no segueix sumant pàgines i torna a començar per 1 a cada llibret
 @URGENT
 
 
@@ -2152,7 +2179,134 @@ FemFum_CaLi2CoPi_042_REpublica.ps | no hi han adreces absolutes
 
 
     06.01.2025
-- - - - - - - - HT
+- - - - - - - - HT 2.15
 
 %%H de 07h45 a 08h45
-%%H de 10h00 a
+%%H de 10h00 a 11h15
+
+
+
+    07.01.2025
+- - - - - - - - HT 2
+
+%%H de 08h30 a 09h30
+%%H de 11h45 a 12h45
+
+
+
+    08.01.2025
+- - - - - - - - HT 0
+
+
+
+    09.01.2025
+- - - - - - - - HT 1.5
+
+%%H de 11h30 a 13h00
+
+
+
+    10.01.2025
+- - - - - - - - HT 0.5
+
+%%H de 20h30 a 21h00
+
+
+
+    11.01.2025
+- - - - - - - - HT 3
+
+%%H de 12h00 a 13h30
+%%H de 20h30 a 22h00
+
+
+
+    12.01.2025
+- - - - - - - - HT 0
+
+
+
+- - - - - - - - SETMANA 12 9.15
+
+
+
+    13.01.2025
+- - - - - - - - HT 4.5
+
+%%H de 09h30 a 11h00
+%%H de 15h00 a 18h00
+
+
+
+    14.01.2025
+- - - - - - - - HT 1.5
+
+%%H de 07h15 a 08h00
+%%H de 11h00 a 11h45
+
+
+
+    15.01.2025
+- - - - - - - - HT 5
+
+%%H de 10h00 a 12h30
+%%H de 17h00 a 18h30
+%%H de 22h00 a 23h00
+
+
+
+    16.01.2025
+- - - - - - - - HT 6.50
+
+%%H de 06h45 a 07h45
+%%H de 11h30 a 13h15
+%%H de 13h45 a 15h30
+%%H de 21h00 a 22h00
+
+
+    17.01.2025
+- - - - - - - - HT 1.5
+
+%%H de 08h30 a 09h00
+%%H de 16h30 a 17h30
+
+
+
+    18.01.2025
+- - - - - - - - HT 2.75
+
+%%H de 08h45 a 09h45
+%%H de 18h00 a 19h45
+
+
+
+    19.01.2025
+- - - - - - - - HT 4.75
+
+%%H de 09h45 a 11h45
+%%H de 13h00 a 14h00
+%%H de 17h00 a 18h15
+%%H de 19h45 a 20h15
+
+
+
+- - - - - - - - SETMANA 13 26.5
+
+
+
+    20.01.2025
+- - - - - - - - HT 4.5
+
+%%H de 10h30 a 12h45
+%%H de 16h30 a 17h00
+%%H de 18h30 a 19h30
+%%H de 21h00 a 21h45
+
+
+
+    21.01.2025
+- - - - - - - - HT
+
+%%H de 11h00 a 12h45
+%%H de 16h00 a 20h00
+
