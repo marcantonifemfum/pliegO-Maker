@@ -278,7 +278,8 @@ document.write
 );
 <!-- document.cookie="horaminutsegon"; -->
 </script>';
-*/
+ */
+
 // exit($_COOKIE['horaminutsegon'].' ...en podem extraure l\'hora del client?');
 //$ficali = $_COOKIE['horaminutsegon'];
 //$ficali = 'aeiou';
@@ -336,6 +337,7 @@ $somaGS = "/usr/bin/";  // path a l'executable de Ghostscript al localhost de Tu
 //$baseurlPDF = "http://localhost/www.pliegos.net/maker/REpublica/pdf/";  // base url al pdf al localhost del MacbookAir
 // @EP al servidor commonscloud.coop és clau NO posar-hi les 3 www al davant, si les duu dóna problemes al descarregar el PDF!
 $baseurlPDF = "http://localhost/www.pliegos.net/maker/UBESH/pdf/";  // base url al pdf al localhost de Tuxedo
+$baseurlMAPA = "http://localhost/www.pliegos.net/maker/UBESH/tmp/";  // base url on desem els mapes d'imposició al localhost de Tuxedo
 
 //$baseURL = "http://www.pliegos.net/maker";  // base url a la interfície del nou servidor www.pliegos.net de Teixidora
 //$baseURL = "http://localhost/www.pliegos.net/maker";  // base url a la interfície del localhost del Macbook Air
@@ -356,6 +358,10 @@ $PSapplet = $somaPS . "pliegOMaker_UBESH.ps";
 //$pdfnomes = $PDFunic . "_plegaVeu.pdf";
 $pdfnomes = $PDFunic . $PDFplanxat . "_UBESH.pdf";
 
+//@URLUBESH
+//@EP aquí desem $PDFunic com a variable d'entorn per tal que a farceixPDFs_pseudoPDFX5_UBESH.ps la capturem per desar-hi un HTML amb el mapa d'imposició
+putenv("MRCT_PDFunic=$PDFunic");  // desem el numèric únic a la variable d'entorn 
+// i la cridarem després de l'execució com a resultat de l'assaig al prompt del navegador
 
 $pdfFile = $somaPDF . $pdfnomes;
 
@@ -387,11 +393,15 @@ $command = $somaGS . "gs -q -dNOSAFER -o '" . $pdfFile . "' -dALLOWPSTRANSPARENC
 // temps d'espera frisso?
 //echo("<center><img src='frisso.gif' /></center>");
 
+//@UBESH si anem a true ens llista els missatges per la pantalla de l'html comn si fos el prompt del Terminal
 if(false)
 {  // si posem </pre> ens llistarà els missatges respectant la sintaxi que ve del PS
  echo '<pre>';
  // mètode normal de llistat del prompt
  $LaDarrera = system($command, $ElQtorna);
+
+ exit("- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -");
+
  echo '</pre>';
 }
 else
@@ -434,10 +444,18 @@ echo "</body></html>";
  {
   if ($mapai == 7)  // assagem?
   {
-   echo ($prompt);  // el prompt del .ps llistat pel gs
-   exit("...sembla que ho ha fet bé!");
-  }
+   //echo ($prompt);  // el prompt del .ps llistat pel gs
+   //exit("...sembla que ho ha fet bé!");
 
+   //@URLUBESH localhost
+   // aquí llistem el mapa d'imposició com si fos el prompt del Terminal
+   echo "<center><span style='color:#ff0000;font-family:monospace;font-size:24px'><br><br>&gt;&gt;&gt; ASSAIG DEL MAPA D'IMPOSICI&Oacute; &lt;&lt;&lt;</span>";
+//   echo "<br><br><div w3-include-html='" . $baseurlMAPA . $PDFunic . ".html' style='color:#999999;font-family:monospace;font-size:24px'></div>";
+   echo "<br><br><iframe src='" . $baseurlMAPA . $PDFunic . ".html'  height='100%' width='50%' title='' style='border:none' ></iframe>";
+   exit("<br><p><br><p><span style='color:#ff0000;font-family:monospace;font-size:24px'><a style='color:#ff0000;font-family:monospace;font-size:18px' href='$baseURL'>Si torneu enrera per aquest vincle perdereu les opcions de men&uacute; triades, si ho feu amb el bot&oacute; del navegador les conservareu</a></span><br><p><br></center>");
+  }
+  else
+  {
 // forcem la descàrrega d'un PDF
 //header('Content-type: application/pdf, text/html');
 // nom del pdf per anomenar i desar
@@ -456,6 +474,9 @@ echo "</body></html>";
 //           $txerKB = ceil(filesize($pdfFile)/1024);
 //           echo "</font><ul><font color='#00ff00'>Tiba't la composici&oacute;... <a href=$pdfFile TARGET='resource window'>$pdfFile ($txerKB Kb)</a>";
 //           echo "<br><p><br><p><a href='$urlDtreball'> ...pots clicar aqu&iacute; per tornar a composar.</a></font></font></ul>";
+
+  }
+
 
 // esborrem tots els fitxers del directori pdf que tinguin més de 24 hores
   $path="pdf";
@@ -478,9 +499,9 @@ echo "</body></html>";
  { // podem provocar errors executant sense interfície amb només comandes via URL (captura GET)
   // aquí llistem l'ERROR del prompt i demanem que s'enviï
   echo "<center><span style='color:#ff0000;font-family:monospace;font-size:24px'><br><br>&gt;&gt;&gt; ERROR d'execuci&oacute; de l'algorisme &lt;&lt;&lt;</span>";
-  echo "<br><br><span style='color:#999999;font-family:monospace;font-size:24px'>".$prompt."</font><br></span>";
+  echo "<br><br><span style='color:#999999;font-family:monospace;font-size:24px'>".$prompt."<br></span>";
 //@URLUBESH localhost
-  exit("<br><p><br><p><span style='color:#ff0000;font-family:monospace;font-size:24px'><a style='color:#ff0000;font-family:monospace;font-size:24px' href='mailto:marcantoni@femfum.com'>podeu documentar-nos l'error via email? (copieu i enganxeu el text en gris) gr&agrave;cies!</a><br><br><a style='color:#ff0000;font-family:monospace;font-size:18px' href='$baseURL'>pliegO'Maker</a></center>");
+  exit("<br><p><br><p><span style='color:#ff0000;font-family:monospace;font-size:24px'><a style='color:#ff0000;font-family:monospace;font-size:24px' href='mailto:marcantoni@femfum.com'>podeu documentar-nos l'error via email? (copieu i enganxeu el text en gris) gr&agrave;cies!</a><br><br><a style='color:#ff0000;font-family:monospace;font-size:18px' href='$baseURL'>pliegO'Maker</a></span></center>");
  }
 
  echo "</body></html>";

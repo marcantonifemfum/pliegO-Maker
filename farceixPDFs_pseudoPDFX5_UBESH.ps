@@ -63,7 +63,7 @@ noNULL  %% pinta el contingut de pàgina?
 
 %%UBESH personalització d'escales de llançat
  M2 0 eq
- {  %% hem triat el llançat Handbook (un tall sense desbarbar) amb la segona plana en blanc o a pàgina completa?
+ {  %% hem triat el llançat (Handbook) un tall sense desbarbar 8+1 amb la segona plana en blanc o a pàgina completa?
   iPln 9 eq  %% aquesta és la primera pàgina del revers
   {  %% en aquest cas la pàgina del llançat té el mateix format que el full d'impressió
    xFull /xPagina exch def
@@ -192,12 +192,13 @@ nomesunAvegada  %% sigui una pàgina en blanc o sigui o no la pàgina 1
 
    %% capturem la variable d'entorn que porta el nom del fitxer PDF normalitzat que s'ha carregat al servidor commonscloud.coop
    (MRCT_planxat) getenv  %% la variable d'entorn existeix?
-   {  %% existeix perquè ve d'executar-se via html/php  
+   {  %% existeix perquè ve d'executar-se via html/php
+    /veDEwww true def  %% gatell per saber si estem cridant l'algorisme des de la web
     dup length 0 eq
     {  %% arriba buida perquè executem via URL amb pliegOmaker.php sense paràmetres (mètode $_GET)
      pop  %% si l'eliminem del menú via mètode $_POST també
 %%URLUBESH farcim el path al PDF a imposar
-     ()  %% aquí podria anar-hi un PDF d'exemple numerat per tal d'experimentar amb la resta de paràmetres
+     ()  %% aquí podria anar-hi un PDF d'exemple (32paginesA4numerades.pdf) que, per defecte, ens deixés experimentar com treballa amb la resta de paràmetres
     } 
     {  %% té dades perquè executem via URL amb index_##.php (mètode $_POST) o amb pliegOmaker.php amb paràmetres (mètode $_GET)
 %%URLREpublica
@@ -208,6 +209,7 @@ nomesunAvegada  %% sigui una pàgina en blanc o sigui o no la pàgina 1
     dup length serverPath length add string dup 0 serverPath putinterval dup 3 -1 roll serverPath length exch putinterval  %% és una string!
    }
    {  %% la variable d'entorn NO existeix perquè executem l'applet en local via Terminal per línia de comanda
+    /veDEwww false def  %% gatell per saber si estem cridant l'algorisme des de la web
     CddVf
     {  %% via TXT
     }       
@@ -1502,7 +1504,7 @@ M10
 
  %% tabulem el mapa d'imposició per tal d'orientar indicant quines pàgines treballen en doble
  [
-  [2 3 3 4 4 3 3 2]  %% 0 un tall al mig sense desbarbar (Tarde Handbook)
+  [2 3 3 4 4 3 3 2]  %% 0 un tall al mig sense desbarbar 8+1 (Tarde Handbook)
   [2 2]  %% 1 cara i dors 1+1
   [2 3 3 2]  %% 2 llibret 2+2
   null  %% 3
@@ -1514,7 +1516,7 @@ M10
  ] M2 get /ATmi exch def
 
  [  %% rutines d'escriptura i tabulació pel mapa d'imposició (mateixa tabulació equival a pàgines que poden treballar en doble)
-  {  %% 0 treiem per pantalla el mapa d'imposició tipus un tall al mig sense desbarbar (Tarde Handbook)
+  {  %% 0 treiem per pantalla el mapa d'imposició 8+1 tipus un tall al mig sense desbarbar (Tarde Handbook)
    ([\n)print flush
    {  %% forall
     ( [\n)print flush
@@ -1532,7 +1534,7 @@ M10
       2 index exch get (  )print flush ==
       7 eq
       {
-       (% - - - revers - - - \n)print flush
+       (% - - - anvers/revers - - - \n)print flush
       }if
      }ifelse
     }for
@@ -1556,7 +1558,7 @@ M10
      2 index exch get ==
      0 eq
      {
-      (% - - - revers - - - \n)print flush
+      (% - - - anvers/revers - - - \n)print flush
      }if
     }for
     ( ]\n)print flush
@@ -1579,7 +1581,7 @@ M10
      2 index exch get ==
      1 eq
      {
-      (% - - - revers - - - \n)print flush
+      (% - - - anvers/revers - - - \n)print flush
      }if
     }for
     ( ]\n)print flush
@@ -1605,40 +1607,62 @@ M10
   null  %% 3
 
   {  %% 4 treiem per pantalla el mapa d'imposició tipus llibret 4+4
-   ([\n)print flush
-   {  %% forall
-    ( [\n)print flush
-    0 1 7
+
+   (MRCT_mapai) getenv  %% la variable d'entorn existeix?
+   {  %% sí: voldrà dir que estem executant via interfície www
+    pop %% i segur que valdrà 7 perquè estem assajant (i l'eliminem sense validar) doncs si féssim el PDF de debò ja no passaríem per aquí?
+    %% capturem la variable d'entorn amb el numèric únic amb el que desarem l'html amb el mapa d'imposició que cridarem des del PHP
+    (MRCT_PDFunic) getenv
+    {  %% muntem el fitxer html per escriure-hi el mapa d'imposició respectant la tabulació
+     dup length dup /araVa exch def 5 add string dup 3 -1 roll 0 exch putinterval dup araVa (.html) putinterval
+     7up_pliegOMaker_UBESH 6 get  %% (tmp/) l'html aquí dins s'esborrarà la propera execució de CaLi2CoPi
+     dup length dup /araVa exch def 2 index length add string dup 3 -1 roll 0 exch putinterval dup araVa 4 -1 roll putinterval
+     (w) file dup /HTMLaEscriure exch def
+     (<pre style='color:#999999;font-family:monospace;font-size:24px'>\n) writestring
+    }
     {
-     dup dup
-     ATmi exch get
+     pstack ERRORlaVARIABLEnumericaUNICAnoSHAcreat!
+    }ifelse
+    /aHTML true def
+   }
+   {  %% si no existeix vol dir que estem executant via Terminal/TXT
+    /aHTML false def
+   }ifelse
+
+   ([\n) aHTML{HTMLaEscriure exch writestring}{print flush}ifelse
+    {  %% forall
+     ( [\n) aHTML{HTMLaEscriure exch writestring}{print flush}ifelse
+     0 1 7
      {
-      ( )print flush
-     }repeat
-     2 index exch get ==
-     3 eq
+      dup dup
+      ATmi exch get
+      {
+       ( ) aHTML{HTMLaEscriure exch writestring}{print flush}ifelse
+      }repeat
+      2 index exch get aHTML{HTMLaEscriure exch 5 string cvs writestring HTMLaEscriure (\n) writestring}{==}ifelse
+      3 eq
+      {
+       (% - - - anvers/revers - - - \n) aHTML{HTMLaEscriure exch writestring}{print flush}ifelse
+      }if
+     }for
+     ( ]\n) aHTML{HTMLaEscriure exch writestring}{print flush}ifelse
+     pop
+     %% invertim el tabulat de l'array ATmi per l'encartat
+     M9 null ne
      {
-      (% - - - revers - - - \n)print flush
+      M9
+      {
+       [
+        ATmi aload pop
+        4
+        {
+         8 -7 roll
+        }repeat
+       ] /ATmi exch def
+      }if
      }if
-    }for
-    ( ]\n)print flush
-    pop
-    %% invertim el tabulat de l'array ATmi per l'encartat
-    M9 null ne
-    {
-     M9
-     {
-      [
-       ATmi aload pop
-       4
-       {
-        8 -7 roll
-       }repeat
-      ] /ATmi exch def
-     }if
-    }if
-   }forall
-   (]\n)print flush
+    }forall
+   (]\n) aHTML{HTMLaEscriure exch writestring HTMLaEscriure dup (</pre>) writestring closefile}{print flush}ifelse
   }
 
   null  %% 5
@@ -1661,7 +1685,7 @@ M10
      2 index exch get ==
      7 eq
      {
-      (% - - - revers - - - \n)print flush
+      (% - - - anvers/revers - - - \n)print flush
      }if
     }for
     ( ]\n)print flush
@@ -2501,19 +2525,23 @@ grestore
       true .setalphaisshape .4 .setfillconstantalpha
      }if
 
-     %[  %% color de la forma del fons del numerador
-     % {  %% 0 cap
-     %  %% dymo?
-     % }
-     % {  %% 1 negre
-     %  0 0 0 setrgbcolor
-     % }
-     % {  %% 2 gris
-     %  .7 .7 .7 setrgbcolor
-     % }
-     %]
-
-     cQCT cvx exec setrgbcolor  %% opció de color per menú
+     veDEwww
+     {
+      cQCT cvx exec setrgbcolor  %% opció de color per menú www
+     }
+     {
+      [  %% color de la forma del fons del numerador
+       {  %% 0 cap
+        %% dymo?
+       }
+       {  %% 1 negre
+        0 0 0 setrgbcolor
+       }
+       {  %% 2 gris
+        .7 .7 .7 setrgbcolor
+       }
+      ] cQCT get cvx exec  %% opció de color per menú TXT
+     }ifelse
 
      [  %% forma del fons del numerador
       {  %% 0 cap
@@ -2553,18 +2581,22 @@ grestore
       true .setalphaisshape .4 .setfillconstantalpha
      }if
 
-     %[  %% color de la forma del fons del numerador
-     % {  %% 0 cap
-     % }
-     % {  %% 1 negre
-     %  0 0 0 setrgbcolor
-     % }
-     % {  %% 2 gris
-     %  .7 .7 .7 setrgbcolor
-     % }
-     %]
-
-     cQCT cvx exec setrgbcolor  %% opció de color per menú
+     veDEwww
+     {
+      cQCT cvx exec setrgbcolor  %% opció de color per menú www
+     }
+     {
+      [  %% color de la forma del fons del numerador
+       {  %% 0 cap
+       }
+       {  %% 1 negre
+        0 0 0 setrgbcolor
+       }
+       {  %% 2 gris
+        .7 .7 .7 setrgbcolor
+       }
+      ] cQCT get cvx exec  %% opció de color per menú TXT
+     }ifelse
 
      [  %% forma del fons del numerador
       {  %% 0 cap
@@ -2628,18 +2660,22 @@ grestore
       true .setalphaisshape .4 .setfillconstantalpha
      }if
 
-     %[  %% color de la forma del fons del numerador
-     % {  %% 0 cap
-     % }
-     % {  %% 1 negre
-     %  0 0 0 setrgbcolor
-     % }
-     % {  %% 2 gris
-     %  .7 .7 .7 setrgbcolor
-     % }
-     %]
-
-     cQCT cvx exec setrgbcolor  %% opció de color per menú
+     veDEwww
+     {
+      cQCT cvx exec setrgbcolor  %% opció de color per menú www
+     }
+     {
+      [  %% color de la forma del fons del numerador
+       {  %% 0 cap
+       }
+       {  %% 1 negre
+        0 0 0 setrgbcolor
+       }
+       {  %% 2 gris
+        .7 .7 .7 setrgbcolor
+       }
+      ] cQCT get cvx exec  %% opció de color per menú TXT
+     }ifelse
 
      [  %% forma del fons del numerador
       {  %% 0 cap
