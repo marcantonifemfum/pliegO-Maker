@@ -22,7 +22,7 @@ file:///home/femfum/Documents/UB/pressupostUB_10_2024_MarcantoniMalagarrigaPicas
 #    A1.1 ~ Detecció de PDFs erronis, protegits per encriptació i signats digitalment, determinant el tipus de missatge que donarem a l'ususari per continuar treballant
 @FET
 
-+ línia de comanda Cali2CoPi_042 (reanomenat amb la cua _pliegOMakerUBESH) Tuxedo:
++ línia de comanda, a partir del gs 9.55, per Cali2CoPi_042 (reanomenat amb la cua _pliegOMakerUBESH) Tuxedo:
 + gs -q -dNOSAFER -o re.pdf -sDEVICE=pdfwrite -dALLOWPSTRANSPARENCY -dAutoRotatePages=/None -f FemFum_CaLi2CoPi_042_pliegOMakerUBESH.ps
 @FET
 
@@ -142,10 +142,10 @@ gs -q -dNOSAFER -o re.pdf -sDEVICE=pdfwrite -f nUp_pliegOS_UBESH.ps …veiem que
 + 2 ~ descarreguem del Git REpublica: farceixPDFs_pseudoPDFX5_REpublica.ps i el reanomenem farceixPDFs_pseudoPDFX5_UBESH.ps
 + 3 ~ descarreguem del Git REpublica: FemFum_CaLi2CoPi_042_REpublica.ps i el reanomenem FemFum_CaLi2CoPi_042_pliegOMakerUBESH.ps
 + 4 ~ actualitzem tots els path de treball i els marquem amb %%URLUBESH també els punts potencials de modificació amb %%UBESH
-+ 5 ~ la línia de comanda des del directori de treball del Terminal… /home/femfum/Documents/pliegOMakerUB …és:
++ 5 ~ la línia de comanda, a partir del gs 9.55, des del directori de treball del Terminal… /home/femfum/Documents/pliegOMakerUB …és:
 gs -q -dNOSAFER -o re.pdf -sDEVICE=pdfwrite -dALLOWPSTRANSPARENCY -dAutoRotatePages=/None -f nUp_pliegOS_UBESH.ps
 + 6 ~ a… farceixPDFs_pseudoPDFX5_UBESH.ps …mantenim l'estratègia de separar el nom de fitxer PDF a tractar amb el path absolut fix on hi posarem aquests PDFs %MENU% en paral·lel a l'estratègia seguida treballant via web. Al Tuxedo… /home/femfum/Documents/pliegOMakerUB/Hpdf/
-+ 7 ~ en canvi on volem que s'escrigui el fitxer PDF imposat, resultat del pliegO'Maker, i el seu nom, només dependrà de com escrivim la línia de comanda al Terminal… gs -q -dNOSAFER -o pliegOSimposat.pdf -sDEVICE=pdfwrite -dALLOWPSTRANSPARENCY -dAutoRotatePages=/None -f nUp_pliegOS_UBESH.ps
++ 7 ~ en canvi on volem que s'escrigui el fitxer PDF imposat, resultat del pliegO'Maker, i el seu nom, només dependrà de com escrivim la línia de comanda, a partir del gs 9.55, al Terminal… gs -q -dNOSAFER -o pliegOSimposat.pdf -sDEVICE=pdfwrite -dALLOWPSTRANSPARENCY -dAutoRotatePages=/None -f nUp_pliegOS_UBESH.ps
 @FET
 
 + operacions amb PDFs via línia de comanda GS:
@@ -1222,7 +1222,7 @@ arraytype
 
 + com es criden ara els fitxers del pliegO'Maker entre ells?
 
-   Ghostscript
+   Ghostscript, a partir de la 9.55:
    gs -q -dNOSAFER -o resultat.pdf -dALLOWPSTRANSPARENCY -dAutoRotatePages=/None -sDEVICE=pdfwrite -f pliegOMaker_UBESH.ps
 (intèrpret PostScript)
      ^
@@ -1443,8 +1443,8 @@ FemFum_CaLi2CoPi_042_REpublica.ps | no hi han adreces absolutes
 + ara tenim la PHP Version 8.1.2-1ubuntu2.19
 @FET
 
-+ EP! però el phpinfo.php funciona però no pas als directoris de treball a partir de localhost/www.pliegos.net)
-@URGENT
++ EP! però el phpinfo.php funciona però no pas als directoris de treball a partir de localhost/www.pliegos.net
+@FET
 
 
 + C. Afegim l'opció de numerar les pàgines del llançat en base a un seguit de criteris: M15 a les opcions de menú TXT de capçalera
@@ -1467,7 +1467,6 @@ FemFum_CaLi2CoPi_042_REpublica.ps | no hi han adreces absolutes
 @PENDENT
 
 
-
     e
 Interfície web per facilitar la usabilitat de l'eina pliegO'Maker en paral·lel a la seva execució via fitxer ascii de capçalera:
 
@@ -1483,8 +1482,24 @@ Interfície web per facilitar la usabilitat de l'eina pliegO'Maker en paral·lel
         e3.1 ~ Un altre mètode d'execució que pot facilitar certes dinàmiques de treball on la repetició sigui una de les prioritats. En posteriors projectes de desenvolupament aquest mètode també seria traslladable a execucions en un servidor a www (connectats a Internet
 
 
-+ tenim un error al sistema de numeració quan fem més d'1 llibret (apilats o encartats), doncs no segueix sumant pàgines i torna a començar per 1 a cada llibret
++ cal polir l'anàlisi quan acotem la imposició a menys pàgines de les que permet l'nUp, per exemple, fent un 4+4 (sobre un PDF que en té 16) però que hem acotat la impocició només de la 1 a la 2, ens diu:
+            1     ......... pagina on iniciarem la imposicio al PDF d'origen
+            8     ......... pagina on finalitzarem la imposicio al PDF d'origen
+            0     ......... pagines ignorades del PDF d'origen
+…suposem que potser també l'erra quan la numeració és saltada (p.e. comença per un núm de pàgina més gran del que no acaba) …caldrà veure si quan fem el PDF de debò també ho diu malament
 @URGENT
+
++ cal solucionar de com servir el PDF amb o sense la pàgina o vincle que ara tenim en blanc (pse, pse)
++ cal implementar l'escriptura del mapa d'imposició a l'HTML al 8+8, 8+1 i la resta que ara no surten via web (1+1 2+2)
++ cal apujar la limitació a 100 MB de fitxer PDF a imposar al servidor de somNúvol (OJU que al localhost ara éstà entre 2 i 8 M)
++ tenim un error al sistema de numeració quan fem més d'1 llibret (apilats o encartats), doncs no segueix sumant pàgines i torna a començar per 1 a cada llibret
++ cal afegir a /Hpdf l'esborrat a 24h
++ al 8+1 hi ha un error quan l'enquadernat és a (null) 1 sol llibret i avalua:  0     ......... pagines ignorades del PDF d'origen (si el PDF a imposar en té 16 hauria de dir 7)
+@FET
+
+
++ hem renombrat els 5 algorismes que teniem al directori… /home/femfum/Documents/pliegOMakerUB …sense evolucionar per les noves funcions de menú web (somNúvol/localhost) amb un txt_#.ps per tal de posar-hi els que estem escrivint ara al /localhost i veure que mantenim la compatibilitat de les 3 execucions possibles: via TXT, via nUp_pliegOS_UBESH.ps (configurant les opcions de les variables d'entorn) i via web
+@VIST
 
 
 
@@ -2305,8 +2320,44 @@ Interfície web per facilitar la usabilitat de l'eina pliegO'Maker en paral·lel
 
 
     21.01.2025
-- - - - - - - - HT
+- - - - - - - - HT 5.75
 
 %%H de 11h00 a 12h45
 %%H de 16h00 a 20h00
+
+
+
+    22.01.2025
+- - - - - - - - HT 0.5
+
+%%H de 17h30 a 18h00
+
+
+
+    23.01.2025
+- - - - - - - - HT 1.25
+
+%%H de 12h00 a 12h45
+%%H de 22h00 a 22h30
+
+
+
+    24.01.2025
+- - - - - - - - HT 3
+
+%%H de 10h30 a 13h00
+%%H de 16h30 a 17h00
+
+
+
+    25.01.2025
+- - - - - - - - HT
+
+%%H de 10h15 a 13h00
+%%H de 16h30 a 18h00
+%%H de 18h30 a 19h45
+%%H de 21h15 a 22h00
+
+
+
 
