@@ -451,8 +451,8 @@ echo "</body></html>";
    // aquí llistem el mapa d'imposició com si fos el prompt del Terminal
    echo "<center><span style='color:#ff0000;font-family:monospace;font-size:24px'><br><br>&gt;&gt;&gt; ASSAIG DEL MAPA D'IMPOSICI&Oacute; &lt;&lt;&lt;</span>";
 //   echo "<br><br><div w3-include-html='" . $baseurlMAPA . $PDFunic . ".html' style='color:#999999;font-family:monospace;font-size:24px'></div>";
-   echo "<br><br><iframe src='" . $baseurlMAPA . $PDFunic . ".html'  height='100%' width='50%' title='' style='border:none' ></iframe>";
-   exit("<br><p><br><p><span style='color:#ff0000;font-family:monospace;font-size:24px'><a style='color:#ff0000;font-family:monospace;font-size:18px' href='$baseURL'>Si torneu enrera per aquest vincle perdereu les opcions de men&uacute; triades, si ho feu amb el bot&oacute; del navegador les conservareu</a></span><br><p><br></center>");
+   echo "<br><br><iframe src='" . $baseurlMAPA . $PDFunic . ".html'  height='100%' width='75%' title='' style='border:none' ></iframe>";
+   exit("<br><p><br><p><span style='color:#0000ff;font-family:monospace;font-size:24px'><a style='color:#0000ff;font-family:monospace;font-size:18px' href='$baseURL'>Si torneu enrera per aquest vincle perdereu les opcions de men&uacute; triades, si ho feu amb el bot&oacute; del navegador les conservareu</a></span><br><p><br></center>");
   }
   else
   {
@@ -466,19 +466,19 @@ echo "</body></html>";
   // forcem l'obertura del pdf a la mateixa finestra
   // header("Location:" . $baseurlPDF . $pdfnomes);  // no li agrada a SomNuvol !
 
-//echo '<script type="text/javascript">window.open("http://localhost/www.pliegos.net/maker/'.$pdfnomes.'");</script>';
+   echo "<center><span style='color:#ff0000;font-family:monospace;font-size:24px'><br><br>&gt;&gt;&gt; <a href='http://localhost/www.pliegos.net/maker/UBESH/pdf/" . $pdfnomes . "'>ENLLA&Ccedil; AL PDF RESULTANT</a> &lt;&lt;&lt;</span>";
+	  
+	  //echo '<script type="text/javascript">window.open("http://localhost/www.pliegos.net/maker/'.$pdfnomes.'");</script>';
 //@URLUBESH localhost
 	 echo '<script type="text/javascript">window.open("http://localhost/www.pliegos.net/maker/UBESH/pdf/'.$pdfnomes.'");</script>';
 
-//           echo "<center><font color='#00ff00'>***** ginyB42 HA ENLLESTIT la feina correctament *****</font><br><p><br><p></center>";
-//           $txerKB = ceil(filesize($pdfFile)/1024);
-//           echo "</font><ul><font color='#00ff00'>Tiba't la composici&oacute;... <a href=$pdfFile TARGET='resource window'>$pdfFile ($txerKB Kb)</a>";
-//           echo "<br><p><br><p><a href='$urlDtreball'> ...pots clicar aqu&iacute; per tornar a composar.</a></font></font></ul>";
+//           $txerKB = ceil(filesize($pdfFile)/1024);  // si necessitem mesurar el fitxer de sortida
+   echo("<br><p><br><p><span style='color:#0000ff;font-family:monospace;font-size:24px'><a style='color:#0000ff;font-family:monospace;font-size:18px' href='$baseURL'>Torneu</a></span><br><p><br></center>");
 
   }
 
 
-// esborrem tots els fitxers del directori pdf que tinguin més de 24 hores
+// esborrem tots els fitxers del directori pdf (resultats finals de pliegOS) que tinguin més de 24 hores
   $path="pdf";
   if (is_dir("$path") )
   {
@@ -493,6 +493,24 @@ echo "</body></html>";
    }
    closedir($manegal);
   }
+
+// esborrem tots els fitxers del directori Hpdf (fitxers originals + repicats de CaLi2CoPi) que tinguin més de 24 hores
+
+  $path="Hpdf";
+  if (is_dir("$path") )
+  {
+   $manegal=opendir($path);
+   while (false!==($file = readdir($manegal)))
+   {
+    if ($file != "." && $file != "..")
+    {
+     $Diff = (time() - filectime("$path/$file"))/60/60/24;
+     if ($Diff > 1) unlink("$path/$file");
+    }
+   }
+   closedir($manegal);
+  }
+
 
  }
  else

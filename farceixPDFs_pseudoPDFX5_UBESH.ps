@@ -297,22 +297,43 @@ M12 aload pop 2 copy gt 1 index 0 ne and  %% tret que el segon valor sigui zero 
 M10
 {  %% assaig i NO fem el llançat i només generem el mapa d'imposició en base al nombre de pàgines del PDF i l'enquadernat triat
 
+   (MRCT_mapai) getenv  %% la variable d'entorn existeix?
+   {  %% sí: voldrà dir que estem executant via interfície www
+    pop %% i segur que valdrà 7 perquè estem assajant (i l'eliminem sense validar) doncs si féssim el PDF de debò ja no passaríem per aquí?
+    %% capturem la variable d'entorn amb el numèric únic amb el que desarem l'html amb el mapa d'imposició que cridarem des del PHP
+    (MRCT_PDFunic) getenv
+    {  %% muntem el fitxer html per escriure-hi el mapa d'imposició respectant la tabulació
+     dup length dup /araVa exch def 5 add string dup 3 -1 roll 0 exch putinterval dup araVa (.html) putinterval
+     7up_pliegOMaker_UBESH 6 get  %% (tmp/) l'html aquí dins s'esborrarà la propera execució de CaLi2CoPi
+     dup length dup /araVa exch def 2 index length add string dup 3 -1 roll 0 exch putinterval dup araVa 4 -1 roll putinterval
+     (w) file dup /HTMLaEscriure exch def
+     (<pre style='color:#999999;font-family:monospace;font-size:24px'>\n) writestring
+    }
+    {
+     pstack ERRORlaVARIABLEnumericaUNICAnoSHAcreat!
+    }ifelse
+    /aHTML true def
+   }
+   {  %% si no existeix vol dir que estem executant via Terminal/TXT
+    /aHTML false def
+   }ifelse
+
 %%UBESH sedassem | garbellem | destriem
 %(\n\n | | | | | | | | | | | | | | | | | | | | | | | | | | | | | |\n)print flush
-(\n\n - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n)print flush
+(\n\n - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n) aHTML{HTMLaEscriure exch writestring}{print flush}ifelse
 %(\n\n + + + + + + + + + + + + + + + + + + + + + + + + + + + + + +\n)print flush
 %(\n\n ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~\n)print flush
 %(\n\n / / / / / / / / / / / / / / / / / / / / / / / / / / / / / /\n)print flush
 %( \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \n\n)print flush
 %(\n : : : : : : : : : : : : : : : : : : : : : : : : : : : : : :\n)print flush
 %%(\n                s   e   d   a   s   s   e   m\n\n)print flush
-(\n                  assagem el mapa d'imposicio\n\n)print flush
+(\n                                analitzem l'assaig\n\n) aHTML{HTMLaEscriure exch writestring}{print flush}ifelse
 %( : : : : : : : : : : : : : : : : : : : : : : : : : : : : : :\n\n)print flush
 %(\n \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \n)print flush
 %( / / / / / / / / / / / / / / / / / / / / / / / / / / / / / /\n)print flush
 %( ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~\n\n)print flush
 %( + + + + + + + + + + + + + + + + + + + + + + + + + + + + + +\n\n)print flush
-( - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n\n)print flush
+( - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n\n) aHTML{HTMLaEscriure exch writestring}{print flush}ifelse
 %( | | | | | | | | | | | | | | | | | | | | | | | | | | | | | |\n\n)print flush
 
  %% tant si fem totes les pàgines del PDF d'entrada (poPDF) com si hem acotat un determinat rang de pàgines (M12), mirem si és un múltiple exacte de l'Nup triat
@@ -691,6 +712,8 @@ M13 0 ne
  /rEpEtIcIons 0 def  %% en un assaig de nou en nou no es produiran mai repeticions de pàgines
 }
 {  %% FEM el llançat servint-nos del mapa d'imposició del menú M8
+ /aHTML false def  %% imprescindible si anem directes sense assaig!
+
  (\n\n - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n)print flush
  (\n                     f e m   p l i e g O S\n\n)print flush
  ( - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n\n)print flush
@@ -1274,11 +1297,13 @@ mapaDimposicio  %% aquest mapa d'imposició encara no té el format que necessita 
 }ifelse
 
 %% sedassem el prompt amb l'anàlisi
-(\n)print flush
+(\n) aHTML{HTMLaEscriure exch writestring}{print flush}ifelse
 %% nombre de pàgines que té el PDF d'origen
-(                 ) dup 12 poPDF 8 string cvs putinterval print flush ( ......... nombre de pagines del PDF d'origen\n)print flush
+(                 ) dup 12 poPDF 8 string cvs putinterval aHTML{HTMLaEscriure exch writestring}{print flush}ifelse
+( ......... nombre de pagines del PDF d'origen\n) aHTML{HTMLaEscriure exch writestring}{print flush}ifelse
 %% núm. de pàgina a iniciar el llançat al PDF d'entrada
-(                 ) dup 12 iLlançat 8 string cvs putinterval print flush ( ......... pagina on iniciarem la imposicio al PDF d'origen\n)print flush
+(                 ) dup 12 iLlançat 8 string cvs putinterval aHTML{HTMLaEscriure exch writestring}{print flush}ifelse
+( ......... pagina on iniciarem la imposicio al PDF d'origen\n) aHTML{HTMLaEscriure exch writestring}{print flush}ifelse
 %% núm. de pàgina a finalitzar el llançat al PDF d'entrada
 (                 ) dup 12
 M10 M2 0 gt and M9 null eq and
@@ -1288,7 +1313,8 @@ M10 M2 0 gt and M9 null eq and
 {
  fLlançat
 }ifelse
-8 string cvs putinterval print flush ( ......... pagina on finalitzarem la imposicio al PDF d'origen\n)print flush
+8 string cvs putinterval aHTML{HTMLaEscriure exch writestring}{print flush}ifelse
+( ......... pagina on finalitzarem la imposicio al PDF d'origen\n) aHTML{HTMLaEscriure exch writestring}{print flush}ifelse
 %% nombre absolut de pàgines del PDF a imposar (no compten ni les repeticions ni les blanques)
 (                 ) dup 12
 M10 M2 0 gt and M9 null eq and
@@ -1298,18 +1324,29 @@ M10 M2 0 gt and M9 null eq and
 {
  pPDF
 }ifelse
-8 string cvs putinterval print flush ( ......... total de pagines a imposar del PDF d'origen\n)print flush
+8 string cvs putinterval aHTML{HTMLaEscriure exch writestring}{print flush}ifelse
+( ......... total de pagines a imposar del PDF d'origen\n) aHTML{HTMLaEscriure exch writestring}{print flush}ifelse
 %% pàgines d'1 sol llibre per l'nUp triat
-(                 ) dup 12 ppLl 8 string cvs putinterval print flush ( ......... pagines per llibret\n)print flush
+(                 ) dup 12 ppLl 8 string cvs putinterval aHTML{HTMLaEscriure exch writestring}{print flush}ifelse
+( ......... pagines per llibret\n) aHTML{HTMLaEscriure exch writestring}{print flush}ifelse
 %% nobre de NULLs al mapa d'imposició
-(                 ) dup 12 enBlanc 8 string cvs putinterval print flush ( ......... pagines en blanc dels llibrets\n)print flush
+(                 ) dup 12 enBlanc 8 string cvs putinterval aHTML{HTMLaEscriure exch writestring}{print flush}ifelse
+( ......... pagines en blanc dels llibrets\n) aHTML{HTMLaEscriure exch writestring}{print flush}ifelse
  
 M10
 {  %% NO fem el llançat i només generem el mapa d'imposició en base al nombre de pàgines del PDF i l'enquadernat triat
  mapaDimposicio /ARArray exch def
  nqdrnt null eq
  {  %% 1 sol llibret de pàgines seguides (apilat) fins que s'esgoti l'nUp
-  poPDF Nup 2 mul sub
+  poPDF
+  M2 0 eq
+  {  %% l'Nup 8+1 té 9 pàgines
+   9
+  }
+  {
+   Nup 2 mul
+  }ifelse
+  sub
   dup 0 lt  %% el nombre de pàgines del PDF d'origen és més petit que el nombre de pàgines d'1 nUp?
   {  %% evitem negatius quan hi ha menys pàgines que el total d'1 nUp
    pop 0
@@ -1359,10 +1396,12 @@ M10
  poPDF pPDF sub /Pignorades exch def
 }ifelse
 %% nombre de pàgines del PDF a imposar que no figuren al mapa d'imposició, llavors les repeticions no compten
-(                 ) dup 12 Pignorades 8 string cvs putinterval print flush ( ......... pagines ignorades del PDF d'origen\n)print flush
+(                 ) dup 12 Pignorades 8 string cvs putinterval aHTML{HTMLaEscriure exch writestring}{print flush}ifelse
+( ......... pagines ignorades del PDF d'origen\n) aHTML{HTMLaEscriure exch writestring}{print flush}ifelse
 
 %% cal descriure les pàgines repetides?
-(                 ) dup 12 rEpEtIcIons 8 string cvs putinterval print flush ( ......... pagines repetides del PDF d'origen\n)print flush
+(                 ) dup 12 rEpEtIcIons 8 string cvs putinterval aHTML{HTMLaEscriure exch writestring}{print flush}ifelse
+( ......... pagines repetides del PDF d'origen\n) aHTML{HTMLaEscriure exch writestring}{print flush}ifelse
 
 nqdrnt null eq
 {
@@ -1378,13 +1417,13 @@ nqdrnt null eq
  }ifelse
 }ifelse
 dup /nLlibrets exch def
-(                 ) dup 12 4 -1 roll 8 string cvs putinterval print flush
+(                 ) dup 12 4 -1 roll 8 string cvs putinterval aHTML{HTMLaEscriure exch writestring}{print flush}ifelse
 %% nombre de pliegOS (nUps) encartats o apilats
-( ......... nombre de llibrets del PDF resultant\n)print flush
+( ......... nombre de llibrets del PDF resultant\n) aHTML{HTMLaEscriure exch writestring}{print flush}ifelse
 
 nqdrnt null eq
 {
- (    un de sol    ) print flush
+ (    un de sol    ) aHTML{HTMLaEscriure exch writestring}{print flush}ifelse
 }
 {
  nqdrnt
@@ -1392,26 +1431,26 @@ nqdrnt null eq
   Nllibrets 1 add
   1 eq
   { 
-   (    un de sol    ) print flush
+   (    un de sol    ) aHTML{HTMLaEscriure exch writestring}{print flush}ifelse
   }
   {
-   (     encartat    ) print flush
+   (     encartat    ) aHTML{HTMLaEscriure exch writestring}{print flush}ifelse
   }ifelse
  }
  {
   nPliegOS
   1 eq
   {
-   (    un de sol    ) print flush
+   (    un de sol    ) aHTML{HTMLaEscriure exch writestring}{print flush}ifelse
   }
   {
-   (       apilat    ) print flush
+   (       apilat    ) aHTML{HTMLaEscriure exch writestring}{print flush}ifelse
   }ifelse
  }ifelse
 }ifelse
 
 %% 1 sol pliegOS o més d'1, encartat o apilat
-( ......... tipus d'enquadernat dels llibrets\n)print flush
+( ......... tipus d'enquadernat dels llibrets\n) aHTML{HTMLaEscriure exch writestring}{print flush}ifelse
 
 %% excepcions segons el tipus de llançat 
 M2 0 eq
@@ -1433,12 +1472,14 @@ M2 0 eq
   }ifelse
  }ifelse
 }ifelse
-(                 ) dup 12 4 -1 roll 8 string cvs putinterval print flush
+(                 ) dup 12 4 -1 roll 8 string cvs putinterval aHTML{HTMLaEscriure exch writestring}{print flush}ifelse
 %% pàgines sumades de tots els nUps
-( ......... pagines de tripa dels llibrets sumats\n\n)print flush
+( ......... pagines de tripa dels llibrets sumats\n\n) aHTML{HTMLaEscriure exch writestring}{print flush}ifelse
 
 %% potencial array per posar al menú
-(            mapa d'imposicio amb ) print flush NpliegOS print flush (\n\n)print flush
+(            mapa d'imposicio pel ) aHTML{HTMLaEscriure exch writestring}{print flush}ifelse
+NpliegOS aHTML{HTMLaEscriure exch writestring}{print flush}ifelse
+(\n\n) aHTML{HTMLaEscriure exch writestring}{print flush}ifelse
 
 %%(ANALITZEM i CORREGIM LA MATRIU)pstack quit
 %% potser convindrà farcir un HTML quan construïm la interfície web
@@ -1517,74 +1558,90 @@ M10
 
  [  %% rutines d'escriptura i tabulació pel mapa d'imposició (mateixa tabulació equival a pàgines que poden treballar en doble)
   {  %% 0 treiem per pantalla el mapa d'imposició 8+1 tipus un tall al mig sense desbarbar (Tarde Handbook)
-   ([\n)print flush
+   aHTML
+   {
+    HTMLaEscriure (</pre><span style="font-family:Roboto;color:#ff0000;font-size:38px;font-weight:Regular" title="El text vermell &eacute;s el mapa d'imposici&oacute; que podeu copiar al camp per generar el PDF i, si s'escau, acabar-lo d'ajustar editant el seu contingut.\n\nEl tabulat indica quines p&agrave;gines s'aparellen en doble amb el llibret obert.\n\nEls d&iacute;gits indiquen el n&uacute;mero de p&agrave;gina del PDF que imposarem, no pas l'ordre de lectura que &eacute;s el de la seq&uuml;&egrave;ncia de compaginaci&oacute;"><pre>) writestring
+   }if
+
+   ([\n) aHTML{HTMLaEscriure exch writestring}{print flush}ifelse
    {  %% forall
-    ( [\n)print flush
+    ( [\n) aHTML{HTMLaEscriure exch writestring}{print flush}ifelse
     0 1 15
     {
      dup dup 6 le
      {
       ATmi exch get
       {
-       ( )print flush
+       ( ) aHTML{HTMLaEscriure exch writestring}{print flush}ifelse
       }repeat
-      1 index exch get ==
+      1 index exch get aHTML{HTMLaEscriure exch dup type /nulltype eq {pop (null)}{5 string cvs}ifelse writestring HTMLaEscriure (\n) writestring}{==}ifelse
      }
      {
-      2 index exch get (  )print flush ==
+      2 index exch get (  ) aHTML{HTMLaEscriure exch writestring}{print flush}ifelse
+      aHTML{HTMLaEscriure exch dup type /nulltype eq {pop (null)}{5 string cvs}ifelse writestring HTMLaEscriure (\n) writestring}{==}ifelse
       7 eq
       {
-       (% - - - anvers/revers - - - \n)print flush
+       (% - - - anvers/revers - - - \n) aHTML{HTMLaEscriure exch writestring}{print flush}ifelse
       }if
      }ifelse
     }for
-    ( ]\n)print flush
+    ( ]\n) aHTML{HTMLaEscriure exch writestring}{print flush}ifelse
    }forall
-   (]\n)print flush
+   (]\n) aHTML{HTMLaEscriure exch writestring HTMLaEscriure dup (</span></pre>) writestring closefile}{print flush}ifelse
    pop
   }
 
   {  %% 1 treiem per pantalla el mapa d'imposició tipus cara i dors 1+1
-   ([\n)print flush
+   aHTML
+   {
+    HTMLaEscriure (</pre><span style="font-family:Roboto;color:#ff0000;font-size:38px;font-weight:Regular" title="El text vermell &eacute;s el mapa d'imposici&oacute; que podeu copiar al camp per generar el PDF i, si s'escau, acabar-lo d'ajustar editant el seu contingut.\n\nEl tabulat indica quines p&agrave;gines s'aparellen en doble amb el llibret obert.\n\nEls d&iacute;gits indiquen el n&uacute;mero de p&agrave;gina del PDF que imposarem, no pas l'ordre de lectura que &eacute;s el de la seq&uuml;&egrave;ncia de compaginaci&oacute;"><pre>) writestring
+   }if
+
+   ([\n) aHTML{HTMLaEscriure exch writestring}{print flush}ifelse
    {  %% forall
-    ( [\n)print flush
+    ( [\n) aHTML{HTMLaEscriure exch writestring}{print flush}ifelse
     0 1 1
     {
      dup dup
      ATmi exch get
      {
-      ( )print flush
+      ( ) aHTML{HTMLaEscriure exch writestring}{print flush}ifelse
      }repeat
-     2 index exch get ==
+     2 index exch get aHTML{HTMLaEscriure exch dup type /nulltype eq {pop (null)}{5 string cvs}ifelse writestring HTMLaEscriure (\n) writestring}{==}ifelse
      0 eq
      {
-      (% - - - anvers/revers - - - \n)print flush
+      (% - - - anvers/revers - - - \n) aHTML{HTMLaEscriure exch writestring}{print flush}ifelse
      }if
     }for
-    ( ]\n)print flush
+    ( ]\n) aHTML{HTMLaEscriure exch writestring}{print flush}ifelse
     pop
    }forall
-   (]\n)print flush
+   (]\n) aHTML{HTMLaEscriure exch writestring HTMLaEscriure dup (</span></pre>) writestring closefile}{print flush}ifelse
   }
 
   {  %% 2 treiem per pantalla el mapa d'imposició tipus llibret 2+2
-   ([\n)print flush
+   aHTML
+   {
+    HTMLaEscriure (</pre><span style="font-family:Roboto;color:#ff0000;font-size:38px;font-weight:Regular" title="El text vermell &eacute;s el mapa d'imposici&oacute; que podeu copiar al camp per generar el PDF i, si s'escau, acabar-lo d'ajustar editant el seu contingut.\n\nEl tabulat indica quines p&agrave;gines s'aparellen en doble amb el llibret obert.\n\nEls d&iacute;gits indiquen el n&uacute;mero de p&agrave;gina del PDF que imposarem, no pas l'ordre de lectura que &eacute;s el de la seq&uuml;&egrave;ncia de compaginaci&oacute;"><pre>) writestring
+   }if
+
+   ([\n) aHTML{HTMLaEscriure exch writestring}{print flush}ifelse
    {  %% forall
-    ( [\n)print flush
+    ( [\n) aHTML{HTMLaEscriure exch writestring}{print flush}ifelse
     0 1 3
     {
      dup dup
      ATmi exch get
      {
-      ( )print flush
+      ( ) aHTML{HTMLaEscriure exch writestring}{print flush}ifelse
      }repeat
-     2 index exch get ==
+     2 index exch get aHTML{HTMLaEscriure exch dup type /nulltype eq {pop (null)}{5 string cvs}ifelse writestring HTMLaEscriure (\n) writestring}{==}ifelse
      1 eq
      {
-      (% - - - anvers/revers - - - \n)print flush
+      (% - - - anvers/revers - - - \n) aHTML{HTMLaEscriure exch writestring}{print flush}ifelse
      }if
     }for
-    ( ]\n)print flush
+    ( ]\n) aHTML{HTMLaEscriure exch writestring}{print flush}ifelse
     pop
     %% invertim el tabulat de l'array ATmi per l'encartat
     M9 null ne
@@ -1601,33 +1658,17 @@ M10
      }if
     }if
    }forall
-   (]\n)print flush
+   (]\n) aHTML{HTMLaEscriure exch writestring HTMLaEscriure dup (</span></pre>) writestring closefile}{print flush}ifelse
   }
 
   null  %% 3
 
   {  %% 4 treiem per pantalla el mapa d'imposició tipus llibret 4+4
 
-   (MRCT_mapai) getenv  %% la variable d'entorn existeix?
-   {  %% sí: voldrà dir que estem executant via interfície www
-    pop %% i segur que valdrà 7 perquè estem assajant (i l'eliminem sense validar) doncs si féssim el PDF de debò ja no passaríem per aquí?
-    %% capturem la variable d'entorn amb el numèric únic amb el que desarem l'html amb el mapa d'imposició que cridarem des del PHP
-    (MRCT_PDFunic) getenv
-    {  %% muntem el fitxer html per escriure-hi el mapa d'imposició respectant la tabulació
-     dup length dup /araVa exch def 5 add string dup 3 -1 roll 0 exch putinterval dup araVa (.html) putinterval
-     7up_pliegOMaker_UBESH 6 get  %% (tmp/) l'html aquí dins s'esborrarà la propera execució de CaLi2CoPi
-     dup length dup /araVa exch def 2 index length add string dup 3 -1 roll 0 exch putinterval dup araVa 4 -1 roll putinterval
-     (w) file dup /HTMLaEscriure exch def
-     (<pre style='color:#999999;font-family:monospace;font-size:24px'>\n) writestring
-    }
-    {
-     pstack ERRORlaVARIABLEnumericaUNICAnoSHAcreat!
-    }ifelse
-    /aHTML true def
-   }
-   {  %% si no existeix vol dir que estem executant via Terminal/TXT
-    /aHTML false def
-   }ifelse
+   aHTML
+   {
+    HTMLaEscriure (</pre><span style="font-family:Roboto;color:#ff0000;font-size:38px;font-weight:Regular" title="El text vermell &eacute;s el mapa d'imposici&oacute; que podeu copiar al camp per generar el PDF i, si s'escau, acabar-lo d'ajustar editant el seu contingut.\n\nEl tabulat indica quines p&agrave;gines s'aparellen en doble amb el llibret obert.\n\nEls d&iacute;gits indiquen el n&uacute;mero de p&agrave;gina del PDF que imposarem, no pas l'ordre de lectura que &eacute;s el de la seq&uuml;&egrave;ncia de compaginaci&oacute;"><pre>) writestring
+   }if
 
    ([\n) aHTML{HTMLaEscriure exch writestring}{print flush}ifelse
     {  %% forall
@@ -1639,7 +1680,7 @@ M10
       {
        ( ) aHTML{HTMLaEscriure exch writestring}{print flush}ifelse
       }repeat
-      2 index exch get aHTML{HTMLaEscriure exch 5 string cvs writestring HTMLaEscriure (\n) writestring}{==}ifelse
+      2 index exch get aHTML{HTMLaEscriure exch dup type /nulltype eq {pop (null)}{5 string cvs}ifelse writestring HTMLaEscriure (\n) writestring}{==}ifelse
       3 eq
       {
        (% - - - anvers/revers - - - \n) aHTML{HTMLaEscriure exch writestring}{print flush}ifelse
@@ -1662,7 +1703,7 @@ M10
       }if
      }if
     }forall
-   (]\n) aHTML{HTMLaEscriure exch writestring HTMLaEscriure dup (</pre>) writestring closefile}{print flush}ifelse
+   (]\n) aHTML{HTMLaEscriure exch writestring HTMLaEscriure dup (</span></pre>) writestring closefile}{print flush}ifelse
   }
 
   null  %% 5
@@ -1672,23 +1713,29 @@ M10
   null  %% 7
 
   {  %% 8 treiem per pantalla el mapa d'imposició tipus llibret 8+8
-   ([\n)print flush
+
+   aHTML
+   {
+    HTMLaEscriure (</pre><span style="font-family:Roboto;color:#ff0000;font-size:38px;font-weight:Regular" title="El text vermell &eacute;s el mapa d'imposici&oacute; que podeu copiar al camp per generar el PDF i, si s'escau, acabar-lo d'ajustar editant el seu contingut.\n\nEl tabulat indica quines p&agrave;gines s'aparellen en doble amb el llibret obert.\n\nEls d&iacute;gits indiquen el n&uacute;mero de p&agrave;gina del PDF que imposarem, no pas l'ordre de lectura que &eacute;s el de la seq&uuml;&egrave;ncia de compaginaci&oacute;"><pre>) writestring
+   }if
+
+   ([\n) aHTML{HTMLaEscriure exch writestring}{print flush}ifelse
    {  %% forall
-    ( [\n)print flush
+    ( [\n) aHTML{HTMLaEscriure exch writestring}{print flush}ifelse
     0 1 15
     {
      dup dup
      ATmi exch get
      {
-      ( )print flush
+      ( ) aHTML{HTMLaEscriure exch writestring}{print flush}ifelse
      }repeat
-     2 index exch get ==
+     2 index exch get aHTML{HTMLaEscriure exch dup type /nulltype eq {pop (null)}{5 string cvs}ifelse writestring HTMLaEscriure (\n) writestring}{==}ifelse
      7 eq
      {
-      (% - - - anvers/revers - - - \n)print flush
+      (% - - - anvers/revers - - - \n) aHTML{HTMLaEscriure exch writestring}{print flush}ifelse
      }if
     }for
-    ( ]\n)print flush
+    ( ]\n) aHTML{HTMLaEscriure exch writestring}{print flush}ifelse
     pop
     %% invertim el tabulat de l'array ATmi per l'encartat
     M9 null ne
@@ -1705,7 +1752,7 @@ M10
      }if
     }if
    }forall
-   (]\n)print flush
+   (]\n) aHTML{HTMLaEscriure exch writestring HTMLaEscriure dup (</span></pre>) writestring closefile}{print flush}ifelse
   }
  ] M2 get cvx exec
  
@@ -2396,7 +2443,7 @@ Simposa
      1 sub  %% però el retornem al seu índex per fer el .PDFDrawPage
 
 %%ENUMERA pàgines
-dup /iDoE exch def  %% l'índex de pàgina en el sentit de lectura ens detectarà pàgines a dreta/esquerra en el sentit de lectura? segurament no serà valid per alguns nUps
+dup /iDoE exch def  %% l'índex de pàgina en el sentit de lectura ens detectarà pàgines a dreta/esquerra en el sentit de lectura? segurament no serà valid per alguns nUps?
 
      /llançat true def
     }ifelse
@@ -2483,7 +2530,7 @@ grestore
  %% aquest és el punt on millor podem fer aquesta feina?
  %% que la basarem en l'estratègia de compondre el numeral que toqui en base al mapa d'imposició (però ara ho fa via Npgn)
  %% doncs l'usuari podrà haver omès el dígit del número de pàgina (pàgina sense numerar) o haver-lo personalitzat o forçar a una pàgina en blanc que es numeri
- %% gràficament jugarem amb una base geomètrica: quadrat, triangle, semicercle, amb un factor de transparència que podrà ser inicalment gris o negre
+ %% gràficament jugarem amb una base geomètrica: quadrat, triangle, semicercle, amb un factor de transparència (gris o negre al TXT, però 100% RGB al web)
  %% el valor del numeral el posarem inicialment en blanc opac (podríem posar tots dos elements en una capa de PDF desactivable per l'usuari a l'imprimir?)
 
  %% per defecte NO numerem les pàgines en blanc
@@ -2494,7 +2541,11 @@ grestore
   llançat  %% la pàgina en blanc NO la numerem ara
   {
    iDoE  %% haurem de pescar el numèric a pintar del mapa d'imposició
-   1 add 2 mod 0 eq  %% primer ens cal saber si estem fent una pàgina de la dreta o de l'esquerra (imparells/parells?)
+   1 add
+
+   dup 5 string cvs /deLectura exch def  %% numerador que pintarem a cada pàgina segons l'ordre de lectura que ens mani l'nUp i la seva enquadernació
+
+   2 mod 0 eq  %% primer ens cal saber si estem fent una pàgina de la dreta o de l'esquerra (imparells/parells?)
    {  %% esquerra és sempre parell?
     false
    }
@@ -2748,17 +2799,17 @@ grestore
       {  %% 1 quadrat
        LdBiC aload pop dfNum exch scalefont setfont
        pop 2 index sub 2 div
-       0 0 moveto Npgn stringwidth pop 2 div sub 3 -1 roll add exch pop cCub .3 mul moveto Npgn show
+       0 0 moveto deLectura stringwidth pop 2 div sub 3 -1 roll add exch pop cCub .3 mul moveto deLectura show
       }
       {  %% 2 semicercle
        LdBiC aload pop dfNum exch .7 mul scalefont setfont
        pop 2 index sub 2 div
-       0 0 moveto Npgn stringwidth pop 2 div sub 3 -1 roll add exch pop cCub .1 mul moveto Npgn show
+       0 0 moveto deLectura stringwidth pop 2 div sub 3 -1 roll add exch pop cCub .1 mul moveto deLectura show
       }
       {  %% 3 triangle
        LdBiC aload pop dfNum exch .7 mul scalefont setfont
        pop 2 index sub 2 div
-       0 0 moveto Npgn stringwidth pop 2 div sub 3 -1 roll add exch pop cCub .1 mul moveto Npgn show
+       0 0 moveto deLectura stringwidth pop 2 div sub 3 -1 roll add exch pop cCub .1 mul moveto deLectura show
       }
      ] QCT get cvx exec
     }
@@ -2773,12 +2824,12 @@ grestore
        {  %% xamfrà dret
         dfNum exch scalefont setfont
         pop 2 index sub 2 div
-        0 0 moveto Npgn stringwidth pop 2 div sub 3 -1 roll add exch pop cCub .3 mul moveto Npgn show
+        0 0 moveto deLectura stringwidth pop 2 div sub 3 -1 roll add exch pop cCub .3 mul moveto deLectura show
        }
        {  %% xamfrà esquerre
         dfNum exch scalefont setfont
         pop 2 index sub 2 div
-        0 0 moveto Npgn stringwidth pop 2 div sub 3 -1 roll add exch pop cCub .3 mul moveto Npgn show
+        0 0 moveto deLectura stringwidth pop 2 div sub 3 -1 roll add exch pop cCub .3 mul moveto deLectura show
        }ifelse
       }
       {  %% 2 semicercle
@@ -2786,16 +2837,12 @@ grestore
        {  %% xamfrà dret
         dfNum exch .9 mul scalefont setfont
         xPagina	0 translate 45 rotate
-	0 0 moveto Npgn stringwidth pop 2 div neg exch .5 mul moveto
-	Npgn show
-	pop pop pop
+	0 0 moveto deLectura stringwidth pop 2 div neg exch .5 mul moveto deLectura show pop pop pop
        }
        {  %% xamfrà esquerre
         dfNum exch .9 mul scalefont setfont
         0 0 translate -45 rotate
-	0 0 moveto Npgn stringwidth pop 2 div neg exch .5 mul moveto
-	Npgn show
-	pop pop pop
+	0 0 moveto deLectura stringwidth pop 2 div neg exch .5 mul moveto deLectura show pop pop pop
        }ifelse
       }
       {  %% 3 triangle
@@ -2803,16 +2850,12 @@ grestore
        {  %% xamfrà dret
         dfNum exch .4 mul scalefont setfont
         xPagina	0 translate 45 rotate
-	0 0 moveto Npgn stringwidth pop 2 div neg exch .3 mul moveto
-	Npgn show
-	pop pop pop
+	0 0 moveto deLectura stringwidth pop 2 div neg exch .3 mul moveto deLectura show pop pop pop
        }
        {  %% xamfrà esquerre
         dfNum exch .4 mul scalefont setfont
         0 0 translate -45 rotate
-	0 0 moveto Npgn stringwidth pop 2 div neg exch .3 mul moveto
-	Npgn show
-	pop pop pop
+	0 0 moveto deLectura stringwidth pop 2 div neg exch .3 mul moveto deLectura show pop pop pop
        }ifelse
       }
      ] QCT get cvx exec
@@ -2828,14 +2871,12 @@ grestore
        {  %% vora dreta
         dfNum exch .5 mul dup /araCos exch def scalefont setfont
 	2 div exch 2 div 4 -1 roll add exch 3 -1 roll add exch
-	0 0 moveto Npgn stringwidth pop 2 div sub exch araCos 3 div sub
-	moveto Npgn show
+	0 0 moveto deLectura stringwidth pop 2 div sub exch araCos 3 div sub moveto deLectura show
        }
        {  %% vora esquerra
         dfNum exch .5 mul dup /araCos exch def scalefont setfont
 	2 div exch 2 div 4 -1 roll add exch 3 -1 roll add exch
-	0 0 moveto Npgn stringwidth pop 2 div sub exch araCos 3 div sub
-	moveto Npgn show
+	0 0 moveto deLectura stringwidth pop 2 div sub exch araCos 3 div sub moveto deLectura show
        }ifelse
       }
       {  %% 2 semicercle
@@ -2843,14 +2884,12 @@ grestore
        {  %% vora dreta
         exch pop exch sub
 	dfNum exch dup 2 div /araR exch def .3 mul scalefont setfont
-	translate araR 2 div 0 0 moveto Npgn stringwidth pop
-        2 div add neg araR .15 mul neg moveto Npgn show
+	translate araR 2 div 0 0 moveto deLectura stringwidth pop 2 div add neg araR .15 mul neg moveto deLectura show
        }
        {  %% vora esquerra
         exch pop exch sub
 	dfNum exch dup 2 div /araR exch def .3 mul scalefont setfont
-	translate araR 2 div 0 0 moveto Npgn stringwidth pop
-        2 div sub araR .15 mul neg moveto Npgn show
+	translate araR 2 div 0 0 moveto deLectura stringwidth pop 2 div sub araR .15 mul neg moveto deLectura show
        }ifelse
       }
       {  %% 3 triangle
@@ -2858,14 +2897,12 @@ grestore
        {  %% vora dreta
         3 index sub dfNum exch .25 mul dup /araCos exch def scalefont setfont
         2 index sub 2 div 3 -1 roll add exch 2 index sub 2 div 3 -1 roll add
-	0 0 moveto Npgn stringwidth pop 2 div sub exch araCos 3 div sub
-	moveto Npgn show
+	0 0 moveto deLectura stringwidth pop 2 div sub exch araCos 3 div sub moveto deLectura show
        }
        {  %% vora esquerra
         3 index sub dfNum exch .25 mul dup /araCos exch def scalefont setfont
         2 index sub 2 div 3 -1 roll add exch 2 index sub 2 div 3 -1 roll add
-	0 0 moveto Npgn stringwidth pop 2 div sub exch araCos 3 div sub
-	moveto Npgn show
+	0 0 moveto deLectura stringwidth pop 2 div sub exch araCos 3 div sub moveto deLectura show
        }ifelse
       }
      ] QCT get cvx exec

@@ -56,9 +56,17 @@ function setCookie(c_name, value, exdays) {
     var c_value = escape(value) + ((exdays == null) ? '' : '; expires=' + exdate.toUTCString());
     document.cookie = c_name + '=' + c_value;
 }
+
+// hauria de canviar el valor del botó del final de pàgina:
+function fesAssaig() {
+  document.getElementById("pitja").setAttribute("value", " Fes l'Assaig "); 
+}
+function fespliegOS() {
+  document.getElementById("pitja").setAttribute("value", " Fes el pliegOS "); 
+}
 </script>
 </head>
-<body onload="neteja();escriU()">
+<body onload="neteja();escriU();fesAssaig()">
 <header>
 <article>
 <br>
@@ -179,7 +187,7 @@ function escriU()
 <button type="button" class="collapsible">mapa d'imposici&oacute;</button>
 <div class="content" style="cursor:not-allowed">
 <br>
-<input onclick="document.getElementById('tmapai').disabled = true; document.getElementById('rang1').disabled = false; document.getElementById('rang2').disabled = false; document.getElementById('rang3').disabled = false;" type="radio" name="mapai" id="pVeu" value="7" method="POST" style="cursor:pointer" checked /> <label for="pVeu" style="cursor:pointer" title="No crearem el PDF i nom&eacute;s donarem com a resultat, per la pantalla, una proposta en forma de matriu que definir&agrave; la feina segons l'nUp, l'enquadernat, la p&agrave;gina d'inici, final i nombre de llibrets que haguem triat">assaig del mapa d'imposici&oacute; sense generar cap PDF</label>
+<input onclick="document.getElementById('tmapai').disabled = true; document.getElementById('rang1').disabled = false; document.getElementById('rang2').disabled = false; document.getElementById('rang3').disabled = false;fesAssaig()" type="radio" name="mapai" id="pVeu" value="7" method="POST" style="cursor:pointer" checked /> <label for="pVeu" style="cursor:pointer" title="No crearem el PDF i nom&eacute;s donarem com a resultat, per la pantalla, una proposta en forma de matriu que definir&agrave; la feina segons l'N-up, l'enquadernat, la p&agrave;gina d'inici, final i nombre de llibrets que haguem triat">assaig del mapa d'imposici&oacute; sense generar cap PDF</label>
 <br><br>
 <fieldset>
 <legend style="color:gray;font-size:20px">rang de p&agrave;gines i nombre de llibrets per l'assaig</legend>
@@ -193,10 +201,10 @@ function escriU()
 <input type="number" form="gomaker" id="rang3" name="rang3" value="0" step="1" min="0" max="100" title="De 0 a 100 | zero equival a generar el mapa d'imposici&oacute; per enquadernar tot el PDF d'entrada (tret que si necessit&eacute;s m&eacute;s d'un llibret l'enquadernat fos limitat a un de sol, o que el rang de p&agrave;gines NO sigui 0 0, o que el llan&ccedil;at NO sigui 8+1)&#10;Aquest par&agrave;metre nom&eacute;s mana quan el nombre de llibrets que li demanem &eacute;s inferior als que surten enquadernant el rang definit entre la p&agrave;gina d'inici i la p&agrave;gina final" />
 </fieldset>
 <br><br>
-<input onclick="document.getElementById('rang1').disabled = true; document.getElementById('rang2').disabled = true; document.getElementById('rang3').disabled = true; document.getElementById('tmapai').disabled = false;" type="radio" name="mapai" id="tripa" value="3" method="POST" style="cursor:pointer" /> <label for="tripa" style="cursor:pointer" title="Si no escrivim res dins el camp de text treballar&agrave; amb una matriu buida [ ], o sigui que, en base a l'nUp triat, s'imposaran totes les p&agrave;gines del PDF seguint el seu ordre natural de lectura">per generar el PDF, enganxa-hi o escriu el mapa d'imposici&oacute; o deixa-ho buit</label>
+<input onclick="document.getElementById('rang1').disabled = true; document.getElementById('rang2').disabled = true; document.getElementById('rang3').disabled = true; document.getElementById('tmapai').disabled = false;fespliegOS()" type="radio" name="mapai" id="tripa" value="3" method="POST" style="cursor:pointer" /> <label for="tripa" style="cursor:pointer" title="Enganxeu, si s'escau, el text en vermell del mapa d'imposici&oacute; resultant de l'assaig.&#10;&#10;Si no hi copieu o hi escriviu res, treballar&agrave; amb una matriu buida [ ] (mapa d'imposici&oacute; buit), o sigui que, en base a l'N-up triat, s'imposaran totes les p&agrave;gines del PDF seguint el seu ordre natural de lectura">per generar el PDF, enganxa-hi o escriu el mapa d'imposici&oacute; o deixa-ho buit</label>
 <br><br>
 <!-- a value= hi ha el mètode via PHP per fer que el contingut de la textarea sigui exportada com a valor fent el POST -->
-<textarea name="tmapai" form="gomaker" id="tmapai" for="tripa" placeholder="% exemple del mapa d'imposici&oacute; m&eacute;s simple:&#10;&#10;[ ]&#13;&#13;% una matriu buida significa que, en base a l'nUp triat, s'imposaran totes les p&agrave;gines del PDF seguint el seu ordre natural de lectura&#10;&#13;% si no hi poseu res treballar&agrave; com una matriu buida" method="POST" value="<?php echo $tmapai; ?>" rows="10" cols="100%" maxlength=4000 style="font-size: 14pt;color:#cc0000" title="Si no escrivim res dins el camp de text treballar&agrave; amb una matriu buida [ ], o sigui que, en base a l'nUp triat, s'imposaran totes les p&agrave;gines del PDF seguint el seu ordre natural de lectura" disabled>
+<textarea name="tmapai" form="gomaker" id="tmapai" for="tripa" placeholder="% exemple del mapa d'imposici&oacute; m&eacute;s simple:&#10;&#10;[ ]&#13;&#13;% una matriu buida significa que, en base a l'N-up triat, s'imposaran totes les p&agrave;gines del PDF seguint el seu ordre natural de lectura&#10;&#13;% si no hi poseu res treballar&agrave; com una matriu buida" method="POST" value="<?php echo $tmapai; ?>" rows="10" cols="100%" maxlength=4000 style="font-size: 14pt;color:#cc0000" title="Si no escrivim res dins el camp de text treballar&agrave; amb una matriu buida [ ] (mapa d'imposici&oacute; buit), o sigui que, en base a l'N-up triat, s'imposaran totes les p&agrave;gines del PDF seguint el seu ordre natural de lectura" disabled>
 </textarea>
 <br>
 </div>
@@ -206,7 +214,7 @@ function escriU()
 <div class="content" style="cursor:not-allowed">
 <br>
 <br>
-<input type="radio" name="enqdrnt" id="enull" value="null" method="POST" style="cursor:pointer" checked /> <label for="enull" style="cursor:pointer" title="Un (1) sol llibret, en mode apilat, fins que s'esgoti el llan&ccedil;at nUp (si falten p&agrave;gines s'omplen amb buides i si en sobren es talla)">un sol llibret</label>&nbsp;&nbsp;&nbsp;&nbsp;<input type="radio" name="enqdrnt" id="etrue" value="true" method="POST" style="cursor:pointer" /> <label for="etrue" style="cursor:pointer" title="Diversos llibrets, encartats un a dins de l'altre (fins que s'esgotin les p&agrave;gines del PDF i si en falten s'afegeixen en blanc a la cua del llan&ccedil;at)">llibrets encartats</label>&nbsp;&nbsp;&nbsp;&nbsp;<input type="radio" name="enqdrnt" id="efalse" value="false" method="POST" style="cursor:pointer" /><label for="efalse" style="cursor:pointer" title="Diversos llibrets apilats, un al costat de l'altre (fins que s'esgotin les p&agrave;gines del PDF i si en falten s'afegeixen en blanc a la cua del llan&ccedil;at)">llibrets apilats</label>
+<input type="radio" name="enqdrnt" id="enull" value="null" method="POST" style="cursor:pointer" checked /> <label for="enull" style="cursor:pointer" title="Aquesta opci&oacute; mana per sobre del mapa d'imposici&oacute; (si existeix) respectant l'ordre, apilat o encartat.&#10;&#10;Un (1) sol llibret, en mode apilat o encartat, fins que s'esgoti el llan&ccedil;at N-up (si falten p&agrave;gines s'omplen amb buides i, si en sobren, es talla.)">un sol llibret</label>&nbsp;&nbsp;&nbsp;&nbsp;<input type="radio" name="enqdrnt" id="etrue" value="true" method="POST" style="cursor:pointer" /> <label for="etrue" style="cursor:pointer" title="Diversos llibrets, encartats un a dins de l'altre (fins que s'esgotin les p&agrave;gines del PDF i, si en falten, s'afegeixen en blanc a la cua del llan&ccedil;at.&#10;&#10;Aquesta opci&oacute; nom&eacute;s actua quan fem l'assaig o quan al camp per generar el PDF no hi hagi cap mapa d'imposici&oacute; que mani m&eacute;s.)">llibrets encartats</label>&nbsp;&nbsp;&nbsp;&nbsp;<input type="radio" name="enqdrnt" id="efalse" value="false" method="POST" style="cursor:pointer" /><label for="efalse" style="cursor:pointer" title="Diversos llibrets apilats, un al costat de l'altre (fins que s'esgotin les p&agrave;gines del PDF i, si en falten, s'afegeixen en blanc a la cua del llan&ccedil;at.&#10;&#10;Aquesta opci&oacute; nom&eacute;s actua quan fem l'assaig o quan al camp per generar el PDF no hi hagi cap mapa d'imposici&oacute; que mani m&eacute;s.)">llibrets apilats</label>
 <br>
 <br>
 </div>
@@ -243,9 +251,13 @@ function escriU()
 <br>
 <input type="radio" name="lab" id="lclock" value="1" method="POST" style="cursor:pointer" /> <label for="lclock" style="cursor:pointer" title="current time in catalan language, with random type and colour">literary clock sample (now in catalan)</label>
 -->
-Escull un fitxer PDF (fins a 20M):&nbsp;&nbsp;
-<!-- upload_max_filesize està limitat a 20M al servidor de commonscloud.coop -->
-<input type="hidden" name="MAX_FILE_SIZE" value="20971520" />
+Escull un fitxer PDF (m&agrave;xim fins a 100M):&nbsp;&nbsp;
+<!-- upload_max_filesize està limitat a 2M al localhost de Tuxedo -->
+<!-- post_max_size està limitat a 8M al localhost de Tuxedo -->
+<!-- upload_max_filesize està limitat a 500M al servidor de commonscloud.coop -->
+<!-- post_max_size està limitat a 500M al servidor de commonscloud.coop -->
+<!-- per HTML ho limitem a 100M (100 * 1024 * 1024) -->
+<input type="hidden" name="MAX_FILE_SIZE" value="104857600" />
 <input type="file" name="atenyer" id="atenyer" style="cursor:pointer">
 <br>
 <br>
@@ -260,7 +272,7 @@ Escull un fitxer PDF (fins a 20M):&nbsp;&nbsp;
 <center>
 <br><br><br>
 <!-- desem a la galeta quinHoraEs l'hora del client capturada via _quinHoraEs en format (hh:mm:ss) -->
-<input type="submit" class="pitja" value="&nbsp;Fes PliegO&nbsp;" name="submit" title="F&eacute;u que un sol full de paper esdevingui un llibret excepcional" onclick="var _quinHoraEs = new Date().toLocaleTimeString();setCookie('quinHoraEs', _quinHoraEs, 1);" />
+<input type="submit" id="pitja" class="pitja" value="&nbsp;Fes PliegO&nbsp;" name="submit" title="F&eacute;u que un sol full de paper esdevingui un llibret excepcional" onclick="var _quinHoraEs = new Date().toLocaleTimeString();setCookie('quinHoraEs', _quinHoraEs, 1);" />
 </center>
 </form>
 

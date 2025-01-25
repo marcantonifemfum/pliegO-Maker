@@ -136,7 +136,7 @@ noMesunavegada
  /noMesunavegada false def
 
 %%EP! captura de dades via fitxer d'interfície TXT?
- false
+ true
 
  dup /CddVf exch def
  {
@@ -1141,7 +1141,7 @@ noMesunavegada
    }ifelse
   }
 
-  (un tall al mig sense desbarbar \(Tarde Handbook\))  %% 4 nom o ID únic?
+  (8+1 amb un tall al mig sense desbarbar)  %% 4 nom o ID únic?
  ]
 
  [  %% 1 1hvUpHV una pàgina (en dúplex), horitzontal o vertical, imposada en un full horitzontal o vertical
@@ -2520,7 +2520,7 @@ _anversrevers
    compOnedors M6 get (r) file cvx exec  %% pesquem i executem l'algorisme de composició independent del nUp triat
 
 }stopped
-{(\n\n - - - - - - - -  E P ! peta l'algorisme d'imposicio? - - - - - - -\n) print flush stop}if
+{(\n\n - - - - - - -  aturem l'algorisme d'imposicio (tret que peti) - - - - - - -\n) print flush stop}if
 
    grestore
 

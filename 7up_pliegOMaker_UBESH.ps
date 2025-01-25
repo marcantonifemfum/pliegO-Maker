@@ -1,6 +1,8 @@
 %!
 %% configuració d'adreces absolutes o relatives de la constel·lació de fitxers de pliegO'Maker marcades al codi amb el comentari %%URLUBESH
 %% segons el seu context d'execució al Terminal / localhost / commonscloud.coop
+%% els fitxer o paths situats en el mateix directori d'execució de pliegOMaker_UBESH.ps poden tenir adreça relativa
+%%CAL veure quines adreces poden ser relatives i quines han de ser obligatòriament absolutes, també quines poder ser de disc i quines d'URL
 
 [
  %% dins pliegOMaker_UBESH.ps
@@ -9,12 +11,12 @@
    %% 0 commonscloud.coop
 
  %% dins nUp_pliegOS_UBESH.ps
- (/home/femfum/Documents/pliegOMakerUB/ESH_UB.txt)  %% 1 Terminal Tuxedo (pot ser relativa?)
+ (ESH_UB.txt)  %% 1 Terminal Tuxedo (pot ser relativa?)
    %% 1 localhost
    %% 1 commonscloud.coop
 
  %% dins nUp_pliegOS_UBESH.ps
- (/home/femfum/Documents/pliegOMakerUB/farceixPDFs_pseudoPDFX5_UBESH.ps)  %% 2 Terminal Tuxedo
+ (farceixPDFs_pseudoPDFX5_UBESH.ps)  %% 2 Terminal Tuxedo (pot ser relativa?)
    %% 2 localhost
    %% 2 commonscloud.coop
 
@@ -24,7 +26,7 @@
    %% variable /serverPath  %% 3 commonscloud.coop
 
  %% dins farceixPDFs_pseudoPDFX5_UBESH.ps
- (/home/femfum/Documents/pliegOMakerUB/FemFum_CaLi2CoPi_042_pliegOMakerUBESH.ps)  %% 4 Terminal Tuxedo
+ (FemFum_CaLi2CoPi_042_pliegOMakerUBESH.ps)  %% 4 Terminal Tuxedo (pot ser relativa?)
    %% 4 localhost
    %% 4 commonscloud.coop
 
@@ -38,7 +40,18 @@
    %% 6 localhost
    %% 6 commonscloud.coop
 
- %% 7 possiblement hi haurà alguna adreça relacionada al PHP a pliegOmaker_plec.php | $pujali $somaPS $somaPDF que no podem mantenir per aquí
+ %% dins farceixPDFs_pseudoPDFX5_UBESH.ps
+ %(/usr/share/fonts/truetype/hack/Hack-Regular.ttf)  %% 7 Terminal Tuxedo
+ %(/usr/share/fonts/truetype/hack/Hack-Regular.ttf)  %% 7 localhost Tuxedo
+ (Hack-Regular.ttf)  %% 7 hem copiat la tipografia al diectori de treball
+   %% 7 commonscloud.coop
+
+ %% dins farceixPDFs_pseudoPDFX5_UBESH.ps
+ (1paginaDINbuida.pdf)  %% 8 Terminal Tuxedo
+   %% 8 localhost
+   %% 8 commonscloud.coop
+
+ %% # possiblement hi haurà alguna adreça relacionada al PHP a pliegOmaker_plec.php | $pujali $somaPS $somaPDF que no podem mantenir per aquí
 
 ] /7up_pliegOMaker_UBESH exch def
 

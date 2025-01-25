@@ -1,9 +1,10 @@
 %% INTERFÍCIE TXT SENSE FORMAT (ascii)
+%% per fer servir aquest TXT com a interfície hem d'assegurar-nos que a nUp_pliegOS_UBESH.ps hi tinguem la variable /CddVf a true
 
 %% Un sol % fins a final de línia és un comentari que l'intèrpret ignora
 
 %% Línia de comanda, via Terminal, des del mateix directori on tinguem els .ps de pliegO'Maker i on també hi anirà a parar el resultat.pdf
-%% a l'incloure transparències en la paginació és obligat afergir-hi el gatell -dALLOWPSTRANSPARENCY
+%% a l'incloure transparències en la paginació, a partir del gs 9.55, és obligat afergir-hi el gatell -dALLOWPSTRANSPARENCY
 %% gs -q -dNOSAFER -o resultat.pdf -dAutoRotatePages=/None -dALLOWPSTRANSPARENCY -sDEVICE=pdfwrite -f pliegOMaker_UBESH.ps                      
 
 %% MENÚ
@@ -93,13 +94,13 @@ true
 %% 4 = 4+4 graella del llançat en vertical/horitzontal | plegat en llibret desbarbat | 4 pàgines a l'anvers i 4 al revers | impressió dúplex vertical/horitzontal
 %% 8 = 8+8 graella del llançat en vertical | plegat en llibret desbarbat | 8 pàgines a l'anvers i 8 al revers | impressió en dúplex horitzontal
 
-8
+4
 
 
 %%M3 ORIENTACIÓ DEL FULL D'IMPRESSIÓ ?
 %% true = horitzontal | false = vertical (si M2 és 8 sempre força a horitzontal/true)
 
-false
+true
 
 
 
@@ -175,29 +176,68 @@ true
 
 %% enumerem pàgines
 
-%[]
+[]
 
-[
- [
-  1
-   2
-   3
-    4
-    5
-     6
-     7
-      8
+%% mapa d'imposició de 2 llibrets apilats 2+2/2+2 per corregir l'error de numeració
+%[
+% [
+%  1
+%   2
+%% - - - anvers/revers - - - 
+%   3
+%  4
+% ]
+% [
+%  5
+%   6
+%% - - - anvers/revers - - - 
+%   7
+%  8
+% ]
+%]
+
+
+%% mapa d'imposició de 2 llibrets encartats 2+2/2+2 per corregir l'error de numeració
+%[
+% [
+%  1
+%   2
+%% - - - anvers/revers - - - 
+%   7
+%  8
+% ]
+% [
+%   3
+%  4
+%% - - - anvers/revers - - - 
+%  5
+%   6
+% ]
+%]
+
+
+%% mapa d'imposició d'un llibret 8+1 amb tall al mig sense desbarbar per corregir l'error de numeració
+%[
+% [
+%  1
+%   2
+%   3
+%    4
+%    5
+%   6
+%   7
+%  8
 % - - - anvers/revers - - - 
-      null
-     10
-     11
-    12
-    13
-   14
-   15
-  null
- ]
-]
+%  9
+%  null
+%  null
+%  null
+%  null
+%  null
+%  null
+%  null
+% ]
+%]
 
 
 %% Tarde Handbook amb tall al mig sense desbarbar
@@ -257,7 +297,7 @@ true
 %% EP! quan M10 és a false tenir M9 a null fa que només es crei el primer llibret (la primera array de M8)
 %% EP! el valor d'M9 és irrellevant quan el tipus de llançat M2 és 0 (tall al mig sense desbarbar/Handbook)
 
-null
+false
 
 
 
@@ -265,7 +305,7 @@ null
 %% true = si assagem el mapa d'imposició no crearem el PDF i només donarem com a resultat la matriu que defineix M8 amb una anàlisi de la feina segons el triat a M12 i M13
 %% false = generarem el PDF de sortida aplicant el mapa d'imposició definit a M8 i també fem l'anàlisi de la feina
 
-true
+false
 
 
 
@@ -311,13 +351,13 @@ true
 
  true   %% numerem? true si, false no (sempre amb lletra blanca opaca)
 
- 0      %% posició del numerador dins la pàgina: 0 peu, 1 xamfrà, 2 vora
+ 1      %% posició del numerador dins la pàgina: 0 peu, 1 xamfrà, 2 vora
 
  false   %% fons ple o transparent: false ple, true transparent
 
  3      %% forma pel fons del numerador: 1 quadrat, 2 semicercle, 3 triangle
 
- 2      %% color pel fons del numerador: 1 negre, 2 gris
+ 1      %% color pel fons del numerador: 1 negre, 2 gris
 
 ]
 
