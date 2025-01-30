@@ -1306,45 +1306,65 @@ mapaDimposicio  %% aquest mapa d'imposició encara no té el format que necessita 
 ( ......... pagina on iniciarem la imposicio al PDF d'origen\n) aHTML{HTMLaEscriure exch writestring}{print flush}ifelse
 %% núm. de pàgina a finalitzar el llançat al PDF d'entrada
 (                 ) dup 12
-M10 M2 0 gt and M9 null eq and
-{  %% si assagem amb l'enquadernat a null hem de rectificar, només a títol informatiu, el total de pàgines a imposar si fem llibret
- M2 2 mul
-}
-{
+%M10 M2 0 gt and M9 null ne and
+%{  %% si assagem amb l'enquadernat a null hem de rectificar, només a títol informatiu, el total de pàgines a imposar si fem llibret
+% M2 2 mul
+%}
+%{
  fLlançat
-}ifelse
+%}ifelse
 8 string cvs putinterval aHTML{HTMLaEscriure exch writestring}{print flush}ifelse
 ( ......... pagina on finalitzarem la imposicio al PDF d'origen\n) aHTML{HTMLaEscriure exch writestring}{print flush}ifelse
 %% nombre absolut de pàgines del PDF a imposar (no compten ni les repeticions ni les blanques)
 (                 ) dup 12
-M10 M2 0 gt and M9 null eq and
-{  %% si assagem amb l'enquadernat a null hem de rectificar, només a títol informatiu, el total de pàgines a imposar si fem llibret
- M2 2 mul
-}
-{
+%M10 M2 0 gt and M9 null ne and
+%{  %% si assagem amb l'enquadernat a null hem de rectificar, només a títol informatiu, el total de pàgines a imposar si fem llibret
+% M2 2 mul
+%}
+%{
  pPDF
-}ifelse
+%}ifelse
 8 string cvs putinterval aHTML{HTMLaEscriure exch writestring}{print flush}ifelse
 ( ......... total de pagines a imposar del PDF d'origen\n) aHTML{HTMLaEscriure exch writestring}{print flush}ifelse
 %% pàgines d'1 sol llibre per l'nUp triat
 (                 ) dup 12 ppLl 8 string cvs putinterval aHTML{HTMLaEscriure exch writestring}{print flush}ifelse
 ( ......... pagines per llibret\n) aHTML{HTMLaEscriure exch writestring}{print flush}ifelse
 %% nobre de NULLs al mapa d'imposició
-(                 ) dup 12 enBlanc 8 string cvs putinterval aHTML{HTMLaEscriure exch writestring}{print flush}ifelse
+(                 ) dup 12
+M2 0 eq
+{  %% si fem el 8+1 calculem de nou el nombre de pàgines en blanc, doncs podrien ser errònies
+ /enBlanc 0 def
+ mapaDimposicio 0 get
+ dup length 0 eq
+ {
+  pop
+ }
+ {
+  0 9 getinterval
+  {
+   null eq
+   {
+    enBlanc 1 add /enBlanc exch def
+   }if
+  }forall
+ }ifelse
+}if
+ 
+enBlanc 8 string cvs putinterval aHTML{HTMLaEscriure exch writestring}{print flush}ifelse
 ( ......... pagines en blanc dels llibrets\n) aHTML{HTMLaEscriure exch writestring}{print flush}ifelse
  
 M10
-{  %% NO fem el llançat i només generem el mapa d'imposició en base al nombre de pàgines del PDF i l'enquadernat triat
+{  %% NO fem el llançat i només assagem el mapa d'imposició en base al nombre de pàgines del PDF i l'enquadernat triat
  mapaDimposicio /ARArray exch def
  nqdrnt null eq
  {  %% 1 sol llibret de pàgines seguides (apilat) fins que s'esgoti l'nUp
   poPDF
   M2 0 eq
   {  %% l'Nup 8+1 té 9 pàgines
-   9
+   9 enBlanc sub  %% i li restem les que té en blanc
   }
   {
-   Nup 2 mul
+   Nup 2 mul enBlanc sub  %% i li restem les que té en blanc
   }ifelse
   sub
   dup 0 lt  %% el nombre de pàgines del PDF d'origen és més petit que el nombre de pàgines d'1 nUp?
@@ -1580,7 +1600,7 @@ M10
       2 index exch get (  ) aHTML{HTMLaEscriure exch writestring}{print flush}ifelse
       aHTML{HTMLaEscriure exch dup type /nulltype eq {pop (null)}{5 string cvs}ifelse writestring HTMLaEscriure (\n) writestring}{==}ifelse
       7 eq
-      {
+      {  %% l'eliminem perquè NO té cap sentit marcar l'anvers/revers doncs no es correspon al plec real del llibret
        (% - - - anvers/revers - - - \n) aHTML{HTMLaEscriure exch writestring}{print flush}ifelse
       }if
      }ifelse
@@ -1609,7 +1629,7 @@ M10
      }repeat
      2 index exch get aHTML{HTMLaEscriure exch dup type /nulltype eq {pop (null)}{5 string cvs}ifelse writestring HTMLaEscriure (\n) writestring}{==}ifelse
      0 eq
-     {
+     {  %% l'eliminem perquè NO té cap sentit marcar l'anvers/revers doncs no es correspon al plec real del llibret
       (% - - - anvers/revers - - - \n) aHTML{HTMLaEscriure exch writestring}{print flush}ifelse
      }if
     }for
@@ -1637,8 +1657,8 @@ M10
      }repeat
      2 index exch get aHTML{HTMLaEscriure exch dup type /nulltype eq {pop (null)}{5 string cvs}ifelse writestring HTMLaEscriure (\n) writestring}{==}ifelse
      1 eq
-     {
-      (% - - - anvers/revers - - - \n) aHTML{HTMLaEscriure exch writestring}{print flush}ifelse
+     {  %% l'eliminem perquè NO té cap sentit marcar l'anvers/revers doncs no es correspon al plec real del llibret
+      %(% - - - anvers/revers - - - \n) aHTML{HTMLaEscriure exch writestring}{print flush}ifelse
      }if
     }for
     ( ]\n) aHTML{HTMLaEscriure exch writestring}{print flush}ifelse
@@ -1682,8 +1702,8 @@ M10
       }repeat
       2 index exch get aHTML{HTMLaEscriure exch dup type /nulltype eq {pop (null)}{5 string cvs}ifelse writestring HTMLaEscriure (\n) writestring}{==}ifelse
       3 eq
-      {
-       (% - - - anvers/revers - - - \n) aHTML{HTMLaEscriure exch writestring}{print flush}ifelse
+      {  %% l'eliminem perquè NO té cap sentit marcar l'anvers/revers doncs no es correspon al plec real del llibret
+       %(% - - - anvers/revers - - - \n) aHTML{HTMLaEscriure exch writestring}{print flush}ifelse
       }if
      }for
      ( ]\n) aHTML{HTMLaEscriure exch writestring}{print flush}ifelse
@@ -1731,8 +1751,8 @@ M10
      }repeat
      2 index exch get aHTML{HTMLaEscriure exch dup type /nulltype eq {pop (null)}{5 string cvs}ifelse writestring HTMLaEscriure (\n) writestring}{==}ifelse
      7 eq
-     {
-      (% - - - anvers/revers - - - \n) aHTML{HTMLaEscriure exch writestring}{print flush}ifelse
+     {  %% l'eliminem perquè NO té cap sentit marcar l'anvers/revers doncs no es correspon al plec real del llibret
+      % (% - - - anvers/revers - - - \n) aHTML{HTMLaEscriure exch writestring}{print flush}ifelse
      }if
     }for
     ( ]\n) aHTML{HTMLaEscriure exch writestring}{print flush}ifelse
@@ -1846,6 +1866,253 @@ M10
 %   Context1 .PDFInfo /NumPages get /pAimposar exch def  %% nombre de pàgines a imposar del PDF a incrustar
    %% aquí podem treure conclusions de si l' M2, pel pliegOS escollit, podrem fer el llançat de totes les pàgines
    %% si en quedaran de buides a pliegOS o si no les podrem imposar totes
+  
+%%ENUMERA pàgines
+M15 0 get  %% numerem?
+{
+   %% variables per numerar les pàgines encartades
+   /anversOrevers true def  %% comencem per l'anvers
+%   /araPanvers 1 def  %% valor inicial per la numèració de l'anvers
+%   /araPrevers ppLl nLlibrets mul 1 add M2 sub def  %% valor inicial per numerar el revers: pagines per llibret x llibrets +1 i restant la meitat de pàgines per llibret
+   /iPrevers M2 nLlibrets mul def  %% valor d'inici a sumar a la primera pàgina del revers, a cada canvi de llibret li restarem M2
+   /ARAiLlibret 0 def  %% valor inicial del comptador de llibrets
+   /iGATELLaOr 0 def  %% quan arribem al valor de M2 (meitat de les pàgines d'un llibret) inicialitzem
+
+   M9
+   {  %% si encartem generem la guia de numeració /NmapaDimposicio
+    mapaDimposicio  %% del mapa d'imposició de l'usuari en deduïm l'nUp i el nombre total de pàgines
+    dup length exch 0 get length
+    dup 2 div cvi /_Nup exch def  %% la meitat de la mida d'una de les arrays de pàgines és el dígit de l'Nup
+    mul /_pPDF exch def  %% multiplicant el nombre d'arrays per la seva llargada tenim el nombre total de pàgines
+
+    %% farem treballar el mapa d'imposició com a guia de numeració per l'enquadernat encartat
+    %% llegirem els valors de l'estructura del mapa d'imposició final de l'usuari per replicar-la com a guia de numeració
+    /_iLlançat 1 def  %% perquè treballi com a guia de numeració cal que sigui 1
+    /_fLlançat _pPDF def  %% perquè treballi com a guia de numeració cal que sigui ídem a pPDF
+
+   [  %% inici de l'array d'imposició
+
+%M13 0 ne
+%{  %% tret que M13 sigui zero?
+
+%    %% com que mana M13 per sobre el rang definit via M12, sempre que ens demani un nombre de llibrets inferior:
+%    M13 Nup 2 mul mul dup pPDF lt  %% el nombre de pàgines a fer que M13 ens marca a través del nombre de llibrets és més petita?
+%    {
+%     dup /pPDF exch def  %% actualitzem el valor de pPDF
+%     iLlançat add 1 sub /fLlançat exch def  %% i actualitzem la pàgina on acaba el llançat
+%    }
+%    {
+%     pop
+%    }ifelse
+
+%}if
+
+   %% com que no és més petita el valor actual de pPDF (nombre de pàgines del PDF a imposar) ja ens val
+   _pPDF _Nup 2 mul sub  %% nombre de pàgines a part el llibret central
+   dup 0 eq
+   {  %% no hi haurà encartat perquè només dóna per 1 llibret exacte
+    pop
+%    1 1 pPDF
+    _iLlançat 1 _fLlançat
+    {
+    }for
+    ]  %% fi de l'array d'imposició
+    /enBlanc 0 def
+    /_Nllibrets 0 def  %% és el nombre de llibrets (arrays) que envolten al llibret central
+   }
+   {
+    dup 0 lt
+    {  %% hi haurà 1 sol llibret amb pàgines en blanc (null) que inicialment situarem a la cua
+     abs /dNULLS exch def
+%     1 1 pPDF
+     _iLlançat 1 _fLlançat
+     {
+     }for
+     dNULLS
+     {
+      null
+     }repeat
+     ]  %% fi de l'array d'imposició
+     /enBlanc dNULLS def
+     /_Nllibrets 0 def  %% és el nombre de llibrets (arrays) que envolten al llibret central
+    }
+    {  %% hi hauran 2 o més llibrets encartats
+
+     %% deduïm quants llibrets sortiran a part del llibret central
+     dup _Nup 2 mul div ceiling cvi dup
+
+%     M13 0 ne  %% tret que M13 sigui zero!
+%     {  %% avaluem aquí com limitem els llibrets segons M13 > 0
+%      1 add M13 sub 0 le
+%%      (aVEUREsiVAS 3)pstack quit
+%      {  %% com que el nombre de llibrets que demana M13 és igual o més gran els totals reals
+%       dup  %% deixem igual Nllibrets
+%      }
+%      {  %% com que el nombre de llibrets que demana M13 és més petit que els totals reals
+%       pop M13 1 sub dup  %% mana M13 i li restem el llibret central
+%      }ifelse
+%     }if
+
+     /_Nllibrets exch def  %% és el nombre de llibrets (arrays) que envolten al llibret central
+     div _Nup 2 mul exch sub dup 0 ne  %% hi hauran pàgines en blanc?
+%(aVEUREsiVAS 2)pstack quit
+     {  %% SÍ, hi haurà pàgines en blanc
+      _Nllibrets mul round cvi
+      /enBlanc exch def  %% nombre de pàgines en blanc
+     }
+     {  %% NO hi haurà pàgines en blanc
+      pop
+      /enBlanc 0 def
+     }ifelse
+
+%     1 /PgEncartada exch def
+     _iLlançat /PgEncartada exch def
+
+     _Nllibrets
+     {  %% meitat dels llibrets encartats a l'esquerra
+      1 1 _Nup
+      {
+       pop PgEncartada dup 1 add /PgEncartada exch def
+      }for
+      [
+     }repeat
+     enBlanc 0 ne  %% hi ha pàgines en blanc?
+     {  %% sí
+      _Nup enBlanc sub dup 0 lt
+      {  %% si és més petit de zero és que també hi haurà pàgines en blanc al llibret central o a la penúltima array
+       abs cvi /dNULLSc exch def  %% nombre de null que indiquen pàgines en blanc al llibret central o a la penúltima array
+       /dNULLS _Nup def  %% nombre de null que indiquen pàgines en blanc al llibret més extern
+       %% ara aquí cal esbrinar si /dNULLSc va al llibret central o a la penúltima array
+       _Nllibrets 1 eq     %% només si és 1 durà null al llibret central
+       {
+        /blanquesALmig true def
+        /blanquesALpenultim false def
+       }
+       {
+        /blanquesALpenultim true def
+        /blanquesALmig false def
+       }ifelse
+      }
+      {
+       pop enBlanc cvi /dNULLS exch def  %% nombre de null que indiquen pàgines en blanc al llibret més extern
+       /blanquesALmig false def
+       /blanquesALpenultim false def
+      }ifelse
+      /blanquesAcua true def
+     }
+     {  %% no
+      /blanquesALmig false def
+      /blanquesAcua false def
+      /blanquesALpenultim false def
+     }ifelse
+
+     %% llibret central
+     blanquesALmig  %% n'hi ha?
+     {  %% fins on arriben les pàgines del PDF?
+      1 1 _Nup 2 mul dNULLSc sub
+     }
+     {  %% comportament normal
+      1 1 _Nup 2 mul
+     }ifelse
+     {
+      pop PgEncartada dup 1 add /PgEncartada exch def
+     }for
+     blanquesALmig  %% n'hi ha?
+     {
+      dNULLSc
+      {  %% acabem de farcir amb null el llibret central on no arriben les pàgines del PDF
+       null
+      }repeat
+     }if
+     ]
+
+     %% meitat dels llibrets encartats a la dreta
+     enBlanc 0 ne
+     {  %% hi ha pàgines blanques
+      blanquesALpenultim blanquesAcua and
+      {  %% a la cua i al penúltim array
+       _Nllibrets 2 sub  %% fem tots els llibrets menys els 2 darrers
+      }
+      {  %% només a la cua
+       _Nllibrets 1 sub  %% fem tots els llibrets menys el darrer
+      }ifelse
+     }
+     {  %% comportament normal
+      _Nllibrets
+     }ifelse
+     {  %% repeat
+      1 1 _Nup
+      {
+       pop PgEncartada dup 1 add /PgEncartada exch def
+      }for
+      ]
+     }repeat
+
+     %% aquí el penúltim llibret/array per ficar null com a pàgines en blanc en cas que n'hi hagi
+     blanquesALpenultim  %% hi ha pàgines en blanc a la penúltima array?
+     {
+      1 1 _Nup dNULLSc sub  %% escrivim la cua de pàgines finals del PDF
+      {
+       pop PgEncartada dup 1 add /PgEncartada exch def
+      }for
+      %% la cua de pàgines en blac
+      dNULLSc
+      {
+       null
+      }repeat
+      ]
+     }if
+
+     %% aquí el darrer llibret/array per ficar null com a pàgines en blanc en cas que n'hi hagi
+     blanquesAcua  %% hi ha pàgines en blanc?
+     {
+      1 1 _Nup dNULLS sub  %% escrivim la cua de pàgines finals del PDF
+      {
+       pop PgEncartada dup 1 add /PgEncartada exch def
+      }for
+      %% la cua de pàgines en blac
+      dNULLS
+      {
+       null
+      }repeat
+      ]
+     }if
+     %% la fi de l'array d'imposició ja va implícita
+    }ifelse
+   }ifelse
+
+   %dup == (matrius aniuades que haurem de desaniuar!) ==  %pstack quit
+
+   %% per tal de generar d'una forma continuada l'ordre del dúplex anvers/revers que hauria de tenir el PDF resultant
+   /_aDesencartar exch def  %% array que desencartem
+   [
+    {  %% loop
+     /NOhiHAarray true def  %% gatell per saber si hi ha un nou array aniuat, quan torni a ser true sortirem del loop
+     [
+      _aDesencartar
+      {  %% forall
+       dup type /arraytype eq
+       {
+        /_aDesencartar exch def
+        /NOhiHAarray false def  %% n'hi ha 1 a dins!
+       }
+       {  %% no fem res i deixem l'element a l'stack
+       }ifelse
+      }forall
+     ]  %% quedarà a l'stack una array desencartada darrera l'altre
+
+     NOhiHAarray
+     {  %% sortim quan no n'hagi trobat cap
+      exit
+     }if
+    }loop
+   ]  %% aquesta array duu un llibret (array) al costat de l'altre
+
+   %dup == (desencartat/desaniuat?)==
+   /NmapaDimposicio exch def  %% aquest és el mapa d'imposició que servirà de guia de numeració pels llibrets encartats
+   }if
+
+}if
   }if  %% un cop!
 
 }ifelse  %% dos mètodes de lectura
@@ -2405,6 +2672,71 @@ Simposa
 %%Pàgina Npgn -1 com a índex
 
    Npgn cvx exec
+
+%%ENUMERA pàgines
+M15 0 get  %% numerem?
+{
+%%TEST
+%aA aR pstack aVEUREsiVAS
+
+   M2 0 eq
+   {  %% 8+1
+    dup /oDlectura exch def  %% aquest número de pàgina és el de l'ordre de lectura del llibret, o sigui el de la numeració
+   }
+   {  %% cal detectar de si encartem o apilem i fer jugar els llibrets per tal que el número de pàgina s'avingui
+    M9 true eq
+    {  %% encartem
+
+%% hem intentat sense èxit trobar un patró fix i compatible amb la numeració dels llibrets encartats vs els nUps triats i hem hagut de recórrer al mapa d'imposició
+%     ARAiLlibret iLlibret ne
+%     {  %% cada vegada que canviem de llibret
+%      /ARAiLlibret iLlibret def  %% actualizem el detector
+%      /iPrevers iPrevers M2 sub def  %% valor d'inici de cada pàgina del revers que a cada canvi de llibret li restarem la meitat de les pàgines
+%%      /araPrevers iPrevers def  %% per inicialitzar /araPrevers
+%      /iGATELLaOr 0 def  %% inicialitzem
+%     }if
+
+%     anversOrevers  %% som a l'anvers o al revers?
+%     {  %% anvers
+%%      araPanvers dup 1 add /araPanvers exch def
+%      dup M2 iLlibret mul add
+%      iGATELLaOr 1 add M2 eq
+%      {
+%       /anversOrevers false def  %% gatell al revers
+%       /iGATELLaOr 0 def  %% si hem arribat a M2 inicialitzem
+%       %pop  %% aquest numerador ja no val
+%      }
+%      {
+%       iGATELLaOr 1 add /iGATELLaOr exch def
+%      }ifelse
+%     }
+%     {  %% revers
+%%      araPrevers dup 1 add /araPrevers exch def
+%      dup iPrevers add
+%      iGATELLaOr 1 add M2 eq
+%      {
+%       /anversOrevers true def  %% gatell a l'anvers
+%       /iGATELLaOr 0 def  %% si hem arribat a M2 inicialitzem
+%      }
+%      {
+%       iGATELLaOr 1 add /iGATELLaOr exch def
+%      }ifelse
+%     }ifelse
+
+     %%ATENCIÓ: certifiquem que Npgn no és el núm. de pàgina del PDF sinó que és el numerador intern d'imposició, segons l'nUp triat
+     dup NmapaDimposicio iLlibret get exch 1 sub get  %% del llibret que toca pesquem, passant a índex Npgn, la numeració que toca
+
+     /oDlectura exch def  %% aquest número de pàgina és el de l'ordre de lectura del llibret, o sigui el de la numeració
+    }
+    {  %% apilem o 1 sol llibret
+     dup
+     M2 2 mul iLlibret mul add
+%dup ==
+     /oDlectura exch def  %% aquest número de pàgina és el de l'ordre de lectura del llibret, o sigui el de la numeració
+    }ifelse
+   }ifelse
+}if
+
 %%Un truc per començar més enllà de la pàgina 1 del PDF
 %4 add
    1 sub
@@ -2442,8 +2774,7 @@ Simposa
     {
      1 sub  %% però el retornem al seu índex per fer el .PDFDrawPage
 
-%%ENUMERA pàgines
-dup /iDoE exch def  %% l'índex de pàgina en el sentit de lectura ens detectarà pàgines a dreta/esquerra en el sentit de lectura? segurament no serà valid per alguns nUps?
+%dup /iDoE exch def  %% l'índex de pàgina en el sentit de lectura ens detectarà pàgines a dreta/esquerra en el sentit de lectura? segurament no serà valid per alguns nUps?
 
      /llançat true def
     }ifelse
@@ -2540,8 +2871,9 @@ grestore
  {
   llançat  %% la pàgina en blanc NO la numerem ara
   {
-   iDoE  %% haurem de pescar el numèric a pintar del mapa d'imposició
-   1 add
+%   iDoE  %% haurem de pescar el numèric a pintar del mapa d'imposició
+%   1 add
+   oDlectura
 
    dup 5 string cvs /deLectura exch def  %% numerador que pintarem a cada pàgina segons l'ordre de lectura que ens mani l'nUp i la seva enquadernació
 

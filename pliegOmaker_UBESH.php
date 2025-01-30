@@ -466,6 +466,7 @@ echo "</body></html>";
   // forcem l'obertura del pdf a la mateixa finestra
   // header("Location:" . $baseurlPDF . $pdfnomes);  // no li agrada a SomNuvol !
 
+//@URLUBESH localhost
    echo "<center><span style='color:#ff0000;font-family:monospace;font-size:24px'><br><br>&gt;&gt;&gt; <a href='http://localhost/www.pliegos.net/maker/UBESH/pdf/" . $pdfnomes . "'>ENLLA&Ccedil; AL PDF RESULTANT</a> &lt;&lt;&lt;</span>";
 	  
 	  //echo '<script type="text/javascript">window.open("http://localhost/www.pliegos.net/maker/'.$pdfnomes.'");</script>';

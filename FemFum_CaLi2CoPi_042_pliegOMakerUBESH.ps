@@ -4,7 +4,7 @@
 %#  Per a intèrprets `GNU AGPL Ghostscript´ però també, amb ben pocs retocs, pot córrer
 %#  amb l'Adobe Acrobat Distiller (fins hi tot amb MacOSX PSNormalizer Framework/Apple pstopdf).
 %# 
-%#  `Copyleft 2000-2024 :: l'Ametlla de Merola :: Marc Antoni Malagarriga i Picas´
+%#  `Copyleft 2000-2025 :: l'Ametlla de Merola :: Marc Antoni Malagarriga i Picas´
 %#  `<http://www.femfum.com> | <marcantoni@femfum.com>´
 %#  `https://github.com/marcantonifemfum/CaLi2CoPi´
 %# 
@@ -26,7 +26,7 @@
 %#  For `GNU AGPL Ghostscript´ interpreter, but also available with minor changes
 %#  for Adobe Acrobat Distiller (even for MacOSX PSNormalizer Framework/Apple pstopdf).
 %# 
-%#  `Copyleft 2000-2024 :: l'Ametlla de Merola :: Marc Antoni Malagarriga i Picas´
+%#  `Copyleft 2000-2025 :: l'Ametlla de Merola :: Marc Antoni Malagarriga i Picas´
 %#  `<http://www.femfum.com> | <marcantoni@femfum.com>´
 %#  `https://github.com/marcantonifemfum/CaLi2CoPi´
 %# 
@@ -1588,7 +1588,7 @@ false{
 
 %%URLUBESH
 %%URLREpublica de moment amb un path relatiu
-%% (Hpdf/XRay_042_)
+%% (tmp/XRay_042_)  %% posem el TXT al tmp doncs dins l'entorn web es produïa un estrany error al tornar a escriure el mateix TXT de l'XRay
 7up_pliegOMaker_UBESH 5 get
 
 %%% GS MacOSX/Unix/Linux %%%
@@ -5753,7 +5753,9 @@ string dup 3 -1 roll 0 exch putinterval
 dup iNSeRT dena putinterval
 dup iNSeRT2 (_XRay.txt) putinterval
 /FitxerXRay exch def
-FitxerXRay (w) file dup /wFitxerXRay exch def
+FitxerXRay
+%dup length tEmp length dup /araVa exch def add string dup 3 -1 roll araVa exch putinterval dup 0 tEmp putinterval
+(w) file dup /wFitxerXRay exch def
 (Preview:) writestring
 [
  {  %% 0 (repica el fitxer de forma 'intacte')
@@ -6464,7 +6466,8 @@ iPmaker 1 add /iPmaker exch def
 
 
 %%UBESH fem un nou loop explorador d'instruccions Rotate, doncs ens poden condicionar enormement la imposició de pàgines en funció de si les considerem o no
-mark  %% aquest loop pot deixar brossa de diccionaris mal tancats i l'hem d'eliminar per no produir errors més endavant en operadors que treballen amb count
+mark  %% aquest loop pot deixar brossa de diccionaris mal tancats i l'hem d'eliminar per no produir errors al repicar el PDF en operadors que treballen amb count (com SCN)
+
 %% aquí escriurem tots els Rotate definits
 /araPlana 1 def  %% valor inicial del ventador de pàgines
 {  %% loop explorador de Rotate pàgina a pàgina

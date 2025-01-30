@@ -55,7 +55,8 @@ true  %% true fem PDFs | false fem JPEGs
 %% enumerem pàgines
 %(/home/femfum/Downloads/17896_Eskaera_Solicitud.pdf)
 %(/home/femfum/Documents/GuiaJove_EinesDT_v1_web.pdf)  %% hem polit un loop nou a FemFum_CaLi2CoPi_042_pliegOMakerUBESH.ps que generava brossa
-(/home/femfum/Documents/pliegOMakerUB/16pagines_numerades.pdf)
+%(/home/femfum/Documents/pliegOMakerUB/16pagines_numerades.pdf)
+(/home/femfum/Documents/pliegOMakerUB/32paginesA4numerades.pdf)
 
 }
 {
@@ -94,7 +95,7 @@ true
 %% 4 = 4+4 graella del llançat en vertical/horitzontal | plegat en llibret desbarbat | 4 pàgines a l'anvers i 4 al revers | impressió dúplex vertical/horitzontal
 %% 8 = 8+8 graella del llançat en vertical | plegat en llibret desbarbat | 8 pàgines a l'anvers i 8 al revers | impressió en dúplex horitzontal
 
-4
+2
 
 
 %%M3 ORIENTACIÓ DEL FULL D'IMPRESSIÓ ?
@@ -178,6 +179,95 @@ true
 
 []
 
+false{
+[
+ [
+  1
+   1
+   1
+    1
+    1
+   1
+   1
+  1
+ ]
+ [
+    1
+   1
+   1
+  1
+  1
+   1
+   1
+    1
+ ]
+ [
+  1
+   1
+   1
+    1
+    1
+   1
+   1
+  1
+ ]
+ [
+    1
+   1
+   1
+  1
+  1
+   1
+   1
+    1
+ ]
+]
+
+}if
+
+
+%% exemple que posar a prova tant l'anàlisi com la numeració
+%[
+% [
+%  null
+%   4
+%   null
+%    null
+%% - - - anvers/revers - - -
+%    4
+%   null
+%   16
+%  3
+% ]
+%]
+
+false{
+%% mapa d'imposició de 2 llibrets apilats 4+4/4+4 amb les pàgines esbarriades
+[
+ [
+  16
+   2
+   13
+    4
+    15
+   8
+   7
+  6
+ ]
+ [
+  10
+   9
+   11
+    14
+    3
+   12
+   5
+  1
+ ]
+]
+}if
+
+
 %% mapa d'imposició de 2 llibrets apilats 2+2/2+2 per corregir l'error de numeració
 %[
 % [
@@ -196,49 +286,50 @@ true
 % ]
 %]
 
-
+false{
 %% mapa d'imposició de 2 llibrets encartats 2+2/2+2 per corregir l'error de numeració
-%[
-% [
-%  1
-%   2
-%% - - - anvers/revers - - - 
-%   7
-%  8
-% ]
-% [
-%   3
-%  4
-%% - - - anvers/revers - - - 
-%  5
-%   6
-% ]
-%]
-
-
-%% mapa d'imposició d'un llibret 8+1 amb tall al mig sense desbarbar per corregir l'error de numeració
-%[
-% [
-%  1
-%   2
-%   3
-%    4
-%    5
-%   6
-%   7
-%  8
+[
+ [
+  16
+   12
 % - - - anvers/revers - - - 
-%  9
-%  null
-%  null
-%  null
-%  null
-%  null
-%  null
-%  null
-% ]
-%]
+   11
+  10
+ ]
+ [
+   13
+  14
+% - - - anvers/revers - - - 
+  15
+   6
+ ]
+]
+}if
 
+false{
+%% mapa d'imposició d'un llibret 8+1 amb tall al mig sense desbarbar per corregir l'error de numeració
+[
+ [
+  8
+   6
+   7
+    14
+    15
+   2
+   3
+  1
+% - - - anvers/revers - - - 
+  16
+  null
+  null
+  null
+  null
+  null
+  null
+  null
+ ]
+]
+}if
 
 %% Tarde Handbook amb tall al mig sense desbarbar
 %[[1 2 3 4 5 6 7 8 9 null null null null null null null]]
@@ -297,7 +388,7 @@ true
 %% EP! quan M10 és a false tenir M9 a null fa que només es crei el primer llibret (la primera array de M8)
 %% EP! el valor d'M9 és irrellevant quan el tipus de llançat M2 és 0 (tall al mig sense desbarbar/Handbook)
 
-false
+true
 
 
 
@@ -351,11 +442,11 @@ true
 
  true   %% numerem? true si, false no (sempre amb lletra blanca opaca)
 
- 1      %% posició del numerador dins la pàgina: 0 peu, 1 xamfrà, 2 vora
+ 0      %% posició del numerador dins la pàgina: 0 peu, 1 xamfrà, 2 vora
 
- false   %% fons ple o transparent: false ple, true transparent
+ true   %% fons ple o transparent: false ple, true transparent
 
- 3      %% forma pel fons del numerador: 1 quadrat, 2 semicercle, 3 triangle
+ 1      %% forma pel fons del numerador: 1 quadrat, 2 semicercle, 3 triangle
 
  1      %% color pel fons del numerador: 1 negre, 2 gris
 

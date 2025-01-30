@@ -1482,24 +1482,582 @@ Interfície web per facilitar la usabilitat de l'eina pliegO'Maker en paral·lel
         e3.1 ~ Un altre mètode d'execució que pot facilitar certes dinàmiques de treball on la repetició sigui una de les prioritats. En posteriors projectes de desenvolupament aquest mètode també seria traslladable a execucions en un servidor a www (connectats a Internet
 
 
-+ cal polir l'anàlisi quan acotem la imposició a menys pàgines de les que permet l'nUp, per exemple, fent un 4+4 (sobre un PDF que en té 16) però que hem acotat la impocició només de la 1 a la 2, ens diu:
-            1     ......... pagina on iniciarem la imposicio al PDF d'origen
-            8     ......... pagina on finalitzarem la imposicio al PDF d'origen
-            0     ......... pagines ignorades del PDF d'origen
-…suposem que potser també l'erra quan la numeració és saltada (p.e. comença per un núm de pàgina més gran del que no acaba) …caldrà veure si quan fem el PDF de debò també ho diu malament
-@URGENT
++ és possible que quan treballem amb la interfície TXT i el prompt ens torna a informar de l'anàlisi del PDF imposat, en el cas de que quan haguem modificat manualment el mapa d'imposició, de forma saltada i repetitiva, la lògica informativa NO quadri, per exemple en un 4+4 en el que haguem modificant l'assaig:
+[
+ [
+  null
+   4
+   null
+    null
+% - - - anvers/revers - - -
+    2
+   null
+   null
+  3
+ ]
+]
+…aquesta nova informació d'anàlisi, com que de moment s'ignora en la interfície HTML, ens ho podem estalviar, però s'hauria de repassar (hem fet alguna prova i creiem que no!)
+@VIST
+
++ en determinades ocasions la reescriptura de l'XRay:
+-rw-r--r-- 1 www-data www-data  1810 de gen.  27 11:27 XRay_042_16pagines_numerades_pdf_XRay.txt
+…dóna Error: /invalidfileaccess in --file--
+Operand stack:
+   (Hpdf/XRay_042_16pagines_numerades_pdf_XRay.txt)   (w)
+…segurament si l'adrecem al directori tmp això no passarà (doncs ara aquest fitxer no ens és necessari)
+@FET
 
 + cal solucionar de com servir el PDF amb o sense la pàgina o vincle que ara tenim en blanc (pse, pse)
 + cal implementar l'escriptura del mapa d'imposició a l'HTML al 8+8, 8+1 i la resta que ara no surten via web (1+1 2+2)
 + cal apujar la limitació a 100 MB de fitxer PDF a imposar al servidor de somNúvol (OJU que al localhost ara éstà entre 2 i 8 M)
-+ tenim un error al sistema de numeració quan fem més d'1 llibret (apilats o encartats), doncs no segueix sumant pàgines i torna a començar per 1 a cada llibret
 + cal afegir a /Hpdf l'esborrat a 24h
 + al 8+1 hi ha un error quan l'enquadernat és a (null) 1 sol llibret i avalua:  0     ......... pagines ignorades del PDF d'origen (si el PDF a imposar en té 16 hauria de dir 7)
++ cal polir l'anàlisi quan TENINT SELECCIONAT L'ENQUADERNAT D'1 SOL LLIBRET acotem la imposició a menys pàgines de les que permet l'nUp, per exemple, fent un 4+4 (sobre un PDF que en té 16) però que hem acotat la impocició només de la 1 a la 2, ens diu:
+            1     ......... pagina on iniciarem la imposicio al PDF d'origen
+            ......... pagina on finalitzarem la imposicio al PDF d'origen
+            ......... pagines ignorades del PDF d'origen
+            ......... total de pagines a imposar del PDF d'origen
+…suposem que potser també l'erra quan la numeració és saltada (p.e. comença per un núm de pàgina més gran del que no acaba) …caldrà veure si quan fem el PDF de debò també ho diu malament
++ amb 8+1 també l'erra a:
+            13    ......... pagines en blanc dels llibrets
+            7     ......... pagines ignorades del PDF d'origen
+
++ encara hi ha una errada en l'anàlisi de quan encartem p.e. un PDF de 32 pàgines en nUps 4+4 a:
+            8     ......... pagina on finalitzarem la imposicio al PDF d'origen
+            8     ......... total de pagines a imposar del PDF d'origen
 @FET
 
 
 + hem renombrat els 5 algorismes que teniem al directori… /home/femfum/Documents/pliegOMakerUB …sense evolucionar per les noves funcions de menú web (somNúvol/localhost) amb un txt_#.ps per tal de posar-hi els que estem escrivint ara al /localhost i veure que mantenim la compatibilitat de les 3 execucions possibles: via TXT, via nUp_pliegOS_UBESH.ps (configurant les opcions de les variables d'entorn) i via web
 @VIST
+
+
++ tenim un error al sistema de numeració quan fem més d'1 llibret (apilats o encartats), doncs no segueix sumant pàgines i torna a començar per 1 a cada llibret
++ segueix havent-hi un problema amb el numerador, doncs en aquest cas està seguint al número de pàgina del PDF i no pas a l'ordre de lectura que li mana l'Nup:
+[
+ [
+  null
+   4
+   null
+    null
+% - - - anvers/revers - - -
+    4
+   null
+   16
+  3
+ ]
+]
+…ara la variable que mana l'ordre de lectura i la numeració és /oDlectura
+@FET
+
++ quan fem l'assaig del mapa d'imposició, sigui l'encartat o l'apilat, NO té cap sentit marcar l'anvers/revers doncs no es correspon al plec real dels llibrets 2+2 4+4 8+8, en canvi sí que té sentit als nUps 1+1 i 8+1, i els hi haurem de deixar
+@FET
+
++ cal posar un tag informatiu del treball d'anàlisi previ de CaLi2CoPi, desmuntat i muntat del PDF, per filtrar encriptats, signatures, etc
+@FET
+
++ a… nUp_pliegOS_UBESH.ps …si fem l'nUp 2+2 cal forçar al /ViewerPreferences del /DOCVIEW, activar… /Duplex /DuplexFlipShortEdge, doncs la resta (4+4 8+8 8+1) són LongEdge
+@FET
+
++ en canvi, sí que són útils les tabulacions dels números de pàgina/null que indiquen l'aparellament de les pàgines dobles (obertes són contígües). En el cas de l'enquadernat apilat el mapa d'imposició ho mostra de manera sequencial, però en el cas de l'enquadernat encartat el mapa d'imposició ho mostra d'una manera més discontínua, saltant d'un llibret a un altre
+@FET
+
++ pliegOS treballa simultàniament amb 3 sistemes d'ordenat en 3 moments de l'execució:
+
+    # a l'escollir quines pàgines es cridaran per fer el llançat del PDF a imposar
+    …en aquest mapa d'imposició (4+4 apilat) els dígits són els números de les pàgines del PDF a imposar que anirem a buscar
+[
+ [
+  16
+   2
+   13
+    4
+    15
+   8
+   7
+  6
+ ]
+ [
+  10
+   9
+   11
+    14
+    3
+   12
+   5
+  1
+ ]
+]
+
+    # a l'escollir, segons l'nUp triat, l'ordre de les pàgines a imposar a l'anvers i l'ordre de les pàgines a imposar al revers, per cada full a imprimir
+    …imposant un 4+4 apilat (aquí els dígits són els números d'ordre de lectura) l'ordre de quines pàgines imposarem a cada cara (surt al prompt de quan fem el PDF) és, per a 1 full:
+{--ANVERS--}
+         compon --pg. 1
+         compon --pg. 4
+         compon --pg. 5
+         compon --pg. 8
+{--REVERS--}
+         compon --pg. 2
+         compon --pg. 3
+         compon --pg. 6
+         compon --pg. 7
+
+    # a l'escollir, segons l'enquadernació i l'nUp triat, l'ordre de lectura/numeració que tindrà el llibret un cop plegat. En cas d'enquadernar en apilat, els dígits de la llista anterior són els números d'ordre de lectura
+@VIST
+
++ persisteix l'error de numeració en el cas de fer +d'1 llibret encartat i en el cas dels apilats també!
++ cal posar un sumador d'índex dels llibrets al numerador que s'ha de comportar diferent si encartem o apilem
++ comprovem que, efectivament, el motor del componedor treballa de forma independent a l'enquadernat triat.
++ comparem si a la lògica del llançat, per a 2+2 4+4 8+8 però, idèntica per a tots els algorismes de composició i resident a… nUp_pliegOS_UBESH.ps (a l'índex 0 dels nUps definit dins /pliegOS_nUpS) …se'n pot extreure una lògica estable per la numeració de pàgines quan enquadernem en encartat (n llibrets un a dins de l'altre)
+@FET
+
++ hem trobat un mètode estable per a tota mena de combinacions basat en:
+    # generar el mapa d'imposició estàndard (en base a l'array buida []), perquè ens guiï en la numeració (doncs no ens podem refiar del que hagi fet servir l'usuari finalment pel fet que hi poden haver pàgines en blanc, canvis en la numeració o repeticions):
+        # agafarem el mapa d'imposició de l'usuari i en deduirem l'nUp i el nombre de llibrets
+        # cal copiar l'algorisme de generació del mapa d'assaig encartat en base a [] que va de la línia 420 a la 615
+        # haurem de redefinir algunes variables com Nup pPDF iLlançat fLlançat
+    # utilitzem Npgn + iLlibret …per tal de pescar l'array del llibret que toqui i l'índex de composició per anar a buscar la numeració correcte!
+@FET
+
+    ENCARTAT 4+4 D'UN PDF DE 16 PÀGINES VS l'ordre seqencial de les pàgines a imposar a l'anvers i al revers
+    MAPA D'IMPOSICIÓ: correspondències de la numeració dins d'una mateixa cara (plana) del dúplex anvers/revers
+
+    [ ---------------------- LLIBRET 1
+     [                      aA  aR  SOLUCIÓ
+      1- - - - - - - -|A    1       +0
+                      |N
+|- - -2               |V        2   +0
+|                     |E
+|- - -3               |R        3   +0
+|R                    |S
+|E    4- - - - - - - -|     4       +0
+|V                    |
+|E    13 - - - - - - -|     5       +8
+|R                    |
+|S                    |
+|- - -14              |         6   +8
+|                     |
+|- - -15              |         7   +8
+                      |
+      16 - - - - - - -|     8       +8
+     ]
+     [ ---------------------- LLIBRET 2
+      5- - - - - - - -|A    1       +4
+                      |N
+|- - -6               |V        2   +4
+|                     |E
+|- - -7               |R        3   +4
+|R                    |S
+|E    8- - - - - - - -|     4       +4
+|V                    |
+|E    9- - - - - - - -|     5       +4
+|R                    |
+|S                    |
+|- - -10              |         6   +4
+|                     |
+|- - -11              |         7   +4
+                      |
+      12 - - - - - - -|     8       +4
+     ]
+    ]
+
++ Un mapa d'imposició té la lògica següent:
+    # cada array és un full imprès en dúplex que plegat conforma el llibret
+    # la distribució de les pàgines a cada plana (cara) del full es fa de manera que un cop plegat segueixi l'ordre de lectura
+    # la posició a l'anvers i al revers de cada pàgina del llançat no segueix l'ordre seqüencial de l'array del mapa
+    # l'ordre seqüencial de l'array és l'ordre de lectura
+    # cada digit de l'array és el número de pàgina que anirem a buscar al PDF d'entrada i que després imposarem al PDF/pliegOS de sortida
+
+araNúm          {--ANVERS--}        MAPA/NÚM
+ 1               compon --pg. 1     1
+ 4               compon --pg. 4     4
+ 5               compon --pg. 5     13
+ 8               compon --pg. 8     16
+                {--REVERS--}
+ 10              compon --pg. 2     2
+ 11              compon --pg. 3     3
+ 14              compon --pg. 6     14
+ 15              compon --pg. 7     15
+ - - - - - - - - - - - - - - LLIBRET 1
+                {--ANVERS--}                                                 [
+ 5               compon --pg. 1     5
+ 8               compon --pg. 4     8
+ 9               compon --pg. 5     9
+ 12              compon --pg. 8     12
+                {--REVERS--}
+ 6               compon --pg. 2     6
+ 7               compon --pg. 3     7
+ 10              compon --pg. 6     10
+ 11              compon --pg. 7     11
+- - - - - - - - - - - - - - LLIBRET 2
+
+
+
+
+2+2 encartant un PDF de 16 pàgines
+
+    correspondències de la numeració dins d'una mateixa cara (plana) del dúplex anvers/revers
+
+        [ ---------------------- LLIBRET 1
+         [                      aA  aR  SOLUCIÓ
+          1- - - - - - - -|A    1       +0
+   R|- - -2               |         2   +0
+    |- - -15              |         3   +12
+          16 - - - - - - -|     4       +12
+         ]
+         [ ---------------------- LLIBRET 2
+   R|- - -3                         2   +1
+    |- - -4                         3   +1
+          13 - - - - - - -|A    1       +12
+          14 - - - - - - -|     4       +12
+         ]
+         [ ---------------------- LLIBRET 3
+          5- - - - - - - -|A    1       +4
+   R|- - -6               |         2   +4
+    |- - -11              |         3   +8
+          12 - - - - - - -|     4       +8
+         ]
+         [ ---------------------- LLIBRET 4
+          7- - - - - - - -|A    1       +6
+   R|- - -8               |         2   +6
+    |- - -9               |         3   +6
+          10 - - - - - - -|     4       +6
+         ]
+        ]
+
+
+{--ANVERS--}                    MAPA/NÚM
+araNúm
+         compon --pg. 1         1
+1
+         compon --pg. 4         16
+4
+{--REVERS--}
+         compon --pg. 2         2
+10
+         compon --pg. 3         15
+11
+- - - - - - - - - - - - - - LLIBRET 1
+{--ANVERS--}
+         compon --pg. 1         3
+3
+         compon --pg. 4         14
+6
+{--REVERS--}
+         compon --pg. 2         4
+8
+         compon --pg. 3         13
+9
+- - - - - - - - - - - - - - LLIBRET 2
+{--ANVERS--}
+         compon --pg. 1         5
+5
+         compon --pg. 4         12
+8
+{--REVERS--}
+         compon --pg. 2         6
+6
+         compon --pg. 3         11
+7
+- - - - - - - - - - - - - - LLIBRET 3
+{--ANVERS--}
+         compon --pg. 1         7
+7
+         compon --pg. 4         10
+10
+{--REVERS--}
+         compon --pg. 2         8
+4
+         compon --pg. 3         9
+5
+- - - - - - - - - - - - - - LLIBRET 4
+
+
+
+
+
+    MAPA D'IMPOSICIÓ D'UN ENCARTAT 8+8 EN UN PDF DE 32 PÀGINES
+
+      [
+       [                    aA  aR  SOLUCIÓ?
+        1- - - - - - - -|A  1       +0
+ R|- - -2               |N      2   +0
+ E|- - -3               |V      3   +0
+ V|     4- - - - - - - -|E  4       +0
+ V|     5- - - - - - - -|R  5       +0
+ E|- - -6               |S      6   +0
+ R|- - -7               |       7   +0
+ S|     8- - - - - - - -|  8        +0
+  |     25 - - - - - - -|  9        +16
+  |- - -26              |       10  +16
+  |- - -27              |       11  +16
+  |     28 - - - - - - -|  12       +16
+  |     29 - - - - - - -|  13       +16
+  |- - -30              |       14  +16
+  |- - -31              |       15  +16
+        32 - - - - - - -|  16       +16
+       ]---------------------- LLIBRET 1
+       [
+        9 - - - - - - - -|A 1       +8
+ R|- - -10               |N     2   +8
+ E|- - -11               |V     3   +8
+ V|     12- - - - - - - -|E 4       +8
+ E|     13- - - - - - - -|R 5       +8
+ R|- - -14               |S     6   +8
+ S|- - -15               |      7   +8
+  |     16- - - - - - - -|  8       +8
+  |     17- - - - - - - -|  9       +8
+  |- - -18               |      10  +8
+  |- - -19               |      11  +8
+  |     20- - - - - - - -|  12      +8
+  |     21- - - - - - - -|  13      +8
+  |- - -22               |      14  +8
+  |- - -23               |      15  +8
+        24- - - - - - - -|  16      +8
+       ]---------------------- LLIBRET 2
+      ]
+
+
+{--ANVERS--}
+         compon --pg. 1
+1
+         compon --pg. 4
+4
+         compon --pg. 5
+5
+         compon --pg. 8
+8
+         compon --pg. 9
+9
+         compon --pg. 12
+12
+         compon --pg. 13
+13
+         compon --pg. 16
+16
+{--REVERS--}
+         compon --pg. 2
+18
+         compon --pg. 3
+19
+         compon --pg. 6
+22
+         compon --pg. 7
+23
+         compon --pg. 10
+26
+         compon --pg. 11
+27
+         compon --pg. 14
+30
+         compon --pg. 15
+31
+- - - - - - - - - - - - - - LLIBRET 1
+
+{--ANVERS--}
+         compon --pg. 1
+9
+         compon --pg. 4
+12
+         compon --pg. 5
+13
+         compon --pg. 8
+16
+         compon --pg. 9
+17
+         compon --pg. 12
+20
+         compon --pg. 13
+21
+         compon --pg. 16
+24
+{--REVERS--}
+         compon --pg. 2
+10
+         compon --pg. 3
+11
+         compon --pg. 6
+14
+         compon --pg. 7
+15
+         compon --pg. 10
+18
+         compon --pg. 11
+19
+         compon --pg. 14
+22
+         compon --pg. 15
+23
+- - - - - - - - - - - - - - LLIBRET 2
+
+
+
+    MAPA D'IMPOSICIÓ D'UN ENCARTAT 4+4 EN UN PDF DE 32 PÀGINES
+
+         [
+          [ ---------------------- LLIBRET 1
+                                aA  aR  SOLUCIÓ
+           1- - - - - - - -|A   1       +0
+    R|- - -2               |N       2   +0
+    E|- - -3               |V       3   +0
+    V|     4- - - - - - - -|E   4       +0
+    E|     29 - - - - - - -|R   5       +24
+    R|- - -30              |S       6   +24
+    S|- - -31              |        7   +24
+           32 - - - - - - -|    8       +24
+          ]
+          [ ---------------------- LLIBRET 2
+           5- - - - - - - -|A   1       +4
+    R|- - -6               |N       2   +4
+    E|- - -7               |V       3   +4
+    V|     8- - - - - - - -|E   4       +4
+    E|     25 - - - - - - -|R   5       +20
+    R|- - -26              |S       6   +20
+    S|- - -27              |        7   +20
+           28 - - - - - - -|    8       +20
+          ]
+          [ ---------------------- LLIBRET 3
+           9- - - - - - - -|A   1       +8
+    R|- - -10              |N       2   +8
+    E|- - -11              |V       3   +8
+    V|     12 - - - - - - -|E   4       +8
+    E|     21 - - - - - - -|R   5       +16
+    R|- - -22              |S       6   +16
+    S|- - -23              |        7   +16
+           24 - - - - - - -|    8       +16
+          ]
+          [ ---------------------- LLIBRET 4
+           13- - - - - - - -|A  1       +12
+    R|- - -14               |N      2   +12
+    E|- - -15               |V      3   +12
+    V|     16- - - - - - - -|E  4       +12
+    E|     17- - - - - - - -|R  5       +12
+    R|- - -18               |S      6   +12
+    S|- - -19               |       7   +12
+           20- - - - - - - -|   8       +12
+          ]
+         ]
+
+{--ANVERS--}
+         compon --pg. 1
+1
+         compon --pg. 4
+4
+         compon --pg. 5
+5
+         compon --pg. 8
+8
+{--REVERS--}
+         compon --pg. 2
+18
+         compon --pg. 3
+19
+         compon --pg. 6
+22
+         compon --pg. 7
+23
+- - - - - - - - - - - - - - LLIBRET 1
+{--ANVERS--}
+         compon --pg. 1
+5
+         compon --pg. 4
+8
+         compon --pg. 5
+9
+         compon --pg. 8
+12
+{--REVERS--}
+         compon --pg. 2
+14
+         compon --pg. 3
+15
+         compon --pg. 6
+18
+         compon --pg. 7
+19
+- - - - - - - - - - - - - - LLIBRET 2
+{--ANVERS--}
+         compon --pg. 1
+9
+         compon --pg. 4
+12
+         compon --pg. 5
+13
+         compon --pg. 8
+16
+{--REVERS--}
+         compon --pg. 2
+10
+         compon --pg. 3
+11
+         compon --pg. 6
+14
+         compon --pg. 7
+15
+- - - - - - - - - - - - - - LLIBRET 3
+{--ANVERS--}
+         compon --pg. 1
+13
+         compon --pg. 4
+16
+         compon --pg. 5
+17
+         compon --pg. 8
+20
+{--REVERS--}
+         compon --pg. 2
+6
+         compon --pg. 3
+7
+         compon --pg. 6
+10
+         compon --pg. 7
+11
+- - - - - - - - - - - - - - LLIBRET 4
+
+
++ això ens qüestiona el comportament de la numeració de les pàgines en blanc, que: NO es numeren però Sí que sumen pel numerador de pàgines, p.e. entre les pàgines 3 i 5 numerades hi hauria una pàgina en blanc (la 4) no numerada
+@FET
+
+
+
+
++ ATENCIÓ:
++ aquest són els fitxers que poden necessitar d'actualitzar adreces absolutes, crides o URLs en funció de si executem des del Terminal, via HTML/PHP al localhost o somNúvol:
++ tota la resta sembla que poden funcionar amb referències relatives
+
+
+    nUp_pliegOS_UBESH.ps
+
+Si /CddVf la deixem a true, executant via HTML/PHP com que qui mana és la detecció de la variable d'entorn (que l'HTML/PHP genera i detecta), no es molesta quan simultàniament executem des del Terminal via TXT. El que sí que condiciona (llavors /CddVf hauria d'estar a false) és si volem treballar amb opcions de menú directes M## per a cada definició de la variable d'entorn corresponent.
+
+
+    pliegOmaker_UBESH.php (cercar per @URLUBESH), aquestes són les línies potencialment modificables:
+
+$baseURL = "http://localhost/www.pliegos.net/maker/UBESH/";  // localhost de Tuxedo
+
+$pujali = "/var/www/html/www.pliegos.net/maker/UBESH/Hpdf/";  // localhost Tuxedo
+
+$somaPS = "/var/www/html/www.pliegos.net/maker/UBESH/";  // path al ps del localhost de Tuxedo
+
+$somaPDF = "/var/www/html/www.pliegos.net/maker/UBESH/pdf/";  // path al pdf del localhost de Tuxedo
+
+$somaGS = "/usr/bin/";  // path a l'executable de Ghostscript al localhost de Tuxedo
+
+$baseurlPDF = "http://localhost/www.pliegos.net/maker/UBESH/pdf/";  // base url al pdf al localhost de Tuxedo
+
+$baseurlMAPA = "http://localhost/www.pliegos.net/maker/UBESH/tmp/";  // base url on desem els mapes d'imposició al localhost de Tuxedo
+
+$command = $somaGS . "gs -q -dNOSAFER -o '" . $pdfFile . "' -dALLOWPSTRANSPARENCY -sDEVICE=pdfwrite -dAutoRotatePages=/None -f '" . $PSapplet . "'";
+
+echo "<center><span style='color:#ff0000;font-family:monospace;font-size:24px'><br><br>&gt;&gt;&gt; <a href='http://localhost/www.pliegos.net/maker/UBESH/pdf/" . $pdfnomes . "'>ENLLA&Ccedil; AL PDF RESULTANT</a> &lt;&lt;&lt;</span>";
+
+echo '<script type="text/javascript">window.open("http://localhost/www.pliegos.net/maker/UBESH/pdf/'.$pdfnomes.'");</script>';
+
+
+
+
+
 
 
 
@@ -2351,7 +2909,7 @@ Interfície web per facilitar la usabilitat de l'eina pliegO'Maker en paral·lel
 
 
     25.01.2025
-- - - - - - - - HT
+- - - - - - - - HT 6
 
 %%H de 10h15 a 13h00
 %%H de 16h30 a 18h00
@@ -2360,4 +2918,54 @@ Interfície web per facilitar la usabilitat de l'eina pliegO'Maker en paral·lel
 
 
 
+    26.01.2025
+- - - - - - - - HT 0
+
+
+
+- - - - - - - - SETMANA 14 21
+
+
+
+    27.01.2025
+- - - - - - - - HT 7
+
+%%H de 08h00 a 08h45
+%%H de 10h15 a 13h00
+%%H de 15h45 a 16h30
+%%H de 17h15 a 18h15
+%%H de 19h30 a 20h15
+%%H de 21h00 a 22h00
+
+
+
+    28.01.2025
+- - - - - - - - HT 7.5
+
+%%H de 06h00 a 07h45
+%%H de 09h15 a 11h15
+%%H de 12h30 a 13h15
+%%H de 17h15 a 19h00
+%%H de 19h30 a 20h00
+%%H de 21h15 a 22h00
+
+
+
+    29.01.2025
+- - - - - - - - HT 6.25
+
+%%H de 08h00 a 08h45
+%%H de 09h30 a 10h00
+%%H de 11H30 a 13h15
+%%H de 14h00 a 15h00
+%%H de 18h30 a 19h30
+%%H de 21h30 a 22h45
+
+
+
+    30.01.2025
+- - - - - - - - HT
+
+%%H de 07h15 a 08h30
+%%H de 09h30 a 11h45
 

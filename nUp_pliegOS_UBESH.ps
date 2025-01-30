@@ -136,6 +136,8 @@ noMesunavegada
  /noMesunavegada false def
 
 %%EP! captura de dades via fitxer d'interfície TXT?
+%% podem deixar-la a true doncs no es molesta amb l'execució via html/php
+%% només estem obligats a posar-la en false si treballem amb els paràmetres de l'anellat %!%
  true
 
  dup /CddVf exch def
@@ -176,7 +178,7 @@ noMesunavegada
  CddVf
  {  %% UBESH interfície TXT
  }
- {
+ {  %!%
   % false  %% fem visible la vora de la pàgina del llançat? (imposició) més endavant podrem posar-ho en una capa
   true
  }ifelse
@@ -204,7 +206,7 @@ noMesunavegada
  CddVf
  {  %% UBESH interfície TXT
  }
- {
+ {  %!%
   4
  }ifelse
 %% (\n Ghostscript no pot capturar aquesta variable d'entorn!\n\n)print flush
@@ -227,7 +229,7 @@ noMesunavegada
  CddVf
  {  %% UBESH interfície TXT
  }
- {
+ {  %!%
   false  %% pel plegaVeu 19.12.21 forcem el 4+4 sempre en vertical (el 8+8 ja ho fa per defecte)
  }ifelse
 %%EP! el 2Up en vertical talla els originals (cal revisar també en H perquè es veu menys però també passa!)
@@ -250,7 +252,7 @@ noMesunavegada
  CddVf
  {  %% UBESH interfície TXT
  }
- {
+ {  %!%
   4
  }ifelse
 %% (\n Ghostscript no pot capturar aquesta variable d'entorn!\n\n)print flush
@@ -274,7 +276,7 @@ noMesunavegada
  CddVf
  {  %% UBESH interfície TXT
  }
- {
+ {  %!%
   false
  }ifelse
 %% (\n Ghostscript no pot capturar aquesta variable d'entorn!\n\n)print flush
@@ -295,7 +297,7 @@ noMesunavegada
  CddVf
  {  %% UBESH interfície TXT
  }
- {
+ {  %!%
 
   9
 
@@ -353,7 +355,7 @@ noMesunavegada
  CddVf
  {  %% UBESH interfície TXT
  }
- {
+ {  %!%
   true
  }ifelse
 %% (\n Ghostscript no pot capturar aquesta variable d'entorn!\n\n)print flush
@@ -412,7 +414,7 @@ noMesunavegada
  CddVf
  {  %% UBESH interfície TXT
  }
- {
+ {  %!%
   []
  }ifelse
 %% (\n Ghostscript no pot capturar aquesta variable d'entorn!\n\n)print flush
@@ -435,7 +437,7 @@ noMesunavegada
  CddVf
  {  %% UBESH interfície TXT
  }
- {
+ {  %!%
   null
  }ifelse
 %% (\n Ghostscript no pot capturar aquesta variable d'entorn!\n\n)print flush
@@ -459,7 +461,7 @@ noMesunavegada
  CddVf
  {  %% UBESH interfície TXT
  }
- {
+ {  %!%
   false
  }ifelse
 %% (\n Ghostscript no pot capturar aquesta variable d'entorn!\n\n)print flush
@@ -487,7 +489,7 @@ noMesunavegada
  CddVf
  {  %% UBESH interfície TXT
  }
- {
+ {  %!%
 
 
 %%RELLEVANT: si volem reflectir un error PS al prompt de la interfície necessitem sortir amb exit
@@ -578,7 +580,7 @@ noMesunavegada
  CddVf
  {  %% UBESH interfície TXT
  }
- {  %% aquí és on ens cal posar-hi el valors de MRCT_rang1 i MRCT_rang2 subordinats a
+ {  %!% aquí és on ens cal posar-hi el valors de MRCT_rang1 i MRCT_rang2 subordinats a
   [0 0]
  }ifelse
 %% (\n Ghostscript no pot capturar aquesta variable d'entorn!\n\n)print flush
@@ -608,7 +610,7 @@ noMesunavegada
  CddVf
  {  %% UBESH interfície TXT
  }
- {
+ {  %!%
   0
  }ifelse
 %% (\n Ghostscript no pot capturar aquesta variable d'entorn!\n\n)print flush
@@ -631,7 +633,7 @@ noMesunavegada
  CddVf
  {  %% UBESH interfície TXT
  }
- {
+ {  %!%
   true
  }ifelse
 %% (\n Ghostscript no pot capturar aquesta variable d'entorn!\n\n)print flush
@@ -725,7 +727,7 @@ noMesunavegada
  CddVf
  {  %% UBESH interfície TXT
  }
- {
+ {  %!%
   [true 0 false 3 2]
  }ifelse
 %% (\n Ghostscript no pot capturar aquesta variable d'entorn!\n\n)print flush
@@ -2599,8 +2601,13 @@ mark
    %% a la impressora HP Color LaserJet M553 i el driver d'impressió de l'AdobeAcrobatReader/MacOSX:
    %% encara que, per defecte, surti una altra configuració de dúplex al driver, mana el paràmetre que tinguem aquí actiu
    %% el que sí que, creiem, no podem manar des d'aquí, és imprimir al 100% (NO forçar mai el 'Fit' als marges d'impressió)
-   /Duplex /DuplexFlipLongEdge  %% el necessita 8Up i 4Up
-   % /Duplex /DuplexFlipShortEdge
+   M2 2 eq
+   {
+    /Duplex /DuplexFlipShortEdge  %% el necessita 2+2
+   }
+   {
+    /Duplex /DuplexFlipLongEdge  %% el necessita 8Up, 4Up i 8+1
+   }ifelse
 >>  %% activem les opcions del dúplex d'impressió?
 /DOCVIEW pdfmark
 
