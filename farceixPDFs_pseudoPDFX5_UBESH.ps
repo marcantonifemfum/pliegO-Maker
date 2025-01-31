@@ -1878,7 +1878,12 @@ M15 0 get  %% numerem?
    /ARAiLlibret 0 def  %% valor inicial del comptador de llibrets
    /iGATELLaOr 0 def  %% quan arribem al valor de M2 (meitat de les pàgines d'un llibret) inicialitzem
 
-   M9
+   M9 dup null eq
+   {
+    pop false
+   }
+   {
+   }ifelse
    {  %% si encartem generem la guia de numeració /NmapaDimposicio
     mapaDimposicio  %% del mapa d'imposició de l'usuari en deduïm l'nUp i el nombre total de pàgines
     dup length exch 0 get length

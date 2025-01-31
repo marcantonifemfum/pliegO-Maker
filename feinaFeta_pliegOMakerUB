@@ -2032,32 +2032,100 @@ araNúm
 Si /CddVf la deixem a true, executant via HTML/PHP com que qui mana és la detecció de la variable d'entorn (que l'HTML/PHP genera i detecta), no es molesta quan simultàniament executem des del Terminal via TXT. El que sí que condiciona (llavors /CddVf hauria d'estar a false) és si volem treballar amb opcions de menú directes M## per a cada definició de la variable d'entorn corresponent.
 
 
-    pliegOmaker_UBESH.php (cercar per @URLUBESH), aquestes són les línies potencialment modificables:
+        pliegOmaker_UBESH.php (cercar per @URLUBESH), aquestes són les línies potencialment modificables:
 
-$baseURL = "http://localhost/www.pliegos.net/maker/UBESH/";  // localhost de Tuxedo
-
-$pujali = "/var/www/html/www.pliegos.net/maker/UBESH/Hpdf/";  // localhost Tuxedo
-
-$somaPS = "/var/www/html/www.pliegos.net/maker/UBESH/";  // path al ps del localhost de Tuxedo
-
-$somaPDF = "/var/www/html/www.pliegos.net/maker/UBESH/pdf/";  // path al pdf del localhost de Tuxedo
-
-$somaGS = "/usr/bin/";  // path a l'executable de Ghostscript al localhost de Tuxedo
-
-$baseurlPDF = "http://localhost/www.pliegos.net/maker/UBESH/pdf/";  // base url al pdf al localhost de Tuxedo
-
-$baseurlMAPA = "http://localhost/www.pliegos.net/maker/UBESH/tmp/";  // base url on desem els mapes d'imposició al localhost de Tuxedo
-
-$command = $somaGS . "gs -q -dNOSAFER -o '" . $pdfFile . "' -dALLOWPSTRANSPARENCY -sDEVICE=pdfwrite -dAutoRotatePages=/None -f '" . $PSapplet . "'";
-
-echo "<center><span style='color:#ff0000;font-family:monospace;font-size:24px'><br><br>&gt;&gt;&gt; <a href='http://localhost/www.pliegos.net/maker/UBESH/pdf/" . $pdfnomes . "'>ENLLA&Ccedil; AL PDF RESULTANT</a> &lt;&lt;&lt;</span>";
-
-echo '<script type="text/javascript">window.open("http://localhost/www.pliegos.net/maker/UBESH/pdf/'.$pdfnomes.'");</script>';
+    $baseURL = "http://localhost/www.pliegos.net/maker/UBESH/";  // localhost de Tuxedo
+    FET
+        $baseURL = "https://www.pliegos.net/maker/UBESH/";  // somNuvol
 
 
+    $pujali = "/var/www/html/www.pliegos.net/maker/UBESH/Hpdf/";  // localhost Tuxedo
+    FET
+        $pujali = "/var/www/html/maker/UBESH/Hpdf/";  // somNuvol
+
+
+    $somaPS = "/var/www/html/www.pliegos.net/maker/UBESH/";  // path al ps del localhost de Tuxedo
+    FET
+        $somaPS = "/var/www/html/maker/UBESH/";  // path al ps de somNuvol
+
+
+    $somaPDF = "/var/www/html/www.pliegos.net/maker/UBESH/pdf/";  // path al pdf del localhost de Tuxedo
+    FET
+        $somaPDF = "/var/www/html/maker/UBESH/pdf/";  // path al pdf de somNuvol
+
+
+    $somaGS = "/usr/bin/";  // path a l'executable de Ghostscript tant al localhost de Tuxedo com a somNuvol
+    FET
+        ídem
+
+
+    $baseurlPDF = "http://localhost/www.pliegos.net/maker/UBESH/pdf/";  // base url al pdf al localhost de Tuxedo
+    FET
+        $baseurlPDF = "https://www.pliegos.net/maker/UBESH/pdf/";  // base url al pdf de somNuvol
+
+
+    $baseurlMAPA = "http://localhost/www.pliegos.net/maker/UBESH/tmp/";  // base url on desem els mapes d'imposició al localhost de Tuxedo
+    FET
+        $baseurlMAPA = "https://www.pliegos.net/maker/UBESH/tmp/";  // base url on desem els mapes d'imposició a somNuvol
+
+
+    $command = $somaGS . "gs -q -dNOSAFER -o '" . $pdfFile . "' -dALLOWPSTRANSPARENCY -sDEVICE=pdfwrite -dAutoRotatePages=/None -f '" . $PSapplet . "'";
+    FET
+        crida ídem pel gs 9.55
+
+
+    echo "<center><span style='color:#ff0000;font-family:monospace;font-size:24px'><br><br>&gt;&gt;&gt; <a href='http://localhost/www.pliegos.net/maker/UBESH/pdf/" . $pdfnomes . "'>ENLLA&Ccedil; AL PDF RESULTANT</a> &lt;&lt;&lt;</span>";
+    FET
+        echo "<center><span style='color:#ff0000;font-family:monospace;font-size:24px'><br><br>&gt;&gt;&gt; <a href='https://www.pliegos.net/maker/UBESH/pdf/" . $pdfnomes . "'>ENLLA&Ccedil; AL PDF RESULTANT</a> &lt;&lt;&lt;</span>";
+
+
+    echo '<script type="text/javascript">window.open("http://localhost/www.pliegos.net/maker/UBESH/pdf/'.$pdfnomes.'");</script>';
+    FET
+        echo '<script type="text/javascript">window.open("https://www.pliegos.net/maker/UBESH/pdf/'.$pdfnomes.'");</script>';
 
 
 
+    30.01.2025 FITXERS COPIATS DE… /var/www/html/www.pliegos.net/maker/UBESH …A… /var/www/html/maker/UBESH/
+
+siPHPcridaGS.php (https://pliegos.net/maker/UBESH/siPHPcridaGS.php s'executa correctament)
+index.html
+farceixPDFs_pseudoPDFX5_UBESH.ps
+ESH_UB.txt
+nUp_pliegOS_UBESH.ps
+pliegOmaker_UBESH.php
+FemFum_CaLi2CoPi_042_pliegOMakerUBESH.ps
+7up_pliegOMaker_UBESH.ps
+phpinfo.php
+Hack-Regular.ttf
+4Up_153x60.png
+8Up_186x60.png
+Nquadrat3posicions.png
+Nquadrat3posicions_6.png
+Nquadrat3posicions_7.png
+Nquadrat3posicions_8.png
+Nsemicercle3posicions.png
+Nsemicercle3posicions_3.png
+Nsemicercle3posicions_4.png
+Nsemicercle3posicions_5.png
+Ntriangle3posicions.png
+Ntriangle3posicions_0.png
+Ntriangle3posicions_1.png
+Ntriangle3posicions_2.png
+tallSenseDesbarbar_254x60.png
+nomesLogo2UB.jpg
+maker.css
+1paginaDINbuida.pdf
+pliegOMaker_UBESH.ps
+
+
+        DIRECTORIS CREATS (ara tots amb chmod 777)
+tmp
+pdf
+Hpdf
+
+    REDIRECCIÓ
++ hem redirigit via… https://www.pliegos.net/maker/index.html …cap a… https://www.pliegos.net/maker/UBESH/
++ hem afegit la capçalera d'etiquetes opengraph/Twitter també a https://www.pliegos.net/maker/index.html (les tenim també a https://www.pliegos.net/maker/UBESH/index.html)
 
 
 
@@ -2964,8 +3032,17 @@ echo '<script type="text/javascript">window.open("http://localhost/www.pliegos.n
 
 
     30.01.2025
-- - - - - - - - HT
+- - - - - - - - HT 5.50
 
 %%H de 07h15 a 08h30
 %%H de 09h30 a 11h45
+%%H de 12h30 a 13h15
+%%H de 14h00 a 15n15
+- - - - - - - - - - - - - - - - primera versió operativa a somNuvol
+
+
+    31.01.2025
+- - - - - - - - HT
+
+%%H de 09h15 a
 

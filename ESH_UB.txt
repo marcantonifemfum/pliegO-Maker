@@ -55,8 +55,8 @@ true  %% true fem PDFs | false fem JPEGs
 %% enumerem pàgines
 %(/home/femfum/Downloads/17896_Eskaera_Solicitud.pdf)
 %(/home/femfum/Documents/GuiaJove_EinesDT_v1_web.pdf)  %% hem polit un loop nou a FemFum_CaLi2CoPi_042_pliegOMakerUBESH.ps que generava brossa
-%(/home/femfum/Documents/pliegOMakerUB/16pagines_numerades.pdf)
-(/home/femfum/Documents/pliegOMakerUB/32paginesA4numerades.pdf)
+(/home/femfum/Documents/pliegOMakerUB/16pagines_numerades.pdf)
+%(/home/femfum/Documents/pliegOMakerUB/32paginesA4numerades.pdf)
 
 }
 {
@@ -95,7 +95,7 @@ true
 %% 4 = 4+4 graella del llançat en vertical/horitzontal | plegat en llibret desbarbat | 4 pàgines a l'anvers i 4 al revers | impressió dúplex vertical/horitzontal
 %% 8 = 8+8 graella del llançat en vertical | plegat en llibret desbarbat | 8 pàgines a l'anvers i 8 al revers | impressió en dúplex horitzontal
 
-2
+4
 
 
 %%M3 ORIENTACIÓ DEL FULL D'IMPRESSIÓ ?
@@ -388,7 +388,7 @@ false{
 %% EP! quan M10 és a false tenir M9 a null fa que només es crei el primer llibret (la primera array de M8)
 %% EP! el valor d'M9 és irrellevant quan el tipus de llançat M2 és 0 (tall al mig sense desbarbar/Handbook)
 
-true
+false
 
 
 
@@ -442,11 +442,11 @@ true
 
  true   %% numerem? true si, false no (sempre amb lletra blanca opaca)
 
- 0      %% posició del numerador dins la pàgina: 0 peu, 1 xamfrà, 2 vora
+ 2      %% posició del numerador dins la pàgina: 0 peu, 1 xamfrà, 2 vora
 
- true   %% fons ple o transparent: false ple, true transparent
+ false   %% fons ple o transparent: false ple, true transparent
 
- 1      %% forma pel fons del numerador: 1 quadrat, 2 semicercle, 3 triangle
+ 3      %% forma pel fons del numerador: 1 quadrat, 2 semicercle, 3 triangle
 
  1      %% color pel fons del numerador: 1 negre, 2 gris
 
