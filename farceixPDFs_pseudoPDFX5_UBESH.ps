@@ -685,13 +685,38 @@ M13 0 ne
  %% excepcions segons el tipus de llançat 
  M2 0 eq
  {  %% excepció pel Handbook
+
+%[ %%errorUBESH
+
   [
    mapaDimposicio
-   {
-   }forall
-   pop pop pop pop pop pop pop
-   null null null null null null null
+
+%%errorUBESH
+dup
+length 9 sub dup
+0 lt
+{
+abs /ficaNULLS exch def
+{}forall ficaNULLS{null}repeat
+null null null null null null null
+}
+{
+/fesPOPs exch def
+{}forall fesPOPs{pop}repeat
+null null null null null null null
+}ifelse
+
+   %{
+   %}forall
+
+   %pop pop pop pop pop pop pop
+   %null null null null null null null
   ]
+
+%%errorUBESH
+%pstack AVUREelMAPAdIMPOSICIO
+%]
+
   /mapaDimposicio exch def
   %% ajustem, si cal, el valor de fLlançat
   fLlançat 9 gt
@@ -1334,7 +1359,14 @@ mapaDimposicio  %% aquest mapa d'imposició encara no té el format que necessita 
 M2 0 eq
 {  %% si fem el 8+1 calculem de nou el nombre de pàgines en blanc, doncs podrien ser errònies
  /enBlanc 0 def
- mapaDimposicio 0 get
+ mapaDimposicio
+
+%%errorUBESH
+M10 not
+{
+ 0 get
+}if
+
  dup length 0 eq
  {
   pop
