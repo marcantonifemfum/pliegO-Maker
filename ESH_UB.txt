@@ -38,6 +38,11 @@ true  %% true fem PDFs | false fem JPEGs
 %(/home/femfum/Documents/pliegOMakerUB/exemples/8CropBox.pdf)
 %(/home/femfum/Documents/pliegOMakerUB/8CropBox_a3x3.pdf)
 
+(/home/femfum/Documents/pliegOMakerUB/exemples/59573_La_maternitat_de_himmler.pdf)
+
+%%SIGNAT
+%(/home/femfum/Documents/pliegOMakerUB/exemples/30874.pdf)
+
 %% MediaBox | CropBox
 %(/home/femfum/Documents/pliegOMakerUB/4CropBox4orientacions_a3x3_MediaBox2orientacions_NOSE_SENO_pla.pdf)
 %(/home/femfum/Documents/pliegOMakerUB/4CropBox4orientacions_a3x3_MediaBox2orientacions_SONE-NESO_pla.pdf)
@@ -55,7 +60,7 @@ true  %% true fem PDFs | false fem JPEGs
 %% enumerem pàgines
 %(/home/femfum/Downloads/17896_Eskaera_Solicitud.pdf)
 %(/home/femfum/Documents/GuiaJove_EinesDT_v1_web.pdf)  %% hem polit un loop nou a FemFum_CaLi2CoPi_042_pliegOMakerUBESH.ps que generava brossa
-(/home/femfum/Documents/pliegOMakerUB/16pagines_numerades.pdf)
+%(/home/femfum/Documents/pliegOMakerUB/16pagines_numerades.pdf)
 %(/home/femfum/Documents/pliegOMakerUB/32paginesA4numerades.pdf)
 
 }
@@ -95,7 +100,7 @@ true
 %% 4 = 4+4 graella del llançat en vertical/horitzontal | plegat en llibret desbarbat | 4 pàgines a l'anvers i 4 al revers | impressió dúplex vertical/horitzontal
 %% 8 = 8+8 graella del llançat en vertical | plegat en llibret desbarbat | 8 pàgines a l'anvers i 8 al revers | impressió en dúplex horitzontal
 
-4
+0
 
 
 %%M3 ORIENTACIÓ DEL FULL D'IMPRESSIÓ ?
@@ -177,7 +182,9 @@ true
 
 %% enumerem pàgines
 
-[]
+%[]
+[[1 2 3 4 5 6 7 8 1 null null null null null null null]]
+
 
 false{
 [
@@ -389,7 +396,8 @@ false{
 %% EP! el valor d'M9 és irrellevant quan el tipus de llançat M2 és 0 (tall al mig sense desbarbar/Handbook)
 
 false
-
+%null
+%true
 
 
 %%M10 ASSAGEM EL MAPA D'IMPOSICIÓ?
@@ -440,7 +448,7 @@ true
 
 [
 
- true   %% numerem? true si, false no (sempre amb lletra blanca opaca)
+ false   %% numerem? true si, false no (sempre amb lletra blanca opaca)
 
  2      %% posició del numerador dins la pàgina: 0 peu, 1 xamfrà, 2 vora
 
@@ -451,5 +459,10 @@ true
  1      %% color pel fons del numerador: 1 negre, 2 gris
 
 ]
+
+
+%%M16 AMPLIEM LES OPCIONS? (fa que, a l'assaig, el mapa d'imposició deplegui, pàgina a pàgina, les possibles opcions de personalització)
+
+
 
 

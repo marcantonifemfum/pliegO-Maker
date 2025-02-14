@@ -733,9 +733,32 @@ noMesunavegada
 %% (\n Ghostscript no pot capturar aquesta variable d'entorn!\n\n)print flush
 }ifelse
 
-%% fi de MENÚ de capçalera
+%%UBESH
+%%M16 AMPLIEM LES OPCIONS?
+%% capturem la variable d'entorn generada amb PHP com a PHP2PS2PHPgeneracioicapturadunavariabledentorn.php
+(MRCT_extres) getenv  %% la variable d'entorn existeix?
+{  %% existeix perquè ve d'executar-se via html/php
+ dup length 0 eq 
+ {  %% arriba buida perquè executem via URL amb pliegOmaker.php sense paràmetres (mètode $_GET)
+  pop false  %% si l'eliminem del menú via mètode $_POST també
+ }
+ {  %% té dades perquè executem via URL amb index_##.php (mètode $_POST) o amb pliegOmaker.php amb paràmetres (mètode $_GET)
+  cvx exec  %% és una string!
+ }ifelse
+}
+{  %% la variable d'entorn NO existeix perquè executem l'applet en local via Terminal per línia de comanda
+ CddVf
+ {  %% UBESH interfície TXT
+ }
+ {  %!%
+  false
+ }ifelse
+%% (\n Ghostscript no pot capturar aquesta variable d'entorn!\n\n)print flush
+}ifelse
 
+%% fi de MENÚ de capçalera
 %%UBESH noves funcions
+/M16 exch def  %% AMPLIEM LES OPCIONS?
 /M15 exch def  %% NUMERADOR DE PÀGINES
 /M14 exch def  %% DE COM S'ADAPTEN LES PÀGINES AL LLANÇAT
 /M13 exch def  %% NOMBRE MÀXIM DE LLIBRETS A GENERAR

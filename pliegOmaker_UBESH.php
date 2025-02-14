@@ -2,11 +2,13 @@
 
 //@URLUBESH
 // EP! aquí cal veure si al servidor somNúvol podem posar-hi o no les 3 www al davant
-$baseURL = "http://localhost/www.pliegos.net/maker/UBESH/";  // localhost de Tuxedo
+//$baseURL = "http://localhost/www.pliegos.net/maker/UBESH/";  // localhost de Tuxedo
+$baseURL = "http://localhost/www.pliegos.net/maker/UBESH_/UBESH/";  // localhost de Tuxedo | pliegO'Maker mapa+
 
 // @URLUBESH
 // adreça absoluta al directori de càrrega dels PDFs
-$pujali = "/var/www/html/www.pliegos.net/maker/UBESH/Hpdf/";  // localhost Tuxedo
+//$pujali = "/var/www/html/www.pliegos.net/maker/UBESH/Hpdf/";  // localhost Tuxedo
+$pujali = "/var/www/html/www.pliegos.net/maker/UBESH_/UBESH/Hpdf/";  // localhost Tuxedo | pliegO'Maker mapa+
 
 // echo "<b>Type: </b>" . $_FILES["atenyer"]["type"] . "<br>";
 // echo "<b>File Size: </b>" . $_FILES["atenyer"]["size"]/1024 . "<br>";
@@ -49,13 +51,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET')
 //exit('GET!');
 
  // esborrem les anteriors per si les mosques?
- putenv('vp=');  // M1
- putenv('nUp=');  // M2
- putenv('hv=');  // M3
- putenv('full=');  // M4
- putenv('r=');  // M5
- putenv('labal=');  // M6
- putenv('bbox=');  // M7
+ putenv('vp=');  // M1 ensenyem vores de les pàgines?
+ putenv('nUp=');  // M2 nUp
+ putenv('hv=');  // M3 orientació
+ putenv('full=');  // M4 full d'impressió
+ putenv('r=');  // M5 mantenim la ràtio?
+ putenv('labal=');  // M6 algorisme
+ putenv('bbox=');  // M7 respectem el CropBox?
 
  putenv('mapai=');  // M8 gatell del mapa d'imposició
  putenv('tmapai=');  // M8 dades del mapa d'imposició
@@ -63,37 +65,38 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET')
  putenv('rang2=');  // M12 rang de pàgines pel mapa d'imposició
  putenv('rang3=');  // M13 rang de llibrets pel mapa d'imposició
 
- putenv('enqdrnt=');  // M9
- putenv('assagemi=');  // M10
- putenv('tlab=');  // M11
- putenv('pipfa=');  // M12
- putenv('nmdllag=');  // M13
- putenv('agraella=');  // M14
+ putenv('enqdrnt=');  // M9 tipus d'enquadernat
+ putenv('assagemi=');  // M10 assagem la imposició?
+ putenv('tlab=');  // M11 text a compondre
+ putenv('pipfa=');  // M12 pàgina d'inici i final de l'assaig
+ putenv('nmdllag=');  // M13 rang de llibrets pel mapa d'imposició
+ putenv('agraella=');  // M14 de com s'adapten les pàgines a la graella del llançat
 
  putenv('numera=');  // M15 numerem?
  putenv('M154=');  // M15 color de fons del numerador
  putenv('M1513=');  // M15 posició i forma de fons del numerador
  putenv('M152=');  // M15 fem transparent el fons del numerador?
 
+ putenv('extres=');  // M16 ampliem les opcions?
 
 //SNRD inicialitzem la galeta/variable de l'hora del client
  putenv('MRCT_qhe=');
 
  // exemple de crida sense paràmetres per l'execució única del prototip de pliegOS pel projecte sonar+D 2023
  // http://localhost/www.pliegos.net/maker/sonarD2023/pliegOmaker.php
- $vp=$_GET['vp'];  // M1
+ $vp=$_GET['vp'];  // M1 ensenyem vores de les pàgines?
 //echo($vp.'<br>');
- $nup=$_GET['nUp'];  // M2
+ $nup=$_GET['nUp'];  // M2 nUp
 //echo($nup.'<br>');
- $hv=$_GET['hv'];  // M3
+ $hv=$_GET['hv'];  // M3 orientació
 //echo($hv.'<br>');
- $full=$_GET['full'];  // M4
+ $full=$_GET['full'];  // M4 full d'impressió
 //echo($full.'<br>');
- $r=$_GET['r'];  // M5
+ $r=$_GET['r'];  // M5 mantenim la ràtio?
 //echo($r.'<br>');
- $labal=$_GET['labal'];  // M6
+ $labal=$_GET['labal'];  // M6 algorisme
  //echo($labal.'<br>');
- $bbox=$_GET['bbox'];  // M7
+ $bbox=$_GET['bbox'];  // M7 respectem el CropBox?
  //echo($bbox.'<br>');
 
  $mapai=$_GET['mapai'];  // M8 gatell del mapa d'imposició
@@ -107,17 +110,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET')
  $rang3=$_GET['rang3'];  // M13 rang de llibrets pel mapa d'imposició
  //echo($rang3.'<br>');
 
- $enqdrnt=$_GET['enqdrnt'];  // M9
+ $enqdrnt=$_GET['enqdrnt'];  // M9 tipus d'enquadernat
  //echo($enqdrnt.'<br>');
- $assagemi=$_GET['assagemi'];  // M10
+ $assagemi=$_GET['assagemi'];  // M10 assagem la imposició?
  //echo($assagemi.'<br>');
- $tlab=$_GET['tlab'];  // M11
+ $tlab=$_GET['tlab'];  // M11 text a compondre
  //echo($tlab.'<br>');
- $pipfa=$_GET['pipfa'];  // M12
+ $pipfa=$_GET['pipfa'];  // M12 pàgina d'inici i final de l'assaig
  //echo($pipfa.'<br>');
- $nmdllag=$_GET['nmdllag'];  // M13
+ $nmdllag=$_GET['nmdllag'];  // M13 rang de llibrets pel mapa d'imposició
  //echo($nmdllag.'<br>');
- $agraella=$_GET['agraella'];  // M14
+ $agraella=$_GET['agraella'];  // M14 de com s'adapten les pàgines a la graella del llançat
  //echo($agraella.'<br>');
 
  $numera=$_GET['numera'];  // M15 numerem?
@@ -128,6 +131,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET')
  //echo($M1513.'<br>');
  $M152=$_GET['M152'];  // M15 fem transparent el fons del numerador?
  //echo($M152.'<br>');
+ $extres=$_GET['extres'];  // M16 ampliem les opcions?
+ //echo($extres.'<br>');
 
 //exit(' ...em veus?');
 }
@@ -175,7 +180,7 @@ else
  //echo $assagemi;  // M10 assagem la imposició?
 
  $tlab=$_POST['tlab'];
- // echo $tlab;  // M11 text de la caixa
+ // echo $tlab;  // M11 text a compondre
  // echo $_POST['tlab'];  // text a compondre
 
  $pipfa=$_POST['pipfa'];
@@ -195,6 +200,8 @@ else
  // echo $M1513;  // M15 posició i forma del fons del numerador
  $M152=$_POST['M152'];
  // echo $M152;  // M15 fem transparent el fons del numerador?
+ $extres=$_POST['extres'];
+ // echo $extres;  // M16 ampliem les opcions?
 
 // exit(' ...bon dia!');
 }
@@ -233,7 +240,7 @@ putenv("MRCT_numera=$numera");  // M15 desem de si numerem o no les pàgines a la
 putenv("MRCT_M154=$M154");  // M15 desem el color de fons del numerador a la variable d'entorn 
 putenv("MRCT_M1513=$M1513");  // M15 desem la posició i forma del fons del numerador a la variable d'entorn 
 putenv("MRCT_M152=$M152");  // M15 desem si fem el fons transparent del numerador a la variable d'entorn 
-
+putenv("MRCT_extres=$extres");  // M16 desem si ampliem les opcions 
 
 // treballem amb l'hora del client i no pas amb la del servidor?
 // @EP ara mateix (09.05.24) executant la demo del SònarD, apuntant directament, sense paràmetres, a:
@@ -298,9 +305,10 @@ $PDFunic = date("d"."B"."H"."i"."s");
 //$somaPS = "/Library/WebServer/Documents/www.pliegos.net/maker/30segons/";  // path al ps cap al localhost del MacbookAir
 //$somaPS = "/var/www/wordpress/maker/30segons/";  // path al ps cap al servidor de Teixidora
 
-// @URLUBSEH localhost
+// @URLUBESH localhost
 //$somaPS = "/Library/WebServer/Documents/www.pliegos.net/maker/REpublica/";  // path al ps cap al localhost del MacbookAir
-$somaPS = "/var/www/html/www.pliegos.net/maker/UBESH/";  // path al ps del localhost de Tuxedo
+//$somaPS = "/var/www/html/www.pliegos.net/maker/UBESH/";  // path al ps del localhost de Tuxedo
+$somaPS = "/var/www/html/www.pliegos.net/maker/UBESH_/UBESH/";  // path al ps del localhost de Tuxedo | pliegO'Maker mapa+
 
 //$somaPDF = "/home/marcantoni/pliegos.net/maker/pdf/";  // path al pdf al servidor www.pliegos.net del DreamHost
 //$somaPDF = "/var/www/wordpress/maker/plegaVeu/pdf/";  // path al pdf al nou servidor www.pliegos.net de Teixidora
@@ -314,7 +322,8 @@ $somaPS = "/var/www/html/www.pliegos.net/maker/UBESH/";  // path al ps del local
 //@URLUBESH
 // @EP el directori /pdf on s'allotgen els resultats ha de tenir tots els permisos! (si no peta el GS sense que ens digui perquè)
 //$somaPDF = "/Library/WebServer/Documents/www.pliegos.net/maker/REpublica/pdf/";  // path al pdf cap al localhost del MacbookAir
-$somaPDF = "/var/www/html/www.pliegos.net/maker/UBESH/pdf/";  // path al pdf del localhost de Tuxedo
+//$somaPDF = "/var/www/html/www.pliegos.net/maker/UBESH/pdf/";  // path al pdf del localhost de Tuxedo
+$somaPDF = "/var/www/html/www.pliegos.net/maker/UBESH_/UBESH/pdf/";  // path al pdf del localhost de Tuxedo | pliegO'Maker mapa+
 
 //URL30segons
 //$somaGS = "/usr/local/bin/";  // path a l'executable de Ghostscript al localhost del Macbook Air
@@ -336,8 +345,10 @@ $somaGS = "/usr/bin/";  // path a l'executable de Ghostscript al localhost de Tu
 //@URLUBESH localhost
 //$baseurlPDF = "http://localhost/www.pliegos.net/maker/REpublica/pdf/";  // base url al pdf al localhost del MacbookAir
 // @EP al servidor commonscloud.coop és clau NO posar-hi les 3 www al davant, si les duu dóna problemes al descarregar el PDF!
-$baseurlPDF = "http://localhost/www.pliegos.net/maker/UBESH/pdf/";  // base url al pdf al localhost de Tuxedo
-$baseurlMAPA = "http://localhost/www.pliegos.net/maker/UBESH/tmp/";  // base url on desem els mapes d'imposició al localhost de Tuxedo
+//$baseurlPDF = "http://localhost/www.pliegos.net/maker/UBESH/pdf/";  // base url al pdf al localhost de Tuxedo
+$baseurlPDF = "http://localhost/www.pliegos.net/maker/UBESH_/UBESH/pdf/";  // base url al pdf al localhost de Tuxedo | pliegO'Maker mapa+
+//$baseurlMAPA = "http://localhost/www.pliegos.net/maker/UBESH/tmp/";  // base url on desem els mapes d'imposició al localhost de Tuxedo
+$baseurlMAPA = "http://localhost/www.pliegos.net/maker/UBESH_/UBESH/tmp/";  // base url on desem els mapes d'imposició al localhost de Tuxedo | pliegO'Maker mapa+
 
 //$baseURL = "http://www.pliegos.net/maker";  // base url a la interfície del nou servidor www.pliegos.net de Teixidora
 //$baseURL = "http://localhost/www.pliegos.net/maker";  // base url a la interfície del localhost del Macbook Air
@@ -467,11 +478,11 @@ echo "</body></html>";
   // header("Location:" . $baseurlPDF . $pdfnomes);  // no li agrada a SomNuvol !
 
 //@URLUBESH localhost
-   echo "<center><span style='color:#ff0000;font-family:monospace;font-size:24px'><br><br>&gt;&gt;&gt; <a href='http://localhost/www.pliegos.net/maker/UBESH/pdf/" . $pdfnomes . "'>ENLLA&Ccedil; AL PDF RESULTANT</a> &lt;&lt;&lt;</span>";
+   echo "<center><span style='color:#ff0000;font-family:monospace;font-size:24px'><br><br>&gt;&gt;&gt; <a href='http://localhost/www.pliegos.net/maker/UBESH_/UBESH/pdf/" . $pdfnomes . "'>ENLLA&Ccedil; AL PDF RESULTANT</a> &lt;&lt;&lt;</span>";
 	  
 	  //echo '<script type="text/javascript">window.open("http://localhost/www.pliegos.net/maker/'.$pdfnomes.'");</script>';
 //@URLUBESH localhost
-	 echo '<script type="text/javascript">window.open("http://localhost/www.pliegos.net/maker/UBESH/pdf/'.$pdfnomes.'");</script>';
+	 echo '<script type="text/javascript">window.open("http://localhost/www.pliegos.net/maker/UBESH_/UBESH/pdf/'.$pdfnomes.'");</script>';
 
 //           $txerKB = ceil(filesize($pdfFile)/1024);  // si necessitem mesurar el fitxer de sortida
    echo("<br><p><br><p><span style='color:#0000ff;font-family:monospace;font-size:24px'><a style='color:#0000ff;font-family:monospace;font-size:18px' href='$baseURL'>Torneu</a></span><br><p><br></center>");
