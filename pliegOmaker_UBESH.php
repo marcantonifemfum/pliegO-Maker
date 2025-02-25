@@ -460,9 +460,9 @@ echo "</body></html>";
 
    //@URLUBESH localhost
    // aquí llistem el mapa d'imposició com si fos el prompt del Terminal
-   echo "<center><span style='color:#ff0000;font-family:monospace;font-size:24px'><br><br>&gt;&gt;&gt; ASSAIG DEL MAPA D'IMPOSICI&Oacute; &lt;&lt;&lt;</span>";
+   echo "<center><span style='color:#ff0000;font-family:monospace;font-size:24px' title='La matriu del text acolorit &eacute;s el mapa d&#39;imposici&oacute; que podeu copiar al camp per generar el PDF i, si s&#39;escau, acabar-lo d&#39;ajustar editant el seu contingut.\n\nEl tabulat indica quines p&agrave;gines s&#39;aparellen en doble amb el llibret obert.\n\nEls d&iacute;gits indiquen el n&uacute;mero de p&agrave;gina del PDF que imposarem, no pas l&#39;ordre de lectura que &eacute;s el de la seq&uuml;&egrave;ncia de compaginaci&oacute;'><br><br>&gt;&gt;&gt; ASSAIG DEL MAPA D'IMPOSICI&Oacute; &lt;&lt;&lt;</span>";
 //   echo "<br><br><div w3-include-html='" . $baseurlMAPA . $PDFunic . ".html' style='color:#999999;font-family:monospace;font-size:24px'></div>";
-   echo "<br><br><iframe src='" . $baseurlMAPA . $PDFunic . ".html'  height='100%' width='75%' title='' style='border:none' ></iframe>";
+   echo "<br><br><iframe src='" . $baseurlMAPA . $PDFunic . ".html'  height='100%' width='80%' title='' style='border:none' ></iframe>";
    exit("<br><p><br><p><span style='color:#0000ff;font-family:monospace;font-size:24px'><a style='color:#0000ff;font-family:monospace;font-size:18px' href='$baseURL'>Si torneu enrera per aquest vincle perdereu les opcions de men&uacute; triades, si ho feu amb el bot&oacute; del navegador les conservareu</a></span><br><p><br></center>");
   }
   else

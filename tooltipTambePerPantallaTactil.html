@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+<!-- https://jsfiddle.net/xaAN3/
+<style>
+.more_info {
+  border-bottom: 1px dotted;
+  position: relative;
+}
+
+.more_info .title {
+    position: absolute;
+    top: 20px;
+    background: silver;
+    padding: 4px;
+    left: 0;
+    white-space: nowrap;
+}
+</style>
+<script>
+$(".more_info").click(function () {
+    var $title = $(this).find(".title");
+    if (!$title.length) {
+        $(this).append('<span class="title">' + $(this).attr("title") + '</span>');
+    } else {
+        $title.remove();
+    }
+});
+</script>
+-->
+
+<!-- https://stackoverflow.com/questions/61316795/want-to-customise-tooltip-for-mobile-view -->
+<style>
+.tooltip {
+        display: inline-block;
+        position: relative;
+        border-bottom: 2px solid #ff5733;
+        text-align: left;
+    }
+
+    .tooltip .right {
+        min-width: 200px;
+        top: 50%;
+        left: 100%;
+        margin-left: 20px;
+        transform: translate(0, -50%);
+        padding: 10px 20px;
+        color: #444444;
+        background-color: #EEEEEE;
+        font-weight: normal;
+        font-size: 13px;
+        border-radius: 8px;
+        position: absolute;
+        z-index: 99999999;
+        box-sizing: border-box;
+        box-shadow: 0 1px 8px rgba(0, 0, 0, 0.5);
+        visibility: hidden;
+        opacity: 0;
+        transition: opacity 0.8s;
+    }
+
+    .tooltip:hover .right {
+        visibility: visible;
+        opacity: 1;
+    }
+
+    .tooltip .right i {
+        position: absolute;
+        top: 50%;
+        right: 100%;
+        margin-top: -12px;
+        width: 12px;
+        height: 24px;
+        overflow: hidden;
+    }
+
+    .tooltip .right i::after {
+        content: &#39;
+        &#39;
+        ;
+        position: absolute;
+        width: 12px;
+        height: 12px;
+        left: 0;
+        top: 50%;
+        transform: translate(50%, -50%) rotate(-45deg);
+        background-color: #EEEEEE;
+        box-shadow: 0 1px 8px rgba(0, 0, 0, 0.5);
+    }
+
+    .tooltip .top {
+        min-width: 200px;
+        top: -20px;
+        left: 50%;
+        transform: translate(-50%, -100%);
+        padding: 10px 20px;
+        color: #444444;
+        background-color: #EEEEEE;
+        font-weight: normal;
+        font-size: 13px;
+        border-radius: 8px;
+        position: absolute;
+        z-index: 99999999;
+        box-sizing: border-box;
+        box-shadow: 0 1px 8px rgba(0, 0, 0, 0.5);
+        visibility: hidden;
+        opacity: 0;
+        transition: opacity 0.8s;
+    }
+
+    .tooltip:hover .top {
+        visibility: visible;
+        opacity: 1;
+    }
+
+    .tooltip .top i {
+        position: absolute;
+        top: 100%;
+        left: 50%;
+        margin-left: -12px;
+        width: 24px;
+        height: 12px;
+        overflow: hidden;
+    }
+
+    .tooltip .top i::after {
+        content: &#39;
+        &#39;
+        ;
+        position: absolute;
+        width: 12px;
+        height: 12px;
+        left: 50%;
+        transform: translate(-50%, -50%) rotate(45deg);
+        background-color: #EEEEEE;
+        box-shadow: 0 1px 8px rgba(0, 0, 0, 0.5);
+    }
+
+    .tooltip .bottom {
+        min-width: 200px;
+        top: 40px;
+        left: 50%;
+        transform: translate(-50%, 0);
+        padding: 10px 20px;
+        color: #444444;
+        background-color: #EEEEEE;
+        font-weight: normal;
+        font-size: 13px;
+        border-radius: 8px;
+        position: absolute;
+        z-index: 99999999;
+        box-sizing: border-box;
+        box-shadow: 0 1px 8px rgba(0, 0, 0, 0.5);
+        visibility: hidden;
+        opacity: 0;
+        transition: opacity 0.8s;
+    }
+
+    .tooltip:hover .bottom {
+        visibility: visible;
+        opacity: 1;
+    }
+
+    .tooltip .bottom i {
+        position: absolute;
+        bottom: 100%;
+        left: 50%;
+        margin-left: -12px;
+        width: 24px;
+        height: 12px;
+        overflow: hidden;
+    }
+
+    .tooltip .bottom i::after {
+        content: &#39;
+        &#39;
+        ;
+        position: absolute;
+        width: 12px;
+        height: 12px;
+        left: 50%;
+        transform: translate(-50%, 50%) rotate(45deg);
+        background-color: #EEEEEE;
+        box-shadow: 0 1px 8px rgba(0, 0, 0, 0.5);
+    }
+
+    .tooltip .left {
+        min-width: 200px;
+        top: 50%;
+        right: 100%;
+        margin-right: 20px;
+        transform: translate(0, -50%);
+        padding: 10px 20px;
+        color: #444444;
+        background-color: #EEEEEE;
+        font-weight: normal;
+        font-size: 13px;
+        border-radius: 8px;
+        position: absolute;
+        z-index: 99999999;
+        box-sizing: border-box;
+        border: 3px solid #ff5733;
+        box-shadow: 0 1px 8px rgba(0, 0, 0, 0.5);
+        visibility: hidden;
+        opacity: 0;
+        transition: opacity 0.8s;
+    }
+
+    .tooltip:hover .left {
+        visibility: visible;
+        opacity: 1;
+    }
+
+    .tooltip .left i {
+        position: absolute;
+        top: 50%;
+        left: 100%;
+        margin-top: -12px;
+        width: 12px;
+        height: 24px;
+        overflow: hidden;
+    }
+
+    .tooltip .left i::after {
+        content: '';
+        position: absolute;
+        width: 12px;
+        height: 12px;
+        left: 0;
+        top: 50%;
+        transform: translate(-50%, -50%) rotate(-45deg);
+        background-color: #EEEEEE;
+        border: 3px solid #ff5733;
+        box-shadow: 0 1px 8px rgba(0, 0, 0, 0.5);
+    }
+
+
+    @media(max-width: 100%) {
+        body {
+            margin-top: 10%;
+        }
+        .tooltip>.toolTipWrap i:after {
+          content: '';
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    left: 0;
+    top: 50%;
+    transform: translate(-50%, -50%) rotate(-45deg);
+    border: 3px solid #ff5733;
+        }
+        .tooltip>.toolTipWrap {
+            left: 50% !important;
+            top: auto !important;
+            transform: translateX(-50%);
+            right: auto !important;
+            bottom: 150% !important;
+        }
+
+        .tooltip>.toolTipWrap i {
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-top: 0px;
+            width: 12px;
+            height: 24px;
+            overflow: hidden;
+            transform: rotate(90deg) translateX(-50%);
+            background: transparent;
+        }
+    }
+</style>
+</head>
+<body>
+<center>
+<br><br>
+<br><br>
+<br><br>
+<br><br>
+<br><br>
+<br><br>
+<br><br>
+<br><br>
+
+<!-- https://jsfiddle.net/xaAN3/
+<p>An <span class="more_info" title="also called an underscore">underline</span> character is used here</p>
+<br><br>
+<p>Un <span class="more_info" title="en podriem dir emfatitzat">subratllat</span> t&eacute; un car&agrave;cter ressaltat</p>
+-->
+
+<!-- https://stackoverflow.com/questions/61316795/want-to-customise-tooltip-for-mobile-view -->
+<!--    <span class="btn btn-primary tooltip">Bufarola a sota -->
+    <span class="tooltip">Bufarola a sota
+        <span class="bottom toolTipWrap">
+            <h3>Lorem Ipsum</h3>
+            <p>Dolor sit amet, consectetur adipiscing elit.ofugugvufg
+                efuwgefwgcvurwef
+		wfierhfvierhvoerihvr</p><br>
+		<p>+0
+	        +1
+	        +2
+		+3</p><p>
+	        +4
+	        +5
+	        +6
+	        +7
+	        +8
+	        +9</p>
+            <i>Em veus?</i>
+        </span>
+    </span>&nbsp;&nbsp;&nbsp;&nbsp;
+
+    <span class="btn btn-primary tooltip">Bufarola a sobre
+        <span class="top toolTipWrap">
+            <h3>Lorem Ipsum</h3>
+            <p>Dolor sit amet, consectetur adipiscing elit.</p>
+            <i></i>
+        </span>
+    </span>&nbsp;&nbsp;&nbsp;&nbsp;
+
+    <span class="btn btn-primary tooltip">Bufarola a l'esquerra
+        <span class="left toolTipWrap">
+            <h3>Lorem Ipsum</h3>
+            <p>Dolor sit amet, consectetur adipiscing elit.</p>
+            <i></i>
+        </span>
+    </span>&nbsp;&nbsp;&nbsp;&nbsp;
+
+    <span class="btn btn-primary tooltip">Bufarola a la dreta
+        <div class="right toolTipWrap">
+            <h3>Lorem Ipsum</h3>
+            <p><img alt="The Bangle Sellers Poem's Workbook Solution" border="0" data-original-height="427" data-original-width="760" src="https://newsroom.ibm.com/image/security%2Bthumbnail%2B400x400.png"> consectetur
+                efrnvlkfnv</p>
+            <i></i>
+        </div>
+    </span>
+
+</center>
+</body>
+</html>
+

@@ -307,7 +307,100 @@ M10
      7up_pliegOMaker_UBESH 6 get  %% (tmp/) l'html aquí dins s'esborrarà la propera execució de CaLi2CoPi
      dup length dup /araVa exch def 2 index length add string dup 3 -1 roll 0 exch putinterval dup araVa 4 -1 roll putinterval
      (w) file dup /HTMLaEscriure exch def
-     (<pre style='color:#999999;font-family:monospace;font-size:24px'>\n) writestring
+     (<!DOCTYPE html><html lang="ca"><head>
+<style>
+.tooltip {
+        display: inline-block;
+        position: relative;
+        border-bottom: 2px solid #ff5733;
+        text-align: left;
+    }
+
+    .tooltip .top {
+        min-width: 200px;
+        top: -20px;
+        left: 50%;
+        transform: translate(-50%, -100%);
+        padding: 10px 20px;
+        color: #444444;
+        background-color: #EEEEEE;
+        font-weight: normal;
+        font-size: 13px;
+        border-radius: 8px;
+        position: absolute;
+        z-index: 99999999;
+        box-sizing: border-box;
+        border: 3px solid #ff5733;
+        box-shadow: 0 1px 8px rgba(0, 0, 0, 0.5);
+        visibility: hidden;
+        opacity: 0;
+        transition: opacity 0.8s;
+    }
+
+    .tooltip:hover .top {
+        visibility: visible;
+        opacity: 1;
+    }
+
+    .tooltip .top i {
+        position: absolute;
+        top: 100%;
+        left: 50%;
+        margin-left: -12px;
+        width: 24px;
+        height: 12px;
+        overflow: hidden;
+    }
+
+    .tooltip .top i::after {
+        content: &#39;
+        &#39;
+        ;
+        position: absolute;
+        width: 12px;
+        height: 12px;
+        left: 50%;
+        transform: translate(-50%, -50%) rotate(45deg);
+        background-color: #EEEEEE;
+        box-shadow: 0 1px 8px rgba(0, 0, 0, 0.5);
+    }
+
+    @media(max-width: 100%) {
+        body {
+            margin-top: 10%;
+        }
+        .tooltip>.toolTipWrap i:after {
+          content: '';
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    left: 0;
+    top: 50%;
+    transform: translate(-50%, -50%) rotate(-45deg);
+    border: 3px solid #ff5733;
+        }
+        .tooltip>.toolTipWrap {
+            left: 50% !important;
+            top: auto !important;
+            transform: translateX(-50%);
+            right: auto !important;
+            bottom: 150% !important;
+        }
+
+        .tooltip>.toolTipWrap i {
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-top: 0px;
+            width: 12px;
+            height: 24px;
+            overflow: hidden;
+            transform: rotate(90deg) translateX(-50%);
+            background: transparent;
+        }
+    }
+</style>
+     </head><body><pre style='color:#999999;font-family:monospace;font-size:24px'>\n) writestring
     }
     {
      pstack ERRORlaVARIABLEnumericaUNICAnoSHAcreat!
@@ -1534,7 +1627,26 @@ NpliegOS aHTML{HTMLaEscriure exch writestring}{print flush}ifelse
 (\n\n) aHTML{HTMLaEscriure exch writestring}{print flush}ifelse
 
 %%(ANALITZEM i CORREGIM LA MATRIU)pstack quit
-%% potser convindrà farcir un HTML quan construïm la interfície web
+
+%% definicions pel farcit d'HTML del packedarrays del mapa d'imposició amb les opcions ampliades amb bufaroles (tooltips) tàctils
+/oLcap (<span class="tooltip" style="color:#F26522;cursor:pointer">) def
+%% índex 0 d'ordre de lectura
+/oL0cua (<span class="top toolTipWrap"><h3>Ordre de lectura segons l'enquadernat</h3><p>Aquest primer d&iacute;git del paquet <strong>no s'ha de modificar mai</strong></p></span></span> ) def
+%% índex 1 pel nom del PDF secundari
+/oL1cua (<span class="top toolTipWrap"><h3>PDF secundari a carregar al servidor</h3><p>Copieu dins el <strong>()</strong> el nom del PDF</p></span></span> ) def
+%% índex 2
+/oL2cua (<span class="top toolTipWrap"><h3>P&agrave;gina del PDF principal o secundari a imposar</h3><p>Si escriviu <strong>null</strong> la p&agrave;gina quedar&agrave; en blanc</p></span></span> ) def
+%% índex 3 pàgina per ordre de lectura on imposarem
+/oL3cua (<span class="top toolTipWrap"><h3>P&agrave;gina, per ordre de lectura, on imposarem</h3><p>Si aquest d&iacute;git no &eacute;s el mateix que el primer d&iacute;git del paquet,&#10;la p&agrave;gina a imposar quedar&agrave; repartida entre totes dues</p></span></span> [ ) def
+%% índex 4 comportament amb els retalladors
+/oL4cua (<span class="top toolTipWrap"><h3>Comportament amb els retalladors de p&agrave;gina</h3><p>Si escrivim <strong>true</strong> respectar&agrave; l'&agrave;rea del retallador /CropBox, si existeix&#10;Si escrivim <strong>false</strong> ignorar&agrave; el /CropBox, si existeix, i treballar&agrave; amb el /MediaBox</p></span></span> ) def
+%% índex 5 de com ens adaptem a la pàgina del llançat
+/oL5cua (<span class="top toolTipWrap"><h3>Comportament de com ens adaptem a la p&agrave;gina del llan&ccedil;at</h3><p>Si escrivim <strong>true</strong> la p&agrave;gina a imposar s'adaptar&agrave; a l'orientaci&oacute; de la p&agrave;gina del llan&ccedil;at&#10;Si escrivim <strong>false</strong> la p&agrave;gina a imposar s'adaptar&agrave; a l'orientaci&oacute; segons el seu /Rotate&#10;Si escrivim <strong>null</strong> la p&agrave;gina a imposar s'adaptar&agrave; a l'orientaci&oacute; segons el seu /MediaBox</p></span></span> ) def
+%% índex 6 afegim una rotació
+/oL6cua (<span class="top toolTipWrap"><h3>Comportament per afegir rotacions</h3><p>Valor de rotaci&oacute; extra, en salts de 90 graus&#10;Els valors positius giren en el sentit de les agulles del rellotge&#10;Si ho deixem a <strong>0</strong> l'orientaci&oacute; de p&agrave;gina quedar&agrave; definida pels dos par&agrave;metres anteriors</p></span></span> ] ) def
+%% índex 7 afegim una rotació
+/oL7cua (<span class="top toolTipWrap"><h3>Numeraci&oacute; de p&agrave;gines</h3><p>Inicialment si <strong>()</strong> &eacute;s buida, voldr&agrave; dir que no hem activat la numeraci&oacute;&#10;Si hem activat la numeraci&oacute;, inicialment hi haur&agrave; el d&iacute;git corresponent a l'ordre de lectura&#10;Si hem activat la numeraci&oacute; i no volem numerar una p&agrave;gina, ho deixarem buit <strong>()</strong>&#10;&Ograve;viament podem alterar el contingut del numerador escrivint el qu&egrave; ens convingui</p></span></span> }) def
+
 
 %% només desencartem si assagem?
 M10
@@ -1609,91 +1721,801 @@ M10
  ] M2 get /ATmi exch def
 
  [  %% rutines d'escriptura i tabulació pel mapa d'imposició (mateixa tabulació equival a pàgines que poden treballar en doble)
-  {  %% 0 treiem per pantalla el mapa d'imposició 8+1 tipus un tall al mig sense desbarbar (Tarde Handbook)
+  {  %% 0 treiem per pantalla o html el mapa d'imposició 8+1 llibret d'un tall al mig sense desbarbar (Tarde Handbook)
    aHTML
    {
-    HTMLaEscriure (</pre><span style="font-family:Roboto;color:#ff0000;font-size:38px;font-weight:Regular" title="El text vermell &eacute;s el mapa d'imposici&oacute; que podeu copiar al camp per generar el PDF i, si s'escau, acabar-lo d'ajustar editant el seu contingut.\n\nEl tabulat indica quines p&agrave;gines s'aparellen en doble amb el llibret obert.\n\nEls d&iacute;gits indiquen el n&uacute;mero de p&agrave;gina del PDF que imposarem, no pas l'ordre de lectura que &eacute;s el de la seq&uuml;&egrave;ncia de compaginaci&oacute;"><pre>) writestring
+    HTMLaEscriure (</pre><pre style='margin-left:20%;color:#0000ff;font-family:monospace;font-size:38px'>) writestring
    }if
 
-   ([\n) aHTML{HTMLaEscriure exch writestring}{print flush}ifelse
+   ([\n)
+   aHTML
+   {
+    HTMLaEscriure exch writestring
+   }
+   {
+    print flush
+   }ifelse
    {  %% forall
-    ( [\n) aHTML{HTMLaEscriure exch writestring}{print flush}ifelse
+    ( [\n)
+    aHTML
+    {
+     HTMLaEscriure exch writestring
+    }
+    {
+     print flush
+    }ifelse
     0 1 15
     {
      dup dup 6 le
      {
       ATmi exch get
       {
-       ( ) aHTML{HTMLaEscriure exch writestring}{print flush}ifelse
+       ( )
+       aHTML
+       {
+        HTMLaEscriure exch writestring
+       }
+       {
+        print flush
+       }ifelse
       }repeat
-      1 index exch get aHTML{HTMLaEscriure exch dup type /nulltype eq {pop (null)}{5 string cvs}ifelse writestring HTMLaEscriure (\n) writestring}{==}ifelse
+      1 index exch get
+      aHTML
+      {  %% sortida a interfície web
+       HTMLaEscriure exch dup type /nulltype eq
+       {
+        pop (null)
+       }
+       {
+        M16  %% ampliem opcions?
+        {  %% farcim el packedarray amb les opcions ampliades per cada pàgina
+         /pArray ({ ) def  %% tot el packedarray quedarà farcit en aquesta variable
+         5 string cvs /oL exch def  %% l'ordre de lectura (i teòrica pàgina de PDF a imposar) a string
+
+         %% aquí va l'etiquetat de la bufarola per a cada dada del packedarray
+         %% dada d'índex 0 ordre de lectura
+         pArray length dup /araVa exch def oLcap length add string dup 0 pArray putinterval dup araVa oLcap putinterval
+	 dup length dup /araVa exch def oL length add string dup 3 -1 roll 0 exch putinterval dup araVa oL putinterval
+         dup length dup /araVa exch def oL0cua length add string dup 3 -1 roll 0 exch putinterval dup araVa oL0cua putinterval
+
+         %% dada d'índex 1 pdf secundari
+	 dup length dup /araVa exch def oLcap length add string dup 3 -1 roll 0 exch putinterval dup araVa oLcap putinterval
+         dup length dup /araVa exch def 2 add string dup 3 -1 roll 0 exch putinterval dup araVa (\(\)) putinterval
+	 dup length dup /araVa exch def oL1cua length add string dup 3 -1 roll 0 exch putinterval dup araVa oL1cua putinterval
+       
+         %% dada d'índex 2 pàgina del PDF principal o secundari a imposar
+	 dup length dup /araVa exch def oLcap length add string dup 3 -1 roll 0 exch putinterval dup araVa oLcap putinterval
+	 dup length dup /araVa exch def oL length add string dup 3 -1 roll 0 exch putinterval dup araVa oL putinterval
+	 dup length dup /araVa exch def oL2cua length add string dup 3 -1 roll 0 exch putinterval dup araVa oL2cua putinterval
+
+         %% dada d'índex 3 pàgina per ordre de lectura on imposarem
+	 dup length dup /araVa exch def oLcap length add string dup 3 -1 roll 0 exch putinterval dup araVa oLcap putinterval
+         dup length dup /araVa exch def oL length add string dup 3 -1 roll 0 exch putinterval dup araVa oL putinterval
+	 dup length dup /araVa exch def oL3cua length add string dup 3 -1 roll 0 exch putinterval dup araVa oL3cua putinterval
+
+         %% dada d'índex 4 comportament amb els retalladors
+	 dup length dup /araVa exch def oLcap length add string dup 3 -1 roll 0 exch putinterval dup araVa oLcap putinterval
+         dup length dup /araVa exch def
+         M7  %% respectem els retalladors?
+         {
+          (true) dup /ema7 exch def length add
+         }
+         {
+          (false) dup /ema7 exch def length add
+         }ifelse
+         string dup 3 -1 roll 0 exch putinterval dup araVa ema7 putinterval
+	 dup length dup /araVa exch def oL4cua length add string dup 3 -1 roll 0 exch putinterval dup araVa oL4cua putinterval
+
+         %% dada d'índex 5 de com ens adaptem a la pàgina del llançat
+	 dup length dup /araVa exch def oLcap length add string dup 3 -1 roll 0 exch putinterval dup araVa oLcap putinterval
+         dup length dup /araVa exch def
+         M14 true eq  %% com ens comportem dins el llançat?
+         {
+          (true) dup /ema14 exch def length add
+         }
+         {
+          M14 null eq
+          {
+           (null) dup /ema14 exch def length add
+	  }
+	  {
+           (false) dup /ema14 exch def length add
+	  }ifelse
+         }ifelse
+         string dup 3 -1 roll 0 exch putinterval dup araVa ema14 putinterval
+	 dup length dup /araVa exch def oL5cua length add string dup 3 -1 roll 0 exch putinterval dup araVa oL5cua putinterval
+        
+         %% dada d'índex 6 rotació afegida
+	 dup length dup /araVa exch def oLcap length add string dup 3 -1 roll 0 exch putinterval dup araVa oLcap putinterval
+         dup length dup /araVa exch def 1 add string dup 3 -1 roll 0 exch putinterval dup araVa (0) putinterval
+	 dup length dup /araVa exch def oL6cua length add string dup 3 -1 roll 0 exch putinterval dup araVa oL6cua putinterval
+
+         %% dada d'índex 7 numeració de pàgines
+	 dup length dup /araVa exch def oLcap length add string dup 3 -1 roll 0 exch putinterval dup araVa oLcap putinterval
+	 dup length dup /araVa exch def
+         M15 0 get  %% numerem?
+         {
+ 	  (\() dup length dup /araVa2 exch def oL length add string dup 3 -1 roll 0 exch putinterval dup araVa2 oL putinterval
+          dup length dup /araVa2 exch def 1 add string dup 3 -1 roll 0 exch putinterval dup araVa2 (\)) putinterval
+	  dup /ema15 exch def length add
+         }
+         {
+	  (\(\)) dup /ema15 exch def length add
+         }ifelse
+         string dup 3 -1 roll 0 exch putinterval dup araVa ema15 putinterval
+	 dup length dup /araVa exch def oL7cua length add string dup 3 -1 roll 0 exch putinterval dup araVa oL7cua putinterval
+        }
+        {  %% sense ampliar opcions
+         5 string cvs
+        }ifelse
+       }ifelse
+       writestring HTMLaEscriure (\n) writestring
+      }
+      {  %% sortida al prompt
+       M16  %% ampliem opcions?
+       {  %% farcim el packedarray amb les opcions ampliades per cada pàgina
+        /pArray ({ ) def
+        5 string cvs /oL exch def  %% l'ordre de lectura (i teòrica pàgina de PDF a imposar) a string
+        pArray length dup /araVa exch def oL length add string dup 0 pArray putinterval dup araVa oL putinterval
+        dup length dup /araVa exch def 1 add string dup 3 -1 roll 0 exch putinterval dup araVa ( )putinterval
+        dup length dup /araVa exch def 4 add string dup 3 -1 roll 0 exch putinterval dup araVa (\(\) ) putinterval
+        dup length dup /araVa exch def oL length add string dup 3 -1 roll 0 exch putinterval dup araVa oL putinterval
+        dup length dup /araVa exch def 1 add string dup 3 -1 roll 0 exch putinterval dup araVa ( )putinterval
+        dup length dup /araVa exch def oL length add string dup 3 -1 roll 0 exch putinterval dup araVa oL putinterval
+        dup length dup /araVa exch def
+        M7  %% respectem els retalladors?
+        {
+         ( [ true ) dup /ema7 exch def length add
+        }
+        {
+         ( [ false ) dup /ema7 exch def length add
+        }ifelse
+        string dup 3 -1 roll 0 exch putinterval dup araVa ema7 putinterval
+        dup length dup /araVa exch def
+        M14 true eq  %% com ens comportem dins el llançat?
+        {
+         (true 0 ] ) dup /ema14 exch def length add
+        }
+        {
+         M14 null eq
+         {
+          (null 0 ] ) dup /ema14 exch def length add
+	 }
+	 {
+          (false 0 ] ) dup /ema14 exch def length add
+	 }ifelse
+        }ifelse
+        string dup 3 -1 roll 0 exch putinterval dup araVa ema14 putinterval
+        dup length dup /araVa exch def
+        M15 0 get  %% numerem?
+        {
+         (\() dup length dup /araVa2 exch def oL length add string dup 3 -1 roll 0 exch putinterval dup araVa2 oL putinterval
+         dup length dup /araVa2 exch def 1 add string dup 3 -1 roll 0 exch putinterval dup araVa2 (\)) putinterval
+	 dup /ema15 exch def length add
+        }
+        {
+         (\(\)) dup /ema15 exch def length add
+        }ifelse
+        string dup 3 -1 roll 0 exch putinterval dup araVa ema15 putinterval
+        dup length dup /araVa exch def 2 add string dup 3 -1 roll 0 exch putinterval dup araVa ( })putinterval
+
+        cvx exec ==
+       }
+       {  %% sense ampliar opcions
+        ==
+       }ifelse
+      }ifelse
      }
-     {
-      2 index exch get (  ) aHTML{HTMLaEscriure exch writestring}{print flush}ifelse
-      aHTML{HTMLaEscriure exch dup type /nulltype eq {pop (null)}{5 string cvs}ifelse writestring HTMLaEscriure (\n) writestring}{==}ifelse
+     {  %% revers: a partir de l'index 7 endavant
+      2 index exch get
+      (  )
+      aHTML
+      {
+       HTMLaEscriure exch writestring
+      }
+      {
+       print flush
+      }ifelse
+      aHTML
+      {  %% sortida a interfície web
+       HTMLaEscriure exch dup type /nulltype eq
+       {
+        pop (null)
+       }
+       {
+        M16  %% ampliem opcions?
+        {  %% farcim el packedarray amb les opcions ampliades per cada pàgina
+         /pArray ({ ) def  %% tot el packedarray quedarà farcit en aquesta variable
+         5 string cvs /oL exch def  %% l'ordre de lectura (i teòrica pàgina de PDF a imposar) a string
+
+         %% aquí va l'etiquetat de la bufarola per a cada dada del packedarray
+         %% dada d'índex 0 ordre de lectura
+         pArray length dup /araVa exch def oLcap length add string dup 0 pArray putinterval dup araVa oLcap putinterval
+  	 dup length dup /araVa exch def oL length add string dup 3 -1 roll 0 exch putinterval dup araVa oL putinterval
+         dup length dup /araVa exch def oL0cua length add string dup 3 -1 roll 0 exch putinterval dup araVa oL0cua putinterval
+
+         %% dada d'índex 1 pdf secundari
+ 	 dup length dup /araVa exch def oLcap length add string dup 3 -1 roll 0 exch putinterval dup araVa oLcap putinterval
+         dup length dup /araVa exch def 2 add string dup 3 -1 roll 0 exch putinterval dup araVa (\(\)) putinterval
+	 dup length dup /araVa exch def oL1cua length add string dup 3 -1 roll 0 exch putinterval dup araVa oL1cua putinterval
+       
+         %% dada d'índex 2 pàgina del PDF principal o secundari a imposar
+	 dup length dup /araVa exch def oLcap length add string dup 3 -1 roll 0 exch putinterval dup araVa oLcap putinterval
+	 dup length dup /araVa exch def oL length add string dup 3 -1 roll 0 exch putinterval dup araVa oL putinterval
+	 dup length dup /araVa exch def oL2cua length add string dup 3 -1 roll 0 exch putinterval dup araVa oL2cua putinterval
+
+         %% dada d'índex 3 pàgina per ordre de lectura on imposarem
+	 dup length dup /araVa exch def oLcap length add string dup 3 -1 roll 0 exch putinterval dup araVa oLcap putinterval
+         dup length dup /araVa exch def oL length add string dup 3 -1 roll 0 exch putinterval dup araVa oL putinterval
+	 dup length dup /araVa exch def oL3cua length add string dup 3 -1 roll 0 exch putinterval dup araVa oL3cua putinterval
+
+         %% dada d'índex 4 comportament amb els retalladors
+	 dup length dup /araVa exch def oLcap length add string dup 3 -1 roll 0 exch putinterval dup araVa oLcap putinterval
+         dup length dup /araVa exch def
+         M7  %% respectem els retalladors?
+         {
+          (true) dup /ema7 exch def length add
+         }
+         {
+          (false) dup /ema7 exch def length add
+         }ifelse
+         string dup 3 -1 roll 0 exch putinterval dup araVa ema7 putinterval
+	 dup length dup /araVa exch def oL4cua length add string dup 3 -1 roll 0 exch putinterval dup araVa oL4cua putinterval
+
+         %% dada d'índex 5 de com ens adaptem a la pàgina del llançat
+	 dup length dup /araVa exch def oLcap length add string dup 3 -1 roll 0 exch putinterval dup araVa oLcap putinterval
+         dup length dup /araVa exch def
+         M14 true eq  %% com ens comportem dins el llançat?
+         {
+          (true) dup /ema14 exch def length add
+         }
+         {
+          M14 null eq
+          {
+           (null) dup /ema14 exch def length add
+	  }
+	  {
+           (false) dup /ema14 exch def length add
+	  }ifelse
+         }ifelse
+         string dup 3 -1 roll 0 exch putinterval dup araVa ema14 putinterval
+	 dup length dup /araVa exch def oL5cua length add string dup 3 -1 roll 0 exch putinterval dup araVa oL5cua putinterval
+        
+         %% dada d'índex 6 rotació afegida
+	 dup length dup /araVa exch def oLcap length add string dup 3 -1 roll 0 exch putinterval dup araVa oLcap putinterval
+         dup length dup /araVa exch def 1 add string dup 3 -1 roll 0 exch putinterval dup araVa (0) putinterval
+	 dup length dup /araVa exch def oL6cua length add string dup 3 -1 roll 0 exch putinterval dup araVa oL6cua putinterval
+
+         %% dada d'índex 7 numeració de pàgines
+	 dup length dup /araVa exch def oLcap length add string dup 3 -1 roll 0 exch putinterval dup araVa oLcap putinterval
+	 dup length dup /araVa exch def
+         M15 0 get  %% numerem?
+         {
+ 	  (\() dup length dup /araVa2 exch def oL length add string dup 3 -1 roll 0 exch putinterval dup araVa2 oL putinterval
+          dup length dup /araVa2 exch def 1 add string dup 3 -1 roll 0 exch putinterval dup araVa2 (\)) putinterval
+	  dup /ema15 exch def length add
+         }
+         {
+	  (\(\)) dup /ema15 exch def length add
+         }ifelse
+         string dup 3 -1 roll 0 exch putinterval dup araVa ema15 putinterval
+	 dup length dup /araVa exch def oL7cua length add string dup 3 -1 roll 0 exch putinterval dup araVa oL7cua putinterval
+        }
+        {  %% sense ampliar opcions
+	 5 string cvs
+	}ifelse
+       }ifelse
+       writestring HTMLaEscriure (\n) writestring
+      }
+      {  %% sortida al prompt
+       dup type /nulltype eq
+       {
+        pop null ==
+       }
+       {
+        M16  %% ampliem opcions?
+        {  %% farcim el packedarray amb les opcions ampliades per cada pàgina
+         /pArray ({ ) def
+         5 string cvs /oL exch def  %% l'ordre de lectura (i teòrica pàgina de PDF a imposar) a string
+         pArray length dup /araVa exch def oL length add string dup 0 pArray putinterval dup araVa oL putinterval
+         dup length dup /araVa exch def 1 add string dup 3 -1 roll 0 exch putinterval dup araVa ( )putinterval
+         dup length dup /araVa exch def 4 add string dup 3 -1 roll 0 exch putinterval dup araVa (\(\) ) putinterval
+         dup length dup /araVa exch def oL length add string dup 3 -1 roll 0 exch putinterval dup araVa oL putinterval
+         dup length dup /araVa exch def 1 add string dup 3 -1 roll 0 exch putinterval dup araVa ( )putinterval
+         dup length dup /araVa exch def oL length add string dup 3 -1 roll 0 exch putinterval dup araVa oL putinterval
+         dup length dup /araVa exch def
+         M7  %% respectem els retalladors?
+         {
+          ( [ true ) dup /ema7 exch def length add
+         }
+         {
+          ( [ false ) dup /ema7 exch def length add
+         }ifelse
+         string dup 3 -1 roll 0 exch putinterval dup araVa ema7 putinterval
+         dup length dup /araVa exch def
+         M14 true eq  %% com ens comportem dins el llançat?
+         {
+          (true 0 ] ) dup /ema14 exch def length add
+         }
+         {
+          M14 null eq
+          {
+           (null 0 ] ) dup /ema14 exch def length add
+          }
+	  {
+           (false 0 ] ) dup /ema14 exch def length add
+	  }ifelse
+         }ifelse
+         string dup 3 -1 roll 0 exch putinterval dup araVa ema14 putinterval
+         dup length dup /araVa exch def
+         M15 0 get  %% numerem?
+         {
+          (\() dup length dup /araVa2 exch def oL length add string dup 3 -1 roll 0 exch putinterval dup araVa2 oL putinterval
+          dup length dup /araVa2 exch def 1 add string dup 3 -1 roll 0 exch putinterval dup araVa2 (\)) putinterval
+	  dup /ema15 exch def length add
+         }
+         {
+          (\(\)) dup /ema15 exch def length add
+         }ifelse
+         string dup 3 -1 roll 0 exch putinterval dup araVa ema15 putinterval
+         dup length dup /araVa exch def 2 add string dup 3 -1 roll 0 exch putinterval dup araVa ( })putinterval
+
+         cvx exec ==
+        }
+        {  %% sense ampliar opcions
+         ==
+        }ifelse
+       }ifelse
+      }ifelse
+
       7 eq
-      {  %% l'eliminem perquè NO té cap sentit marcar l'anvers/revers doncs no es correspon al plec real del llibret
-       (% - - - anvers/revers - - - \n) aHTML{HTMLaEscriure exch writestring}{print flush}ifelse
+      {  %% no l'eliminem perquè aquí té sentit marcar l'anvers/revers
+       (% - - - anvers/revers - - - \n)
+       aHTML
+       {
+        HTMLaEscriure exch writestring
+       }
+       {
+        print flush
+       }ifelse
       }if
      }ifelse
     }for
-    ( ]\n) aHTML{HTMLaEscriure exch writestring}{print flush}ifelse
+    ( ]\n)
+    aHTML
+    {
+     HTMLaEscriure exch writestring
+    }
+    {
+     print flush
+    }ifelse
    }forall
-   (]\n) aHTML{HTMLaEscriure exch writestring HTMLaEscriure dup (</span></pre>) writestring closefile}{print flush}ifelse
+   (]\n)
+   aHTML
+   {
+    HTMLaEscriure exch writestring HTMLaEscriure dup (</span></pre></body></html>) writestring closefile
+   }
+   {
+    print flush
+   }ifelse
    pop
   }
 
-  {  %% 1 treiem per pantalla el mapa d'imposició tipus cara i dors 1+1
+  {  %% 1 treiem per pantalla o html el mapa d'imposició tipus cara i dors 1+1
    aHTML
    {
-    HTMLaEscriure (</pre><span style="font-family:Roboto;color:#ff0000;font-size:38px;font-weight:Regular" title="El text vermell &eacute;s el mapa d'imposici&oacute; que podeu copiar al camp per generar el PDF i, si s'escau, acabar-lo d'ajustar editant el seu contingut.\n\nEl tabulat indica quines p&agrave;gines s'aparellen en doble amb el llibret obert.\n\nEls d&iacute;gits indiquen el n&uacute;mero de p&agrave;gina del PDF que imposarem, no pas l'ordre de lectura que &eacute;s el de la seq&uuml;&egrave;ncia de compaginaci&oacute;"><pre>) writestring
+    HTMLaEscriure (</pre><pre style='margin-left:20%;color:#0000ff;font-family:monospace;font-size:38px'>) writestring
    }if
 
-   ([\n) aHTML{HTMLaEscriure exch writestring}{print flush}ifelse
+   ([\n)
+   aHTML
+   {
+    HTMLaEscriure exch writestring
+   }
+   {
+    print flush
+   }ifelse
    {  %% forall
-    ( [\n) aHTML{HTMLaEscriure exch writestring}{print flush}ifelse
+    ( [\n)
+    aHTML
+    {
+     HTMLaEscriure exch writestring
+    }
+    {
+     print flush
+    }ifelse
     0 1 1
     {
      dup dup
      ATmi exch get
      {
-      ( ) aHTML{HTMLaEscriure exch writestring}{print flush}ifelse
+      ( )
+      aHTML
+      {
+       HTMLaEscriure exch writestring
+      }
+      {
+       print flush
+      }ifelse
      }repeat
-     2 index exch get aHTML{HTMLaEscriure exch dup type /nulltype eq {pop (null)}{5 string cvs}ifelse writestring HTMLaEscriure (\n) writestring}{==}ifelse
+     2 index exch get
+
+     aHTML
+     {  %% sortida interfície web
+      HTMLaEscriure exch dup type /nulltype eq
+      {
+       pop (null)
+      }
+      {
+       M16  %% ampliem opcions?
+       {  %% farcim el packedarray amb les opcions ampliades per cada pàgina
+        /pArray ({ ) def  %% tot el packedarray quedarà farcit en aquesta variable
+        5 string cvs /oL exch def  %% l'ordre de lectura (i teòrica pàgina de PDF a imposar) a string
+
+        %% aquí va l'etiquetat de la bufarola per a cada dada del packedarray
+        %% dada d'índex 0 ordre de lectura
+        pArray length dup /araVa exch def oLcap length add string dup 0 pArray putinterval dup araVa oLcap putinterval
+	dup length dup /araVa exch def oL length add string dup 3 -1 roll 0 exch putinterval dup araVa oL putinterval
+        dup length dup /araVa exch def oL0cua length add string dup 3 -1 roll 0 exch putinterval dup araVa oL0cua putinterval
+
+        %% dada d'índex 1 pdf secundari
+	dup length dup /araVa exch def oLcap length add string dup 3 -1 roll 0 exch putinterval dup araVa oLcap putinterval
+        dup length dup /araVa exch def 2 add string dup 3 -1 roll 0 exch putinterval dup araVa (\(\)) putinterval
+	dup length dup /araVa exch def oL1cua length add string dup 3 -1 roll 0 exch putinterval dup araVa oL1cua putinterval
+       
+        %% dada d'índex 2 pàgina del PDF principal o secundari a imposar
+	dup length dup /araVa exch def oLcap length add string dup 3 -1 roll 0 exch putinterval dup araVa oLcap putinterval
+	dup length dup /araVa exch def oL length add string dup 3 -1 roll 0 exch putinterval dup araVa oL putinterval
+	dup length dup /araVa exch def oL2cua length add string dup 3 -1 roll 0 exch putinterval dup araVa oL2cua putinterval
+
+        %% dada d'índex 3 pàgina per ordre de lectura on imposarem
+	dup length dup /araVa exch def oLcap length add string dup 3 -1 roll 0 exch putinterval dup araVa oLcap putinterval
+        dup length dup /araVa exch def oL length add string dup 3 -1 roll 0 exch putinterval dup araVa oL putinterval
+	dup length dup /araVa exch def oL3cua length add string dup 3 -1 roll 0 exch putinterval dup araVa oL3cua putinterval
+
+        %% dada d'índex 4 comportament amb els retalladors
+	dup length dup /araVa exch def oLcap length add string dup 3 -1 roll 0 exch putinterval dup araVa oLcap putinterval
+        dup length dup /araVa exch def
+        M7  %% respectem els retalladors?
+        {
+         (true) dup /ema7 exch def length add
+        }
+        {
+         (false) dup /ema7 exch def length add
+        }ifelse
+        string dup 3 -1 roll 0 exch putinterval dup araVa ema7 putinterval
+	dup length dup /araVa exch def oL4cua length add string dup 3 -1 roll 0 exch putinterval dup araVa oL4cua putinterval
+
+        %% dada d'índex 5 de com ens adaptem a la pàgina del llançat
+	dup length dup /araVa exch def oLcap length add string dup 3 -1 roll 0 exch putinterval dup araVa oLcap putinterval
+        dup length dup /araVa exch def
+        M14 true eq  %% com ens comportem dins el llançat?
+        {
+         (true) dup /ema14 exch def length add
+        }
+        {
+         M14 null eq
+         {
+          (null) dup /ema14 exch def length add
+	 }
+	 {
+          (false) dup /ema14 exch def length add
+	 }ifelse
+        }ifelse
+        string dup 3 -1 roll 0 exch putinterval dup araVa ema14 putinterval
+	dup length dup /araVa exch def oL5cua length add string dup 3 -1 roll 0 exch putinterval dup araVa oL5cua putinterval
+        
+        %% dada d'índex 6 rotació afegida
+	dup length dup /araVa exch def oLcap length add string dup 3 -1 roll 0 exch putinterval dup araVa oLcap putinterval
+        dup length dup /araVa exch def 1 add string dup 3 -1 roll 0 exch putinterval dup araVa (0) putinterval
+	dup length dup /araVa exch def oL6cua length add string dup 3 -1 roll 0 exch putinterval dup araVa oL6cua putinterval
+
+        %% dada d'índex 7 numeració de pàgines
+	dup length dup /araVa exch def oLcap length add string dup 3 -1 roll 0 exch putinterval dup araVa oLcap putinterval
+	dup length dup /araVa exch def
+        M15 0 get  %% numerem?
+        {
+ 	 (\() dup length dup /araVa2 exch def oL length add string dup 3 -1 roll 0 exch putinterval dup araVa2 oL putinterval
+         dup length dup /araVa2 exch def 1 add string dup 3 -1 roll 0 exch putinterval dup araVa2 (\)) putinterval
+	 dup /ema15 exch def length add
+        }
+        {
+	 (\(\)) dup /ema15 exch def length add
+        }ifelse
+        string dup 3 -1 roll 0 exch putinterval dup araVa ema15 putinterval
+	dup length dup /araVa exch def oL7cua length add string dup 3 -1 roll 0 exch putinterval dup araVa oL7cua putinterval
+       }
+       {  %% sense ampliar opcions
+        5 string cvs
+       }ifelse
+      }ifelse
+      writestring HTMLaEscriure (\n) writestring
+     }
+     {  %% sortida al prompt
+      M16  %% ampliem opcions?
+      {  %% farcim el packedarray amb les opcions ampliades per cada pàgina
+       /pArray ({ ) def
+       5 string cvs /oL exch def  %% l'ordre de lectura (i teòrica pàgina de PDF a imposar) a string
+       pArray length dup /araVa exch def oL length add string dup 0 pArray putinterval dup araVa oL putinterval
+       dup length dup /araVa exch def 1 add string dup 3 -1 roll 0 exch putinterval dup araVa ( )putinterval
+       dup length dup /araVa exch def 4 add string dup 3 -1 roll 0 exch putinterval dup araVa (\(\) ) putinterval
+       dup length dup /araVa exch def oL length add string dup 3 -1 roll 0 exch putinterval dup araVa oL putinterval
+       dup length dup /araVa exch def 1 add string dup 3 -1 roll 0 exch putinterval dup araVa ( )putinterval
+       dup length dup /araVa exch def oL length add string dup 3 -1 roll 0 exch putinterval dup araVa oL putinterval
+       dup length dup /araVa exch def
+       M7  %% respectem els retalladors?
+       {
+        ( [ true ) dup /ema7 exch def length add
+       }
+       {
+        ( [ false ) dup /ema7 exch def length add
+       }ifelse
+       string dup 3 -1 roll 0 exch putinterval dup araVa ema7 putinterval
+       dup length dup /araVa exch def
+       M14 true eq  %% com ens comportem dins el llançat?
+       {
+        (true 0 ] ) dup /ema14 exch def length add
+       }
+       {
+	M14 null eq
+	{
+         (null 0 ] ) dup /ema14 exch def length add
+	}
+	{
+         (false 0 ] ) dup /ema14 exch def length add
+	}ifelse
+       }ifelse
+       string dup 3 -1 roll 0 exch putinterval dup araVa ema14 putinterval
+       dup length dup /araVa exch def
+       M15 0 get  %% numerem?
+       {
+	(\() dup length dup /araVa2 exch def oL length add string dup 3 -1 roll 0 exch putinterval dup araVa2 oL putinterval
+        dup length dup /araVa2 exch def 1 add string dup 3 -1 roll 0 exch putinterval dup araVa2 (\)) putinterval
+	dup /ema15 exch def length add
+       }
+       {
+	(\(\)) dup /ema15 exch def length add
+       }ifelse
+       string dup 3 -1 roll 0 exch putinterval dup araVa ema15 putinterval
+       dup length dup /araVa exch def 2 add string dup 3 -1 roll 0 exch putinterval dup araVa ( })putinterval
+
+       cvx exec ==
+      }
+      {  %% sense ampliar opcions
+       ==
+      }ifelse
+     }ifelse
+
      0 eq
-     {  %% l'eliminem perquè NO té cap sentit marcar l'anvers/revers doncs no es correspon al plec real del llibret
-      (% - - - anvers/revers - - - \n) aHTML{HTMLaEscriure exch writestring}{print flush}ifelse
+     {  %% no l'eliminem perquè aquí té sentit marcar l'anvers/revers
+      (% - - - anvers/revers - - - \n)
+      aHTML
+      {
+       HTMLaEscriure exch writestring
+      }
+      {
+       print flush
+      }ifelse
      }if
     }for
-    ( ]\n) aHTML{HTMLaEscriure exch writestring}{print flush}ifelse
+    ( ]\n)
+    aHTML
+    {
+     HTMLaEscriure exch writestring
+    }
+    {
+     print flush
+    }ifelse
     pop
    }forall
-   (]\n) aHTML{HTMLaEscriure exch writestring HTMLaEscriure dup (</span></pre>) writestring closefile}{print flush}ifelse
-  }
-
-  {  %% 2 treiem per pantalla el mapa d'imposició tipus llibret 2+2
+   (]\n)
    aHTML
    {
-    HTMLaEscriure (</pre><span style="font-family:Roboto;color:#ff0000;font-size:38px;font-weight:Regular" title="El text vermell &eacute;s el mapa d'imposici&oacute; que podeu copiar al camp per generar el PDF i, si s'escau, acabar-lo d'ajustar editant el seu contingut.\n\nEl tabulat indica quines p&agrave;gines s'aparellen en doble amb el llibret obert.\n\nEls d&iacute;gits indiquen el n&uacute;mero de p&agrave;gina del PDF que imposarem, no pas l'ordre de lectura que &eacute;s el de la seq&uuml;&egrave;ncia de compaginaci&oacute;"><pre>) writestring
+    HTMLaEscriure exch writestring HTMLaEscriure dup (</span></pre></body></html>) writestring closefile
+   }
+   {
+    print flush
+   }ifelse
+  }
+
+  {  %% 2 treiem per pantalla o html el mapa d'imposició tipus llibret 2+2
+   aHTML
+   {
+    HTMLaEscriure (</pre><pre style='margin-left:20%;color:#0000ff;font-family:monospace;font-size:38px'>) writestring
    }if
 
-   ([\n) aHTML{HTMLaEscriure exch writestring}{print flush}ifelse
+   ([\n)
+   aHTML
+   {
+    HTMLaEscriure exch writestring
+   }
+   {
+    print flush
+   }ifelse
    {  %% forall
-    ( [\n) aHTML{HTMLaEscriure exch writestring}{print flush}ifelse
+    ( [\n)
+    aHTML
+    {
+     HTMLaEscriure exch writestring
+    }
+    {
+     print flush
+    }ifelse
     0 1 3
     {
      dup dup
      ATmi exch get
      {
-      ( ) aHTML{HTMLaEscriure exch writestring}{print flush}ifelse
+      ( )
+      aHTML
+      {
+       HTMLaEscriure exch writestring
+      }
+      {
+       print flush
+      }ifelse
      }repeat
-     2 index exch get aHTML{HTMLaEscriure exch dup type /nulltype eq {pop (null)}{5 string cvs}ifelse writestring HTMLaEscriure (\n) writestring}{==}ifelse
+     2 index exch get
+
+     aHTML
+     {  %% sortida interfície web
+      HTMLaEscriure exch dup type /nulltype eq
+      {
+       pop (null)
+      }
+      {
+       M16  %% ampliem opcions?
+       {  %% farcim el packedarray amb les opcions ampliades per cada pàgina
+        /pArray ({ ) def  %% tot el packedarray quedarà farcit en aquesta variable
+        5 string cvs /oL exch def  %% l'ordre de lectura (i teòrica pàgina de PDF a imposar) a string
+
+        %% aquí va l'etiquetat de la bufarola per a cada dada del packedarray
+        %% dada d'índex 0 ordre de lectura
+        pArray length dup /araVa exch def oLcap length add string dup 0 pArray putinterval dup araVa oLcap putinterval
+	dup length dup /araVa exch def oL length add string dup 3 -1 roll 0 exch putinterval dup araVa oL putinterval
+        dup length dup /araVa exch def oL0cua length add string dup 3 -1 roll 0 exch putinterval dup araVa oL0cua putinterval
+
+        %% dada d'índex 1 pdf secundari
+	dup length dup /araVa exch def oLcap length add string dup 3 -1 roll 0 exch putinterval dup araVa oLcap putinterval
+        dup length dup /araVa exch def 2 add string dup 3 -1 roll 0 exch putinterval dup araVa (\(\)) putinterval
+	dup length dup /araVa exch def oL1cua length add string dup 3 -1 roll 0 exch putinterval dup araVa oL1cua putinterval
+       
+        %% dada d'índex 2 pàgina del PDF principal o secundari a imposar
+	dup length dup /araVa exch def oLcap length add string dup 3 -1 roll 0 exch putinterval dup araVa oLcap putinterval
+	dup length dup /araVa exch def oL length add string dup 3 -1 roll 0 exch putinterval dup araVa oL putinterval
+	dup length dup /araVa exch def oL2cua length add string dup 3 -1 roll 0 exch putinterval dup araVa oL2cua putinterval
+
+        %% dada d'índex 3 pàgina per ordre de lectura on imposarem
+	dup length dup /araVa exch def oLcap length add string dup 3 -1 roll 0 exch putinterval dup araVa oLcap putinterval
+        dup length dup /araVa exch def oL length add string dup 3 -1 roll 0 exch putinterval dup araVa oL putinterval
+	dup length dup /araVa exch def oL3cua length add string dup 3 -1 roll 0 exch putinterval dup araVa oL3cua putinterval
+
+        %% dada d'índex 4 comportament amb els retalladors
+	dup length dup /araVa exch def oLcap length add string dup 3 -1 roll 0 exch putinterval dup araVa oLcap putinterval
+        dup length dup /araVa exch def
+        M7  %% respectem els retalladors?
+        {
+         (true) dup /ema7 exch def length add
+        }
+        {
+         (false) dup /ema7 exch def length add
+        }ifelse
+        string dup 3 -1 roll 0 exch putinterval dup araVa ema7 putinterval
+	dup length dup /araVa exch def oL4cua length add string dup 3 -1 roll 0 exch putinterval dup araVa oL4cua putinterval
+
+        %% dada d'índex 5 de com ens adaptem a la pàgina del llançat
+	dup length dup /araVa exch def oLcap length add string dup 3 -1 roll 0 exch putinterval dup araVa oLcap putinterval
+        dup length dup /araVa exch def
+        M14 true eq  %% com ens comportem dins el llançat?
+        {
+         (true) dup /ema14 exch def length add
+        }
+        {
+         M14 null eq
+         {
+          (null) dup /ema14 exch def length add
+	 }
+	 {
+          (false) dup /ema14 exch def length add
+	 }ifelse
+        }ifelse
+        string dup 3 -1 roll 0 exch putinterval dup araVa ema14 putinterval
+	dup length dup /araVa exch def oL5cua length add string dup 3 -1 roll 0 exch putinterval dup araVa oL5cua putinterval
+        
+        %% dada d'índex 6 rotació afegida
+	dup length dup /araVa exch def oLcap length add string dup 3 -1 roll 0 exch putinterval dup araVa oLcap putinterval
+        dup length dup /araVa exch def 1 add string dup 3 -1 roll 0 exch putinterval dup araVa (0) putinterval
+	dup length dup /araVa exch def oL6cua length add string dup 3 -1 roll 0 exch putinterval dup araVa oL6cua putinterval
+
+        %% dada d'índex 7 numeració de pàgines
+	dup length dup /araVa exch def oLcap length add string dup 3 -1 roll 0 exch putinterval dup araVa oLcap putinterval
+	dup length dup /araVa exch def
+        M15 0 get  %% numerem?
+        {
+ 	 (\() dup length dup /araVa2 exch def oL length add string dup 3 -1 roll 0 exch putinterval dup araVa2 oL putinterval
+         dup length dup /araVa2 exch def 1 add string dup 3 -1 roll 0 exch putinterval dup araVa2 (\)) putinterval
+	 dup /ema15 exch def length add
+        }
+        {
+	 (\(\)) dup /ema15 exch def length add
+        }ifelse
+        string dup 3 -1 roll 0 exch putinterval dup araVa ema15 putinterval
+	dup length dup /araVa exch def oL7cua length add string dup 3 -1 roll 0 exch putinterval dup araVa oL7cua putinterval
+       }
+       {  %% sense ampliar opcions
+        5 string cvs
+       }ifelse
+      }ifelse
+      writestring HTMLaEscriure (\n) writestring
+     }
+     {  %% sortida al prompt
+      M16  %% ampliem opcions?
+      {  %% farcim el packedarray amb les opcions ampliades per cada pàgina
+       /pArray ({ ) def
+       5 string cvs /oL exch def  %% l'ordre de lectura (i teòrica pàgina de PDF a imposar) a string
+       pArray length dup /araVa exch def oL length add string dup 0 pArray putinterval dup araVa oL putinterval
+       dup length dup /araVa exch def 1 add string dup 3 -1 roll 0 exch putinterval dup araVa ( )putinterval
+       dup length dup /araVa exch def 4 add string dup 3 -1 roll 0 exch putinterval dup araVa (\(\) ) putinterval
+       dup length dup /araVa exch def oL length add string dup 3 -1 roll 0 exch putinterval dup araVa oL putinterval
+       dup length dup /araVa exch def 1 add string dup 3 -1 roll 0 exch putinterval dup araVa ( )putinterval
+       dup length dup /araVa exch def oL length add string dup 3 -1 roll 0 exch putinterval dup araVa oL putinterval
+       dup length dup /araVa exch def
+       M7  %% respectem els retalladors?
+       {
+        ( [ true ) dup /ema7 exch def length add
+       }
+       {
+        ( [ false ) dup /ema7 exch def length add
+       }ifelse
+       string dup 3 -1 roll 0 exch putinterval dup araVa ema7 putinterval
+       dup length dup /araVa exch def
+       M14 true eq  %% com ens comportem dins el llançat?
+       {
+        (true 0 ] ) dup /ema14 exch def length add
+       }
+       {
+	M14 null eq
+	{
+         (null 0 ] ) dup /ema14 exch def length add
+	}
+	{
+         (false 0 ] ) dup /ema14 exch def length add
+	}ifelse
+       }ifelse
+       string dup 3 -1 roll 0 exch putinterval dup araVa ema14 putinterval
+       dup length dup /araVa exch def
+       M15 0 get  %% numerem?
+       {
+	(\() dup length dup /araVa2 exch def oL length add string dup 3 -1 roll 0 exch putinterval dup araVa2 oL putinterval
+        dup length dup /araVa2 exch def 1 add string dup 3 -1 roll 0 exch putinterval dup araVa2 (\)) putinterval
+	dup /ema15 exch def length add
+       }
+       {
+	(\(\)) dup /ema15 exch def length add
+       }ifelse
+       string dup 3 -1 roll 0 exch putinterval dup araVa ema15 putinterval
+       dup length dup /araVa exch def 2 add string dup 3 -1 roll 0 exch putinterval dup araVa ( })putinterval
+
+       cvx exec ==
+      }
+      {
+       ==
+      }ifelse
+     }ifelse
+
      1 eq
      {  %% l'eliminem perquè NO té cap sentit marcar l'anvers/revers doncs no es correspon al plec real del llibret
       %(% - - - anvers/revers - - - \n) aHTML{HTMLaEscriure exch writestring}{print flush}ifelse
      }if
     }for
-    ( ]\n) aHTML{HTMLaEscriure exch writestring}{print flush}ifelse
+    ( ]\n)
+    aHTML
+    {
+     HTMLaEscriure exch writestring
+    }
+    {
+     print flush
+    }ifelse
     pop
     %% invertim el tabulat de l'array ATmi per l'encartat
     M9 null ne
@@ -1710,52 +2532,242 @@ M10
      }if
     }if
    }forall
-   (]\n) aHTML{HTMLaEscriure exch writestring HTMLaEscriure dup (</span></pre>) writestring closefile}{print flush}ifelse
+   %%(]\n) aHTML{HTMLaEscriure exch writestring HTMLaEscriure dup (</span></pre>) writestring closefile}{print flush}ifelse
+   (]\n)
+   aHTML
+   {
+    HTMLaEscriure exch writestring HTMLaEscriure dup (</span></pre></body></html>) writestring closefile
+   }
+   {
+    print flush
+   }ifelse
   }
 
   null  %% 3
 
-  {  %% 4 treiem per pantalla el mapa d'imposició tipus llibret 4+4
-
+  {  %% 4 treiem per pantalla o html el mapa d'imposició tipus llibret 4+4
    aHTML
    {
-    HTMLaEscriure (</pre><span style="font-family:Roboto;color:#ff0000;font-size:38px;font-weight:Regular" title="El text vermell &eacute;s el mapa d'imposici&oacute; que podeu copiar al camp per generar el PDF i, si s'escau, acabar-lo d'ajustar editant el seu contingut.\n\nEl tabulat indica quines p&agrave;gines s'aparellen en doble amb el llibret obert.\n\nEls d&iacute;gits indiquen el n&uacute;mero de p&agrave;gina del PDF que imposarem, no pas l'ordre de lectura que &eacute;s el de la seq&uuml;&egrave;ncia de compaginaci&oacute;"><pre>) writestring
+    HTMLaEscriure (</pre><pre style='margin-left:20%;color:#0000ff;font-family:monospace;font-size:38px'>) writestring
    }if
 
-   ([\n) aHTML{HTMLaEscriure exch writestring}{print flush}ifelse
-    {  %% forall
-     ( [\n) aHTML{HTMLaEscriure exch writestring}{print flush}ifelse
-     0 1 7
+   ([\n)
+   aHTML
+   {
+    HTMLaEscriure exch writestring
+   }
+   {
+    print flush
+   }ifelse
+   {  %% forall
+    ( [\n)
+    aHTML
+    {
+     HTMLaEscriure exch writestring
+    }
+    {
+     print flush
+    }ifelse
+
+    0 1 7
+    {
+     dup dup
+     ATmi exch get
      {
-      dup dup
-      ATmi exch get
+      ( )
+      aHTML
       {
-       ( ) aHTML{HTMLaEscriure exch writestring}{print flush}ifelse
-      }repeat
-      2 index exch get aHTML{HTMLaEscriure exch dup type /nulltype eq {pop (null)}{5 string cvs}ifelse writestring HTMLaEscriure (\n) writestring}{==}ifelse
-      3 eq
-      {  %% l'eliminem perquè NO té cap sentit marcar l'anvers/revers doncs no es correspon al plec real del llibret
-       %(% - - - anvers/revers - - - \n) aHTML{HTMLaEscriure exch writestring}{print flush}ifelse
-      }if
-     }for
-     ( ]\n) aHTML{HTMLaEscriure exch writestring}{print flush}ifelse
-     pop
-     %% invertim el tabulat de l'array ATmi per l'encartat
-     M9 null ne
-     {
-      M9
+       HTMLaEscriure exch writestring
+      }
       {
-       [
-        ATmi aload pop
-        4
+       print flush
+      }ifelse
+     }repeat
+
+     2 index exch get
+     aHTML
+     {  %% sortida interfície web
+      HTMLaEscriure exch dup type /nulltype eq
+      {
+       pop (null)
+      }
+      {
+       M16  %% ampliem opcions?
+       {  %% farcim el packedarray amb les opcions ampliades per cada pàgina
+        /pArray ({ ) def  %% tot el packedarray quedarà farcit en aquesta variable
+        5 string cvs /oL exch def  %% l'ordre de lectura (i teòrica pàgina de PDF a imposar) a string
+
+        %% aquí va l'etiquetat de la bufarola per a cada dada del packedarray
+        %% dada d'índex 0 ordre de lectura
+        pArray length dup /araVa exch def oLcap length add string dup 0 pArray putinterval dup araVa oLcap putinterval
+	dup length dup /araVa exch def oL length add string dup 3 -1 roll 0 exch putinterval dup araVa oL putinterval
+        dup length dup /araVa exch def oL0cua length add string dup 3 -1 roll 0 exch putinterval dup araVa oL0cua putinterval
+
+        %% dada d'índex 1 pdf secundari
+	dup length dup /araVa exch def oLcap length add string dup 3 -1 roll 0 exch putinterval dup araVa oLcap putinterval
+        dup length dup /araVa exch def 2 add string dup 3 -1 roll 0 exch putinterval dup araVa (\(\)) putinterval
+	dup length dup /araVa exch def oL1cua length add string dup 3 -1 roll 0 exch putinterval dup araVa oL1cua putinterval
+       
+        %% dada d'índex 2 pàgina del PDF principal o secundari a imposar
+	dup length dup /araVa exch def oLcap length add string dup 3 -1 roll 0 exch putinterval dup araVa oLcap putinterval
+	dup length dup /araVa exch def oL length add string dup 3 -1 roll 0 exch putinterval dup araVa oL putinterval
+	dup length dup /araVa exch def oL2cua length add string dup 3 -1 roll 0 exch putinterval dup araVa oL2cua putinterval
+
+        %% dada d'índex 3 pàgina per ordre de lectura on imposarem
+	dup length dup /araVa exch def oLcap length add string dup 3 -1 roll 0 exch putinterval dup araVa oLcap putinterval
+        dup length dup /araVa exch def oL length add string dup 3 -1 roll 0 exch putinterval dup araVa oL putinterval
+	dup length dup /araVa exch def oL3cua length add string dup 3 -1 roll 0 exch putinterval dup araVa oL3cua putinterval
+
+        %% dada d'índex 4 comportament amb els retalladors
+	dup length dup /araVa exch def oLcap length add string dup 3 -1 roll 0 exch putinterval dup araVa oLcap putinterval
+        dup length dup /araVa exch def
+        M7  %% respectem els retalladors?
         {
-         8 -7 roll
-        }repeat
-       ] /ATmi exch def
-      }if
+         (true) dup /ema7 exch def length add
+        }
+        {
+         (false) dup /ema7 exch def length add
+        }ifelse
+        string dup 3 -1 roll 0 exch putinterval dup araVa ema7 putinterval
+	dup length dup /araVa exch def oL4cua length add string dup 3 -1 roll 0 exch putinterval dup araVa oL4cua putinterval
+
+        %% dada d'índex 5 de com ens adaptem a la pàgina del llançat
+	dup length dup /araVa exch def oLcap length add string dup 3 -1 roll 0 exch putinterval dup araVa oLcap putinterval
+        dup length dup /araVa exch def
+        M14 true eq  %% com ens comportem dins el llançat?
+        {
+         (true) dup /ema14 exch def length add
+        }
+        {
+         M14 null eq
+         {
+          (null) dup /ema14 exch def length add
+	 }
+	 {
+          (false) dup /ema14 exch def length add
+	 }ifelse
+        }ifelse
+        string dup 3 -1 roll 0 exch putinterval dup araVa ema14 putinterval
+	dup length dup /araVa exch def oL5cua length add string dup 3 -1 roll 0 exch putinterval dup araVa oL5cua putinterval
+        
+        %% dada d'índex 6 rotació afegida
+	dup length dup /araVa exch def oLcap length add string dup 3 -1 roll 0 exch putinterval dup araVa oLcap putinterval
+        dup length dup /araVa exch def 1 add string dup 3 -1 roll 0 exch putinterval dup araVa (0) putinterval
+	dup length dup /araVa exch def oL6cua length add string dup 3 -1 roll 0 exch putinterval dup araVa oL6cua putinterval
+
+        %% dada d'índex 7 numeració de pàgines
+	dup length dup /araVa exch def oLcap length add string dup 3 -1 roll 0 exch putinterval dup araVa oLcap putinterval
+	dup length dup /araVa exch def
+        M15 0 get  %% numerem?
+        {
+ 	 (\() dup length dup /araVa2 exch def oL length add string dup 3 -1 roll 0 exch putinterval dup araVa2 oL putinterval
+         dup length dup /araVa2 exch def 1 add string dup 3 -1 roll 0 exch putinterval dup araVa2 (\)) putinterval
+	 dup /ema15 exch def length add
+        }
+        {
+	 (\(\)) dup /ema15 exch def length add
+        }ifelse
+        string dup 3 -1 roll 0 exch putinterval dup araVa ema15 putinterval
+	dup length dup /araVa exch def oL7cua length add string dup 3 -1 roll 0 exch putinterval dup araVa oL7cua putinterval
+       }
+       {  %% sense ampliar opcions
+        5 string cvs
+       }ifelse
+      }ifelse
+      writestring HTMLaEscriure (\n) writestring
+     }
+     {  %% sortida al prompt
+      M16  %% ampliem opcions?
+      {  %% farcim el packedarray amb les opcions ampliades per cada pàgina
+       /pArray ({ ) def
+       5 string cvs /oL exch def  %% l'ordre de lectura (i teòrica pàgina de PDF a imposar) a string
+       pArray length dup /araVa exch def oL length add string dup 0 pArray putinterval dup araVa oL putinterval
+       dup length dup /araVa exch def 1 add string dup 3 -1 roll 0 exch putinterval dup araVa ( )putinterval
+       dup length dup /araVa exch def 4 add string dup 3 -1 roll 0 exch putinterval dup araVa (\(\) ) putinterval
+       dup length dup /araVa exch def oL length add string dup 3 -1 roll 0 exch putinterval dup araVa oL putinterval
+       dup length dup /araVa exch def 1 add string dup 3 -1 roll 0 exch putinterval dup araVa ( )putinterval
+       dup length dup /araVa exch def oL length add string dup 3 -1 roll 0 exch putinterval dup araVa oL putinterval
+       dup length dup /araVa exch def
+       M7  %% respectem els retalladors?
+       {
+        ( [ true ) dup /ema7 exch def length add
+       }
+       {
+        ( [ false ) dup /ema7 exch def length add
+       }ifelse
+       string dup 3 -1 roll 0 exch putinterval dup araVa ema7 putinterval
+       dup length dup /araVa exch def
+       M14 true eq  %% com ens comportem dins el llançat?
+       {
+        (true 0 ] ) dup /ema14 exch def length add
+       }
+       {
+	M14 null eq
+	{
+         (null 0 ] ) dup /ema14 exch def length add
+	}
+	{
+         (false 0 ] ) dup /ema14 exch def length add
+	}ifelse
+       }ifelse
+       string dup 3 -1 roll 0 exch putinterval dup araVa ema14 putinterval
+       dup length dup /araVa exch def
+       M15 0 get  %% numerem?
+       {
+	(\() dup length dup /araVa2 exch def oL length add string dup 3 -1 roll 0 exch putinterval dup araVa2 oL putinterval
+        dup length dup /araVa2 exch def 1 add string dup 3 -1 roll 0 exch putinterval dup araVa2 (\)) putinterval
+	dup /ema15 exch def length add
+       }
+       {
+	(\(\)) dup /ema15 exch def length add
+       }ifelse
+       string dup 3 -1 roll 0 exch putinterval dup araVa ema15 putinterval
+       dup length dup /araVa exch def 2 add string dup 3 -1 roll 0 exch putinterval dup araVa ( })putinterval
+
+       cvx exec ==
+      }
+      {
+       ==
+      }ifelse
+     }ifelse
+
+     3 eq
+     {  %% l'eliminem perquè NO té cap sentit marcar l'anvers/revers doncs no es correspon al plec real del llibret
+       %(% - - - anvers/revers - - - \n) aHTML{HTMLaEscriure exch writestring}{print flush}ifelse
      }if
-    }forall
-   (]\n) aHTML{HTMLaEscriure exch writestring HTMLaEscriure dup (</span></pre>) writestring closefile}{print flush}ifelse
+    }for
+    ( ]\n)
+    aHTML
+    {
+     HTMLaEscriure exch writestring
+    }
+    {
+     print flush
+    }ifelse
+    pop
+    %% invertim el tabulat de l'array ATmi per l'encartat
+    M9 null ne
+    {
+     M9
+     {
+      [
+       ATmi aload pop
+       4
+       {
+        8 -7 roll
+       }repeat
+      ] /ATmi exch def
+     }if
+    }if
+   }forall
+   (]\n)
+   aHTML
+   {
+    HTMLaEscriure exch writestring HTMLaEscriure dup (</span></pre></body></html>) writestring closefile
+   }
+   {
+    print flush
+   }ifelse
   }
 
   null  %% 5
@@ -1764,30 +2776,205 @@ M10
 
   null  %% 7
 
-  {  %% 8 treiem per pantalla el mapa d'imposició tipus llibret 8+8
-
+  {  %% 8 treiem per pantalla o html el mapa d'imposició tipus llibret 8+8
    aHTML
    {
-    HTMLaEscriure (</pre><span style="font-family:Roboto;color:#ff0000;font-size:38px;font-weight:Regular" title="El text vermell &eacute;s el mapa d'imposici&oacute; que podeu copiar al camp per generar el PDF i, si s'escau, acabar-lo d'ajustar editant el seu contingut.\n\nEl tabulat indica quines p&agrave;gines s'aparellen en doble amb el llibret obert.\n\nEls d&iacute;gits indiquen el n&uacute;mero de p&agrave;gina del PDF que imposarem, no pas l'ordre de lectura que &eacute;s el de la seq&uuml;&egrave;ncia de compaginaci&oacute;"><pre>) writestring
+    HTMLaEscriure (</pre><pre style='margin-left:20%;color:#0000ff;font-family:monospace;font-size:38px'>) writestring
    }if
 
-   ([\n) aHTML{HTMLaEscriure exch writestring}{print flush}ifelse
+   ([\n)
+   aHTML
+   {
+    HTMLaEscriure exch writestring
+   }
+   {
+    print flush
+   }ifelse
    {  %% forall
-    ( [\n) aHTML{HTMLaEscriure exch writestring}{print flush}ifelse
+    ( [\n)
+    aHTML
+    {
+     HTMLaEscriure exch writestring
+    }
+    {
+     print flush
+    }ifelse
+
     0 1 15
     {
      dup dup
      ATmi exch get
      {
-      ( ) aHTML{HTMLaEscriure exch writestring}{print flush}ifelse
+      ( )
+      aHTML
+      {
+       HTMLaEscriure exch writestring
+      }
+      {
+       print flush
+      }ifelse
      }repeat
-     2 index exch get aHTML{HTMLaEscriure exch dup type /nulltype eq {pop (null)}{5 string cvs}ifelse writestring HTMLaEscriure (\n) writestring}{==}ifelse
+
+     2 index exch get
+     aHTML
+     {  %% sortida interfície web
+      HTMLaEscriure exch dup type /nulltype eq
+      {
+       pop (null)
+      }
+      {
+       M16  %% ampliem opcions?
+       {  %% farcim el packedarray amb les opcions ampliades per cada pàgina
+        /pArray ({ ) def  %% tot el packedarray quedarà farcit en aquesta variable
+        5 string cvs /oL exch def  %% l'ordre de lectura (i teòrica pàgina de PDF a imposar) a string
+
+        %% aquí va l'etiquetat de la bufarola per a cada dada del packedarray
+        %% dada d'índex 0 ordre de lectura
+        pArray length dup /araVa exch def oLcap length add string dup 0 pArray putinterval dup araVa oLcap putinterval
+	dup length dup /araVa exch def oL length add string dup 3 -1 roll 0 exch putinterval dup araVa oL putinterval
+        dup length dup /araVa exch def oL0cua length add string dup 3 -1 roll 0 exch putinterval dup araVa oL0cua putinterval
+
+        %% dada d'índex 1 pdf secundari
+	dup length dup /araVa exch def oLcap length add string dup 3 -1 roll 0 exch putinterval dup araVa oLcap putinterval
+        dup length dup /araVa exch def 2 add string dup 3 -1 roll 0 exch putinterval dup araVa (\(\)) putinterval
+	dup length dup /araVa exch def oL1cua length add string dup 3 -1 roll 0 exch putinterval dup araVa oL1cua putinterval
+       
+        %% dada d'índex 2 pàgina del PDF principal o secundari a imposar
+	dup length dup /araVa exch def oLcap length add string dup 3 -1 roll 0 exch putinterval dup araVa oLcap putinterval
+	dup length dup /araVa exch def oL length add string dup 3 -1 roll 0 exch putinterval dup araVa oL putinterval
+	dup length dup /araVa exch def oL2cua length add string dup 3 -1 roll 0 exch putinterval dup araVa oL2cua putinterval
+
+        %% dada d'índex 3 pàgina per ordre de lectura on imposarem
+	dup length dup /araVa exch def oLcap length add string dup 3 -1 roll 0 exch putinterval dup araVa oLcap putinterval
+        dup length dup /araVa exch def oL length add string dup 3 -1 roll 0 exch putinterval dup araVa oL putinterval
+	dup length dup /araVa exch def oL3cua length add string dup 3 -1 roll 0 exch putinterval dup araVa oL3cua putinterval
+
+        %% dada d'índex 4 comportament amb els retalladors
+	dup length dup /araVa exch def oLcap length add string dup 3 -1 roll 0 exch putinterval dup araVa oLcap putinterval
+        dup length dup /araVa exch def
+        M7  %% respectem els retalladors?
+        {
+         (true) dup /ema7 exch def length add
+        }
+        {
+         (false) dup /ema7 exch def length add
+        }ifelse
+        string dup 3 -1 roll 0 exch putinterval dup araVa ema7 putinterval
+	dup length dup /araVa exch def oL4cua length add string dup 3 -1 roll 0 exch putinterval dup araVa oL4cua putinterval
+
+        %% dada d'índex 5 de com ens adaptem a la pàgina del llançat
+	dup length dup /araVa exch def oLcap length add string dup 3 -1 roll 0 exch putinterval dup araVa oLcap putinterval
+        dup length dup /araVa exch def
+        M14 true eq  %% com ens comportem dins el llançat?
+        {
+         (true) dup /ema14 exch def length add
+        }
+        {
+         M14 null eq
+         {
+          (null) dup /ema14 exch def length add
+	 }
+	 {
+          (false) dup /ema14 exch def length add
+	 }ifelse
+        }ifelse
+        string dup 3 -1 roll 0 exch putinterval dup araVa ema14 putinterval
+	dup length dup /araVa exch def oL5cua length add string dup 3 -1 roll 0 exch putinterval dup araVa oL5cua putinterval
+        
+        %% dada d'índex 6 rotació afegida
+	dup length dup /araVa exch def oLcap length add string dup 3 -1 roll 0 exch putinterval dup araVa oLcap putinterval
+        dup length dup /araVa exch def 1 add string dup 3 -1 roll 0 exch putinterval dup araVa (0) putinterval
+	dup length dup /araVa exch def oL6cua length add string dup 3 -1 roll 0 exch putinterval dup araVa oL6cua putinterval
+
+        %% dada d'índex 7 numeració de pàgines
+	dup length dup /araVa exch def oLcap length add string dup 3 -1 roll 0 exch putinterval dup araVa oLcap putinterval
+	dup length dup /araVa exch def
+        M15 0 get  %% numerem?
+        {
+ 	 (\() dup length dup /araVa2 exch def oL length add string dup 3 -1 roll 0 exch putinterval dup araVa2 oL putinterval
+         dup length dup /araVa2 exch def 1 add string dup 3 -1 roll 0 exch putinterval dup araVa2 (\)) putinterval
+	 dup /ema15 exch def length add
+        }
+        {
+	 (\(\)) dup /ema15 exch def length add
+        }ifelse
+        string dup 3 -1 roll 0 exch putinterval dup araVa ema15 putinterval
+	dup length dup /araVa exch def oL7cua length add string dup 3 -1 roll 0 exch putinterval dup araVa oL7cua putinterval
+       }
+       {  %% sense ampliar opcions
+        5 string cvs
+       }ifelse
+      }ifelse
+      writestring HTMLaEscriure (\n) writestring
+     }
+     {  %% sortida al prompt
+      M16  %% ampliem opcions?
+      {  %% farcim el packedarray amb les opcions ampliades per cada pàgina
+       /pArray ({ ) def
+       5 string cvs /oL exch def  %% l'ordre de lectura (i teòrica pàgina de PDF a imposar) a string
+       pArray length dup /araVa exch def oL length add string dup 0 pArray putinterval dup araVa oL putinterval
+       dup length dup /araVa exch def 1 add string dup 3 -1 roll 0 exch putinterval dup araVa ( )putinterval
+       dup length dup /araVa exch def 4 add string dup 3 -1 roll 0 exch putinterval dup araVa (\(\) ) putinterval
+       dup length dup /araVa exch def oL length add string dup 3 -1 roll 0 exch putinterval dup araVa oL putinterval
+       dup length dup /araVa exch def 1 add string dup 3 -1 roll 0 exch putinterval dup araVa ( )putinterval
+       dup length dup /araVa exch def oL length add string dup 3 -1 roll 0 exch putinterval dup araVa oL putinterval
+       dup length dup /araVa exch def
+       M7  %% respectem els retalladors?
+       {
+        ( [ true ) dup /ema7 exch def length add
+       }
+       {
+        ( [ false ) dup /ema7 exch def length add
+       }ifelse
+       string dup 3 -1 roll 0 exch putinterval dup araVa ema7 putinterval
+       dup length dup /araVa exch def
+       M14 true eq  %% com ens comportem dins el llançat?
+       {
+        (true 0 ] ) dup /ema14 exch def length add
+       }
+       {
+	M14 null eq
+	{
+         (null 0 ] ) dup /ema14 exch def length add
+	}
+	{
+         (false 0 ] ) dup /ema14 exch def length add
+	}ifelse
+       }ifelse
+       string dup 3 -1 roll 0 exch putinterval dup araVa ema14 putinterval
+       dup length dup /araVa exch def
+       M15 0 get  %% numerem?
+       {
+	(\() dup length dup /araVa2 exch def oL length add string dup 3 -1 roll 0 exch putinterval dup araVa2 oL putinterval
+        dup length dup /araVa2 exch def 1 add string dup 3 -1 roll 0 exch putinterval dup araVa2 (\)) putinterval
+	dup /ema15 exch def length add
+       }
+       {
+	(\(\)) dup /ema15 exch def length add
+       }ifelse
+       string dup 3 -1 roll 0 exch putinterval dup araVa ema15 putinterval
+       dup length dup /araVa exch def 2 add string dup 3 -1 roll 0 exch putinterval dup araVa ( })putinterval
+
+       cvx exec ==
+      }
+      {
+       ==
+      }ifelse
+     }ifelse
+
      7 eq
      {  %% l'eliminem perquè NO té cap sentit marcar l'anvers/revers doncs no es correspon al plec real del llibret
       % (% - - - anvers/revers - - - \n) aHTML{HTMLaEscriure exch writestring}{print flush}ifelse
      }if
     }for
-    ( ]\n) aHTML{HTMLaEscriure exch writestring}{print flush}ifelse
+    ( ]\n)
+    aHTML
+    {
+     HTMLaEscriure exch writestring
+    }
+    {
+     print flush
+    }ifelse
     pop
     %% invertim el tabulat de l'array ATmi per l'encartat
     M9 null ne
@@ -1804,7 +2991,14 @@ M10
      }if
     }if
    }forall
-   (]\n) aHTML{HTMLaEscriure exch writestring HTMLaEscriure dup (</span></pre>) writestring closefile}{print flush}ifelse
+   (]\n)
+   aHTML
+   {
+    HTMLaEscriure exch writestring HTMLaEscriure dup (</span></pre></body></html>) writestring closefile
+   }
+   {
+    print flush
+   }ifelse
   }
  ] M2 get cvx exec
  
@@ -1812,7 +3006,6 @@ M10
  %% apuntem al prompt l'array el mapa que hauríem de posar a M8 (amb retocs o sense) quan fem la imposició de debò
 
 % (* * * * * STOP * * * * *)pstack
-%% potser convindrà farcir un HTML quan construïm la interfície web
  stop
 }
 {  %% el mapa d'imposició aquí ja ha de venir endreçat

@@ -100,7 +100,7 @@ true
 %% 4 = 4+4 graella del llançat en vertical/horitzontal | plegat en llibret desbarbat | 4 pàgines a l'anvers i 4 al revers | impressió dúplex vertical/horitzontal
 %% 8 = 8+8 graella del llançat en vertical | plegat en llibret desbarbat | 8 pàgines a l'anvers i 8 al revers | impressió en dúplex horitzontal
 
-0
+8
 
 
 %%M3 ORIENTACIÓ DEL FULL D'IMPRESSIÓ ?
@@ -137,14 +137,14 @@ false
 
 
 
-%%M7 RESPECTEM L'ENQUADRAMENT DEL PDF D'ORIGEN ?
+%%M7 RESPECTEM L'ENQUADRAMENT (retalladors) DEL PDF D'ORIGEN ?
 %% molts PDF duen uns retalladors activats (CropBox) com per exemple les publicacions que amaguen les creus de tall i de registre
 %% aquest paràmetre només té sentit quan activem l'algorisme 9 d'imposició de PDFs
 
 %% true = respectem el /CropBox per a tot el document
 %% false = ignorem el /CropBox i treballem amb el /MediaBox per a tot el document
 
-true
+false
 
 
 
@@ -182,8 +182,8 @@ true
 
 %% enumerem pàgines
 
-%[]
-[[1 2 3 4 5 6 7 8 1 null null null null null null null]]
+[]
+%[[1 2 3 4 5 6 7 8 1 null null null null null null null]]
 
 
 false{
@@ -395,8 +395,8 @@ false{
 %% EP! quan M10 és a false tenir M9 a null fa que només es crei el primer llibret (la primera array de M8)
 %% EP! el valor d'M9 és irrellevant quan el tipus de llançat M2 és 0 (tall al mig sense desbarbar/Handbook)
 
-false
-%null
+%false
+null
 %true
 
 
@@ -404,7 +404,7 @@ false
 %% true = si assagem el mapa d'imposició no crearem el PDF i només donarem com a resultat la matriu que defineix M8 amb una anàlisi de la feina segons el triat a M12 i M13
 %% false = generarem el PDF de sortida aplicant el mapa d'imposició definit a M8 i també fem l'anàlisi de la feina
 
-false
+true
 
 
 
@@ -448,7 +448,7 @@ true
 
 [
 
- false   %% numerem? true si, false no (sempre amb lletra blanca opaca)
+ true   %% numerem? true si, false no (sempre amb lletra blanca opaca)
 
  2      %% posició del numerador dins la pàgina: 0 peu, 1 xamfrà, 2 vora
 
@@ -461,8 +461,8 @@ true
 ]
 
 
-%%M16 AMPLIEM LES OPCIONS? (fa que, a l'assaig, el mapa d'imposició deplegui, pàgina a pàgina, les possibles opcions de personalització)
+%%M16 AMPLIEM LES OPCIONS? (fa que, a l'assaig, el mapa d'imposició deplegui, pàgina a pàgina, els paràmetres de personalització)
 
-
+true
 
 
