@@ -7,7 +7,7 @@ DESCRIPCIÓ DE FEINA FETA
 file:///home/femfum/Documents/UB/pressupostUB_10_2024_MarcantoniMalagarrigaPicas_signat.pdf
 
 + etiquetem els paràgrafs dels registres de feina segons el seu estat:
-@VIST | @FET (comentaris) | @PENDENT | @ESTEMFENT | @URGENT | @RECLAMAT
+@VIST | @FET | @PENDENT | @ESTEMFENT | @URGENT | @RECLAMAT
 
 #A1    Anàlisi dels PDFs a imposar:
 #    A1 >> RI: FemFum_CaLi2CoPi_042_*.ps / farceixPDFs_pseudoPDFX5_ReferenceXObjects_EnricSenabre.ps
@@ -151,6 +151,7 @@ gs -q -dNOSAFER -o re.pdf -sDEVICE=pdfwrite -dALLOWPSTRANSPARENCY -dAutoRotatePa
 + operacions amb PDFs via línia de comanda GS:
 + sumar PDFs un darrera l'altre (si porta capes se les poleix!) gs -q -dNOPAUSE -dBATCH -sDEVICE=pdfwrite -sOutputFile=aimposarambcapes.pdf 21700154803_cubDeNoordzij.pdf 21700154803_cubDeNoordzij.pdf 21700154803_cubDeNoordzij.pdf
 + extraure pàgines de PDF
+gs -sDEVICE=pdfwrite -dNOPAUSE -dBATCH -dNOSAFER -dFirstPage=22 -dLastPage=36 -o extret.pdf -f extraure.pdf
 @VIST
 
 #    A1.3 ~ Detecció d'àrees de retall de pàgines (CropBox), determinant prèviament de com les tractarem: sigui per eliminar-les (interfereixen l'algorisme pristí) o sigui per adaptar el retall a la pàgina del llançat
@@ -189,6 +190,7 @@ gs -q -dNOSAFER -o re.pdf -sDEVICE=pdfwrite -dALLOWPSTRANSPARENCY -dAutoRotatePa
 + afinem millor la captura d'errors dels algorismes de composició, afegint un indicador a l'stopped general de… nUp_pliegOS_UBESH.ps …que ens diu l'índex de l'algorisme componedor que estem executant PERÒ ALERTA PERQUÈ AQUEST AVÍS HAURIA DE SORTIR DESPRÉS DE…  ...FET (certa morralla al /tmp pot ser de profit) …i/o hauriem de marcar l'inici de la rutina 9: farceix…
 + cal tenir en compte que CaLi2CoPi s'executa dins el context de nUp_pliegOS_UBESH
 + quan fem la interfície www caldrà gestionar millor tota aquesta categoria de missatges d'error
++ per exemple, una dada significativa de quan ens documenten un error (enviant-nos el prompt en gris), seria poder desar o arrossegar quines opcions de menú tenia l'ususari en el moment de l'error
 @PENDENT
 
 
@@ -296,6 +298,7 @@ ignorar per qualsevol criteri
 @FET
 
     2 o+ PDFs d'entrada > 1 o+ pliegOS de sortida (en 1 sol PDF)
+    https://www.php.net/manual/en/features.file-upload.multiple.php
 @PENDENT
 
 + haurem de posar un filtre per veure si:
@@ -317,6 +320,7 @@ ignorar per qualsevol criteri
 + quan hi hagi més d'1 PDF a imposar haurem de replicar el protocol afegint el comportament específic pel segon o+ PDFs pujats?
 + una altra qüestió seran els segons o+ PDFs/JPEGs a pujar al servidor que s'hagin d'utilitzar per incrustar continguts dins de l'nUp triat?
 + cal veure si d'una forma senzilla podem pujar més d'1 PDF fent 1 sol submit?
+https://www.php.net/manual/en/features.file-upload.multiple.php
 @PENDENT
 
 + configurem l'accés al nou servidor de pliegOS a somNúvol:
@@ -350,7 +354,7 @@ pOM: modifiqueu el mapa d'imposició […] si voleu un altre comportament per aq
 + fem les primeres proves impreses d'un 4+4 dúplex (long-edge) al 100% d'escala, de manera que cal establir un protocol per saber, en funció de l'orientació de la pàgina (doncs ara marquem quin és l'origen 0,0 a amb la numeració en vermell), quantes ratlles negres (filets) veiem en cadascuna de les 4 vores, tant a l'anvers com al revers del full imprès. Aquestes 8 dades (que seran sempre diferents en funció de cada impressora) ens haurien de servir per entrar-les en un fitxer de configuració del pliegO'Maker per tal que, treballant al 100% d'escala ens permetés quadrar a la perfecció el dúplex de les 2 planes (sobretot en impressores no professionals)
 @ESTEMFENT
 
-+ al fitxer de reglatge2.ps se li haurien d'afegir unes dades importants més: una A per marcar quina plana és l'anvers i una R per marcar quina és el revers, també hauriem de foradar amb una rodona blanca determinats quadrats dels extrems que duen les ratlletes de mesura per tal de facilitar omplir a mà, un cop imprès el dúplex de reglatge, la quantitat de ratlletes que es veuen en cadascun dels 4 marges. Amb aquestes dades d'orientació (0,0|A/R|4 mesures) es podria omplir una formulari que automàticament calibrés l'àrea de treball que, imprimint al 100%, quadrés al màxim vores i cavalcat d'ambdós costats (planes) del full imprès.
++ al fitxer de reglatge2.ps se li haurien d'afegir unes dades importants més: una A per marcar quina plana és l'anvers i una R per marcar quina és el revers, també hauriem de foradar amb una rodona blanca determinats quadrats dels extrems que duen les ratlletes de mesura per tal de facilitar omplir a mà, un cop imprès el dúplex de reglatge, la quantitat de ratlletes que es veuen en cadascun dels 4 marges. Amb aquestes dades d'orientació (0,0|A/R|4 mesures) es podria omplir una formulari de configuració de pliegO'Maker que automàticament calibrés l'àrea de treball que, imprimint al 100%, quadrés al màxim vores i cavalcat d'ambdós costats (planes) del full imprès.
 + amb aquestes dades generariem un segon fitxer de reglatge que hauria de comprovar la correcta calibració: un(s) senzill(s) filet(s) rectangular(s) ajustat(s) al màxim a l'àrea d'impressió i unes creus en diversos punts de la pàgina per comprovar la correcció del registre, acurat o no del dúplex
 @ESTEMFENT
 
@@ -410,8 +414,10 @@ https://tarde.info/brochure/ | …/pliegOMakerUB/exemples/Handbook
 + fem una o+ maquetes en blanc amb les pàgines numerades en base a un possible recorregut de lectura (pel què veiem als exemples de Tarde.info n'hi pot haver més d'un). No sembla que aquest format tingui un recorregut tancat com el llibret estàndard
 + hem d'establir les 2 o tres variants possibles del format Handbook amb el tall al mig de: 8 pàgines a 1 sola cara, amb la segona cara a imposar-hi 1 sola pàgina o 8 pàgines més
 + hem d'experimentar combinacions de numeració amb les maquetes en blanc que hem fet del llibret de tall no desbarbat (format Handbook de Tarde)
-+ cal veure si aquesta opció d'imposar a la segona cara 1 sola pàgina del PDF d'entrada l'afegim de forma fixa dins l'estructura i només ens caldria retallar el mapa d'imposició a 1 sola cara (8 pàgines) i no caldria blocar-la amb un booleni opcional
 @ESTEMFENT
+
++ al 8+1 (handbook) l'opció d'imposar a la segona cara 1 sola pàgina del PDF d'entrada l'afegim de forma fixa dins l'estructura i el mapa d'imposició s'assembla a un 8+8 però a l'anvers només la pàgina 9 és significativa, doncs les 7 restants han d'estar a null
+@FET
 
 + CAL eliminar al revers del handbook la marca de la vora de la pàgina del llançat (ara petita!) o adaptar-la a la nova dimensió de tota la plana! (execució de la variable /xirtam)
 + si fem el Handbook 0 l'hem eliminada al revers via índex de pàgina d'imposició a /BeginPage
@@ -954,7 +960,7 @@ https://tarde.info/brochure/ | …/pliegOMakerUB/exemples/Handbook
 + el problema de que només repetia la primera array de pàgines (tant si era encartat com apilat) venia de cridar cada vegada les dades del menú (ara via TXT), ara fem que les dades del menú es cridin només 1 vegada
 @FET
 
-+ cal escriure un protocol bàsic d'ús amb exemples (parlar-ho amb l'Enric):
++ cal escriure un protocol bàsic d'ús amb exemples? (parlar-ho amb l'Enric):
 @ESTEMFENT
 
 + al fitxer de capçalera… altravolta.ps …li hem de canviat el nom a pliegOMaker_UBESH.ps
@@ -979,8 +985,8 @@ https://tarde.info/brochure/ | …/pliegOMakerUB/exemples/Handbook
 + ho resoldrem a la reunió de dilluns 25 al migdia amb l'Enric
 @ESTEMFENT
 
-+ quan fem la interfície www ens cal fer treballar… espiapaq_fura3_pliegOS.ps … amb una nova versió que generi un fitxer de sortida a string per tal de poder ensenyar pel prompt/HTML el contingut de les arrays d'imposició en qualsevoll dels dos formats (matrioixca o endreçat per generar el pliegOS)
-@ESTEMFENT
++ quan fem la interfície www ens cal fer treballar… espiapaq_fura3_pliegOS.ps (no ha calgut!) … amb una nova versió que generi un fitxer de sortida a string per tal de poder ensenyar pel prompt/HTML el contingut de les arrays d'imposició en qualsevoll dels dos formats (matrioixca o endreçat per generar el pliegOS)
+@FET
 
 + només si M9 és null passem d'avaliuar M13
 + hi ha un error amb aquests valors: %%M2 QUIN LLANÇAT 8 | %%M9 ENQUADERNAT null | %%M10 ASSAGEM EL MAPA D'IMPOSICIÓ? true | %%M12 PÀGINA D'INICI i FINAL DE L'ASSAIG 8 24
@@ -1167,6 +1173,7 @@ arraytype
    [null 0]  % és l'array del comportament d'encaix i rotació de la pàgina del PDF dins el llançat
   }  % el comportament és idèntic a l'haver posat només '2' al lloc del packedarray: mana el MediaBox/CropBox amb rotació zero, imposa la pàgina 2
 + cal saber què passa quan una pàgina de PDF d'entrada s'imposa en dues, però en la roda d'imposició de l'nUp triat s'executa abans la pàgina de la dreta que la de l'esquerra o viceversa?
++ IMPORTANT doncs l'ordre d'execució per establir la lògica que faci possible les dobles pàgines, siguin de PDFs externs o no
 + {
    null
    2
@@ -1179,6 +1186,7 @@ arraytype
    3
    [true 0]  % s'adapta si cal sempre rotant a la dreta, i no duu rotació extra
   }  % la pàgina 2 s'imposa en doble a la 3
++ IMPORTANT: cal veure llavors quina serà la notació de la pàgina 3 (que rep una meitat de la 2) al mapa d'imposició
 + {
    null
    2
@@ -1191,8 +1199,8 @@ arraytype
    3  % és la pàgina on va a parar la segona meitat (dreta) de la pàgina 1 del PDF anterior que s'imposa
    [false -180]  %% si duu un Rotate diferent de zero l'aplica afegint una rotació extra de -180 graus
   }  %
-+ hem de posar un detector de pàgines dobles per cada nUp, o sigui: saber quines pàgines amb el llibret obert són succeptibles de posar-hi un element contigu
-+ podríem posar un filtre d'avis per saber si els packedarrays tenen la seva lògica de doble pàgina?
++ el tabulat del mapa d'imposició és el detector visual de pàgines dobles per cada nUp, o sigui: saber quines pàgines amb el llibret obert són succeptibles de posar-hi un element contigu
++ podríem posar un filtre d'avis per saber si els packedarrays tenen la seva lògica de doble pàgina? …de fet la notació manual de l'usuari pot contenir errors i llavors amb aquest filtre els podríem detectar?
 + exemple de mapa d'imposició 4up que ja treballi amb packedarrays:
 [
  [  %% el tabulat indicaria pàgines dobles (que obrint el llibret són contigües) potencialment aparellables en una imposició partida
@@ -1206,7 +1214,80 @@ arraytype
   {[(…/…/aimposar.pdf) 2] 8 8 [true 0]}  %% contraportada
  ]
 ]
-@ESTEMFENT
++ el model inicial per quan activem el «format avançat» (amb packedarrays) d'un mapa d'imposició per tal que l'usuari pugui indicar un comportament individualitzat de cada pàgina i la càrrega o no de PDFs secundaris, seria per un 4+4:
+[  %% inici del mapa d'imposició
+ [  %% inici de llibret
+  {  %% pàgina 1 del llançat
+   1  %%0 ordre de lectura segons l'enquadernat
+   () %%1 carreguem cap PDF secundari?
+   2  %%2 pàgina que anem a buscar o al PDF principal o al PDF secundari?
+   1  %%3 a o fins a quina pàgina la imposem (en l'índex de lectura)? (si no es la mateixa del índex 0 (la de l'ordre de lectura) es divideix en 2)
+   [  %%4 array de comportaments de la pàgina dins el llançat
+    true  %% M7 respectem els retalladors?
+    true  %% M14 creu al format de pàgina (null) / llançat (true) / rotació (false)?
+    0     %% rotació extra
+   ]
+   ()  %%5 M15 una string buida ens dirà que, o no s'ha activat la numeració, o que aquesta pàgina no es numera / si es numera, durà el mateix nombre que l'índex 0
+  } @ESTEMFENT*
+
+   {  %% pàgina 2 del llançat
+    [() 0]  %% equival a null, també si l'array estigués buit i també mentre a l'índex 0 hi hagi una string buida
+    1  %% anem a buscar la pàgina 1 del PDF a imposar
+    3  %% la imposem fins la pàgina 3 del llançat, o sigui, com que som a la 2 del llançat el seu ample X es dividirà per dues pàgines a repartir i aquest fet hauria d'alertar (en funció de l'ordre d'imposició de l'algorisme) un detector per les dades que apareguin a la pàgina 3 del llançat
+    [
+     true
+     0
+    ]
+   }  %% el tabulat ens indica que ambdues pàgines (les pàgines alineades al mapa) s'obren en doble, tocant-se pel llom, dins el llibret de forma contínua
+   {  %% pàgina 3 del llançat
+    null  %% posem totes les dades a null, o fem que així actui (en funció de l'ordre d'imposició de l'algorisme) doncs la pàgina 3 del llançat ara la manen les dades de la pàgina 2
+    null
+    null
+    null
+   }
+
+    {  %% pàgina 4 del llançat
+     4
+    }
+    {  %% pàgina 5 del llançat
+     5
+    }
+
+   {  %% pàgina 6 del llançat
+    6
+   }
+   {  %% pàgina 7 del llançat
+    7
+   }
+
+  {  %% pàgina 8 del llançat
+   8
+  }
+ ]  %% final de llibret
+]  %% final del mapa d'imposició
+@ESTEMFENT*
+
++ no ho hauria de dir diferent quan imposem un PDF de 16 pàgines amb 1 sol llibret 4+4? però ens diu:
+            1     ......... pagina on iniciarem la imposicio al PDF d'origen
+            16    ......... pagina on finalitzarem la imposicio al PDF d'origen
+            16    ......... total de pagines a imposar del PDF d'origen
++ al 8+1 ho fa bé:
+            1     ......... pagina on iniciarem la imposicio al PDF d'origen
+            9     ......... pagina on finalitzarem la imposicio al PDF d'origen
+            9     ......... total de pagines a imposar del PDF d'origen
++ o si amb 4+4 acotem les pàgines (1 s'inici i 4 de final), també ho fa bé:
+            1     ......... pagina on iniciarem la imposicio al PDF d'origen
+            4     ......... pagina on finalitzarem la imposicio al PDF d'origen
+            4     ......... total de pagines a imposar del PDF d'origen
++ a 8+8 amb un PDF de 32 pàgines i 1 sol llibret també ens diu malament:
+            1     ......... pagina on iniciarem la imposicio al PDF d'origen
+            32    ......... pagina on finalitzarem la imposicio al PDF d'origen
+            32    ......... total de pagines a imposar del PDF d'origen
++ a 1+1 amb un PDF de 16 pàgines i 1 sol llibret també ens diu malament:
+            1     ......... pagina on iniciarem la imposicio al PDF d'origen
+            16    ......... pagina on finalitzarem la imposicio al PDF d'origen
+            16    ......... total de pagines a imposar del PDF d'origen
+@URGENT
 
 + hem de solucionar els nous paràmetres M11 i M12: han d'actuar només a l'assaig! …hem ampliat M12 perquè contempli també el núm. de pàgina on volguem finalitzar la imposició
 @FET
@@ -2026,8 +2107,15 @@ araNúm
 + aquest són els fitxers que poden necessitar d'actualitzar adreces absolutes, crides o URLs en funció de si executem des del Terminal, via HTML/PHP al localhost o somNúvol:
 + tota la resta sembla que poden funcionar amb referències relatives
 
+Si canviem de directoris de treball:
 
-    nUp_pliegOS_UBESH.ps
+
+        7up_pliegOMaker_UBESH.ps
+
+NO CAL CANVIAR RES doncs tot són adreces relatives sense path arrel
+
+
+        nUp_pliegOS_UBESH.ps
 
 Si /CddVf la deixem a true, executant via HTML/PHP com que qui mana és la detecció de la variable d'entorn (que l'HTML/PHP genera i detecta), no es molesta quan simultàniament executem des del Terminal via TXT. El que sí que condiciona (llavors /CddVf hauria d'estar a false) és si volem treballar amb opcions de menú directes M## per a cada definició de la variable d'entorn corresponent.
 
@@ -2035,52 +2123,52 @@ Si /CddVf la deixem a true, executant via HTML/PHP com que qui mana és la detec
         pliegOmaker_UBESH.php (cercar per @URLUBESH), aquestes són les línies potencialment modificables:
 
     $baseURL = "http://localhost/www.pliegos.net/maker/UBESH/";  // localhost de Tuxedo
-    FET
+        FET
         $baseURL = "https://www.pliegos.net/maker/UBESH/";  // somNuvol
 
 
     $pujali = "/var/www/html/www.pliegos.net/maker/UBESH/Hpdf/";  // localhost Tuxedo
-    FET
+        FET
         $pujali = "/var/www/html/maker/UBESH/Hpdf/";  // somNuvol
 
 
     $somaPS = "/var/www/html/www.pliegos.net/maker/UBESH/";  // path al ps del localhost de Tuxedo
-    FET
+        FET
         $somaPS = "/var/www/html/maker/UBESH/";  // path al ps de somNuvol
 
 
     $somaPDF = "/var/www/html/www.pliegos.net/maker/UBESH/pdf/";  // path al pdf del localhost de Tuxedo
-    FET
+        FET
         $somaPDF = "/var/www/html/maker/UBESH/pdf/";  // path al pdf de somNuvol
 
 
     $somaGS = "/usr/bin/";  // path a l'executable de Ghostscript tant al localhost de Tuxedo com a somNuvol
-    FET
+        FET
         ídem
 
 
     $baseurlPDF = "http://localhost/www.pliegos.net/maker/UBESH/pdf/";  // base url al pdf al localhost de Tuxedo
-    FET
+        FET
         $baseurlPDF = "https://www.pliegos.net/maker/UBESH/pdf/";  // base url al pdf de somNuvol
 
 
     $baseurlMAPA = "http://localhost/www.pliegos.net/maker/UBESH/tmp/";  // base url on desem els mapes d'imposició al localhost de Tuxedo
-    FET
+        FET
         $baseurlMAPA = "https://www.pliegos.net/maker/UBESH/tmp/";  // base url on desem els mapes d'imposició a somNuvol
 
 
     $command = $somaGS . "gs -q -dNOSAFER -o '" . $pdfFile . "' -dALLOWPSTRANSPARENCY -sDEVICE=pdfwrite -dAutoRotatePages=/None -f '" . $PSapplet . "'";
-    FET
+        FET
         crida ídem pel gs 9.55
 
 
     echo "<center><span style='color:#ff0000;font-family:monospace;font-size:24px'><br><br>&gt;&gt;&gt; <a href='http://localhost/www.pliegos.net/maker/UBESH/pdf/" . $pdfnomes . "'>ENLLA&Ccedil; AL PDF RESULTANT</a> &lt;&lt;&lt;</span>";
-    FET
+        FET
         echo "<center><span style='color:#ff0000;font-family:monospace;font-size:24px'><br><br>&gt;&gt;&gt; <a href='https://www.pliegos.net/maker/UBESH/pdf/" . $pdfnomes . "'>ENLLA&Ccedil; AL PDF RESULTANT</a> &lt;&lt;&lt;</span>";
 
 
     echo '<script type="text/javascript">window.open("http://localhost/www.pliegos.net/maker/UBESH/pdf/'.$pdfnomes.'");</script>';
-    FET
+        FET
         echo '<script type="text/javascript">window.open("https://www.pliegos.net/maker/UBESH/pdf/'.$pdfnomes.'");</script>';
 
 
@@ -2127,9 +2215,66 @@ Hpdf
 + hem redirigit via… https://www.pliegos.net/maker/index.html …cap a… https://www.pliegos.net/maker/UBESH/
 + hem afegit la capçalera d'etiquetes opengraph/Twitter també a https://www.pliegos.net/maker/index.html (les tenim també a https://www.pliegos.net/maker/UBESH/index.html)
 
++ + + + + + + + + + + + + + + + + +
+
++ un cop enllestida l'operativa de la versió a somNúvol (implementa el 99% dels apartats A B C E del pressupost presentat) … https://www.pliegos.net/maker …ens queda implementar l'apartat D que resumeix el pressupost com:
+
+    d
+
+Pàgines d'excepció per incloure-hi continguts a doble pàgina:
+
+    d1. En realitat seria una nova funcionalitat afegida al punt A.3
+
+    d1.1 ~ Tria de les pàgines contigües possibles (l'aplicació diria quines segons l'nUp triat i format d'imposició) que, un cop obertes, poden oferir una doble pàgina on incloure el contingut en PDF o JPEG previst
+
+    d2. Funcionalitats aplicables només a nivell d'algorisme intern
+
+    d2.1 ~ Configuració de les dades d'execució via fitxer ascii de capçalera
+
+        [ 8% del projecte | 4 dies de treball≅ ]
+
++ passos a seguir:
+
+    # clonaríem el contingut del localhost UBESH a un nou directori per implementar l'afegit del que podríem anomenar com «opcions avançades»
+        cp -r source_folder /path/to/destination_folder/
+@FET
+
+    # ho activaríem amb un boolè (checkbox al www) per tal que, a l'assaig, generés el mapa d'imposició ampliat a totes les varibles que podrem ajustar pàgina a pàgina
+@ESTEMFENT
+
+    # informaríem amb bufaroles què fa cadascún dels parèmetres del packedarray x pàgina (veure @ESTEMFENT*)
+@PENDENT
+
+    # fitxers i ajustos que cal traslladar a la versió del servidor un cop tinguem activa la versió ampliada d'opcions del mapa d'imposició
+    + de… http://localhost/www.pliegos.net/maker/UBESH_/UBESH/ …copiar al servidor:
+        index.html
+        nUp_pliegOS_UBESH.ps
+        pliegOmaker_UBESH.php
+        ESH_UB.txt
+    + al servidor retocar… pliegOmaker_UBESH.php …a:
+        hi ha un… UBSEH …que ha de ser… UBESH
+@ESTEMFENT*
+
++ afegir a les bufaroles (numerem?) la informació del tractament fix de la tipografia (Hack work is &copy; 2018 Source Foundry Authors. MIT License) que estem fent servir (https://github.com/source-foundry/Hack) i del sistema de numeració aràbic
+@FET
+
++ coses que ens hem deixat:
+    # cal afegir a la bufarola informativa a l'assaig i a l'àrea de text del mapa d'imposició, que podem alterar el núm de pàgina que cridem, repetir-les o deixarles en blanc (null)
+    # assegurar l'operativitat de les execucions via URL directa (GET) amb totes les variables a l'adreça i bastin diversos exemples a donar
+@PENDENT
+
++ a… farceixPDFs_pseudoPDFX5_UBESH.ps …hem solucionat un error en el mode assaig quan fèiem el 8+1 que se'ns havia escapat (atrapat per les proves que fa l'Enric / correu 3/2/25 21:05 a marcantoni@femfum.com)
+@FET
+
++ arrencada GIMP Beta: flatpak run org.gimp.GIMP//beta
 
 
 - - - - - - - - - - - - - - - - - CALENDARI
+
+18 feb ateneo de madrid
+
+noguesynogues@yahoo.es
+agrupación republicana de l'Ateneo de Madrid
 
 
     21.10.2024
@@ -2820,7 +2965,7 @@ Hpdf
 
 
     06.01.2025
-- - - - - - - - HT 2.15
+- - - - - - - - HT 2.25
 
 %%H de 07h45 a 08h45
 %%H de 10h00 a 11h15
@@ -2867,7 +3012,7 @@ Hpdf
 
 
 
-- - - - - - - - SETMANA 12 9.15
+- - - - - - - - SETMANA 12 9.25
 
 
 
@@ -2972,6 +3117,7 @@ Hpdf
 - - - - - - - - HT 3
 
 %%H de 10h30 a 13h00
+====================================================== LÍMIT DEL PRESSUPOST DE 300h
 %%H de 16h30 a 17h00
 
 
@@ -2992,6 +3138,9 @@ Hpdf
 
 
 - - - - - - - - SETMANA 14 21
+
+
++ + + + + + + + TOTAL PARCIAL 307,00h (amb 14 setmanes seguides treballades, 1 sense activitat, ja en sobren 7 del pressupostat de 300h)
 
 
 
@@ -3038,11 +3187,231 @@ Hpdf
 %%H de 09h30 a 11h45
 %%H de 12h30 a 13h15
 %%H de 14h00 a 15n15
-- - - - - - - - - - - - - - - - primera versió operativa a somNuvol
+- - - - - - - - - - - - - - - - primera versió operativa a somNúvol!
 
 
     31.01.2025
+- - - - - - - - HT 0.50
+
+%%H de 09h15 a 09h45
+
+
+
+    01.02.2025
+- - - - - - - - HT 0
+
+
+
+    02.02.2025
+- - - - - - - - HT 0
+
+
+- - - - - - - - SETMANA 15 26.75
+
+
+    03.02.2025
+- - - - - - - - HT 0
+
+
+
+    04.02.2025
+- - - - - - - - HT 1.50
+
+%%H de 21h00 a 22h30
+
+
+
+    05.02.2025
+- - - - - - - - HT 0
+
+
+
+    06.02.2025
+- - - - - - - - HT 0
+
+
+
+    07.02.2025
+- - - - - - - - HT 0
+
+
+
+    08.02.2025
+- - - - - - - - HT 0
+
+
+
+    09.02.2025
+- - - - - - - - HT 0
+
+
+
+- - - - - - - - SETMANA 16 1.50
+
+
+
+    10.02.2025
+- - - - - - - - HT 0
+
+
+
+    11.02.2025
+- - - - - - - - HT 0
+
+
+
+    12.02.2025
+- - - - - - - - HT 2.50
+
+%%H de 10h00 a 12h30
+
+
+
+    13.02.2025
+- - - - - - - - HT 0.50
+
+%%H de 16h30 a 17h00
+
+
+
+    14.02.2025
+- - - - - - - - HT 4.50
+
+%%H de 11h30 a 13h30
+%%H de 13h45 a 14h15
+%%H de 18h30 a 19h30
+%%H de 20h30 a 21h30
+
+
+
+    15.02.2025
+- - - - - - - - HT 0
+
+
+
+    16.02.2025
+- - - - - - - - HT 0
+
+
+
+- - - - - - - - SETMANA 17 7.50
+
+
+
+    17.02.2025
+- - - - - - - - HT 1.25
+
+%%H de 12h15 a 13h00
+%%H de 19h30 a 20h00
+
+
+
+    18.02.2025
+- - - - - - - - HT 4
+
+%%H de 07h30 a 08h30
+%%H de 12h00 a 13h00
+%%H de 16h00 a 18h00
+
+
+
+    19.02.2025
+- - - - - - - - HT 2.5
+
+%%H de 10h45 a 12h45
+%%H de 18h00 a 18h30
+
+
+
+    20.02.2025
+- - - - - - - - HT 3.5
+
+%%H de 11h00 a 12h00
+%%H de 17h15 a 19h45
+
+
+
+    21.02.2025
+- - - - - - - - HT 2
+
+%%H de 17h45 a 19h45
+
+
+
+    22.02.2025
+- - - - - - - - HT 0.75
+
+%%H de 18h30 a 19h15
+
+
+
+    23.02.2025
+- - - - - - - - HT 0
+
+
+
+- - - - - - - - SETMANA 18 14
+
+
+
+    24.02.2025
+- - - - - - - - HT 0.75
+
+%%H de 12h00 a 12h45
+
+
+
+    25.02.2025
 - - - - - - - - HT
 
-%%H de 09h15 a
+%%H de 10h30 a 12h45
+%%H de 16h00 a 17h30
+%%H de
+
+
++ + + + monòstic
+quesiqueusveig
+vosamino
+
+
+Mari Cruz Garcia (cap d'hostatgeria web)
+Jordi Pardo (Rimda)
+núm. de projecte RIMDA IDD388
+
+http://www.ctan.org/tex-archive/fonts/psfonts/w-a-schmidt/pmn.zip
+
+https://x.com/OnEtsOncleGuill/status/1707016553282113945
+
+obriulesfosses.cat
+3ZXqYSJhmMGDcXj
+
+#llill
+https://www.youtube.com/watch?v=g5D0-GKMYL4
+
+https://www.ara.cat/cultura/historia/maternitats-nazis-explotaven-l-uter-dones_128_5277237.html
+L'abominable eugenèsia Nazi posa en relació els crims de guerra amb la Bioètica.
+
+Si com es diu a l'article, Himmler va posar en funcionament la primera maternitat a Heim Hochland el 1936, dos anys més tard desapareixia el meu oncle en un camp de concentració al front del Segre.
+
+Avui (i des de 2016) hem descobert que les Desaparcicions Forçades o Involuntàries de la Guerra d'Espanya (dita civil) i posterior dictadura, altra cop es posen en relació amb la Bioètica.
+
+Com es diu a l'article, gràcies a persones ordinàries avui a Catalunya es fan passar com a malalties les dades genètiques dels familiars dels deapareguts 1936-1977, quan en realitat són dades forenses… https://obriulesfosses.cat/EduardoTizzanoPIG_isciii_C0003544_EsterCapella.png
+
+Finalment també, com es diu a l'article, si a Noruega és tabú encara parlar de les maternitats Nazis, a Catalunya ho és encara (també en aquest diari), parlar del frau de bioètica que patim els més de quatre-mil donants d'ADN del Programa d'Identificació Genètica del departament de Justícia de la Generalitat.
+
+https://x.com/llenguacat/status/1889715792180101361
+https://x.com/omnium/status/1889936845661949971/media_tags
+https://x.com/elciemen/status/1889783126135644258/media_tags
+https://x.com/assemblea/status/1889714039543959571
+https://x.com/GrupBarnils/status/1889734496662016072
+https://x.com/USTECSTEs/status/1889682442778263636
+https://x.com/LaIntersindical/status/1889719202514083924
+https://x.com/AccioCulturalPV/status/1890333666942877707
+
+@raulromeva @Josep_Huguet la «Desaparició Forçada o Involuntària» no té edat.
+
+Les criatures la van patir durant la Guerra d'Espanya, Franquisme i Transició, i els adults també.
+
+Tots els que jauen encara dins les 900 fosses que tenim a Catalunya per exhumar, ho són!
+https://x.com/FundacioIrla/status/1889996797679976492
 
