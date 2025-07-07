@@ -1,0 +1,247 @@
+%!
+%%+ valors clau
+%% donat un nombre de pàgines a compaginar i donada una cadena de glifs a compondre
+%% deduïm el nombre de glifs per pàgina i definim quin tram de paraules correspon a cada pàgina
+%% ponderant les separacions entre paraules (ara no trenquem paraules) i equilibrant les desviacions de més i de menys
+
+%%* i seguim aplicant l'algorisme, un cop tenim el nombre de glifs per pàgina, per ponderar els gligs per línia i les línies de text per pàgina segons la ràtio de la taca
+
+%%+
+3  %% valors entre 1 i n mots -1 (posant un nombre que iguali o sobrepassi de molt el nombre de mots, cada pAc serà una pàgina podent apareixer pàgines en blanc)
+/pAc exch def  %% pàgines a compaginar
+
+%%+
+%(De cos present et necessita la meva primavera\no acabaré vomitant flors mutilades,\nque jo no vull tornar-me lletra\nper fer-te imatge i mentida,\nque ens vull elèctrics i brutals\nen mig del desastre, morint,\nsi cal, al cos de l'altre,\nsacsejats pel tro, bruts de desfici,\nescampats al paisatge de l'abril més salvatge,\nla tempesta que esclati!)
+%(Peixos dins el rostoll\nàligues dins el foc\nla mar dins els ulls\nels peus plens de cans\nel vent és pudent\ntots els déus van gats\n\nOh serra mamerra\nens roben la terra\ni ens fonen l'aram.)
+%(Si vinguessis per tardor\nespolsaríem l'estiu\namb llengots i mitja rialla,\ncom mestresses al badiu.\n\nSi ens veiéssim en un any\ncabdellaríem mesades,\ntotes al seu calaixer,\nmentre el temps passa debades.\n\nSi triguessis sols un segles,\ncomptats només amb la mà,\ndeixondint els dits tot d'una\ndins el Van Diemens llunyà.\n\nSi del cert la vida fuig,\nbé prou que ambdós ho sabem,\nbo i foragitant l'embolcall\nfaríem un tast a l'etern.\n\nAra però, ignorem al capdavall\nsi el temps és l'ala incerta\nd'un borinot que, cap a mi furiós,\nenvà el seu fibló no encerta.)
+%(Sembla mentida que haguen de fer a trossets una frase ben llarga entre un seguit de pagines, per satisfer els desitjos de la componedora.)
+(Una polla xica, pica, pellarica, camatorta i becarica va tenir sis polls xics, pics, pellarics, camacurts i becarics.\nSi la polla no hagués sigut xica, pica, pellarica, camatorta i becarica, els sis polls no haguessin sigut xics, pics, pellarics, camacurts i becarics.)
+%%(Just Like) Starting Over | John Lennon
+%(Our life together is so precious together\nWe have grown, we have grown\nAlthough our love is still special\nLet's take a chance and fly away\nSomewhere alone\nIt's been too long since we took the time\nNo-one's to blame, I know time flies so quickly\nBut when I see you darling\nIt's like we both are falling in love again\nIt'll be just like starting over\nStarting over\nEveryday we used to make it love\nWhy can't we be making love nice and easy\nIt's time to spread our wings and fly\nDon't let another day go by my love\nIt'll be just like starting over\nStartin' over\nWhy don't we take off alone\nTake a trip somewhere far, far away\nWe'll be together all alone again\nLike we used to in the early days\nWell, well, well darling\nIt's been too long since we took the time\n\nNo-one's to blame, I know time flies so quickly\nBut when I see you darling\nIt's like we both are falling in love again\nIt'll be just like starting over\nStarting over, Look out\nOur life together\nIs so precious together\nWe have grown, mmh we have grown\nAlthough our love still is special\nLet's take a chance and fly away somewhere\nStarting over \(over and over and over\))
+/cDgAc exch def  %% cadena de glifs a compondre
+
+/ntdg 0 def  %% nombre total de glifs comptant els espais que separen cada paraula
+/tm [] def  %% array amb tots els mots, on cada paraula és una string
+/mpp [] def  %% array que conté els mots a compaginar per cada pàgina (tantes arrays com pAc)
+
+cDgAc
+{  %% loop per farcir tots els mots en una array
+ token  %% aquest operador té excepcions per poder detectar els retors de carro?
+ {
+  256 string cvs dup length ntdg add 1 add /ntdg exch def  %% glifs de cada paraula més un espai separador
+  tm dup length dup /araVa exch def 1 add array dup 3 -1 roll 0 exch putinterval
+  dup 3 -1 roll araVa exch put /tm exch def
+ }
+ {
+  exit
+ }ifelse
+}loop
+
+ntdg 1 sub pAc idiv /gpp exch def  %% glifs per pàgina
+
+%%+ un % massa elevat pot fer variar pAc (el que sembla que no falla mai és treballar a tolerància zero)
+/txcDerror ntdg 1 sub .0  %% % màxim de tolerància amb el nombre de glifs (que en sobrin o que en faltin per decidir si canviem de pàgina)
+mul ceiling cvi def  %% nombre màxim de glifs que tolerarem que en sobrin o que en faltin al final del recompte de mots per pàgina
+
+/admpPagina [] def  %% array de mots per pàgina
+/Dmarge 0 def  %% nombre de glifs de marge que encara ens queden per esgotar el nombre màxim de glifs per pàgina (si el nombre és positiu en sobren i viceversa)
+0  %% sumador de glifs
+tm
+{  %% forall de distribució dels mots per pàgina
+ dup length 1 add  %% al nombre de glifs li afegim l'espai separador
+ 3 -1 roll add gpp 2 copy
+ gt  %% supera el nombre de mots per pàgina?
+ {  %% els supera i ho avaluem
+  2 copy Dmarge sub sub txcDerror gt
+  {  %% si és més gran que el % de tolerància
+   %% desem /admpPagina tal com està dins /mpp i el mot sobrant dins una nova /admpPagina
+   sub /Dmarge exch def  %% com queda /Dmarge?
+   0 exch  %% posem a zero el sumador de glifs
+   mpp dup length dup /araVa exch def 1 add array dup 3 -1 roll 0 exch putinterval
+   dup araVa admpPagina put /mpp exch def
+   1 array astore /admpPagina exch def
+  }
+  {  %% si és més petit o igual que el % de tolerància
+   %% el mot entra dins /admpPagina, la desem dins /mpp i n'estrenem una de nova /admpPagina buida
+%   pstack ESMESPETITOIGUAL
+   sub /Dmarge exch def  %% com queda /Dmarge?
+   0 exch  %% posem a zero el sumador de glifs
+   admpPagina dup length dup /araVa exch def 1 add array dup 3 -1 roll 0 exch putinterval
+   dup 3 -1 roll araVa exch put  %% la desarem dins /mpp
+   mpp dup length dup /araVa exch def 1 add array dup 3 -1 roll 0 exch putinterval
+   dup araVa 4 -1 roll put /mpp exch def
+   /admpPagina [] def  %% inicialitzem l'array de mots per pàgina
+  }ifelse
+ }
+ {  %% encara no hi arriba, però entra dins el llindar?
+  2 copy Dmarge sub sub abs txcDerror lt
+  {  %% el mot entra dins /admpPagina, la desem dins /mpp i n'estrenem una de nova /admpPagina buida
+   sub /Dmarge exch def  %% com queda /Dmarge?
+   0 exch  %% posem a zero el sumador de glifs
+   admpPagina dup length dup /araVa exch def 1 add array dup 3 -1 roll 0 exch putinterval
+   dup 3 -1 roll araVa exch put  %% la desarem dins /mpp
+   mpp dup length dup /araVa exch def 1 add array dup 3 -1 roll 0 exch putinterval
+   dup araVa 4 -1 roll put
+% pstack entradinsELLLINDAR
+   /mpp exch def
+   /admpPagina [] def  %% inicialitzem l'array de mots per pàgina
+  }
+  {
+   pop exch
+   admpPagina dup length dup /araVa exch def 1 add array dup 3 -1 roll 0 exch putinterval
+   dup 3 -1 roll araVa exch put /admpPagina exch def
+  }ifelse
+ }ifelse
+}forall  %% de distribució dels mots per pàgina
+
+pop  %% ens carreguem el comptador de glifs
+%% tancament final
+admpPagina length 0 ne
+{  %% si l'array de mots d'1 pàgina no acaba buit és que encara manca afegir-lo a /mpp
+ mpp dup length dup /araVa exch def 1 add array dup 3 -1 roll 0 exch putinterval
+ dup araVa admpPagina put /mpp exch def
+}if
+
+%% avaluem la ditribució de mots i glifs
+/MAXglifs 0 def  %% el nombre màxim de glifs per pàgina
+mpp
+{
+ dup length ==  %% llistem el nombre de mots per pàgina
+ 0 exch
+ {
+  length add
+ }forall
+ dup MAXglifs gt
+ {
+  dup /MAXglifs exch def
+ }if
+ ==  %% llistem el nombre de glifs per pàgina
+ (+ + + + + + + + +)=  %% separador de pàgines
+}forall
+
+%%* en base a la ràtio de la taca del traçat harmònic ens cal deduir la ratio de (glifs per línia) x (nombre de línies) = aprox total de glifs de la plana
+MAXglifs sqrt cvi
+{
+%%+ ràtio que ens donarà el nombre de línies per pàgina
+ dup dup 2 sqrt
+ mul mul MAXglifs gt
+ {  %% si supera el nombre màxim, li restem 1 glif a la línia òptima
+  1 sub
+ }
+ {  %% el nombre de línies per pàgina és el nombre de glifs per linia que ara treiem pel prompt multiplicat per arrel de dos (1.41)
+  dup = ( x )= 2 sqrt mul cvi dup = /lAc exch def  %% línies a compaginar per cada pàgina
+  exit  %% sortim quan no se supera el nombre màxim
+ }ifelse
+}loop
+
+%%+ amb el nombre de línies per plana hem d'endreçar el mots línia a línia, a cada plana, aplicant el mateix algoritme () a cadascuna de les arrays de mpp
+[  %% conté les mpp planes amb els mots endreçats linia a línia
+ mpp
+ {  %% forall per endreçar els mots línia a línia i a cada pàgina
+  /mpl [] def  %% array que conté els mots a compaginar per cada línia (tantes arrays com lAc)
+  dup /tm exch def  %% array amb els mots de cada pàgina, on cada paraula és una string
+  dup length /ntdg exch def  %% nombre total de glifs comptant els espais que separen cada paraula
+  {
+   length ntdg add /ntdg exch def
+  }forall
+  ntdg 1 sub lAc idiv /gpl exch def  %% glifs per línia
+
+%%+ un % massa elevat pot fer variar pAc (el que sembla que no falla mai és treballar a tolerància zero)
+  /txcDerror ntdg 1 sub 0.00  %% % màxim de tolerància amb el nombre de glifs (que en sobrin o que en faltin per decidir si canviem de línia)
+  mul ceiling cvi def  %% nombre màxim de glifs que tolerarem que en sobrin o que en faltin al final del recompte de mots per línia
+
+  /admpLinia [] def  %% array de mots per línia
+  /Dmarge 0 def  %% nombre de glifs de marge que encara ens queden per esgotar el nombre màxim de glifs per línia (si el nombre és positiu en sobren i viceversa)
+  0  %% sumador de glifs
+  tm
+  {  %% forall de distribució dels mots per línia
+   dup length 1 add  %% al nombre de glifs li afegim l'espai separador
+   3 -1 roll add gpl 2 copy
+   gt  %% supera el nombre de mots per pàgina?
+   {  %% els supera i ho avaluem
+    2 copy Dmarge sub sub txcDerror gt
+    {  %% si és més gran que el % de tolerància
+     %% desem /admpLinia tal com està dins /mpl i el mot sobrant dins una nova /admpLinia
+     sub /Dmarge exch def  %% com queda /Dmarge?
+     0 exch  %% posem a zero el sumador de glifs
+     mpl dup length dup /araVa exch def 1 add array dup 3 -1 roll 0 exch putinterval
+     dup araVa admpLinia put /mpl exch def
+     1 array astore /admpLinia exch def
+    }
+    {  %% si és més petit o igual que el % de tolerància
+     %% el mot entra dins /admpLinia, la desem dins /mpl i n'estrenem una de nova /admpLinia buida
+%   pstack ESMESPETITOIGUAL
+     sub /Dmarge exch def  %% com queda /Dmarge?
+     0 exch  %% posem a zero el sumador de glifs
+     admpLinia dup length dup /araVa exch def 1 add array dup 3 -1 roll 0 exch putinterval
+     dup 3 -1 roll araVa exch put  %% la desarem dins /mpl
+     mpl dup length dup /araVa exch def 1 add array dup 3 -1 roll 0 exch putinterval
+     dup araVa 4 -1 roll put /mpl exch def
+     /admpLinia [] def  %% inicialitzem l'array de mots per línia
+    }ifelse
+   }
+   {  %% encara no hi arriba, però entra dins el llindar?
+    2 copy Dmarge sub sub abs txcDerror lt
+    {  %% el mot entra dins /admpLinia, la desem dins /mpl i n'estrenem una de nova /admpLinia buida
+     sub /Dmarge exch def  %% com queda /Dmarge?
+     0 exch  %% posem a zero el sumador de glifs
+     admpLinia dup length dup /araVa exch def 1 add array dup 3 -1 roll 0 exch putinterval
+     dup 3 -1 roll araVa exch put  %% la desarem dins /mpl
+     mpl dup length dup /araVa exch def 1 add array dup 3 -1 roll 0 exch putinterval
+     dup araVa 4 -1 roll put
+% pstack entradinsELLLINDAR
+     /mpl exch def
+     /admpLinia [] def  %% inicialitzem l'array de mots per línia
+    }
+    {
+     pop exch
+     admpLinia dup length dup /araVa exch def 1 add array dup 3 -1 roll 0 exch putinterval
+     dup 3 -1 roll araVa exch put /admpLinia exch def
+    }ifelse
+   }ifelse
+  }forall  %% de distribució dels mots per línia
+
+  pop  %% ens carreguem el comptador de glifs
+  %% tancament final
+  admpLinia length 0 ne
+  {  %% si l'array de mots d'1 línia no acaba buit és que encara manca afegir-lo a /mpl
+   mpl dup length dup /araVa exch def 1 add array dup 3 -1 roll 0 exch putinterval
+   dup araVa admpLinia put /mpl exch def
+  }if
+
+  mpl  %% deixem l'array de la pàgina amb el seus mots per línia endreçats
+
+ }forall  %% per endreçar els mots línia a línia i a cada pàgina
+
+] /TOT exch def  %% conté les mpp planes amb els mots endreçats linia a línia
+
+/laPamblaLmesllarga 0 def  %% quina pàgina conté la línia més llarga de glifs i quina és?
+/laMESllarga [0 0] def  %% quina línia és la més llarga i a quina pàgina?
+TOT
+{  %% forall per totes les pàgines
+ laPamblaLmesllarga 1 add /laPamblaLmesllarga exch def
+ {  %% forall per totes le línies
+  /araGLIFSxLinia 0 def  %% sumador de glifs per línia
+  {  %% forall per comptar els glifs de tots els mots d'1 línia
+   length araGLIFSxLinia add
+   1 add  %% espai en blanc separador!
+   /araGLIFSxLinia exch def
+  }forall  %% per comptar els glifs de tots els mots d'1 línia
+  araGLIFSxLinia dup laMESllarga 0 get gt
+  {
+   laPamblaLmesllarga 2 array astore /laMESllarga exch def
+  }
+  {
+   pop
+  }ifelse
+ }forall  %% de totes les línies
+}forall  %% per totes les pàgines
+
+laMESllarga dup ==  %% a l'índex zero se li ha de restar 1 doncs el darrer glif en blanc NO hi ha de ser?
+
+1 get 1 sub TOT exch get  %% pesquem la pàgina amb la línia més llarga
+
+pstack
+
+%% amb aquestes dades ja podrem fer un primer càlcul per compondre amb monoespaiades i a partir d'aquí anem avançant
+
