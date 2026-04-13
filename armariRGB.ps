@@ -1,0 +1,146 @@
+%!
+%% com a mètode d'endreça i lectura dinàmica de colors RGB (amb 3 arrays en nines russes) per evitar repeticions i que pot ser útil tant per a futurs indexats
+%% com per escriure de forma ordenada i en imatges separades la reproducció dels píxels d'una altra imatge
+ 
+
+%% aquesta primera array contindrà el valor de R de forma que si a la posició del valor de color (índex) hi ha una array voldrà dir que el valor R existeix
+%% dins d'aquesta, a la posició d'índex que hi hagi una array és on hi haurà el valor de G i dins d'aquesta a la pòsició d'índex on hi hagi un true el valor de B
+/armariRGB 256 array def
+
+%% un valor RGB a desar l'/armariRGB
+[
+ 127  %% R
+ 0  %% G
+ 255  %% B
+]
+(>>> DESO 1 COLOR RGB... )print flush dup ==
+/pixelRGB exch def
+
+%% l'array /armariRGB per a un negre RGB 0 0 0 faria
+%[
+% [  %% 0 R
+%  [  %% 0 G
+%   true  %% 0 B
+%   ...
+%  ]
+%  null
+%  ...
+% ]
+% null
+% ...
+%]
+
+pixelRGB aload pop
+%% capturem el valor de l'octet per a cadascun dels canals
+/Boctet exch def
+/Goctet exch def
+/Roctet exch def
+
+%% quan desa 1 color RGB a 8 bits nou és quan construeix la o les array(s) de l'estructura en nines russes d'/armariRGB
+%% si ja existeix, llavors no el desa però sí que hauria d'anotar en una array el seu índex (desat a B) on s'indexin les posicions dels colors trobats
+%% perquè desi tots els colors s'hi haurien d'afegir les comprovacions prèvies d'existència [] o no null de cada valor i tot plegat dins un loop 
+%% tal i com està només és vàlid per a 1 sol color!
+armariRGB Roctet get null eq
+{  %% només si el valor de R no existeix seguim per bastir els altres 2 arrays de G i B
+ 256 array dup  %% l'array de G si no existeix B
+ 256 array dup  %% l'array de B si no existeix G
+ Boctet 0 put  %%EP! hauríem de desar aquí un índex si hi ha un null (o sigui que no existeix)
+ Goctet exch put  %% desem l'array de B al valor de G
+ armariRGB exch Roctet exch put  %% desem l'array de R al seu valor
+}
+{  %% R ja existeix 
+ 
+}ifelse
+
+
+%% cal veure si ens estalviaria temps d'execució comprovar abans si el color que hem de desar dins /armariRGB ja existeix
+%armariRGB
+%pixelRGB 0 get get  %% valor de R com a índex  %% en cas que el duplicat fos provable aquí hi hauria una array
+%pixelRGB 1 get get  %% valor de G com a índex  %% en cas que el duplicat fos provable aquí hi hauria una array
+%pixelRGB 2 get get  %% valor de B com a índex  %% en cas que el duplicat es confirmés aquí ens arribaria un índex
+%pstack quit
+
+
+%% lector de color RGB
+0 1 255
+{  %% for llegeix R
+ dup armariRGB exch get dup null ne
+ {
+  /aGB exch def
+  /llegitR exch def
+  0 1 255
+  {  %% for llegeix G
+   dup aGB exch get dup null ne
+   {
+    /aB exch def
+    /llegitG exch def
+    0 1 255
+    {  %% for llegeix B
+     dup aB exch get dup null ne
+     {
+      pop /llegitB exch def exit
+     }
+     {
+      pop pop
+%(B) pstack quit
+%BENENDINS
+     }ifelse
+    }for
+   }
+   {
+    pop pop
+%(G)pstack quit
+%ENDINSENMI
+   }ifelse
+  }for
+ }
+ {
+  pop pop
+%(R)pstack quit
+%ARASOMAQUI
+ }ifelse
+}for
+
+%% s'haurien d'escriure en una array indexada i simultàniament?
+(\n>>> HE LLEGIT:\n)print flush
+llegitR 3 string cvs print flush ( ...R\n)print flush
+llegitG 3 string cvs print flush ( ...G\n)print flush
+llegitB 3 string cvs print flush ( ...B\n)print flush
+
+%% per a fer un lector d'ìndex de colors potser seria útil crear un lector en nines russes
+%% per exemple, aquest seria l'aspecte de les nines russes d'/armariRGB:
+%[  %% un cop desats tots els colors d'una determinada imatge només faria falta llegir aquesta array penetrant cap endins per deduir-los altra cop
+% [  %% 0 R
+%  [  %% 0 G  %% llegint cadascuna d'aquestes arrays en tindríem prou per muntar els 3 octets de cada color RGB en un mapa únic i indexat
+%   0  %% 0 B
+%   null
+%   null
+%   1
+%   2  %% índex del color RGB per ordre d'aparició
+%   null
+%   8
+%   null
+%   4
+%   5
+%   9
+%   ...
+%   null  %% 255
+%  ]
+%  null
+%  [
+%   3
+%   null
+%   null
+%   6
+%   ...
+%   7
+%   null
+%  ]
+%  ...
+%  null  %% 255
+% ]
+% null
+% ...
+% null  %% 255
+%]
+

@@ -1,0 +1,33 @@
+[		%% array /RGBunics o array de valors de R
+ [		%% índex on es situa el valor de R
+  [		%% índex on es situa el valor de G
+   null
+   ...
+   null
+   2		%% índex on es situa el valor de B com a índex del color RGB sencer: 0000FF
+  ]
+  null
+  ...
+  null
+  [		%% índex on es situa el valor de G
+   1		%% índex on es situa el valor de B com a índex del color RGB sencer: 00FF00
+   null
+   ...
+   null
+  ]
+ ]
+ null
+ ...
+ null
+ [		%% índex on es situa el valor de R
+  [		%% índex on es situa el valor de G
+   0		%% índex on es situa el valor de B com a índex del color RGB sencer: FF0000
+   null
+   ...
+   null
+  ]
+  null
+  ...
+  null
+ ]
+]

@@ -1,0 +1,33 @@
+Exemple de com queda desat el color RGB <fffe00 fffe01 fefe01>
+
+[		%% array /RGBunics o array de R
+ null
+ ...
+ null 
+ [		%% índex on es situa el valor de R: FE
+  null
+  ...
+  null
+  [		%% índex on es situa el valor de G: FE
+   null
+   2		%% índex on es situa el valor de B: 01 com a índex del color RGB sencer: FEFE01
+   null
+   ...
+   null
+  ]
+  null
+ ]
+ [		%% índex on es situa el valor de R: FF
+  null
+  ...
+  null
+  [		%% índex on es situa el valor de G: FE
+   0		%% índex on es situa el valor de B: 00 com a índex del color RGB sencer: FFFE00
+   1		%% índex on es situa el valor de B: 01 com a índex del color RGB sencer: FFFE01
+   null
+   ...
+   null
+  ]
+  null
+ ]
+]

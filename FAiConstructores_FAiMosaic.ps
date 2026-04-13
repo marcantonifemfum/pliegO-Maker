@@ -1,0 +1,112 @@
+%!
+%% llegeix i escriu a disc les imatges iConstructores i iMosaic resultants de 2 arrays indexades al valor d'1 píxel RGB
+
+[  %% ADEU! X x Y imatges a 8 bits
+ 0 0 0 1 0 0 0   0   1 1 1 1 0 0 0   0   1 1 1 1 1 1 0   0   1 0 0 0 0 0 1   0   0 0 0 1 1 0 0
+ 0 0 1 1 1 0 0   0   1 0 0 0 1 1 0   0   1 0 0 0 0 0 0   0   1 0 0 0 0 0 1   0   0 0 0 1 1 0 0
+ 0 0 1 0 1 0 0   0   1 0 0 0 0 0 1   0   1 0 0 0 0 0 0   0   1 0 0 0 0 0 1   0   0 0 0 1 1 0 0
+ 0 1 0 0 0 1 0   0   1 0 0 0 0 0 1   0   1 1 1 1 0 0 0   0   1 0 0 0 0 0 1   0   0 0 0 1 1 0 0
+ 0 1 1 1 1 1 0   0   1 0 0 0 0 0 1   0   1 0 0 0 0 0 0   0   0 1 0 0 0 1 0   0   0 0 0 1 1 0 0
+ 1 0 0 0 0 0 1   0   1 0 0 0 0 0 1   0   1 0 0 0 0 0 0   0   0 1 0 0 0 1 0   0   0 0 0 0 0 0 0
+ 1 0 0 0 0 0 1   0   1 0 0 0 1 1 0   0   1 0 0 0 0 0 0   0   0 1 0 0 0 1 0   0   0 0 0 1 1 0 0
+ 1 0 0 0 0 0 1   0   1 1 1 1 0 0 0   0   1 1 1 1 1 1 1   0   0 0 1 1 1 0 0   0   0 0 0 1 1 0 0
+] /iiConstructores exch def  %% array d'índex per a 39x8=312 imatges constructores (/iConstructore) del mosaic (/iMosaic) DaaaLí
+
+[  %% HOLA? 1 sola imatge a 8 bits
+ 1 0 0 0 0 0 1   0   0 0 1 1 1 0 0   0   1 0 0 0 0 0 0   0   0 0 0 1 0 0 0   0   0 1 1 1 1 0 0
+ 1 0 0 0 0 0 1   0   0 1 0 0 0 1 0   0   1 0 0 0 0 0 0   0   0 0 1 1 1 0 0   0   1 0 0 0 0 1 0
+ 1 0 0 0 0 0 1   0   1 0 0 0 0 0 1   0   1 0 0 0 0 0 0   0   0 0 1 0 1 0 0   0   0 0 0 0 0 0 1
+ 1 0 0 0 0 0 1   0   1 0 0 0 0 0 1   0   1 0 0 0 0 0 0   0   0 1 0 0 0 1 0   0   0 0 0 0 0 1 0
+ 1 1 1 1 1 1 1   0   1 0 0 0 0 0 1   0   1 0 0 0 0 0 0   0   0 1 1 1 1 1 0   0   0 0 0 0 1 0 0
+ 1 0 0 0 0 0 1   0   1 0 0 0 0 0 1   0   1 0 0 0 0 0 0   0   1 0 0 0 0 0 1   0   0 0 0 1 0 0 0
+ 1 0 0 0 0 0 1   0   0 1 0 0 0 1 0   0   1 0 0 0 0 0 0   0   1 0 0 0 0 0 1   0   0 0 0 0 0 0 0
+ 1 0 0 0 0 0 1   0   0 0 1 1 1 0 0   0   1 1 1 1 1 1 1   0   1 0 0 0 0 0 1   0   0 0 0 1 0 0 0
+] /iiMosaic exch def  %% array d'index per a una imatge que acturarà de mosaic (/iMosaic) base a DaaaLí de 39x8 píxels
+
+%% pintem la imatge 39x8 iMosaic
+[  %% 2 valors indexats RGB a 8 bits d'1 píxel d'imatge iMosaic
+ <FFFFFF>  %% 0 blanc
+ <999999>  %% 1 gris
+] /imosaicRGB exch def
+
+<</PageSize[390 80]>>setpagedevice
+/DeviceRGB setcolorspace
+
+0 0 translate
+390 80 scale
+
+39 8 8  %% píxels d'ample, píxels d'alt i bits per píxel
+[39 0 0 -8 0 8]  %% matriu 39x8
+{  %%ATENCIÓ: si el codi que munta la cadena amb els valors RGB dels píxels té un error de sintaxi
+ %% situats aquí, l'intèpret no ens el reportarà amb detall i només ens traurà un undefined associat a colorimage
+ iiMosaic length 3 mul string /cbufa exch def
+ cbufa /NullEncode filter /fbufa exch def
+ iiMosaic
+ {  %% farcim via índex la cadena de píxels
+  imosaicRGB exch get fbufa exch writestring
+ }forall
+ fbufa dup flushfile closefile
+ %% 39x8 píxels a 8 bits per canal RGB
+ cbufa
+
+ %% escrivim el RAW de la imatge de 39x8 píxels (312x3=936 octets)
+ (iMosaic/___.RAW)  %% directori relatiu amb màscara d'on desarem la imatge mosaic
+ (w) file dup dup cbufa writestring flushfile closefile
+}
+false
+3
+colorimage
+showpage
+
+
+%% pintem les 39x8 imatges iConstructores
+[  %% 2 valors indexats RGB a 8 bits d'1 píxel d'imatge iMosaic
+ <FFFF00>  %% 0 groc
+ <0000FF>  %% 1 blau
+] /iconstructoresRGB exch def
+
+<</PageSize[390 80]>>setpagedevice
+/DeviceRGB setcolorspace
+
+/costat 10 def
+80 costat sub /araY exch def  %% inici Y de la primera imatge a UL
+0 /ii exch def  %% índex de l'índex a l'array iiConstructores
+
+0 1 7  %% les 8 fileres d'imatges
+{  %% for per cada filera
+ /iFil exch def
+ 0 1 38  %% les 39 columnes d'imatges
+ {  %% for per cada columna
+  %dup
+  costat mul /araX exch def  %% posició X de la imatge
+  ii iiConstructores exch get  %% índex RGB
+  iconstructoresRGB exch get /araRAW exch def  %% valor del píxel RGB
+  
+  %% escrivim el RAW de cadascuna de les tessel·les d'imatge d'1x1 píxels (39x8= 312 imatges de 3 octets)
+  (iConstructores/)  %% directori relatiu amb màscara d'on desarem les imatges constructores
+  dup length dup /araVa exch def ii 3 string cvs dup length 3 -1 roll add dup /araVa2 exch def 4 add string dup
+  4 -1 roll 0 exch putinterval dup 3 -1 roll araVa exch putinterval %dup araVa2 (.RAW) putinterval
+  %% els noms dels fitxers han de ser purament numèrics (sense màscares de farciment) perquè la funció posterior que els ordena treballi bé
+  (w) file dup dup araRAW writestring flushfile closefile
+
+  gsave
+  araX araY translate
+  costat dup scale
+  1 1 8  %% píxels d'ample, píxels d'alt i bits per píxel
+  [1 0 0 -1 0 1]  %% matriu 1x1
+  {
+   araRAW 
+  }
+  false
+  3
+  colorimage
+  grestore
+  ii 1 add /ii exch def
+ }for
+ araY costat sub /araY exch def  %% nova posició de Y de la imatge de dalt cap a baix
+}for
+
+showpage
+
+(BROSSA?)pstack
+
