@@ -1,0 +1,10 @@
+___GNUfemfumDaaaLi (protocol, assajos, etc.)
+
+>> al B&O desem tot el codi històric i l'actual a... C:\Users\Marc Antoni\UB\FIMA\eixorbar\DaaaLi
+>> al UB205 PAU 85907 a...
+>> GitHub... 
+
+>> marquem amb un * el què encara hi ha pendent d'experimentar d'aquesta estratègia
+
+	GNUfemfumDaaaLi_ESH_FIMAeixorbar.ps
+

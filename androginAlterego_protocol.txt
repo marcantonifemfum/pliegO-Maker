@@ -1,0 +1,76 @@
+___androginAlterego (protocol, assajos, etc.)
+
+>> al B&O desem tot el codi històric i l'actual a... C:\Users\Marc Antoni\UB\FIMA\eixorbar\androginAlterego
+>> al UB205 PAU 85907 a...
+>> GitHub... 
+
+>> marquem amb un * el que hauríem d'experimentar en un futur d'aquesta estratègia
+
+	alterego2_ESH_FIMAeixorbar.ps
+
+>> execució al B&O per línia de comanda a GPL Ghostscript 10.06.0 (2025-09-09)
+gswin64c -q -dNOSAFER -o androginAlterego_000.pdf -sDEVICE=pdfwrite -f alterego2_ESH_FIMAeixorbar.ps
+
+
+>> breu de com treballa i quin estàndard fa servir:
+
+	al codi .ps
+s'hi han de posar els valors en manual:
+del path a les 2 imatges (pantalla/impressora), que han d'estar en JPEG compatible (per ser coherents i no tenir sorpreses, d'entrada a la mateixa resolució), també l'ample i alt en píxels d'ambdues, atents a l'espai de color
+també cal veure que quadri la ràtio del format de pàgina definit amb l'ample/alt de les 2 imatges
+també podem ajustar el DOCINFO
+també podríem activar-hi una màscara complementària (ara està desactivada l'entrada /Mask al diccionari de la imatge alternativa)
+
+	comportament de l'intèrpret GPL Ghostscript 10.06.0 (2025-09-09)
+escriu el codi PDF a la versió 1.7
+escriu a la capçalera del PDF una derivada de la línia de comanda
+%%Invocation: path/gswin64c.exe -dDisplayFormat=198788 -dDisplayResolution=192 -q -dNOSAFER ? ? -sDEVICE=pdfwrite -f ?
+ATENCIÓ: els paths que arrosseguem de Windows ens cal canviar els separadors en contrabarra \ a la barra/slash / a totes lea adreces de codi
+els paths que duguin espais en blanc ens cal escapar-los amb... \ ...exemple (Marc\ Antoni)
+
+	PDF Reference 1.7
+es descriu aquesta funció a la pàg.347 apartat Alternate Images | taula 4.41 | exemple 4.29 a la pàgina següent
+
+
+>> qui determina el comportament d'aquesta estratègia?
+
+	el codi PS?
+
+	el codi PDF?
+
+	el Viewer?
+
+	el llenguatge de la impressora?
+
+
+>> aspectes importants a considerar
+	el codi PDF de la imatge per pantalla apunta a l'alternativa per imprimir i duu un gatell /DefaultForPrinting true que podríem desactivar com un simple interruptor, si ens convingués, amb un repicat a CaLi2CoPi*
+		/Alternates [<</Image  8 0 R /DefaultForPrinting true /OC # # R>>]
+	també hi hauria la possibilitat de tenir-ne diverses amb diccionaris diversos dins l'array /Alternates on només 1 estigués a true?*
+	noteu que en aquest diccionari també s'hi pot incloure la clau /OC per vincular-ho a una capa de comportaments X*
+
+	cal experimentar com li afecta un canvi de resolució, escala i ratio*
+
+	cal experimentar les diverses impressores virtuals que tingui l'entorn des d'on imprimim*
+	al B&O en tenim 3: Adobe PDF, Microsoft Print to PDF, Microsoft XPS Document Writer
+
+>> primer resultat androginAlterego_000.pdf (4224 Kb està liniaritzat?*)
+
+	B&O MSWindows 11 Enterprise
+
+		l'obrim amb Acrobat Pro DC v.2025.001.21288 | 64-bit
+			la imatge que veiem per pantalla és correctament el manifest d'Ulises Carrión
+		fem una impressió virtual amb els valors per defecte de la impressora Adobe PDF: androginAlterego_000_repicatImpres.pdf
+			la imatge que veiem per pantalla és la imatge alternativa "Oficina de Detención y Deportación de Estados Unidos"
+			cal destacar que el seu pes ha baixat dràsticament a 123 Kb doncs el tou de dades de la imatge alternativa d'impressió
+			ha estat repicat a Flate (la imatge per pantalla ha desaparegut) mantenint la resolució al 100%, i optimitzant les dades
+			de color amb un indexat a CMYK (anàlisi fet amb amb CaLi2CoPi 0)
+
+>> segon resultat androginAlterego_001_OCR.pdf (1133)
+
+	obrim androginAlterego_000.pdf amb Acrobat Pro DC v.2025.001.21288 | 64-bit
+	al demanar-nos si volem que li passi l'OCR li diem que sí i ens deixa triar una resolució de downsampling (600, 300, 150, 72) triem 600 (hauríem de veure si això realment suposa o no una reducció en relació a la que tenia?) sense més opcions extra d'edició d'imatge i text, i tornem a guardar-la com a... androginAlterego_001_OCR.pdf (ens el desa amb FWV i cal veure si també està *liniaritzat)
+	> cal passar-lo pel CaLi2CoPi per comprovar que només llegeix la imatge de la pàgina 1 i quina estratègia fa servir amb el render del text?
+
+
+
