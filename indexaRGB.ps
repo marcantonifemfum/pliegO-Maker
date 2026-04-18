@@ -1,0 +1,263 @@
+%!
+%% llegirà un fitxer JPEG RGB i el passarà a RAW i llegirà píxel a píxel els 3 canals de color per indexar-ne el valor
+%% construint per una banda la gamma de colors únics indexats /nRGB i per l'altra el mapa d'índex de colors /aiPIXELS de cadascun dels píxels de la imatge
+%% quan aprofitem aquest algorisme per generar l'ofuscador DaaaLí, /aiPIXELS i /nRGB hauran de servir per escriure les /iConstructores
+
+%% aquí hi haurà d'anar el lector de JPEG que ens dirà si és RGB i quins píxels d'ample i alt té la imatge
+%% de moment treballem en manual
+/piX 8 def  %% píxels d'ample
+/piY 8 def  %% píxels d'alt
+
+%% aquí hi haurà d'anar el RAW RGB extret
+<
+ffff00 ffff00 ffff00 ff00ff ffff00 ffff00 ffff00 ffff00
+ff0000 ffff00 ffff00 ffff00 ffff00 ffff00 ff0000 ffff00
+ff0000 ff0000 ff0000 ff0000 ff0000 ff0000 ff0000 ffff00
+ffff00 ffff00 ffff00 00ff00 ffffff ffff00 ffff00 ffff00
+ffff00 ffff00 ffff00 0000ff 00ffff ffff00 ffff00 ffff00
+ffff00 ff0000 ff0000 ff0000 ff0000 ff0000 ff0000 ff0000
+ffff00 ff0000 ffff00 ffff00 ffff00 ffff00 ffff00 ff0000
+ffff00 000000 ffff00 ffff00 ffff00 ffff00 ffff00 000000
+>  %% ninot
+
+%pop  %% ens carreguem el ninot ara?
+
+%% casos de lectura que hem de resoldre per a 3 colors diferents i consecutius
+%<ff0000 00ff00 0000ff>
+%<ff0000 ff0100 ff0101>
+%<fffe00 fffe01 fefe01>
+%<fffe00 fffe01 caca>  %% RAW fallit
+
+/elRAW exch def
+
+%% treballant en RGB bastim un sistema de 3 arrays en nines russes on desarem els valors RGB únics a mida que els anem llegint del RAW
+%% a la tercera array és on sempre hi haurà el valor d'índex del color únic que, en 3 octets, desarem a /nRGB i el seu índex a /aiPIXELS
+%% de manera que un cop construit /RGBunics podríem deduir de nou tots els valors únics de color utilitzats per la imatge explorada
+/RGBunics 256 array def
+
+/araRGB 3 string def  %% buffer de 3 octets amb el valor decimal RGB d'1 píxel que desarem a /nRGB
+
+/nRGB 256 array def  %% gamma cromàtica (magatzem inicial) de 256 colors indexats únics
+
+piX piY mul array /aiPIXELS exch def  %% array pel RAW d'índex de colors (posicions a /nRGB) de cadascun dels píxels de la imatge
+
+/iRGB -1 def  %% inici del comptador d'índex de colors
+/iPIX 0 def  %% comptador d'índex de píxels
+
+%% capturem el valor de l'octet per a cadascun dels canals, píxel a píxel
+elRAW 0 () /SubFileDecode filter /fRAW exch def
+{  %% loop de lectura tot el fitxer
+
+ {  %% loop de lectura dels 3 canals d'1  píxel
+  fRAW read
+  {  %% llegim R
+   /Roctet exch def
+   fRAW read
+   {  %% llegim G
+    /Goctet exch def
+    fRAW read
+    {  %% llegim B
+     /Boctet exch def
+     false exit
+    }
+    {
+     /llegit true def
+     true exit
+    }ifelse
+   }
+   {
+    /llegit true def
+    true exit
+   }ifelse
+  }
+  {
+   /llegit false def
+   true exit
+  }ifelse
+ }loop  %% de lectura dels 3 canals d'1 píxel
+
+ {  %% som al final del fitxer o NO ha anat bé la lectura?
+  llegit
+  {  %% RAW fallit, NO ha anat bé la lectura?
+   (\n\n >>> NO HA ANAT BE LA LECTURA! hi ha un valor RGB estroncat? <<<\n\n)print flush
+  }if
+  exit
+ }
+ {  %% no som al final del fitxer
+  %% quan desa 1 color RGB a 8 bits nou és quan construeix la o les array(s) de l'estructura en nines russes dins /RGBunics
+  %% si ja existeix, llavors no el desa però sí que hauria d'anotar a /aiPIXELS el seu índex (desat a B) on s'indexin les posicions dels colors trobats
+  RGBunics Roctet get null eq
+  {  %% només si el valor de R no existeix seguim per bastir els altres 2 arrays de G i B
+(la_R_noEXISTEIX llavors aquest color RGB TAMPOC!)==
+   iRGB 1 add /iRGB exch def  %% el comptador de colors només s'actualitza quan se'n confirma un de nou
+
+   256 array dup  %% creem l'array de G si no existeix R
+   256 array dup  %% creem l'array de B si no existeix G
+   Boctet iRGB put  %% desem l'índex del nou color a l'índex com a valor de B dins l'array de B
+   Goctet exch put  %% desem l'array de B a l'índex com a valor de G dins l'array de R
+   RGBunics exch Roctet exch put  %% desem l'array de R a l'índex de /RGBunics com a valor
+
+   %% desem els 3 octets del nou color RGB al buffer /araRGB
+   araRGB dup dup 0 Roctet put 1 Goctet put 2 Boctet put
+   %% hem superat els 256 colors diferents?
+   iRGB 256 ge  %% a 8 bits mai no podrem indexar més de 256 colors, doncs la mida màxima de /nRGB ve condicionada per la fondària de bits per píxel i color
+   {  %% aquí aturem la feina!
+    (\n\n>>> HEM SUPERAT ELS 256 COLORS PERMESOS A INDEXAR! ...per indexar aquesta imatge ens cal treballar a 12 bits, pleguem! <<< \n\n)print flush quit
+   }
+   {  %% desem els 3 octets del píxel a l'índex del color que li toca dins /nRGB
+    nRGB iRGB araRGB dup length string copy put
+   }ifelse
+   %% desem l'índex de color al píxel que li toca
+   aiPIXELS iPIX iRGB put
+   iPIX 1 add /iPIX exch def  %% comptador de píxels
+  }
+  {  %% R ja existeix 
+   %% si la R ja existeix hauríem de saber si la G també
+(la_R_jaEXISTEIX! i la G?)==
+   RGBunics Roctet get Goctet get null eq
+   {
+(la_G_noEXISTEIX llavors aquest color RGB TAMPOC!)== %quit
+    iRGB 1 add /iRGB exch def  %% el comptador de colors només s'actualitza quan se'n confirma un de nou
+    %% desem el valor R G B 
+    RGBunics Roctet get dup  %% extraiem l'array situada al valor de R
+    %% li fiquem el nou array situat al valor de G amb l'índex del color al valor de B
+    Goctet 256 array dup Boctet iRGB put put
+    %% desem finalment a l'índex del valor de R dins /RGBunics
+    RGBunics exch Roctet exch put
+    %% RGBunics ===  %% podem comprovar-ho
+
+    %% desem els 3 octets del nou color RGB al buffer /araRGB
+    araRGB dup dup 0 Roctet put 1 Goctet put 2 Boctet put
+    %% hem superat els 256 colors diferents?
+    iRGB 256 ge  %% a 8 bits mai no podrem indexar més de 256 colors, doncs la mida màxima de /nRGB ve condicionada per la fondària de bits per píxel i color
+    {  %% aquí aturem la feina!
+     (\n\n>>> HEM SUPERAT ELS 256 COLORS PERMESOS A INDEXAR! ...per indexar aquesta imatge ens cal treballar a 12 bits, pleguem! <<< \n\n)print flush quit
+    }
+    {  %% desem els 3 octets del píxel a l'índex del color que li toca dins /nRGB
+     nRGB iRGB araRGB dup length string copy put  %% profilaxi abans de desar!
+    }ifelse
+    %% desem l'índex de color al píxel que li toca
+    aiPIXELS iPIX iRGB put
+    iPIX 1 add /iPIX exch def  %% comptador de píxels
+   }
+   {  %% si la G ja existeix hauríem de saber si la B també
+(la_G_jaEXISTEIX! i la B?)==
+    RGBunics Roctet get Goctet get Boctet get dup
+    null eq  %% aquest darrer valor és el que defineix si definitivament tenim un color repetit o no 
+    {
+     pop  %% ens carreguem l'índex del color
+(la_B_noEXISTEIX llavors aquest color RGB TAMPOC!)== %quit
+     iRGB 1 add /iRGB exch def  %% el comptador de colors només s'actualitza quan se'n confirma un de nou
+     %% desem el valor R G B d'una manera més simplificada automàticament a /RGBunics per l'efecte dels 'composite objects'
+     RGBunics Roctet get  %% extraiem l'array situada al valor de R
+     Goctet get  %% extraiem l'array situada al valor de G
+     Boctet iRGB put  %% fiquem a l'índex del valor de B el valor de l'índex del color RGB
+
+     %% desem els 3 octets del nou color RGB al buffer /araRGB
+     araRGB dup dup 0 Roctet put 1 Goctet put 2 Boctet put
+     %% hem superat els 256 colors diferents?
+     iRGB 256 ge  %% a 8 bits mai no podrem indexar més de 256 colors, doncs la mida màxima de /nRGB ve condicionada per la fondària de bits per píxel i color
+     {  %% aquí aturem la feina!
+      (\n\n>>> HEM SUPERAT ELS 256 COLORS PERMESOS A INDEXAR! ...per indexar aquesta imatge ens cal treballar a 12 bits, pleguem! <<< \n\n)print flush quit
+     }
+     {  %% desem els 3 octets del píxel a l'índex del color que li toca dins /nRGB
+      nRGB iRGB araRGB dup length string copy put
+     }ifelse
+     %% desem l'índex de color al píxel que li toca
+     aiPIXELS iPIX iRGB put
+     iPIX 1 add /iPIX exch def  %% comptador de píxels
+    }
+    {  %% si la B ja existeix només hauríem de desar l'índex de color al píxel que toca
+     %% desem l'índex de color al píxel que li toca
+     aiPIXELS iPIX %iRGB
+     3 -1 roll put  %% aquí desem l'índex de color que es repeteix
+     iPIX 1 add /iPIX exch def  %% i actualitzem el comptador de píxels
+(la_B_jaEXISTEIX!)==
+    }ifelse
+   }ifelse
+  }ifelse  %% aquest color existeix?
+ }ifelse  %% som al final del fitxer?
+}loop  %% de lectura tot el fitxer
+
+%aiPIXELS
+%nRGB
+%iRGB pstack quit
+
+%% com podem avaluar visualment que la feina s'ha fet correctament?
+%% podríem posar de costat les 2 imatges: la llegida del JPEG/RAW i la llegida en base a les dades indexades
+
+%% la indexada
+%% posem el mapa de la gamma de colors RGB en 1 sola string
+3 iRGB 1 add mul string /lookupRGB exch def
+%% string com a buffer pel fitxer d'escriptura
+lookupRGB /NullEncode filter /rBUTI exch def
+%% escriu la gamma de colors dins l'string
+nRGB
+{
+ dup null eq
+ {
+  pop exit
+ }
+ {
+  rBUTI exch writestring
+ }ifelse
+}forall
+rBUTI dup flushfile closefile
+
+gsave
+%% cridem l'espai de color indexat per reproduir la imatge indexada
+[
+ /Indexed
+ /DeviceRGB  %% espai de color amb que treballa la lookupRGB
+ iRGB  %% el valor més alt d'índex del color indexat en aquest cas a lookupRGB
+ lookupRGB  %% aquí és una string però també podria ser un procediment {}
+] setcolorspace
+
+%% exemple de com cridar colors plans indexats entre 0 i iRGB
+%% 1 setcolor 10 10 100 100 rectfill
+
+%% la imatge indexada
+0 0 translate
+300 300 scale
+<<
+  /ImageType 1
+  /Width piX
+  /Height piY
+  /ImageMatrix [piX 0 0 piY neg 0 piY]
+  /Decode [0 iRGB]  %% el segon valor d'aquesta array ha de ser també el avlor més alt d'índex
+  /DataSource
+  %% repiquem l'array d'índex de colors, píxel a píxel, en una string d'1 octet per cada color repartits entre 0 i 255
+  aiPIXELS dup length string dup /BUFF exch def /NullEncode filter /touRAW exch def
+  {  %% treballant a 8 bits els índex per color s'han de repartir entre 0 i 255 doncs la lògica mana que cada octet treballi com a índex per cada color RGB
+   touRAW exch 255 iRGB idiv mul write  %% això fa que la gamma de colors indexable quedi limitada pel rang de la fondària del color
+   %% de manera que la gamma de 256 colors només la podem ampliar treballant els píxels per color a 12 bits, cosa que ens permetria un rang entre 0 i 4095
+  }forall
+  touRAW dup flushfile closefile BUFF
+  /BitsPerComponent 8  %% treballant a 8 bits només podem indexar fins a 256 colors, treballant a 12 bits en podem indexar fins a 4096 
+>> image
+grestore
+
+(\n\n >>> aquesta imatge te... )print flush iRGB 1 add 3 string cvs print flush ( ...colors\n\n)print flush
+%% purguem l'array de nulls per tal que nRGB tingui només els valors decimals RGB indexats
+nRGB 0 iRGB 1 add getinterval ===
+%% aquí l'array de píxels amb el color indexat
+aiPIXELS ===
+
+%% la imatge SENSE indexar
+gsave
+/DeviceRGB setcolorspace
+0 300 translate
+300 300 scale
+<<
+  /ImageType 1
+  /Width piX
+  /Height piY
+  /ImageMatrix [piX 0 0 piY neg 0 piY]
+  /Decode [0 1 0 1 0 1]
+  /DataSource elRAW
+  /BitsPerComponent 8
+>> image
+grestore
+
+showpage
+

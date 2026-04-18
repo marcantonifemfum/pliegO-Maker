@@ -1,0 +1,47 @@
+
+
+    **** Breu Ajuda de FemFum DaaaLí v.1.0.05 Beta ****
+
+Aquesta es una eina que, inspirada en els retrats generats per Salvador Dalí sobre el rostre d'Abraham Lincoln, automatitza el procés de reproducció d'una imatge de baixa resolució per mitjà d'una col·lecció d'imatges a més alta resolució.
+
+
+__De Com Treballa DaaaLí__
+
+# Escrit en llenguatge PostScript 3, genera com a resultat un fitxer PDF o un JPEG a la resolució adequada per a ser imprès.# Totalment multiplataforma (Win, Mac, Unix/Linux), s'executa des del servidor per mitjà d'un navegador Web, sota una interfície HTML+PHP i un intèrpret Ghostscript.
+# Treballa amb fitxers d'imatge en format JPEG.
+# Treballa en espai de color RGB.
+# Podem triar les imatges que construiran el DaaaLigrama (pas 5)
+# Podem regular el rang de contrast del color de les imatges constructores (pas 4).
+# Les imatges constructores condicionen la mida final del mural (pas 3).
+# Podem triar un PDF o un JPEG de sortida a la resolució adequada (pas 2).
+# Podem composar aleatòriament les imatges (pas 2).
+# Podem cavalcar les imatges de forma regular o irregular (pas 2).
+# La calibració de color s'aconseguiex per mitjà de corbes de transferència.
+# Podem escollir la imatge de base del mural (pas 1).
+
+
+__Molt Important Pel Que Fa a les Imatges Utilitzades a DaaaLí__
+
+# Els mosaics d'imatge només tenen sentit visual si treballem en gran format. Doncs alhora, podrem veure d'aprop les imatges petites que construeixen el mural i de lluny la imatge general que es forma de la suma de totes elles.
+# Per aconseguir uns bons resultats, les imatges constructores han de tenir com a mínim d'un centímetre de costat. Si voleu fer càlculs sobre el paper, heu de saber que 1 cm = 28.35 punts.
+# Per exemple, per reproduir en un A3 aconsellaríem treballar en una imatge de base de 42x30 píxels i amb les imatges constructores a 28.35 punts. No aconsellem treballar amb una imatge de base mes enllà dels 150x150 píxels. Un bon mosaic d'imatges ha d'aconseguir tenir un bon efecte a curta i a llarga distància.
+# Els fitxers JPEG han d'estar en RGB i cal tenir cura, al desar-los, d'escollir l'opció "Línia de Base Estàndard" a l'editor d'imatge (p.e. Adobe Photoshop). Si no es així, DaaaLí ens donarà un missatge d'error per la pantalla d'execució.
+# Les imatges constructores poden tenir tota la resolució que necessitem (variable segons la mida i el sistema de reproducció).
+
+
+__Molt Important Pel Que Fa a la Visualització i Reproducció dels Mosaics Fets per DaaaLí__
+
+# Podem tenir la sorpresa que al visualitzar el fitxer PDF del Mosaic d'Imatges, perdem tota la calibració de color (funcions de transferència) i la imatge base del mural desaparegui. Això ens pot passar per exemple, si obrim el PDF amb l'eina Preview del MacOSX. No ens passarà mai si obrim el PDF amb l'AdobeReader o amb les darreres versions del GhostView (v.4.9).
+# Podem tenir la sorpresa que al reproduir (imprimir) el Mosaic d'Imatges, perdem tota la calibració de color (funcions de transferència) i la imatge base del mural desaparegui. Si es així, haurem de generar un JPEG en comptes del PDF o imprimir el PDF amb una impressora NO PostScript. També és una bona solució imprimir el PDF com a imatge (aquesta opció sol estar dins les opcions avançades del menú d'impressió). Només els intèrprets PostScript (RIP) d'alt nivell són capaços d'interpretar correctament les corbes de transferència dinàmiques.
+# Aconsellem NO intentar obrir el PDF del Daaaligrama amb l'AdobePhotoshop (qualsevol versió), doncs molt probablement es quedarà 'penjat' indefinidament. Aquest és encara un fitxer massa complex per Photoshop.# Si volem importar el Daaaligrama des d'una altra aplicació, aconsellem fer-ho a través del JPEG de sortida o com a EPS, si des de l'Acrobat Professional obrim el PDF i fem: Exportar (Acrobat 4) o Anomenar i Desar (Acrobat 5 o +). Recordem que també es pot generar un EPS imprimint, si el manejador d'impressió (driver) ens ho permet.
+
+
+__Pel Que Fa al Navegador Que Utilitzeu a l'Executar Aquest Aplicatiu__
+
+# En qualsevol plataforma, aconsellem utilitzar el navegador Mozilla Firefox degut a que és l'únic que ens permet visualitzar el procés d'execució en temps real al servidor. Un cop alliberada la primera pantalla per la puja dels fitxer de treball, podrem seguir pas a pas tots els missatges i el procés d'execució, en una segona pantalla fins a la seva finalització.
+# Si en canvi utilitzeu els navegadors Safari o MS Internet Explorer, no us serà mostrada la segona pantalla d'execució fins que aquesta hagi finalitzat la feina completament.
+
+
+
+    Copyright (c) 2002-2008 Marc Antoni Malagarriga i Picas
+    <http://www.femfum.com> | <marcantoni@femfum.com>

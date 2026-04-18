@@ -1,0 +1,21 @@
+    FemFum DaaaLí v.1.0.05 Beta és un generador dinàmic de mosaic d'imatges, d'alta
+    resolució, que amb el color calibrat ens en permet veure una altra d'un tros
+    lluny. Ha estat inspirat pel retrat Abraham Lincoln pintat per Salvador Dalí.
+
+    Per a intèrprets Ghostscript però també, amb ben pocs retocs, pot còrrer
+    amb l'Adobe Acrobat Distiller (fins hi tot l'OSX PSNormalizer Framework).
+
+    Copyright (c) 2002-2008 Marc Antoni Malagarriga i Picas
+    <http://www.femfum.com> | <marcantoni@femfum.com>
+
+    Aquest programa és programari lliure: podeu redistribuir-lo i/o modificar-lo
+    sota els termes de la Llicència Pública General de GNU publicada per la Free
+    Software Foundation, ja sigui la versió 3 de la Llicència, o (a la seva elecció)
+    qualsevol versió posterior.
+
+    Aquest programa es distribuïx amb l'esperança que sigui útil, però SENSE CAP GARANTIA;
+    ni tan sols la garantia implícita MERCANTIL o d'APTITUD PER A UN OBJECTIU PARTICULAR.
+    Consulteu els detalls de la Llicència Pública General de GNU per a més informació.
+
+    Haurieu de rebre una còpia de la Llicència Pública General de GNU junt amb aquest
+    programa. En cas contrari, consulteu <http://www.gnu.org/licenses/>

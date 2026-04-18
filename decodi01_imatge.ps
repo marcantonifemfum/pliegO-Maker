@@ -1,0 +1,90 @@
+%!
+%%%%%%% DECODIFICADOR DE DADES AL SEU FORMAT ORIGINAL
+
+% GS
+% gs -q -dNOSAFER -o re.pdf -sDEVICE=pdfwrite -c .setpdfwrite -f decodi00.ps 
+
+/cdn 65535 string def
+
+%(C:/MaRCanToni/FemFum/taller_d'applets/aramateix/WebProof/CALi2COPi/missingfontabort_a85+flate_pla.txt) (w) file  % aqui el fitxer de dades final
+%(C:/MaRCanToni/FemFum/taller_d'applets/aramateix/WebProof/CALi2COPi/tmp/57_____________0.pla)
+%(C:/MaRCanToni/FemFum/taller_d'applets/aramateix/formsecundina/js2.txt)
+%%(/enfony/CaLi2CoPi/tmp/27_____________0.txt)
+%%(toledano.raw)
+%%(/Users/femfum/Desktop/eraalescriptori_270210/Anduaga_OTF/anduagaVELLA.txt)
+%%(/Users/femfum/Desktop/Farrerons/ToUnicodeFarrerons.txt)
+%(errorUBESH.txt)
+(RAWjpeg.raw)
+(w) file
+/NaDiU exch def
+%(C:/MaRCanToni/FemFum/taller_d'applets/aramateix/WebProof/CALi2COPi/missingfontabort_a85+flate.txt)  % aqui el fitxer de dades per decodificar
+%(C:/MaRCanToni/FemFum/taller_d'applets/aramateix/WebProof/CALi2COPi/tmp/57_____________0)
+%(C:/MaRCanToni/FemFum/taller_d'applets/aramateix/formsecundina/js.flt)
+%%(/enfony/CaLi2CoPi/tmp/27_____________0)
+%%(toledano.png)
+%(tmp/232____________0)
+%(aviamA5LZW.ps)
+(adeu.jpg)
+(r) file
+<<
+  /ColorTransform 1
+>>/DCTDecode filter         % aqui el filtre decodificador
+
+%/ASCIIHexDecode filter
+%/ASCII85Decode filter
+%/RunLengthDecode filter
+%/LZWDecode filter
+%<<
+%  /Columns 3504
+%  /Rows 4960
+%  /K -1
+%  /Uncompressed true
+%  /EndOfLine false
+%  /EncodedByteAlign true
+%  /EndOfBlock true
+%  /BlackIs1 true
+%>>
+%/CCITTFaxDecode  filter
+
+%/FlateDecode filter
+
+%% de debò podem llegir PNG via FlateDecode?
+%%<<
+%%  /Predictor 11
+%%  /Columns 622
+%%  /Colors 3
+%%  /BitsPerComponent 8
+%%>> /FlateDecode filter 
+
+{  %% loop de lectura/escriptura
+ dup  %% dupliquen el fitxer de lectura
+ cdn readstring  %% llegim el fitxer amb una cadena de capacitat maxima
+ not
+ {
+  NaDiU exch writestring closefile exit
+ }if  %% si hem arribat al final del fitxer (false) escrivim la cadena al fitxer d'escriptura, tanquem i sortim del loop
+ NaDiU exch writestring  %% si no hem arribat al final sel fitxer (true) seguim escrivint la cadena al fitxer
+}loop
+
+(BROSSA?)pstack
+%%EOF
+
+%% pintem la imatge que ja en sabem les mides i l'espai de color
+<</PageSize[105 63]>>setpagedevice
+gsave
+/DeviceRGB setcolorspace
+0 0 translate
+105 63 scale
+<<
+  /ImageType 1
+  /Width 105
+  /Height 63
+  /ImageMatrix [105 0 0 63 neg 0 63]
+  /Decode [0 1 0 1 0 1]
+  /DataSource (RAWjpeg.raw) (r) file
+  /BitsPerComponent 8
+>> image
+grestore
+
+showpage
+

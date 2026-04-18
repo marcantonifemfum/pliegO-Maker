@@ -1,0 +1,969 @@
+%!
+%% integrem el clàssic GNUfemfumDaaaLi amb l'indexador de color RGB per tal de tenir un primer sistema d'ofuscació de continguts
+%% fusionant 2 imatges (amb idèntic ràtio i nombre de píxels) a través del mètode de Transfer Functions, per tal que la IA en deixi de llegir una de les dues
+
+%% línia de comanda
+%% gswin64c -q -dNOSAFER -o surt.pdf -sDEVICE=pdfwrite -f eixorbar_DaaaLi_00_UBESH.ps
+
+%% menú de capçalera
+
+%%% 1 %% JPEG base del mural
+(C:/Users/Marc\ Antoni/UB/FIMA/eixorbar/DaaaLi/iMosaic/fora/hola.jpg)
+
+%%% 2 %% JPEG a deslligar, píxel a píxel, en imatges constructores
+(C:/Users/Marc\ Antoni/UB/FIMA/eixorbar/DaaaLi/adeu.jpg)
+
+
+%%%  ve de GNUfemfumDaaaLi_ESH_FIMAeixorbar_RAW.ps   %%%%%%%%%%
+
+
+%%% A %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% SIZE (in points) FOR EACH IMAGE MOSAIC
+
+%30
+
+1 28.35 mul
+
+%%% B %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% COLOR CORRECTION ( 0 ... 1 )
+
+1
+
+
+%%% C %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% RANDOM IMAGES ? (true = YES / false = NO)
+
+false  %%UBESH eixorbar | les imatges constructores han d'estar en un ordre determinat per tal de transformar un glif en un altre 
+
+
+%%% D %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% IMAGE OVERLAPPING (REGULAR = true / NOT REGULAR = false)
+
+true
+
+
+%%% E %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% BIG IMAGE BASE (rgb+jpeg)
+
+%(C:/Documents and Settings/Administrador/Escritorio/Drupa2004/HPshow/VolcaniaDefinitiu/bigimage/volcania18560.jpg)
+%(C:/Documents and Settings/Administrador/Escritorio/Drupa2004/HPshow/VolcaniaDefinitiu/prova3x6HP.jpg)
+%(C:/MaRCanToni/FemFum/Drupa2004/HPshow/messe_logo.jpg)
+%(C:/wamp/www/CimentsMolins/logo-molins-cat2.jpg)
+
+%%UBESH eixorbar | necessitem el path absolut al fitxer a /iMosaic on farem el mosaic amb les /iConstructores
+%(C:/Users/Marc\ Antoni/UB/FIMA/eixorbar/DaaaLi/iMosaic/___.RAW)
+
+
+%%% F %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% FOLDER PATH FOR THE IMAGE BUILDERS (rgb+jpeg)
+
+%(C:/Documents and Settings/Administrador/Escritorio/Drupa2004/HPshow/VolcaniaDefinitiu/smallimagesdeveritat)
+%(C:/Documents and Settings/Administrador/Escritorio/Drupa2004/HPshow/adfDrupaPortraits)
+%(C:/MaRCanToni/FemFum/taller_d'applets/aramateix/daaali/cares)
+%(C:/Users/Marc\ Antoni/UB/FIMA/eixorbar/DaaaLi/iConstructores/)  %%UBESH eixorbar: ha de dur el darrer /
+
+
+%%%%%%%% paquet babel
+% estrategia per concentrar tots els missatges impresos i escrits indexats en una array
+% indexant tambe en una array superior els diversos idiomes
+% activem l'idioma desitjat amb un simple index
+
+/bAbElArrAy
+[
+ /cAtAlA	% index 0
+ /EnglIsh	% index 1
+% /EspAnOl	% index 2
+% /frAncAIs	% index 3
+] def
+
+/cAtAlA
+[
+ % 0
+ (\n\n            E R R O R   l'Applet No Parla Aquest Idioma ...)
+
+ % 1
+ (\n >>>> GPL FemFum DaaaLi PostScript Applet\n)
+
+ % 2
+ (\n . . . .  Analitzant les imatges constructores ...\n\n . . . .  )
+
+ %3
+ (\n\n >>>>  E R R O R  al path o fitxer inexistent <<<<\n\n\n)
+
+ % 4
+ (\n\n >>>>  L L I C E N C I A   D ' A P P L E T   I N V A L I D A  <<<<\n\n Per mes informacio: \n\n ---->  Marc Antoni Malagarriga\n ---->  marcantoni@femfum.com\n\n)
+
+ % 5
+ (\n\n >>>>  Format de pagina massa gran per la compatibilitat ... )
+
+ % 6
+ ( . . . .  Generant el mural DaaaL\303\255 ...)
+
+ % 7
+ (\n Aquesta versio de PDF nomes permet fins ... )
+
+ % 8
+ %% (\n\n >>>> D a a a L i  Nomes Treballa amb Adobe Acrobat Distiller 4/5 <<<< \n\n\n)
+( ... correcte !\n\n . . . .  )
+
+ % 9
+ (\n\n >>>> Us MANCA alguna DADA al Menu de l'Applet <<<< \n\n\n)
+
+ % 10
+ ( Aquest JPEG no es RGB \n\n . . . .  )
+
+ % 11
+ (  imatges construiran el mural\n\n)
+
+ % 12
+% ( ... correcte !\n\n . . . .  )
+( | )
+
+ % 13
+ (\n . . . .  Analitzant la imatge base ...\n . . . .  )
+
+ % 14
+ (\n . . . .  Les mides del mural seran ...\n . . . .  )
+
+ % 15
+ ( punts\n)
+
+ % 16
+ ( >>>> D a a a L i  ...\n)
+
+ % 17
+ (\n\n >>>> F E T !\n.)
+
+ % 18
+ ( ... erronia\n . . . .  )
+
+ % 19
+ ( ... rebutjada <----\n ---->  )
+
+ % 20
+ ( Aquest JPEG no te validesa\n\n . . . .  )
+
+ % 21
+ (\n\n >>>> Aturem l'Applet, heu de corregir la imatge de base <<<< \n\n\n)
+
+ % 22
+ (\n\n ---->  Desactivem l'aleatori, doncs teniu mes de 65535 imatges \n\n)
+
+ %23
+ (\n . . . .  Trigara aproximadament  ... )
+
+ %24
+ ( minuts ...\n . . . .  \n . . . .  )
+
+ % 25
+ (\n\n >>>> Teniu l'Acrobat Distiller mal instal.lat <<<< \n\n\n)
+
+] def
+
+
+/EnglIsh
+[
+ % 0
+ (\n\n            E R R O R   The Applet don't Support this Language ...)
+
+ % 1
+ (\n >>>> GPL FemFum DaaaLi PostScript Applet\n)
+
+ % 2
+ (\n . . . .  Scanning the image builders ...\n\n . . . .  )
+
+ %3
+ (\n\n >>>>  Path Syntax  E R R O R  or Folder Without JPEG files <<<<\n\n\n)
+
+ % 4
+ (\n\n >>>>  I N V A L I D  A P P L E T   L I C E N S E  <<<<\n\n For more information: \n\n ---->  Marc Antoni Malagarriga\n ---->  marcantoni@femfum.com\n\n)
+
+ % 5
+ (\n\n >>>>  The PDF compatibility don't supports this Page Size ... )
+
+ % 6
+ ( . . . .  Generating the DaaaLí mosaic ...)
+
+ % 7
+ (\n This PDF version only supports untill ... )
+
+ % 8
+ (\n\n >>>> D a a a L i  Only Works with Adobe Acrobat Distiller 4/5 <<<< \n\n\n)
+
+ % 9
+ (\n\n >>>> You have losted a parameter in the Applet Menu <<<< \n\n\n)
+
+ % 10
+ ( This JPEG is not RGB \n\n . . . .  )
+
+ % 11
+ (  different images inside the mosaic\n\n)
+
+ % 12
+ ( ... ok !\n\n . . . .  )
+
+ % 13
+ (\n . . . .  Analizing the base image ...\n . . . .  )
+
+ % 14
+ (\n . . . .  The mosaic size are ...\n . . . .  )
+
+ % 15
+ ( points\n)
+
+ % 16
+ ( >>>> D a a a L i  ...\n)
+
+ % 17
+ (\n\n >>>> DONE !\n.)
+
+ % 18
+ ( ... not valid\n . . . .  )
+
+ % 19
+ ( ... rejected <----\n ---->  )
+
+ % 20
+ ( This JPEG is not valid\n\n . . . .  )
+
+ % 21
+ (\n\n >>>> Applet stopped, you can correct the base image <<<< \n\n\n)
+
+ % 22
+ (\n\n ---->  Radom switch off, you have more than 65535 images\n\n)
+
+ %23
+ (\n . . . .  It to be late  ... )
+
+ %24
+ ( minuts ...\n . . . .  \n . . . .  )
+
+ % 25
+ (\n\n >>>> The Acrobat Distiller installation is not valid <<<< \n\n\n)
+
+] def
+
+/lleNguatge 0 def  %% idioma a escollir (0 Catala . 1 Angles ... )
+
+{
+ bAbElArrAy lleNguatge get
+} stopped
+{
+ cAtAlA 0 get print flush EnglIsh 0 get print flush quit
+}if  %% activem directament l'error d'idioma
+
+cvx exec
+
+/BaBeL exch def  %% redefinim l'array de l'idioma actiu
+
+%%%%%%%% fi de paquet babel
+
+
+%%% captura del menu GNUfemfumDaaaLi_ESH_FIMAeixorbar_RAW.ps
+{  %% stopped
+
+%%UBESH eixorbar
+% /CNL exch def /_B exch def /_A exch def  %% GHI canals, alt i ample de píxels
+
+% /PetaLenta exch def  %% F carpeta amb les imatges petites
+
+% /ComElLincoln exch def  %% E path de la imatge gran del mural
+
+ /capOpeus exch def  %% D arrenglerem les imatges pel cap (regular) o pels peus (irregular)
+
+ /ALEAi exch def  %% C fem l'aleatori d'imatges ?
+
+ /RaNG exch def  %% B definim el rang de contrast/cal.libracio de color
+
+ dup /rd exch def /CoS exch def  %% A mida del costat de les imatges petites
+} stopped
+{BaBeL 9 get print flush quit}if
+%%%% fi de captura
+
+
+%% captura de dades de capçalera de eixorbar_DaaaLi_00_UBESH.ps 
+
+/FiConstructores exch def  %% 2 %% JPEG a deslligar, píxel a píxel, en imatges constructores
+
+/FiMosaic exch def  %% 1 %% JPEG base del mural
+
+
+%% llegim les dades del JPEG base del mural
+mark  %% per netejar la brossa
+FiMosaic
+%% captura de dades del JPEG i comprovacio de si existeix...
+dup status
+{
+ pop pop
+ % el fitxer fa...
+ /FiFtxr exch def pop
+ dup /elD'ara exch def  % path+Nom del fitxer que processem
+ (r) file /tesela exch def  % fitxer de lectura
+}
+{
+ (el JPEG base del mural NO HI ES...) == tesela closefile quit
+}ifelse
+
+%% mirem el cap i els peus (marcadors d'inici i final) del fitxer aviam si son normatius...
+tesela FiFtxr 2 sub setfileposition
+tesela 2 string readstring pop <FFD9> eq
+{
+
+%%SNRD matem els missatges
+%(PEUS OK) ==
+
+ tesela dup 0 setfileposition
+ 2 string readstring pop <FFD8> eq
+ {
+
+  %%SNRD matem els missatges
+  %(CAP OK) ==
+
+  /SoRTiM false def  % pestell de sortida
+
+  %% explorem el fitxer per localitzar els marcadors significatius que duen les dades d'imatge (qualsevol d'ells es valid)
+
+  {  % loop
+   tesela 2 string readstring  %% llegim el segment
+   {
+    /SeGMeNT exch def
+    0 1 6
+    {  %% for
+     [<FFC0> <FFC1> <FFC2> <FFC3> <FFC5> <FFC6> <FFC7>]  %% marcadors significatius
+     exch get SeGMeNT eq
+     {
+%%SNRD matem els missatges
+% (JA EL TINC !!!) ==
+
+      tesela 10 string readstring pop
+
+      %% captura del valor de files (y)
+      dup dup 3 get 256 mul exch 4 get add
+
+%%SNRD matem els missatges
+% (\n >>>> Files (Y) ... ) print flush dup ==
+
+      /_Bib exch def  % (Y) FILES D'IMATGE
+
+      %% captura del valor de columnes (x)
+      dup dup 5 get 256 mul exch 6 get add
+
+%%SNRD matem els missatges
+% (\n >>>> Columnes (X) ... ) print flush dup ==
+
+      /_Aib exch def  % (X) COLUMNES D'IMATGE
+
+      %% captura dels components de color (1, 3 o 4 canals)
+      dup dup 7 get
+
+%%SNRD matem els missatges
+% (\n >>>> Components de Color ... ) print flush dup ==
+
+      /CNLib exch def
+
+      %% bits per component de color (o per pixel)
+      dup dup 2 get
+
+%%SNRD matem els missatges
+% (\n >>>> Bits x Comp ... ) print flush dup == (\n\n) print flush
+
+      /bXpib exch def
+
+      /SoRTiM true def
+     }if
+    }for
+    SoRTiM not
+    {
+     tesela 2 string readstring
+     {  %% llegim la llargada del segment per saltar al seguent...
+      dup 0 get 256 mul exch 1 get add
+      2 sub string tesela exch readstring
+      {
+       pop
+      }
+      {
+       pop tesela closefile exit
+      }ifelse
+     }
+     {
+      pop tesela closefile exit
+     }ifelse
+    }if
+   }
+   {
+    pop tesela closefile exit
+   }ifelse
+   SoRTiM
+   {
+    tesela closefile exit
+   }if
+  }loop
+
+  SoRTiM not
+  {
+   (\n\n <<<< NO podem llegir correctament les dades d'aquest JPEG base del mural\n\n) print flush
+  }if
+ }
+ {
+  (AP KAPPUT del JPEG base del mural)==
+ }ifelse
+}
+{
+ (PEUS KAPPUT del JPEG base del mural)==
+}ifelse
+
+%% captura dels canals, espai de color i escala de treball per la imatge base del mural
+{
+ [
+  0
+  % 1 canal (ploma, escala de grisos)
+  {/DCDib [0 1] def /SCEib {/DeviceGray setcolorspace} def}
+  0
+  % 3 canals (RGB, L*a*b*)
+  {/DCDib [0 1 0 1 0 1] def /SCEib {/DeviceRGB setcolorspace} def}
+  % 4 canals (CMYK)
+  {/DCDib [1 0 1 0 1 0 1 0] def /SCEib {/DeviceCMYK setcolorspace} def}
+]
+CNLib get exec
+
+} stopped
+{ % canals incorrectes
+ (\n\n <<<< Canals Incorrectes del JPEG base del mural...\n\n) print flush
+}if
+
+%%SNRD multiplicador que ens dóna el valor d'ample _A
+%% escala  1 = 100% = 72 dpi
+%XYlogo _A div
+%/Scl exch def 
+
+cleartomark  %% pot fer brossa
+
+(\n\n\n)print flush
+FiMosaic ==
+( >>> el JPEG base del mural fa... )print flush _Aib 4 string cvs print flush ( x )print flush _Bib 4 string cvs print flush
+( pixels | a... )print flush CNLib 1 string cvs print flush ( ...canals | a... )print flush bXpib 2 string cvs print flush ( ...bits\n\n)print flush
+
+
+%% llegim les dades del JPEG a deslligar per les imatges constructores
+mark  %% per netejar la brossa
+FiConstructores
+%% captura de dades del JPEG i comprovacio de si existeix...
+dup status
+{
+ pop pop
+ % el fitxer fa...
+ /FiFtxr exch def pop
+ dup /elD'ara exch def  % path+Nom del fitxer que processem
+ (r) file /tesela exch def  % fitxer de lectura
+}
+{
+ (el JPEG a deslligar per les imatges constructores NO HI ES...) == tesela closefile quit
+}ifelse
+
+%% mirem el cap i els peus (marcadors d'inici i final) del fitxer aviam si son normatius...
+tesela FiFtxr 2 sub setfileposition
+tesela 2 string readstring pop <FFD9> eq
+{
+
+%%SNRD matem els missatges
+%(PEUS OK) ==
+
+ tesela dup 0 setfileposition
+ 2 string readstring pop <FFD8> eq
+ {
+
+  %%SNRD matem els missatges
+  %(CAP OK) ==
+
+  /SoRTiM false def  % pestell de sortida
+
+  %% explorem el fitxer per localitzar els marcadors significatius que duen les dades d'imatge (qualsevol d'ells es valid)
+
+  {  % loop
+   tesela 2 string readstring  %% llegim el segment
+   {
+    /SeGMeNT exch def
+    0 1 6
+    {  %% for
+     [<FFC0> <FFC1> <FFC2> <FFC3> <FFC5> <FFC6> <FFC7>]  %% marcadors significatius
+     exch get SeGMeNT eq
+     {
+%%SNRD matem els missatges
+% (JA EL TINC !!!) ==
+
+      tesela 10 string readstring pop
+
+      %% captura del valor de files (y)
+      dup dup 3 get 256 mul exch 4 get add
+
+%%SNRD matem els missatges
+% (\n >>>> Files (Y) ... ) print flush dup ==
+
+      /_Bic exch def  % (Y) FILES D'IMATGE
+
+      %% captura del valor de columnes (x)
+      dup dup 5 get 256 mul exch 6 get add
+
+%%SNRD matem els missatges
+% (\n >>>> Columnes (X) ... ) print flush dup ==
+
+      /_Aic exch def  % (X) COLUMNES D'IMATGE
+
+      %% captura dels components de color (1, 3 o 4 canals)
+      dup dup 7 get
+
+%%SNRD matem els missatges
+% (\n >>>> Components de Color ... ) print flush dup ==
+
+      /CNLic exch def
+
+      %% bits per component de color (o per pixel)
+      dup dup 2 get
+
+%%SNRD matem els missatges
+% (\n >>>> Bits x Comp ... ) print flush dup == (\n\n) print flush
+
+      /bXpic exch def
+
+      /SoRTiM true def
+     }if
+    }for
+    SoRTiM not
+    {
+     tesela 2 string readstring
+     {  %% llegim la llargada del segment per saltar al seguent...
+      dup 0 get 256 mul exch 1 get add
+      2 sub string tesela exch readstring
+      {
+       pop
+      }
+      {
+       pop tesela closefile exit
+      }ifelse
+     }
+     {
+      pop tesela closefile exit
+     }ifelse
+    }if
+   }
+   {
+    pop tesela closefile exit
+   }ifelse
+   SoRTiM
+   {
+    tesela closefile exit
+   }if
+  }loop
+
+  SoRTiM not
+  {
+   (\n\n <<<< NO podem llegir correctament les dades d'aquest JPEG a deslligar per les imatges constructores\n\n) print flush
+  }if
+ }
+ {
+  (CAP KAPPUT del JPEG a deslligar per les imatges constructores)==
+ }ifelse
+}
+{
+ (PEUS KAPPUT del JPEG a deslligar per les imatges constructores)==
+}ifelse
+
+%% captura dels canals, espai de color i escala de treball pel JPEG a deslligar per les imatges constructores
+{
+ [
+  0
+  % 1 canal (ploma, escala de grisos)
+  {/DCDic [0 1] def /SCEic {/DeviceGray setcolorspace} def}
+  0
+  % 3 canals (RGB, L*a*b*)
+  {/DCDic [0 1 0 1 0 1] def /SCEic {/DeviceRGB setcolorspace} def}
+  % 4 canals (CMYK)
+  {/DCDic [1 0 1 0 1 0 1 0] def /SCEic {/DeviceCMYK setcolorspace} def}
+]
+CNLic get exec
+
+} stopped
+{ % canals incorrectes
+ (\n\n <<<< Canals Incorrectes del JPEG a deslligar per les imatges constructores...\n\n) print flush
+}if
+
+%%SNRD multiplicador que ens dóna el valor d'ample _A
+%% escala  1 = 100% = 72 dpi
+%XYlogo _A div
+%/Scl exch def 
+
+cleartomark  %% pot fer brossa
+FiConstructores ==
+( >>> el JPEG a deslligar per les imatges constructores fa... )print flush _Aic 4 string cvs print flush ( x )print flush _Bic 4 string cvs print flush
+( pixels | a... )print flush CNLic 1 string cvs print flush ( ...canals | a... )print flush bXpic 2 string cvs print flush ( ...bits\n\n)print flush
+
+%% filtrem que ràtio, nombre de píxels, espai i fondària de color, coincideixen entre les dues imatges doncs, sinó, no podrem seguir treballant 
+CNLib CNLic ne  %% les dues són RGB?
+{
+ (\n >>> UN DELS DOS JPEGS NO TREBALLA EN RGB ...pleguem!\n\n)print flush quit
+}if
+
+_Aib _Aic ne  %% l'ample en píxels coincideix?
+{
+ (\n >>> ELS DOS JPEGs NO FAN ELS MATEIXOS PIXELS D'AMPLE ...pleguem!\n\n)print flush quit
+}if
+
+_Bib _Bic ne  %% l'alt en píxels coincideix?
+{
+ (\n >>> ELS DOS JPEGs NO FAN ELS MATEIXOS PIXELS D'ALT ...pleguem!\n\n)print flush quit
+}if
+
+bXpib bXpic ne  %% els bits per píxel i canal coincideixen?
+{
+ (\n >>> ELS DOS JPEGs NO TENEN LA MATEIXA FONDARIA D'IMATGE (bits per pixel i canal) ...pleguem!\n\n)print flush quit
+}if
+
+
+%%PER ASSAIG REPRODUÏM LES 2 IMATGES?
+false  %% fem les imatges d'assaig?
+{
+ %% JPEG base del mural
+ %% Decodifiquem el JPEG a RAW
+ /cdn 65535 string def
+
+ (ibRAWjpeg.raw)
+ dup /SRCib exch def 
+ (w) file
+ /NaDiU exch def
+
+ FiMosaic
+ (r) file
+ <<
+   /ColorTransform 1
+ >>/DCTDecode filter  %% aquí el filtre decodificador
+
+ {  %% loop de lectura/escriptura
+  dup  %% dupliquen el fitxer de lectura
+  cdn readstring  %% llegim el fitxer amb una cadena de capacitat maxima
+  not
+  {
+   NaDiU exch writestring closefile exit
+  }if  %% si hem arribat al final del fitxer (false) escrivim la cadena al fitxer d'escriptura, tanquem i sortim del loop
+  NaDiU exch writestring  %% si no hem arribat al final sel fitxer (true) seguim escrivint la cadena al fitxer
+ }loop
+
+ (BROSSA 00?)pstack
+ %%EOF
+
+ %% pintem la imatge del JPEG base del mural, passada a RAW, de la que ja en sabem les mides i l'espai de color
+ <</PageSize[_Aib _Bib]>>setpagedevice
+ gsave
+ /DeviceRGB setcolorspace
+ 0 0 translate
+ 105 63 scale
+ <<
+   /ImageType 1
+   /Width _Aib
+   /Height _Bib
+   /ImageMatrix [_Aib 0 0 _Bib neg 0 _Bib]
+   /Decode DCDib
+   /DataSource SRCib (r) file
+   /BitsPerComponent bXpib
+ >> image
+ grestore
+
+ showpage
+
+ (BROSSA 01?)pstack
+
+
+ %% JPEG a deslligar per les imatges constructores
+ %% Decodifiquem el JPEG a RAW
+ /cdn 65535 string def
+
+ (icRAWjpeg.raw)
+ dup /SRCic exch def 
+ (w) file
+ /NaDiU exch def
+
+ FiConstructores
+ (r) file
+ <<
+   /ColorTransform 1
+ >>/DCTDecode filter  %% aquí el filtre decodificador
+
+ {  %% loop de lectura/escriptura
+  dup  %% dupliquen el fitxer de lectura
+  cdn readstring  %% llegim el fitxer amb una cadena de capacitat maxima
+  not
+  {
+   NaDiU exch writestring closefile exit
+  }if  %% si hem arribat al final del fitxer (false) escrivim la cadena al fitxer d'escriptura, tanquem i sortim del loop
+  NaDiU exch writestring  %% si no hem arribat al final sel fitxer (true) seguim escrivint la cadena al fitxer
+ }loop
+
+ (BROSSA 02?)pstack
+ %%EOF
+
+ %% pintem el JPEG a deslligar per les imatges constructores, passat a RAW, de la que ja en sabem les mides i l'espai de color
+ <</PageSize[_Aic _Bic]>>setpagedevice
+ gsave
+ /DeviceRGB setcolorspace
+ 0 0 translate
+ 105 63 scale
+ <<
+   /ImageType 1
+   /Width _Aic
+   /Height _Bic
+   /ImageMatrix [_Aic 0 0 _Bic neg 0 _Bic]
+   /Decode DCDic
+   /DataSource SRCic (r) file
+   /BitsPerComponent bXpic
+ >> image
+ grestore
+
+ showpage
+
+ (BROSSA 03?)pstack
+
+}if  %% fem les imatges d'assaig?
+
+
+%%Algorisme indexador per deslligar les imatges constructores
+%% llegirà píxel a píxel els 3 canals de color per indexar-ne el valor, construint per una banda la gamma de colors únics indexats /nRGB
+%% i per l'altra el mapa d'índex de colors /aiPIXELS de cadascun dels píxels de la imatge, tant /aiPIXELS com /nRGB serviran per generar l'ofuscació
+ 
+%% JPEG a deslligar per les imatges constructores
+%% com que ja tenim les seves dades, apuntem al JPEG original
+%FiConstructores
+FiMosaic  %% pot tenir milions de colors
+(r) file
+<<
+  /ColorTransform 1
+>>/DCTDecode filter  %% aquí el filtre decodificador
+/fRAW exch def
+
+%%TEST inicial de càlcul de temps d'emmagatzemat de colors
+
+%% treballant en RGB bastim un sistema de 3 arrays en nines russes on desarem els valors RGB únics a mida que els anem llegint del RAW
+%% a la tercera array és on sempre hi haurà el valor d'índex del color únic que, en 3 octets, desarem a /nRGB i el seu índex a /aiPIXELS
+%% de manera que un cop construit /RGBunics podríem deduir de nou tots els valors únics de color utilitzats per la imatge explorada
+/RGBunics 256 array def  %% 256 elements per cada array és la capacitat justa treballant amb imatges de 8 bits per pixel i canal (16777216 milions de colors)
+%% si treballessim amb imatges de 12 bits per píxel i canal, hauríem de fer el sistema de nines russes en 3 arrays de 4096 elements (68719476736 bilions de colors)
+
+/araRGB 3 string def  %% buffer de 3 octets (8 bits per píxel i canal) amb el valor decimal RGB d'1 píxel que desarem a /nRGB
+%% si treballessim amb imatges de 12 bits per píxel i canal, hauríem de treballar amb 6 octets (2 octets per color)
+
+%% cal veure si la capacitat inicial de la gamma cromàtica fa més eficient el desat de cadascun dels colors indexats
+%% hauríem de fer un càlcul d'eficiència mesurant el temps d'execució en imatges amb molts colors, de manera que definint /nLIMITnRGB per sobre del màxim de colors
+/nLIMITnRGB 256 def  %% límit en el nombre de colors diferents que inicialment podem emmagatzemar
+%% d'una imatge (de manera que només haguem de fer un purgat de nulls) es pugui veure que va més ràpid si l'obliguem a anar ampliant /nRGB per cada color nou
+%% l'intèrpret GS 10.##.# limita la capacitat d'una array a 16777216 (oju perquè els intèrprets d'Adobe, com Distiller, la limiten a 65535)
+/nRGB nLIMITnRGB array def  %% gamma cromàtica (magatzem inicial) de 256 colors indexats únics
+
+_Aic _Bic mul array /aiPIXELS exch def  %% array pel RAW d'índex de colors (posicions a /nRGB) de cadascun dels píxels de la imatge
+
+/iRGB -1 def  %% inici del comptador d'índex de colors
+/iPIX 0 def  %% comptador d'índex de píxels
+
+{  %% loop de lectura de tot el fitxer
+
+ {  %% loop de lectura dels 3 canals d'1  píxel
+  fRAW read
+  {  %% llegim R
+   /Roctet exch def
+   fRAW read
+   {  %% llegim G
+    /Goctet exch def
+    fRAW read
+    {  %% llegim B
+     /Boctet exch def
+     false exit
+    }
+    {
+     /llegit true def
+     true exit
+    }ifelse
+   }
+   {
+    /llegit true def
+    true exit
+   }ifelse
+  }
+  {
+   /llegit false def
+   true exit
+  }ifelse
+ }loop  %% de lectura dels 3 canals d'1 píxel
+
+ {  %% som al final del fitxer o NO ha anat bé la lectura?
+  llegit
+  {  %% RAW fallit, NO ha anat bé la lectura?
+   (\n\n >>> Hi ha un error de lectura o hi ha un valor RGB estroncat? <<<\n\n)print flush
+  }if
+  exit
+ }
+ {  %% no som al final del fitxer
+  %% quan desa 1 color RGB a 8 bits nou és quan construeix la o les array(s) de l'estructura en nines russes dins /RGBunics
+  %% si ja existeix, llavors no el desa però sí que hauria d'anotar a /aiPIXELS el seu índex (desat a B) on s'indexin les posicions dels colors trobats
+  RGBunics Roctet get null eq
+  {  %% només si el valor de R no existeix seguim per bastir els altres 2 arrays de G i B
+%(la_R_noEXISTEIX llavors aquest color RGB TAMPOC!)==
+   iRGB 1 add /iRGB exch def  %% el comptador de colors només s'actualitza quan se'n confirma un de nou
+
+   256 array dup  %% creem l'array de G si no existeix R
+   256 array dup  %% creem l'array de B si no existeix G
+   Boctet iRGB put  %% desem l'índex del nou color a l'índex com a valor de B dins l'array de B
+   Goctet exch put  %% desem l'array de B a l'índex com a valor de G dins l'array de R
+   RGBunics exch Roctet exch put  %% desem l'array de R a l'índex de /RGBunics com a valor
+
+   %% desem els 3 octets del nou color RGB al buffer /araRGB
+   araRGB dup dup 0 Roctet put 1 Goctet put 2 Boctet put
+   %% hem superat els 256 colors diferents?
+   iRGB nLIMITnRGB ge  %% a 8 bits mai no podrem indexar més de 256 colors, doncs la mida màxima de /nRGB ve condicionada per la fondària de bits per píxel i color
+   {  %% aquí ampliem l'array
+    iRGB 1 add array dup dup 0 nRGB putinterval iRGB araRGB dup length string copy put /nRGB exch def  %% cal!
+    %(\n\n>>> HEM SUPERAT ELS 256 COLORS PERMESOS A INDEXAR! ...per reproduir aquesta imatge indexada caldria treballar a 12 bits <<< \n\n)print flush quit
+   }
+   {  %% desem els 3 octets del píxel a l'índex del color que li toca dins /nRGB
+    nRGB iRGB araRGB dup length string copy put
+   }ifelse
+   %% desem l'índex de color al píxel que li toca
+   aiPIXELS iPIX iRGB put
+   iPIX 1 add /iPIX exch def  %% comptador de píxels
+  }
+  {  %% R ja existeix 
+   %% si la R ja existeix hauríem de saber si la G també
+%(la_R_jaEXISTEIX! i la G?)==
+   RGBunics Roctet get Goctet get null eq
+   {
+%(la_G_noEXISTEIX llavors aquest color RGB TAMPOC!)== %quit
+    iRGB 1 add /iRGB exch def  %% el comptador de colors només s'actualitza quan se'n confirma un de nou
+    %% desem el valor R G B 
+    RGBunics Roctet get dup  %% extraiem l'array situada al valor de R
+    %% li fiquem el nou array situat al valor de G amb l'índex del color al valor de B
+    Goctet 256 array dup Boctet iRGB put put
+    %% desem finalment a l'índex del valor de R dins /RGBunics
+    RGBunics exch Roctet exch put
+    %% RGBunics ===  %% podem comprovar-ho
+
+    %% desem els 3 octets del nou color RGB al buffer /araRGB
+    araRGB dup dup 0 Roctet put 1 Goctet put 2 Boctet put
+    %% hem superat els 256 colors diferents?
+    iRGB nLIMITnRGB ge  %% a 8 bits mai no podrem indexar més de 256 colors, doncs la mida màxima de /nRGB ve condicionada per la fondària de bits per píxel i color
+    {  %% aquí ampliem l'array
+     iRGB 1 add array dup dup 0 nRGB putinterval iRGB araRGB dup length string copy put /nRGB exch def  %% cal!
+     %(\n\n>>> HEM SUPERAT ELS 256 COLORS PERMESOS A INDEXAR! ...per reproduir aquesta imatge indexada caldria treballar a 12 bits <<< \n\n)print flush quit
+    }
+    {  %% desem els 3 octets del píxel a l'índex del color que li toca dins /nRGB
+     nRGB iRGB araRGB dup length string copy put  %% profilaxi abans de desar!
+    }ifelse
+    %% desem l'índex de color al píxel que li toca
+    aiPIXELS iPIX iRGB put
+    iPIX 1 add /iPIX exch def  %% comptador de píxels
+   }
+   {  %% si la G ja existeix hauríem de saber si la B també
+%(la_G_jaEXISTEIX! i la B?)==
+    RGBunics Roctet get Goctet get Boctet get dup
+    null eq  %% aquest darrer valor és el que defineix si definitivament tenim un color repetit o no 
+    {
+     pop  %% ens carreguem l'índex del color
+%(la_B_noEXISTEIX llavors aquest color RGB TAMPOC!)== %quit
+     iRGB 1 add /iRGB exch def  %% el comptador de colors només s'actualitza quan se'n confirma un de nou
+     %% desem el valor R G B d'una manera més simplificada automàticament a /RGBunics per l'efecte dels 'composite objects'
+     RGBunics Roctet get  %% extraiem l'array situada al valor de R
+     Goctet get  %% extraiem l'array situada al valor de G
+     Boctet iRGB put  %% fiquem a l'índex del valor de B el valor de l'índex del color RGB
+
+     %% desem els 3 octets del nou color RGB al buffer /araRGB
+     araRGB dup dup 0 Roctet put 1 Goctet put 2 Boctet put
+     %% hem superat els 256 colors diferents?
+     iRGB nLIMITnRGB ge  %% a 8 bits mai no podrem indexar més de 256 colors, doncs la mida màxima de /nRGB ve condicionada per la fondària de bits x píxel i color
+     {  %% aquí ampliem l'array
+      iRGB 1 add array dup dup 0 nRGB putinterval iRGB araRGB dup length string copy put /nRGB exch def  %% cal!
+      %(\n\n>>> HEM SUPERAT ELS 256 COLORS PERMESOS A INDEXAR! ...per reproduir aquesta imatge indexada caldria treballar a 12 bits <<< \n\n)print flush quit
+     }
+     {  %% desem els 3 octets del píxel a l'índex del color que li toca dins /nRGB
+      nRGB iRGB araRGB dup length string copy put
+     }ifelse
+     %% desem l'índex de color al píxel que li toca
+     aiPIXELS iPIX iRGB put
+     iPIX 1 add /iPIX exch def  %% comptador de píxels
+    }
+    {  %% si la B ja existeix només hauríem de desar l'índex de color al píxel que toca
+     %% desem l'índex de color al píxel que li toca
+     aiPIXELS iPIX %iRGB
+     3 -1 roll put  %% aquí desem l'índex de color que es repeteix
+     iPIX 1 add /iPIX exch def  %% i actualitzem el comptador de píxels
+%(la_B_jaEXISTEIX!)==
+    }ifelse
+   }ifelse
+  }ifelse  %% aquest color existeix?
+ }ifelse  %% som al final del fitxer?
+}loop  %% lectura de tot el fitxer
+
+%% purguem l'array de nulls per tal que /nRGB tingui només els valors decimals RGB indexats
+%%EP! hem de posar un gatell per veure si cal o no fer el purgat
+nRGB 0 iRGB 1 add getinterval /nRGB exch def  %% array exacte de la gamma cromàtica RGB en decimal 
+
+%%TEST final de càlcul de temps d'emmagatzemat de colors
+
+%%TEST array de píxels d'imatge pel seu índex de color
+%aiPIXELS dup === length ==
+
+%% nombre de colors diferents que hem indexat
+iRGB 1 add 8 string cvs
+(\n >>> el JPEG a deslligar per les imatges constructores duu... )print flush print flush ( ...colors diferents\n\n)print flush
+
+
+%% aquí la resta del codi de GNUfemfumDaaaLi_ESH_FIMAeixorbar_RAW.ps 
+
+/FemFumPriv << >> def  % diccionari privat
+
+%%%% rutina de comprovacio de l'OS
+
+mark  %% tanca de recollida d'escombraries
+
+%% comprova si es Mac o Win
+
+/MoW 0 def
+%% comprova si trova fitxers o directoris amb l'identificador del Mac
+(:*)
+{
+ MoW 1 add /MoW exch def
+} 100 string filenameforall
+
+%% EP! el PSNormalizer.framework va amb slash
+%% treballant amb c:/GhostCall/GhostCall.exe el directori de treball es l'arrel d'aquest exe
+
+MoW 0 eq
+{
+ /seP (./) def	%% utilitzat per fademo
+ /bUsca (/) def  %% utilitzat a l'applet per extraure el nom del fitxer
+
+%%UBESH eixorbar: ara treballem directament en RAW
+ /liNka (/*.*) def  %% cercar ARA SENSE l'extensió RAW
+
+ /tEmp (tmp/) def  %% directori utilitzat a l'applet per desar tots els streams
+ /aFeGeiX (tmp/afegeix) def  %% fitxer utilitzat per l'applet per afegir els Contents definits com una array en un sol fitxer
+                             %% per tal d'evitar errors d'interpretacio per XERRA quan es trenquen continguts (p.e. [100 (aeiou)] en una array i TJ en la seguent)
+ /macOS false def  %% pestell per saber si es Win
+ /l'AseDelsCops (tmp/repica) def  %% fitxer on escriurem tots els PDF a tractar
+%%UBESH eixorbar | necessitem el path absolut al fitxer JPEG decodificat xiuraw
+ /nAdIu (C:/Users/Marc\ Antoni/UB/FIMA/eixorbar/DaaaLi/tmp/xiuraw) def  %% fitxer on hi haura el raw de la imatge de base
+}  %% Win/Unix
+{  %% Mac (antics)
+ /seP (:) def
+ /bUsca (:) def	 %% utilitzat a l'applet per extraure el nom del fitxer
+
+%%UBESH eixorbar: ara treballem directament en RAW
+ /liNka (:*.RAW) def  %% cercar per l'extensió RAW
+
+ /tEmp (tmp:) def  %% utilitzat a l'applet per desar tots els streams
+ /aFeGeiX (tmp:afegeix) def  %% utilitzat per l'applet per afegir els Contents definits com una array en un sol fitxer
+                             %% per tal d'evitar errors d'interpretacio per XERRA quan es trenquen continguts (p.e. [100 (aeiou)] en una array i TJ en la seguent)
+ /macOS true def  %% pestell per saber si es Mac
+ /l'AseDelsCops (%ram%repica) def  %% fitxer on escriurem tots els PDF a tractar
+ /nAdIu (tmp:xiuraw) def  %% fitxer on hi haura el raw de la imatge de base
+}ifelse  %% sintaxi segons S.O.
+
+cleartomark  %% recull les possibles escombraries (p.e. a Mac OS)
+
+%%%% fi d'OS
+
+

@@ -1,0 +1,1823 @@
+%!
+%% copying permission statement:
+%%
+%% This file is part of FemFum_DaaaLi.
+%%
+%% FemFum_DaaaLi is free software; you can redistribute it and/or modify
+%% it under the terms of the GNU General Public License as published by
+%% the Free Software Foundation; either version 2 of the License, or
+%% (at your option) any later version.
+%%
+%% FemFum_DaaaLi is distributed in the hope that it will be useful,
+%% but WITHOUT ANY WARRANTY; without even the implied warranty of
+%% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+%% GNU General Public License for more details.
+%%
+%% You shouldhave received a copy of the GNU General Public License
+%% along with Foobar; if not, write to the Free Software
+%% Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+%%
+%% FemFum PostScript Applet original: Daaali04.ps (v 1.0.0)
+%% Images Mosaic Generator inspired in the genie of Salvador Dali
+%% For Ghostscript | Adobe Acrobat Distiller | OSX PSNormalizer
+%% (c) Marc Antoni Malagarriga i Picas 05.2004
+%% <marcantoni@femfum.com>
+%% http://www.femfum.com
+
+%% Salvador Dalí ja ho va fer amb el Lincoln que hi ha al Teatre-Museu de Figueres
+
+%% aquesta versio GNU treballara amb les opcions seguents:
+%% multiplataforma
+%% nomes espai RGB i format JPEG conforme amb el filtre DCT
+%% format final en funcio de la mida de la foto petita (sempre en quadrat) + infoXpantalla
+%% detector del limit del format de pagina condicionat per la versio de PDF seleccionada 1.2, 1.3/1.4
+%% rang de contrast de color (0 ... 1) amb un sol metode de cal.libracio
+%% nombre il.limitat d'imatges a reproduir sense l'aleatori i amb l'aleatori fins 65535
+%% col.locar aleatoriament les imatges o no
+%% muntar les imatges per la base (composicio irregular) o muntar-les pel cap (composicio regularment quadrada)
+%% detector d'imatges JPEG invalides
+%% (desactivat) detector de versions minimes de Ghostscript (?) | Distiller (4) | PSNormalizer (?)
+%% (desactivat) detector/generador de clau digital (tipus LicenseID)
+%% configuracio d'obertura fixa i dades del DocInfo + dict privat FemFum
+%% configuracio manual de les opcions (minimes) clau del Distiller per generar els murals (compatibilitat, compressio i preserve/apply transfers)
+
+%%% 27.10.03 hem millorat uns anellats save/restore marcats amb % sobretot!
+%%% que feien petar el daaaligrama amb ioerror quan passavem de les 2044 fotos aprox
+
+%%% rang de contrast de color (entre 0.001 ... i ... 1)
+%%% si el rang es petit (obligatoriament ha de ser mes gran de zero!) les imatges petites tindran poc contrast pero la imatge gran tindra el maxim de calibrat de color
+%%% si el rang es molt gran (maxim 1) les imatges tindran un contrast quasi natural pero la imatge de conjunt perderà calibracio de color
+
+%%% 25.10.06 tornem a canviar tots els stop per quit doncs d'aquesta manera evitem que
+%%%  surtin els missatges del GS del volcat de l'stack al prompt (nomes surten els nostres)
+
+%%UBESH eixorbar: ajustem el codi per tal treballi directament amb imatges RAW tant a /iMosaic o a /iConstructores
+%% de manera que en aquesta versió hem de tenir ja fetes a /iMosaic el RAW de base amb coneixement previ de canals i pixels
+%% també hem de tenir fetes les imatges /iConstructores en RAW RGB d'1 píxel que, ordenades per ordre alfabètic, construiran el mosaic
+%% en cas que no funcionés l'ordre natural alfabètic del directori hauríem de posar una rutina d'endreça d'aquestes tessel·les
+
+%%UBESH eixorbar | ara agafarem les dades d'aquest mateix .ps
+%%(capDaaali.dat) (r) file cvx exec
+
+
+%%%  M E N U   O P T I O N S  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%%% A %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% SIZE (in points) FOR EACH IMAGE MOSAIC
+
+%30
+
+1 28.35 mul
+
+%%% B %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% COLOR CORRECTION ( 0 ... 1 )
+
+1
+
+
+%%% C %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% RANDOM IMAGES ? (true = YES / false = NO)
+
+false  %%UBESH eixorbar | les imatges constructores han d'estar en un ordre determinat per tal de transformar un glif en un altre 
+
+
+%%% D %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% IMAGE OVERLAPPING (REGULAR = true / NOT REGULAR = false)
+
+true
+
+
+%%% E %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% BIG IMAGE BASE (rgb+jpeg)
+
+%(C:/Documents and Settings/Administrador/Escritorio/Drupa2004/HPshow/VolcaniaDefinitiu/bigimage/volcania18560.jpg)
+%(C:/Documents and Settings/Administrador/Escritorio/Drupa2004/HPshow/VolcaniaDefinitiu/prova3x6HP.jpg)
+%(C:/MaRCanToni/FemFum/Drupa2004/HPshow/messe_logo.jpg)
+%(C:/wamp/www/CimentsMolins/logo-molins-cat2.jpg)
+
+%%UBESH eixorbar | necessitem el path absolut al fitxer a /iMosaic on farem el mosaic amb les /iConstructores
+(C:/Users/Marc\ Antoni/UB/FIMA/eixorbar/DaaaLi/iMosaic/___.RAW)
+
+
+%%% F %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% FOLDER PATH FOR THE IMAGE BUILDERS (rgb+jpeg)
+
+%(C:/Documents and Settings/Administrador/Escritorio/Drupa2004/HPshow/VolcaniaDefinitiu/smallimagesdeveritat)
+%(C:/Documents and Settings/Administrador/Escritorio/Drupa2004/HPshow/adfDrupaPortraits)
+%(C:/MaRCanToni/FemFum/taller_d'applets/aramateix/daaali/cares)
+(C:/Users/Marc\ Antoni/UB/FIMA/eixorbar/DaaaLi/iConstructores/)  %%UBESH eixorbar: ha de dur el darrer /
+
+
+%%UBESH eixorbar
+%%% GHI %%%%%%
+%%% ample i alt de píxels i canals
+39 8 3
+
+
+%%%%%%%%%%%%%%%%% DON'T MODIFY UNDER THIS LINE %%%%%%%%%%%%%%%%
+
+%%% path de la imatge (RGB+JPEG) de gran format (nomes apte per path sense espais en blanc)
+%{
+% %% normalitza un path Win (\) a un path PS (/)
+% dup length dup /fa exch def string cvs
+% fa string /pathPS exch def /iP 0 def
+% % repiquem els 'bakslash' per 'slash'
+% {dup 92 eq {pop 47}if pathPS exch iP exch put iP 1 add /iP exch def}forall
+% pathPS
+
+%%dup /CuRSuS exch def  %%A EPS amb el cursus a llegir
+%} stopped
+%{
+% (\n\n >>>> Teniu un ERROR de SINTAXI al Menu de l'Applet\n\n\n) print flush quit
+%} if
+
+
+%(C:/Documents and Settings/Marc Antoni/Escritorio/2t2003/2t.jpg)
+%(C:/Documents and Settings/Marc Antoni/Escritorio/2t2003/opuscle/traça.jpg)
+%(C:/MaRCanToni/FemFum/projectes/imgrama/IGCgraphispag03.jpg)
+%(C:/Documents and Settings/Marc Antoni/Escritorio/warnock&geschke/bones/geshcke.jpg)
+%(C:/Documents and Settings/Marc Antoni/Escritorio/miner2.jpg)
+%(C:/Documents and Settings/Marc Antoni/Escritorio/iTime/it_1.jpg)
+%(C:/MaRCanToni/FemFum/projectes/daaali/XiclogoNoalaGuerra.jpg)
+%(C:/MaRCanToni/FemFum/projectes/daaali/ull_2.jpg)
+%(C:/MaRCanToni/FemFum/projectes/daaali/egm.jpg)
+%(C:/MaRCanToni/FemFum/taller_d'applets/aramateix/iTime/logosimanaies/C1664CDCd01.jpg)
+%(C:/MaRCanToni/FemFum/taller_d'applets/aramateix/daaali/16c.jpg)
+%(C:/MaRCanToni/FemFum/taller_d'applets/cal·ligrames/trilla/xin.jpg)
+%(C:/Documents and Settings/Administrador/Escritorio/PostalFemFum2003/cua3.jpg)
+%(C:/Documents and Settings/Administrador/Escritorio/Drupa2004/messe_logo.jpg)
+%(C:/Documents and Settings/Administrador/Escritorio/Drupa2004/preparacio/ximprimir/migull.jpg)
+%(C:/MaRCanToni/FemFum/taller_d'applets/aramateix/daaali/cares/nen.jpg)
+
+%%% Distiller6 OSX Phanter
+%(Macintosh_HD:FemFumDrupa04:HPshow:imatge:llensolHP.jpg)
+
+%%% PSNormalizer.framework reconeix les adreces des d'on executem el PS
+%(./imatge/llensolHP.jpg)
+%(./imatge/messe_logo.jpg)
+%(./imatge/nens60x40.jpg)
+
+%%% path del directori amb les imatges de construccio (sense el darrer / ! o cal posar un filtre)
+
+%exch
+%{  %  (nomes apte per path sense espais en blanc)
+% %% normalitza un path Win (\) a un path PS (/)
+% dup length dup /fa exch def string cvs
+% fa string /pathPS exch def /iP 0 def
+% % repiquem els 'bakslash' per 'slash'
+% {dup 92 eq {pop 47}if pathPS exch iP exch put iP 1 add /iP exch def}forall
+% pathPS
+
+%%dup /CuRSuS exch def  %%A EPS amb el cursus a llegir
+%} stopped
+%{
+% (\n\n >>>> Teniu un ERROR de SINTAXI al Menu de l'Applet\n\n\n) print flush quit
+%} if
+%exch
+
+%(C:/MaRCanToni/FemFum/taller_d'applets/cal·ligrames/trilla/trossos/)
+%(C:/MaRCanToni/FemFum/taller_d'applets/aramateix/daaali/1sola)
+%(C:/MaRCanToni/FemFum/taller_d'applets/aramateix/iTime/rellotges/)
+%(C:/Documents and Settings/Marc Antoni/Escritorio/suriencs/apunt)
+%(C:/MaRCanToni/FemFum/taller_d'applets/aramateix/daaali/cares)
+%(C:/MaRCanToni/FemFum/projectes/daaali/noalaguerra)
+%(C:/Documents and Settings/Marc Antoni/Escritorio/trilla)
+%(C:/Documents and Settings/Marc Antoni/Escritorio/2t2003/potipoti)
+%(C:/Documents and Settings/Marc Antoni/Escritorio/warnock&geschke/imatges)
+%(C:/Documents and Settings/Administrador/Escritorio/PostalFemFum2003/terra)
+
+%%% Distiller6 OSX Phanter
+%(Macintosh_HD:FemFumDrupa04:HPshow:maquintou:cares2)
+%%% PSNormalizer.framework reconeix les adreces des d'on executem el PS
+%(./maquintou/cares2)
+%%% fi del menu
+
+%%%%%%%% paquet babel
+% estrategia per concentrar tots els missatges impresos i escrits indexats en una array
+% indexant tambe en una array superior els diversos idiomes
+% activem l'idioma desitjat amb un simple index
+
+/bAbElArrAy
+[
+ /cAtAlA	% index 0
+ /EnglIsh	% index 1
+% /EspAnOl	% index 2
+% /frAncAIs	% index 3
+] def
+
+/cAtAlA
+[
+ % 0
+ (\n\n            E R R O R   l'Applet No Parla Aquest Idioma ...)
+
+ % 1
+ (\n >>>> GPL FemFum DaaaLi PostScript Applet\n)
+
+ % 2
+ (\n . . . .  Analitzant les imatges constructores ...\n\n . . . .  )
+
+ %3
+ (\n\n >>>>  E R R O R  al path o fitxer inexistent <<<<\n\n\n)
+
+ % 4
+ (\n\n >>>>  L L I C E N C I A   D ' A P P L E T   I N V A L I D A  <<<<\n\n Per mes informacio: \n\n ---->  Marc Antoni Malagarriga\n ---->  marcantoni@femfum.com\n\n)
+
+ % 5
+ (\n\n >>>>  Format de pagina massa gran per la compatibilitat ... )
+
+ % 6
+ ( . . . .  Generant el mural DaaaL\303\255 ...)
+
+ % 7
+ (\n Aquesta versio de PDF nomes permet fins ... )
+
+ % 8
+ %% (\n\n >>>> D a a a L i  Nomes Treballa amb Adobe Acrobat Distiller 4/5 <<<< \n\n\n)
+( ... correcte !\n\n . . . .  )
+
+ % 9
+ (\n\n >>>> Us MANCA alguna DADA al Menu de l'Applet <<<< \n\n\n)
+
+ % 10
+ ( Aquest JPEG no es RGB \n\n . . . .  )
+
+ % 11
+ (  imatges construiran el mural\n\n)
+
+ % 12
+% ( ... correcte !\n\n . . . .  )
+( | )
+
+ % 13
+ (\n . . . .  Analitzant la imatge base ...\n . . . .  )
+
+ % 14
+ (\n . . . .  Les mides del mural seran ...\n . . . .  )
+
+ % 15
+ ( punts\n)
+
+ % 16
+ ( >>>> D a a a L i  ...\n)
+
+ % 17
+ (\n\n >>>> F E T !\n.)
+
+ % 18
+ ( ... erronia\n . . . .  )
+
+ % 19
+ ( ... rebutjada <----\n ---->  )
+
+ % 20
+ ( Aquest JPEG no te validesa\n\n . . . .  )
+
+ % 21
+ (\n\n >>>> Aturem l'Applet, heu de corregir la imatge de base <<<< \n\n\n)
+
+ % 22
+ (\n\n ---->  Desactivem l'aleatori, doncs teniu mes de 65535 imatges \n\n)
+
+ %23
+ (\n . . . .  Trigara aproximadament  ... )
+
+ %24
+ ( minuts ...\n . . . .  \n . . . .  )
+
+ % 25
+ (\n\n >>>> Teniu l'Acrobat Distiller mal instal.lat <<<< \n\n\n)
+
+] def
+
+
+/EnglIsh
+[
+ % 0
+ (\n\n            E R R O R   The Applet don't Support this Language ...)
+
+ % 1
+ (\n >>>> GPL FemFum DaaaLi PostScript Applet\n)
+
+ % 2
+ (\n . . . .  Scanning the image builders ...\n\n . . . .  )
+
+ %3
+ (\n\n >>>>  Path Syntax  E R R O R  or Folder Without JPEG files <<<<\n\n\n)
+
+ % 4
+ (\n\n >>>>  I N V A L I D  A P P L E T   L I C E N S E  <<<<\n\n For more information: \n\n ---->  Marc Antoni Malagarriga\n ---->  marcantoni@femfum.com\n\n)
+
+ % 5
+ (\n\n >>>>  The PDF compatibility don't supports this Page Size ... )
+
+ % 6
+ ( . . . .  Generating the DaaaLí mosaic ...)
+
+ % 7
+ (\n This PDF version only supports untill ... )
+
+ % 8
+ (\n\n >>>> D a a a L i  Only Works with Adobe Acrobat Distiller 4/5 <<<< \n\n\n)
+
+ % 9
+ (\n\n >>>> You have losted a parameter in the Applet Menu <<<< \n\n\n)
+
+ % 10
+ ( This JPEG is not RGB \n\n . . . .  )
+
+ % 11
+ (  different images inside the mosaic\n\n)
+
+ % 12
+ ( ... ok !\n\n . . . .  )
+
+ % 13
+ (\n . . . .  Analizing the base image ...\n . . . .  )
+
+ % 14
+ (\n . . . .  The mosaic size are ...\n . . . .  )
+
+ % 15
+ ( points\n)
+
+ % 16
+ ( >>>> D a a a L i  ...\n)
+
+ % 17
+ (\n\n >>>> DONE !\n.)
+
+ % 18
+ ( ... not valid\n . . . .  )
+
+ % 19
+ ( ... rejected <----\n ---->  )
+
+ % 20
+ ( This JPEG is not valid\n\n . . . .  )
+
+ % 21
+ (\n\n >>>> Applet stopped, you can correct the base image <<<< \n\n\n)
+
+ % 22
+ (\n\n ---->  Radom switch off, you have more than 65535 images\n\n)
+
+ %23
+ (\n . . . .  It to be late  ... )
+
+ %24
+ ( minuts ...\n . . . .  \n . . . .  )
+
+ % 25
+ (\n\n >>>> The Acrobat Distiller installation is not valid <<<< \n\n\n)
+
+] def
+
+/lleNguatge 0 def  %% idioma a escollir (0 Catala . 1 Angles ... )
+
+{
+ bAbElArrAy lleNguatge get
+} stopped
+{
+ cAtAlA 0 get print flush EnglIsh 0 get print flush quit
+}if  %% activem directament l'error d'idioma
+
+cvx exec
+
+/BaBeL exch def  %% redefinim l'array de l'idioma actiu
+
+%%%%%%%% fi de paquet babel
+
+
+%% inici del missatge d'execucio de l'Applet
+BaBeL 1 get print flush
+%% BaBeL 16 get print flush
+
+
+%%% captura del menu
+{  %% stopped
+
+%%UBESH eixorbar
+/CNL exch def /_B exch def /_A exch def  %% GHI canals, alt i ample de píxels
+
+ /PetaLenta exch def  %% F carpeta amb les imatges petites
+
+ /ComElLincoln exch def  %% E path de la imatge gran del mural
+
+ /capOpeus exch def  %% D arrenglerem les imatges pel cap (regular) o pels peus (irregular)
+
+ /ALEAi exch def  %% C fem l'aleatori d'imatges ?
+
+ /RaNG exch def  %% B definim el rang de contrast/cal.libracio de color
+
+ dup /rd exch def /CoS exch def  %% A mida del costat de les imatges petites
+} stopped
+{BaBeL 9 get print flush quit}if
+%%%% fi de captura
+
+
+%%% compatibilitat amb Distiller 4.0
+%%% Detecta interprets no Distiller i avalua la versio
+%%% Nomes deixa passar els 4000 (4.0) o superior
+%/currentdistillerparams where
+%{
+% pop currentdistillerparams /CoreDistVersion get 4000 lt
+% { BaBeL 8 get print flush quit }if
+
+%%%% ara avaluem quina mena de producte es ...
+%%systemdict dup /product known {/product get (pstopdf) search {pop pop pop}{(Distiller) search {pop pop pop}{pop (\n\n...>>> NO ES RES QUE CONEGUI <<<...\n\n) print flush quit}ifelse}ifelse}{pop (\n\n...>>> Producte Desconegut <<<...\n\n) print flush quit}ifelse
+
+%}
+%{
+% BaBeL 8 get print flush stop	% stop equival a quit p.e. al Ghostscript
+%} ifelse			% caldria experimentar-ho en Jaws o en impressores
+%%%%%%% fi de compatibilitats
+
+
+%true setglobal
+
+/FemFumPriv << >> def  % diccionari privat
+
+%%% per Demos hi haura d'anar la clau generadora .FUM (clauer3.ps)
+%%%%%%%%%%%% VALIDACIO DE LA CLAU DIGITAL IDENTIFICATIVA
+%save
+%% fitxer amb la clau digital LicenseID
+%currentsystemparams dup /LicenseID known
+%{
+% /LicenseID get
+% (LN-3148302423)  % meu ADist6 x MacOSX Phanter
+% eq
+% currentsystemparams /LicenseID get
+%% (LN-13047080)  % meva pentium III HA CANVIAT !!!
+%% (LN-13051697)	% meva pentium III, 19.07.02
+%% (LN-13055365) % ha tornat a canviar el 29.08.02 !!!
+%% (LN-13060097)  % nova 09.02 HA CANVIAT!!
+%%(LN-13055308)  % NOVA 21.11.02
+%%(LN-13046908)  % nova 12.02
+%%(LN-13058725)  % nova 02.02
+%%(LN-13050897)  % nova 20.02.03
+%%(LN-13050222)  % nova 05.03.03
+%%(LN-13059640)
+%%(LN-13051457)  % nova 25.03.03
+%%(LN-13054497) % nova egm
+%%(LN-13055468)  % reinstal.lacio 26.06.03 W2K SP3
+%%(LN-13050702)  % ha canviat en molt pocs dies ... 02.07.03
+%%(LN-13051537)  % EvoP3 23.10.03
+%%(LN-13051491)
+%%(LN-13055091)  %Evo 23.12.03
+%(LN-3160022501) % per l'estand d'HP i Acro5 classic sota OSXPhanter del PowerBook de l'Arik Sofer
+
+%%% copiem la cadena sense efectes secundaris i preparem per repicar-la en hexa
+%dup dup length dup /faS exch def string copy /esCriu exch def faS 2 mul string
+%%%% Encodem a hexa ...
+%/StringEncoded exch def
+%save
+%StringEncoded /ASCIIHexEncode filter dup esCriu writestring flushfile
+%restore
+%FemFumPriv /MRCT_FemFumID StringEncoded put  % incrustem LicenseID en hexa al dict privat
+
+% eq or
+% currentsystemparams /LicenseID get
+%% (LN-13055400)  % 6q
+%(LN-829496311)  % EVO meva WinAcro6
+%%()  % PSNormalizer.framework
+% eq or
+% not
+% {BaBeL 4 get print flush stop} if
+%}
+%{
+% BaBeL 4 get print flush stop
+%}ifelse
+%restore
+%%%%%%%%%%%% FI DE CLAU DIGITAL (/LicenseID)
+
+%false setglobal  % tanquem l'acces global de memoria
+
+
+
+%%%% rutina de comprovacio de l'OS
+
+mark  %% tanca de recollida d'escombraries
+
+%% comprova si es Mac o Win
+
+/MoW 0 def
+%% comprova si trova fitxers o directoris amb l'identificador del Mac
+(:*)
+{
+ MoW 1 add /MoW exch def
+} 100 string filenameforall
+
+%% EP! el PSNormalizer.framework va amb slash
+%% treballant amb c:/GhostCall/GhostCall.exe el directori de treball es l'arrel d'aquest exe
+
+MoW 0 eq
+{
+ /seP (./) def	%% utilitzat per fademo
+ /bUsca (/) def  %% utilitzat a l'applet per extraure el nom del fitxer
+
+%%UBESH eixorbar: ara treballem directament en RAW
+ /liNka (/*.*) def  %% cercar ARA SENSE l'extensió RAW
+
+ /tEmp (tmp/) def  %% directori utilitzat a l'applet per desar tots els streams
+ /aFeGeiX (tmp/afegeix) def  %% fitxer utilitzat per l'applet per afegir els Contents definits com una array en un sol fitxer
+                             %% per tal d'evitar errors d'interpretacio per XERRA quan es trenquen continguts (p.e. [100 (aeiou)] en una array i TJ en la seguent)
+ /macOS false def  %% pestell per saber si es Win
+ /l'AseDelsCops (tmp/repica) def  %% fitxer on escriurem tots els PDF a tractar
+%%UBESH eixorbar | necessitem el path absolut al fitxer JPEG decodificat xiuraw
+ /nAdIu (C:/Users/Marc\ Antoni/UB/FIMA/eixorbar/DaaaLi/tmp/xiuraw) def  %% fitxer on hi haura el raw de la imatge de base
+}  %% Win/Unix
+{  %% Mac (antics)
+ /seP (:) def
+ /bUsca (:) def	 %% utilitzat a l'applet per extraure el nom del fitxer
+
+%%UBESH eixorbar: ara treballem directament en RAW
+ /liNka (:*.RAW) def  %% cercar per l'extensió RAW
+
+ /tEmp (tmp:) def  %% utilitzat a l'applet per desar tots els streams
+ /aFeGeiX (tmp:afegeix) def  %% utilitzat per l'applet per afegir els Contents definits com una array en un sol fitxer
+                             %% per tal d'evitar errors d'interpretacio per XERRA quan es trenquen continguts (p.e. [100 (aeiou)] en una array i TJ en la seguent)
+ /macOS true def  %% pestell per saber si es Mac
+ /l'AseDelsCops (%ram%repica) def  %% fitxer on escriurem tots els PDF a tractar
+ /nAdIu (tmp:xiuraw) def  %% fitxer on hi haura el raw de la imatge de base
+}ifelse  %% sintaxi segons S.O.
+
+cleartomark  %% recull les possibles escombraries (p.e. a Mac OS)
+
+%%%% fi d'OS
+
+%%UBESH eixorbar: deixem d'interpretar el JPEG
+false{
+
+%%seP bUsca liNka tEmp aFeGeiX macOS l'AseDelsCops nAdIu pstack AAAAAAAAAAAAAAAAAA
+
+BaBeL 13 get print flush  %% missatge d'inici d'analisi de la imatge de base
+
+
+ComElLincoln
+dup
+{
+ %% macOS {(:)}{(/)}ifelse
+ bUsca
+ search
+ {pop pop}{exit}ifelse
+}loop dup
+/TitolDocInfo exch def print flush  %% apuntem per pantalla l'arxiu d'imatge base del mural
+
+%% creem el fitxer per decodificar a raw i filtrem la seva existència
+{
+ (r) file
+} stopped
+{
+ BaBeL 3 get print flush quit
+}if
+
+%% aquí caldria un stopped ?
+/cdn 65535 string def
+nAdIu dup /elRAW exch def
+
+{
+ (w) file  %% aquí el fitxer de dades final al temp del GS/Distiller
+} stopped
+{
+ BaBeL 25 get print flush stop
+}if
+/NaDiU exch def
+
+{  %% stopped per detectar si el .JPEG base del mural és vàlid o defectuós
+
+%!
+%% DECODIFICADOR DE DADES AL SEU FORMAT ORIGINAL
+ <<
+   %/ColorTransform 1
+ >> /DCTDecode filter         % aqui el filtre decodificador
+ %/ASCIIHexDecode filter
+ %/ASCII85Decode filter
+ %/RunLengthDecode filter
+ %/LZWDecode filter
+ %<</K -1 /Columns 3432 /Rows 4850 /Blackls1 false>> /CCITTFaxDecode filter
+ %/FlateDecode filter
+ {  %% loop 1
+  dup  %% dupliquen el fitxer de lectura
+  cdn readstring  %% llegim el fitxer amb una cadena de capacitat màxima
+  not
+  {
+   NaDiU exch writestring closefile exit
+  } if  %% si hem arribat al final del fitxer (false) escrivim la cadena al fitxer final d'escriptura, tanquem el fitxer i sortim del loop
+  NaDiU exch writestring  %% si no hem arribat al final sel fitxer (true) escrivim la cadena al fitxer final d'escriptura
+ }loop  %% fi de loop 1
+%%EOF
+
+ %% test
+ NaDiU dup flushfile closefile
+
+} stopped
+{  %% peta
+ BaBeL 19 get print flush
+ BaBeL 20 get print flush
+ BaBeL 21 get print flush quit
+}
+{  %% no peta
+ %%% AQUESTA UTILITAT IMPRIMEIX AUTOMATICAMENT UNA IMATGE .JPG
+ %%% (c) marc&toni
+ %%% 16.05.2001
+ %%% Aquesta segona versio ho fa directament d'un fitxer .JPG sense haver de coneixer
+ %%% previament l'espai de color ni les cols i fils
+
+ ComElLincoln dup status
+ {
+  pop pop /FiFtxr exch def pop
+ }  %% bytes totals del fitxer
+ {  %% seria molt extrany que petés doncs aquest path ha estat trobat per filenameforall
+  BaBeL 3 get print flush quit
+ }ifelse
+
+ (r) file /tesela exch def
+
+ %% per trobar el segment d'inici que interessa: busquem els bytes 255 192 tants cops com
+ %% el trobem dins el fitxer i ens quedem amb el darrer que és el bo
+ %% utilitzem per primer cop l'estrategia del ReusableStream
+
+ /laVeta 0 def  %% valor inicial per detectar si ho ha trobat
+
+ {  %% loop per cercar la veta que dóna inici a la informació d'imatge JPEG
+  tesela
+  <<
+    /Filter /SubFileDecode
+    /DecodeParms <</EODCount 0 /EODString (\377\300)>>
+    %/Intent 3
+  >> /ReusableStreamDecode filter pop
+
+  tesela fileposition dup FiFtxr eq
+  {
+   pop exit
+  }  %% sortim tenint desada la darrera posició (que és la bona!) de (\377\300)
+  {  %% desem la posició del doble byte clau on s'inicia la informació d'imatge que necessitem
+   /laVeta exch def
+  }ifelse
+ }loop
+
+ laVeta 0 ne  %% fitxer erroni (no te el doble byte clau)
+ {  %% dades correctes
+ 
+  %% missatge d'imatge correcte
+  BaBeL 12 get print flush
+ }
+ {  %% dades incorrectes cal revisar l'estructura d'aquest JPEG
+  BaBeL 19 get print flush
+  BaBeL 20 get print flush
+  BaBeL 21 get print flush quit
+ }ifelse
+}ifelse
+
+%% lectura de les dades d'imatge gran del mural
+%% captura del valor de files (y)
+%% files (y)
+tesela dup laVeta 3 add setfileposition read pop 256 mul
+tesela dup laVeta 4 add setfileposition read pop add  %%(\n\n >>>> Files (Y) ... ) print flush ==
+/_B exch def  %% (Y) FILES D'IMATGE
+
+%% captura del valor de columnes (x)
+%% columnes (x)
+tesela dup laVeta 5 add setfileposition read pop 256 mul
+tesela dup laVeta 6 add setfileposition read pop add  %%(\n\n >>>> Columnes (X) ... ) print flush ==
+/_A exch def  %% (X) COLUMNES D'IMATGE
+
+%% captura dels components de color (1, 3 o 4 canals)
+%% components de color
+tesela dup laVeta 7 add setfileposition read pop  %%(\n\n >>>> Components de Color ... ) print flush ==
+/CNL exch def
+
+%% bits per component de color (o per píxel)
+tesela dup laVeta 2 add setfileposition read pop  %%(\n\n >>>> Bits x Comp ... ) print flush ==
+/bXp exch def
+
+%% test
+tesela closefile
+
+%%UBESH eixorbar: deixem d'interpretar el JPEG
+}if
+
+
+%%2001%%%%%%%%%%%%%%%%%%%%%%%%%%% CODI ESCRIBA
+%% captura de funcions de menu ESCRIBA
+
+%%UBESH eixorbar: capturem directament el RAW
+%elRAW
+nAdIu /elRAW exch def  %% on s'escriu quan es repica, però cal?
+
+ComElLincoln
+/ElFitxer exch def  %% path
+
+_B /piY exch def  %% files
+_A /piX exch def  %% columnes
+CNL /ECdex exch def  %% espai de color
+%% fi de captura
+
+%% detector no RGB
+CNL 3 ne
+{
+ BaBeL 19 get print flush
+ BaBeL 10 get print flush
+ BaBeL 21 get print flush quit
+} if
+
+%%UBESB eixorbar: forcem el true
+false{
+%% detector de consistencia dels bytes (en JPEG progressius que ara no detectem directament ho podem filtrar per aquí)
+elRAW status pop pop pop exch pop  %% bytes totals del fitxer raw
+piY piX mul CNL mul
+eq
+}
+{
+ true
+}ifelse
+
+{  %% missatge d'imatge correcte
+ BaBeL 8 get print flush
+}
+{
+ BaBeL 19 get print flush
+ BaBeL 20 get print flush
+ BaBeL 21 get print flush quit
+}ifelse
+
+%% detector per informar del format final del mural i tallar el proces si excedeix les mides maximes compatibles per 1.2 o 1.3/1.4
+%%UBESH eixorbar | com que aquesta crida és igualment vàlida pel GS, serà aquí hi haurem d'anar a buscar el gatell clau d'aplicació o no de les TransferFunctions!
+currentdistillerparams /CompatibilityLevel get  % avaluem la versió de PDF
+dup 1.2 gt
+{
+ /MinPag 3 def
+ /MaxPag 14400 def
+ /PDFver exch def
+}
+{
+ /MinPag 72 def
+ /MaxPag 3240 def
+ /PDFver exch def
+}ifelse
+
+%% anàlisi de les mides del mural
+BaBeL 14 get print flush
+piX rd mul 32 string cvs print flush ( x ) print flush
+piY rd mul 32 string cvs print flush 
+BaBeL 15 get print flush
+
+%% avaluem si entra dins els màxims
+piX rd mul
+piY rd mul 2 copy ge
+{
+ % MinPag lt {(Format massa petit) == stop}if
+ pop MaxPag gt
+ {
+  BaBeL 5 get print flush PDFver 6 string cvs print flush
+  BaBeL 7 get print flush MaxPag 32 string cvs print flush ( punts\n\n\n) print flush
+  quit
+ }if
+}
+{
+ exch pop MaxPag gt
+ {
+  BaBeL 5 get print flush PDFver 6 string cvs print flush
+  BaBeL 7 get print flush MaxPag 32 string cvs print flush ( punts\n\n\n) print flush
+  quit
+ }if
+ % MinPag lt {(Format massa petit) == quit}if
+} ifelse
+
+%%%%% rodad'imatges.ps
+%%%%% es una modificacio de fadct_4.ps
+%%%%% emmagatzema al diccionari AlbUm les imatges JPEG en RGB valides ordenades
+%%%%% en una array d'adreces on l'index de cada una correspon a un diccionari
+%%%%% amb les dades d'imatge que necessitem per a cada una
+
+%% missatge del garbellat d'imatges
+BaBeL 2 get print flush
+
+%% diccionari on desarem les dades necessaries per reproduir tota la col·lecció d'imatges
+/AlbUm << >> def
+mark  %% marca per recollir totes les adreces d'imatge vàlides
+
+%% Aquest algorisme cerca per tot l'arbre de directoris i fitxers
+%% a partir del punt on ens situem
+
+%% a cercar
+%(/*)  % tot l'arbre de directoris amb tots els fitxers
+%()
+%%% atencio: cal posar un detector de majuscules i minuscules
+%macOS
+%{(:*.jpg)}  % un determinat tipus de fitxer  % Mac
+%{(/*.jpg)}  % un determinat tipus de fitxer  % Win+Unix
+%ifelse
+
+liNka /aCercar exch def
+
+%% On ens situem ?
+%% Hot Folder on començarem a pescar imatges (NO hi posem el darrer / !!!!)
+
+%%UBESH eixorbar: podem prescindir de la captura de iConstructores
+%% les imatges 1x1 píxels tal i com les hem construït a... FAiConstructores_FAiMosaic.ps ...tenen per nom la successió numèrica del seu índex sense extensió
+false{  %% en prescindim
+
+PetaLenta
+%% filtrem si duu el darrer / o : per moure 1 caracter la incrustació
+%% del comodí de l'extensió del fitxer a cercar
+dup dup length 1 sub get macOS {58 eq}{47 eq}ifelse
+{
+ /rEstem 1 def
+}
+{
+ /rEstem 0 def
+}ifelse  %% si porta / o : al final restem 1 caràcter al posicionat de la cua
+
+%% incrusta aCercar a la cua de l'string de PetaLenta
+dup length dup /deX exch def aCercar length add string dup 3 -1 roll
+0 exch putinterval dup deX rEstem sub  %% restem 1 caràcter?
+aCercar putinterval
+
+/enTens -1 def  %% per saber si ha trobat res i quantes imatges en total (-1) ha trobat al dir
+
+{  %% del filenameforall
+ enTens 1 add /enTens exch def
+ dup length string copy  %% fem un copy per que no es contaminin les strings i poder seguir treballant amb elles
+ dup  %%==  % per que ens ho tregui per pantalleta
+ dup
+ {  %% loop
+  %% macOS {(:)}{(/)}ifelse
+  bUsca search
+  {
+   pop pop
+  }
+  {
+   exit
+  }ifelse
+ }loop print flush  %% anotem per pantalla els arxius que formen el mural, a mida que son analitzats
+
+ %%%%%%% FADCT
+
+ /uau exch def
+
+ uau dup status
+ {
+  pop pop /FiFtxr exch def pop
+ }  %% bytes totals del fitxer
+ {  %% seria molt extrany que petes doncs aquest path ha estat trobat per filenameforall
+  BaBeL 3 get print flush quit
+ }ifelse
+ (r) file /tesela exch def
+
+%%UBESH eixorbar: desactivem perquè aquí sempre treballarem en RAW RGB a 1x1 píxels
+false{
+
+ %% per trobar el segment d'inici que interessa: busquem els bytes 255 192 tants cops com
+ %% el trobem dins el fitxer i ens quedem amb el darrer que es el bo
+ %% utilitzem per primer cop l'estrategia del ReusableStream
+
+ /laVeta 0 def  % valor inicial per detectar si ho ha trobat
+
+ {  % loop per cercar la veta que dona inici a la informacio d'imatge JPEG
+  tesela
+  <<
+  /Filter /SubFileDecode
+  /DecodeParms <</EODCount 0 /EODString (\377\300)>>
+  %/Intent 3
+  >> /ReusableStreamDecode filter pop
+
+  tesela fileposition dup FiFtxr eq
+  {pop exit}  % sortim tenint desada la darrera posicio (que es la bona!) de (\377\300)
+  {/laVeta exch def}  % desem la posicio del doble byte clau on s'inicia la informacio d'imatge que necessitem
+  ifelse
+ }loop
+
+ %% on comença la veta clau ?
+ %laVeta (\n\n >>>> la Veta es a ... ) print flush ==
+ %% que es el 'frame length' ?
+ % inicialitzem el fitxer
+ %tesela resetfile
+
+ laVeta 0 ne  % fitxer erroni (no te el doble byte clau)
+
+ {  % dades correctes
+
+  %% captura del valor de files (y)
+  %% files (y)
+  tesela dup laVeta 3 add setfileposition read pop 256 mul
+  tesela dup laVeta 4 add setfileposition read pop add  %(\n\n >>>> Files (Y) ... ) print flush ==
+  /_B exch def  % (Y) FILES D'IMATGE
+
+  %% captura del valor de columnes (x)
+  %% columnes (x)
+  tesela dup laVeta 5 add setfileposition read pop 256 mul
+  tesela dup laVeta 6 add setfileposition read pop add  %(\n\n >>>> Columnes (X) ... ) print flush ==
+  /_A exch def  % (X) COLUMNES D'IMATGE
+
+  %% captura dels components de color (1, 3 o 4 canals)
+  %% components de color
+  tesela dup laVeta 7 add setfileposition read pop  %(\n\n >>>> Components de Color ... ) print flush ==
+  /CNL exch def
+
+  %% bits per component de color (o per pixel)
+  tesela dup laVeta 2 add setfileposition read pop  %(\n\n >>>> Bits x Comp ... ) print flush ==
+  /bXp exch def
+
+  CNL 3 eq  % nomes deixem passar ara els RGB (que passara amb un CIE-Lab?)
+
+  {  %% és RGB
+   [
+    0
+    %% 1 canal (ploma, escala de grisos)
+    << /DCD [0 1] /SCE {/DeviceGray setcolorspace} >>
+    0
+    %% 3 canals (RGB, L*a*b*)
+    << /DCD [0 1 0 1 0 1] /SCE {/DeviceRGB setcolorspace} >>
+    %% 4 canals (CMYK)
+    << /DCD [0 1 0 1 0 1 0 1] /SCE {/DeviceCMYK setcolorspace} >>
+   ] CNL get
+
+   %% incrustem al dict de l'index els valors iCanals, iX, iY
+   3 dict dup 3 -1 roll /iCanals exch put
+   dup /iX _A put dup /iY _B put
+   %% incrustem el dict de l'index al dict general AlbUm
+   AlbUm exch enTens 5 string cvs cvn exch put
+
+   %% detector de consistencia dels bytes (en JPEG progressius que ara no detectem directament ho podem filtrar per aqui)
+   uau (r) file
+   <<
+     /Filter /DCTDecode
+     /DecodeParms <</ColorTransform 1>>
+     %/Intent 3
+   >> /ReusableStreamDecode filter
+   bytesavailable  %% bytes totals del fitxer raw
+   _A _B mul CNL mul eq
+   {  %% missatge d'imatge correcte
+    BaBeL 12 get print flush
+   }
+   {  %% dades incorrectes, cal revisar l'estructura d'aquest JPEG
+    BaBeL 19 get print flush
+    BaBeL 20 get print flush
+    pop
+    enTens 1 sub /enTens exch def
+   }ifelse
+  }
+  {  %% no es RGB
+   BaBeL 19 get print flush
+   BaBeL 10 get print flush
+   pop
+   enTens 1 sub /enTens exch def
+  }ifelse
+ }
+ {  %% dades incorrectes, cal revisar l'estructura d'aquest JPEG
+  BaBeL 19 get print flush
+  BaBeL 20 get print flush
+  pop
+  enTens 1 sub /enTens exch def
+ }ifelse
+
+%%UBESH eixorbar: desactivem perquè aquí sempre treballarem en RAW RGB a 1x1 píxels
+}if
+%% incrustem al dict de l'index els valors iCanals, iX, iY
+3 dict dup /iCanals 3 put
+dup /iX 1 put dup /iY 1 put
+%% incrustem el dict de l'index al dict general AlbUm
+AlbUm exch enTens 5 string cvs cvn exch put
+
+ %%%%%% fi de FADCT
+
+} 256 string filenameforall
+
+enTens 0 lt
+{
+ BaBeL 3 get print flush quit
+}
+{  %% missatge de fi de garbellat d'imatges i el total
+ (\n\n . . . .  ) print flush enTens 1 add  %% el total real es enTens+1
+ 10 string cvs print flush BaBeL 11 get print flush
+}ifelse
+
+%% desem les adreces de les imatges valides a l'array iArray i aquest dins del dict AlbUm
+counttomark array astore AlbUm exch /iArray exch put
+
+%%UBESH eixorbar: podem prescindir de la captura de iConstructores
+%% les imatges 1x1 píxels tal i com les hem construït a... FAiConstructores_FAiMosaic.ps ...tenen per nom la successió numèrica del seu índex sense extensió
+}if  %% en prescindim
+
+%AlbUm  %% ara ja no ens cal?
+/iArray
+[  %% la nova iArray per AlbUm
+ 0 1 _A _B mul 1 sub  %% seqüència ordenada de les imatges constructores
+ {  %% for per muntar el path de cadascuna de les imatges constructores
+  PetaLenta exch 3 string cvs dup length 2 index length dup /araVa exch def add string dup
+  4 -1 roll 0 exch putinterval dup 3 -1 roll araVa exch putinterval
+ }for
+] dup {==}forall  %% anotem per pantalla les iConstructores
+def
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%UBESH eixorbar: en prescindim
+false{
+%% algorisme per ordenar alfabètica o numèricament una successió de cadenes o nombres que estiguin a l'stack
+ [  %% mark per l'array ordenada per byte offsets de diccionaris trailer 
+  mark  %% mark per l'array ordenada de byte offsets
+
+%   TAUxREF {pop 32 string cvs cvx exec}forall
+1000 0 2 9 555 1
+
+   %% endreça una seqüència numèrica existent a l'stack de menys a més (operador ge) o de més a menys (operador le)
+   %% a comptar des de la base de l'stack
+   {  %% loop mentre estiguin desordenats
+    counttomark 1 sub /iCul exch def
+    %% escombrat d'ordenació
+    iCul
+    {  %% repeat
+     iCul index /araCul exch def
+     iCul 1 sub index araCul le  %% ordre d'endreça
+     {
+      iCul 1 sub /iCul exch def
+     }
+     {
+      iCul -1 roll
+      iCul 1 add 1 roll
+     }ifelse
+    }repeat
+    %% mirem si estan per ordre de menys a més (ge)
+    %% o de més a menys (le), començant pel cul de l'stack
+    /Ordenats true def
+    counttomark 1 sub /iCul exch def
+    iCul
+    {  %% repeat
+     iCul index /araCul exch def
+     iCul 1 sub index araCul le  %% ordre d'endreça
+     {
+      iCul 1 sub /iCul exch def
+     }
+     {
+      /Ordenats false def
+      exit
+     }ifelse
+    }repeat
+    Ordenats{exit}if
+   }loop
+  ]  %% tanquem l'array ordenada de menys a més byte offset
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+enTens /maxAlbum exch def  % per utilitzar-ho en el moment de muntar l'ICOgrama
+%%%%%%%%%%%%% fi de rodad'imatges.ps
+
+%%UBESH eixorbar: en prescindim
+}if
+
+%%%%%%%%%%%%% aqui escriurem al dict RODAdic els procediments de cada imatge
+%%%%%%%%%%%%% perque nomes s'hagin d'escriure una vegada
+
+true
+{  % no bloquem aixo per ara?
+ %/RODAi 0 def  % index per anomenar i cridar les imatges
+ /RODAdic << >> def
+
+ 0 1 _A _B mul 1 sub  %% seqüència indexada de les imatges constructores
+ {  %% for
+ %{  %% loop
+
+  /RODAi exch def  % index per anomenar i cridar les imatges
+  save  %% sobretot!
+
+  RODAdic
+  RODAi 5 string cvs  %cvn
+  <<
+    /ImageType 1
+
+    %AlbUm RODAi 5 string cvs get
+    %dup /iX get exch /iY get
+
+    /Height _B  %exch
+    %3 -1 roll
+    /Width _A  %exch
+
+    %AlbUm RODAi 5 string cvs get
+    %/iCanals get 
+    %/DCD get
+    /Decode [0 1 0 1 0 1]  %exch
+
+    iArray RODAi get
+    /DataSource exch (r) file  %<</ColorTransform 1>> /DCTDecode filter
+    /BitsPerComponent 8
+    /ImageMatrix
+    [
+     1  %AlbUm RODAi 5 string cvs get /iX get
+     0 0
+     1  %AlbUm RODAi 5 string cvs get /iY get
+     neg 0
+     1  %AlbUm RODAi 5 string cvs get /iY get
+    ]
+  >> put  % ho incrustem al diccionari RODAdic
+
+  restore  %% sobretot!
+
+  %RODAi enTens eq {exit} if
+  %RODAi 1 add /RODAi exch def
+
+ %}loop
+ }for
+
+}if  %% no bloquem aixo per ara
+
+pop  %% ens carreguem la mark
+
+%%UBESH eixorbar: en presindim
+false{
+
+%% si el duu llavors farceix una cadena segons la sintaxi del Creation Date d'AcrobatPDF
+(%Calendar%) /IODevice resourcestatus  % existeix el recurs del calendari+rellotge?
+{  %% existeix! (probablement siguem dins GS)
+ pop pop  % ens carreguem les altres dues respostes del query
+ /QuinaHoraEs () def  % cadena d'inici per l'hora
+ (%Calendar%) currentdevparams %{== ==}forall quit
+ dup /Running get
+ {  %% suposem q per refiar-nos del calendari aquesta entrada ha d'estar a true
+  dup /Year get
+  4 string cvs /aNY exch def
+  dup /Month get
+  2 string cvs /MeS exch def
+  dup /Day get
+  2 string cvs /Dia exch def
+  dup /Hour get
+  2 string cvs dup length dup 2 ne {1 add exch (00) dup 3 -1 roll 1 exch putinterval exch}if
+  QuinaHoraEs length dup /afegit exch def add string dup 0 QuinaHoraEs putinterval
+  dup afegit 4 -1 roll putinterval /QuinaHoraEs exch def
+
+  QuinaHoraEs length dup /afegit exch def 1 add string dup 0 QuinaHoraEs putinterval
+  dup afegit (:) putinterval /QuinaHoraEs exch def
+
+  dup /Minute get dup 0 eq{3141618}{dup}ifelse/miNUT exch def  % x srand
+  2 string cvs dup length dup 2 ne {1 add exch (00) dup 3 -1 roll 1 exch putinterval exch}if
+  QuinaHoraEs length dup /afegit exch def add string dup 0 QuinaHoraEs putinterval
+  dup afegit 4 -1 roll putinterval /QuinaHoraEs exch def
+   
+  QuinaHoraEs length dup /afegit exch def 1 add string dup 0 QuinaHoraEs putinterval
+  dup afegit (:) putinterval /QuinaHoraEs exch def
+   
+  /Second get dup miNUT mul /llevor exch def  % x srand
+  2 string cvs dup length dup 2 ne {1 add exch (00) dup 3 -1 roll 1 exch putinterval exch}if
+  QuinaHoraEs length dup /afegit exch def add string dup 0 QuinaHoraEs putinterval
+  dup afegit 4 -1 roll putinterval /QuinaHoraEs exch def
+ }
+ {  %% si Running es a false deixem un missatge d'avis, pero no fem res...
+  pop
+  (\n...>>> Hi ha %Calendar% pero Running es a false :-\( \n\n) print flush
+  (00:00:00)/QuinaHoraEs exch def
+  (1959)/aNY exch def
+  (11)/MeS exch def
+  (24)/Dia exch def
+ }ifelse
+}
+{
+ (\n...>>> NO hi ha %Calendar% pero no hi fa res... ;-\) \n\n) print flush
+ (00:00:00)/QuinaHoraEs exch def
+ (1959)/aNY exch def
+ (11)/MeS exch def
+ (24)/Dia exch def
+}ifelse
+%% si NO existeix... probablement siguem a Distiller
+
+/RODAi 0 def  %% valor inicial del comptador d'imatges
+
+%% desactivem l'aleatori si el nombre de fotos supera les 65535
+ALEAi
+{
+ enTens 1 add 65535 gt
+ {
+  BaBeL 22 get print flush /ALEAi false def
+ }if
+} if
+
+ALEAi  % fem l'aleatori ?
+{  %% definim l'aleatori per primera vegada
+   %% definicions aleatories
+
+ %%usertime srand
+ %% aixo ho necesita el GS xq realment sigui aleatori?
+ llevor srand
+
+ /number {rand exch mod} bind def
+ %% nombre d'elements (fotos) a barallar
+ enTens 1 add /AfotoS exch def
+ AfotoS array /BoMBo exch def
+ 0  %% index comptador per l'array
+ AfotoS 3 mul  %% tres cops el nombre d'elements
+ {
+  /HiEra false def
+  %% sempre sortira un enter entre 0 i AfotoS-1
+  AfotoS number /HiEs exch def
+  BoMBo {HiEs eq {/HiEra true def exit}if} forall
+  HiEra not {dup BoMBo exch HiEs put 1 add}if
+ }repeat
+ pop
+ %% el treiem per ordre de l'aleatori actual i mirem si som al final per un null
+ BoMBo RODAi get dup null eq {pop enTens dup /RODAi exch def} if
+ /BOMBOi exch def
+ %% fins aqui l'aleatori
+}
+{  %% NO
+ RODAi /BOMBOi exch def
+} ifelse
+
+%%UBESH eixorbar: en prescindim
+}if
+
+%%& fem el dict del fitxer d'imatge (aquest es raw i te les dades conegudes)
+
+true
+{
+%%UBESH eixorbar: que hi pinta doncs el que hem desat a RODAdic???
+ /GoMeT  %% nom del diccionari form
+ %<<
+ %/FormType 1
+ %/BBox [0 0 30 30]
+ %/Matrix [1 0 0 1 0 0]
+ %/PaintProc
+ {
+  save  %% sobretot!
+
+  %/DeviceRGB setcolorspace
+  %30 30 scale
+  <<
+    /ImageType 1
+
+    %/Width 186
+    %/Height 257
+    %AlbUm BOMBOi 5 string cvs get
+    %dup /iX get exch /iY get
+
+    /Height 1  %exch
+    %3 -1 roll
+    /Width 1  %exch
+
+    /BitsPerComponent 8
+    /Decode [0 1 0 1 0 1]
+    %AlbUm BOMBOi 5 string cvs get
+    %/iCanals get 
+    %/DCD get
+    %/Decode exch
+    %/ImageMatrix [186 0 0 -257 0 257]
+    /ImageMatrix
+    [
+     1  %AlbUm BOMBOi 5 string cvs get /iX get
+     0 0
+     1  %AlbUm BOMBOi 5 string cvs get /iY get
+     neg 0
+     %AlbUm BOMBOi 5 string cvs get /iY get
+     1
+    ]
+    %/DataSource (C:/MARCANTONI/FEMFUM/PROJECTES/IMGRAMA/ARRAYHOR/polmia2.jpg) (r) file <</ColorTransform 1>> /DCTDecode filter
+    %AlbUm
+    iArray  %get
+    %BOMBOi
+    RODAi get
+    /DataSource exch (r) file  %<</ColorTransform 1>> /DCTDecode filter
+  >>
+  dup dup /Width get exch /Height get
+  2 copy lt  %% aqui avaluem si hem de primar les x o les y per que la imatge no deixi blancs
+  {
+   CoS mul exch div
+   CoS exch
+   dup /pelCap exch def  %% pesquem la Y de la imatge per corregir la posicio si la muntem pel cap
+   scale
+  }
+  {
+   exch CoS mul exch div
+   CoS
+   dup /pelCap exch def  %% pesquem la Y de la imatge per corregir la posicio si la muntem pel cap
+   scale
+  }ifelse
+
+  image 
+  restore  %% sobretot!
+ }bind def
+ %>> def
+}
+{
+ /GoMeT  %% nom del diccionari de la imatge normal
+ {
+  RODAdic RODAi 5 string cvs cvn get %exec
+  dup dup /Width get exch /Height get
+  2 copy lt  %% aqui avaluem si hem de primar les x o les y per que la imatge no deixi blancs
+  {
+   CoS mul exch div
+   CoS exch scale
+  }
+  {
+   exch CoS mul exch div
+   CoS scale 
+  }ifelse
+  image
+ }bind def
+}ifelse  %% test?
+
+/iMides
+{  %% algorisme que ens captura les mides x, y a escala de la imatge petita abans de executar image (GoMet)
+ %AlbUm BOMBOi 5 string cvs get
+ %dup /iX get exch /iY get
+ 1 1  %%UBESH eixorbar: sempre treballarem amb iConstructores d'1x1
+ 2 copy lt  %% aqui avaluem si hem de primar les x o les y per que la imatge no deixi blancs per la composicio
+ {
+  CoS mul exch div
+  CoS exch
+  /pelCap exch def  %% pesquem la Y de la imatge per corregir la posicio si la muntem pel cap
+  pop  %% ens carreguem la x
+ }
+ {
+  exch CoS mul exch div
+  CoS
+  /pelCap exch def  %% pesquem la Y de la imatge per corregir la posicio si la muntem pel cap
+  pop  %% ens carreguem la x
+ }ifelse
+}bind def
+
+
+%%testVM per que no s'alenteixi quan genera daaaligrames molt grans
+-1 vmreclaim  %% cal veure si realment incideix...
+
+/salva'm save def
+
+<</PageSize [ piX rd mul piY rd mul ]>> setpagedevice
+
+%%2001%%%%%%%%%%%%%%%%%%%%%%%%%%% FI DE REDEFINICIO DE VARIABLES DEL MENU
+
+%/iDX 0 def  %% valor inicial de l'index de la cadena de text
+
+%!
+%%%%% UTILITAT PER CONVERTIR PIXELS A UNA FORMA DE TEXT
+%%%%% POT UTILITZAR-SE PER SIMULAR PROCESSOS DE TRAMAT
+%% 11.04.2000 te un detector de nivell de gris minim que fa perfilar la lletra si es supera
+%% (alenteix molt el treball!) + porta un pestell per si el volem activar
+%% + utilitzem una nova variable anomenada /rmvt (espai proporcional) que fa la feina de rmvt
+%% i avalua si em de llegir un altre pixel d'imatge per poder treballar amb composicio natural
+
+%%%%%%%%%% noves definicions de color
+
+%% pestell per l'espai de color de treball (0=grisos, 1=RGB, 2=CMYK)
+%1
+%/ECdex exch def
+
+%% array de conversio de color
+0 /icOl exch def  %% index del pixel que es llegeix per controlar la conversio
+[
+ 0
+ {255a1 mul /gRis exch def true}  %% escala de grisos
+ 0
+ {
+  [
+   {255a1 mul /R exch def  icOl 1 add /icOl exch def}
+   {255a1 mul /G exch def  icOl 1 add /icOl exch def}
+   {255a1 mul /B exch def  0 /icOl exch def true}
+  ] icOl get exec
+ }  %% RGB
+ {
+  [
+   {255a1 mul 1 exch sub dup /C exch def .3 mul /$C exch def icOl 1 add /icOl exch def}
+   {255a1 mul 1 exch sub dup /M exch def .59 mul /$M exch def icOl 1 add /icOl exch def}
+   {255a1 mul 1 exch sub dup /Y exch def .11 mul /$Y exch def icOl 1 add /icOl exch def}
+   {255a1 mul 1 exch sub dup /K exch def /$K exch def 0 /icOl exch def true}
+  ] icOl get exec
+ }  %% CMYK
+]
+/piNta exch def
+
+%% array de lectures de pixel
+[
+ 0
+ 1
+ 0
+ 3
+ 4
+]
+/lleGeiX exch def
+
+%% array d'activacio d'espai
+[
+ 0
+ {/DeviceGray setcolorspace gRis setcolor}
+ 0
+ {
+  %gsave  %/DeviceRGB setcolorspace
+  %%%%% si es true dona invalidacces
+  %false setpacking
+  %{null mul}
+  %%wcheck pstack quit
+  % dup 0 R put 
+  %{null mul}
+  % dup 0 G put
+  %{null mul}
+  % dup 0 B put  
+  %{0 mul}
+  %setcolortransfer
+  %true setpacking
+ }
+ {/DeviceCMYK setcolorspace C M Y K setcolor}
+]
+/eSpai exch def
+
+/255a100 100 255 div def  %% conversor de valors 0-255 a 0-100
+/255a1 1 255 div def  %% conversor de valors 0-255 a 0-1
+
+%%UBESH eixorbar: són els píxels d'ample i píxels d'alt de la iMosaic
+/pntX piX def  %% meitat dels punts d'amplada de la imatge final
+/pntY piY def  %% meitat dels punts de llargada "       "
+
+rd
+/rmvt exch def  %% ample del pixel (antic moviment relatiu entre caracters)
+
+/255a100 100 255 div def  %% conversor de valors 0-255 a 0-100
+
+/cX 0 def  %% posicions inicials dels caracters
+/cY 0 def
+
+/maXgraella 0 def  %% valor inicial de la variable de control per no excedir l'ample del pixel
+
+%%UBESH eixorbar: apunta al RAW de la iMosaic
+ElFitxer
+(r) file
+/digitAl exch def
+
+/estT true def  %% pestell per executar el calcul de temps 1 cop
+
+/HvY
+{
+ 0  %% comptador inicial
+ {  %% inici del loop
+
+  %% algorisme d'estimacio de temps segons la primera imatge pintada
+  estT
+  {
+   usertime /UNAi exch def /estT false def /estTfi true def
+  }if
+
+  cX cY  %% posicio de l'inici de caracter
+
+  %% estrategia per fer treballar el text amb composicio natural
+
+  cX maXgraella ge
+  {
+
+%%%%%%%%%%%%%%  nous afegits de color
+
+   lleGeiX ECdex get  %% repeticions de lectura de pixel
+
+   {  %% repeat
+    digitAl read  %% llegeix el pixel
+
+    {
+
+%dup ==
+
+     piNta ECdex get cvx exec  %% conversio a de color que toca
+    } 
+    {
+     false
+    }ifelse  %% si arriba al final del fitxer deixa un false per sortir del loop
+   }repeat
+
+
+   eSpai ECdex get cvx exec  %% activacio de l'espai, la conversio i pintat
+
+%%%%%%%%%%%%%%
+
+   maXgraella rd add /maXgraella exch def  %% actualitzem
+   /smp true def  %% sumem el pixel al compador de columnes ?
+  }
+  {
+
+%%%%%%%%%%%%%%  nous afegits de color
+
+   eSpai ECdex get cvx exec  %% activacio de l'espai, la conversio i pintat
+
+%%%%%%%%%%%%%%
+
+   true  %% torna a posar el valor del pixel anterior
+   /smp false def  %% sumem el pixel al comptador de columnes
+  }ifelse
+
+  {
+   2 -1 roll 2 -1 roll
+
+   %false setpacking
+
+   %currentpacking pstack quit
+
+   %% desem les transfers en un fitxer
+   true setglobal
+   %macOS
+   %{(:tmp:ctransfer)}
+   %{(./tmp/ctransfer)}ifelse
+
+   aFeGeiX (w) file /Ctransfer exch def
+
+   false setglobal
+
+%%%%%%%%%%%%%%%%%%% calibració de color idem paparazzialea
+
+   %% filtrem el valor de RaNG perque estigui entre + gran de zero i 1
+   RaNG 0 le
+   {
+
+%%UBESH eixorbar: passem a mínims el valor més acostat a zero pel tal que la transfer dinàmica faci desaparèixer el color de les imatges constructores
+    0.01 /RaNG exch def
+
+   }if  %% si 0 o mes petit el deixem a .1
+   
+   RaNG 1 gt
+   {
+    1 /RaNG exch def
+   }if  %% si es mes gran de 1 el deixem a 1
+
+   %& escrivim els 3 array de transferencia
+
+   %& Roig
+   R RaNG sub 0 le
+   {
+    0 /MinR exch def
+   }
+   {
+    R RaNG sub /MinR exch def
+   }ifelse
+   Ctransfer ( /TransferR [) writestring
+   R 0 eq
+   {
+    256
+    {
+     Ctransfer 48 write Ctransfer 32 write
+    }repeat
+   }
+   {
+    R MinR sub 256 div MinR exch R
+    {
+     20 string cvs Ctransfer exch writestring Ctransfer 32 write
+    }for
+   }ifelse
+   Ctransfer (] def ) writestring
+
+   %&Verd
+   G RaNG sub 0 le
+   {
+    0 /MinG exch def
+   }
+   {
+    G RaNG sub /MinG exch def
+   }ifelse
+   Ctransfer ( /TransferG [) writestring
+   G 0 eq
+   {
+    256
+    {
+     Ctransfer 48 write Ctransfer 32 write
+    }repeat
+   }
+   {
+    G MinG sub 256 div MinG exch G
+    {
+     20 string cvs Ctransfer exch writestring Ctransfer 32 write
+    }for
+   }ifelse
+   Ctransfer (] def ) writestring
+
+   %&Blau
+   B RaNG sub 0 le
+   {
+    0 /MinB exch def
+   }
+   {
+    B RaNG sub /MinB exch def
+   }ifelse
+   Ctransfer ( /TransferB [) writestring
+   B 0 eq
+   {
+    256
+    {
+     Ctransfer 48 write Ctransfer 32 write
+    }repeat
+   }
+   {
+    B MinB sub 256 div MinB exch B
+    {
+     20 string cvs Ctransfer exch writestring Ctransfer 32 write
+    }for
+   }ifelse
+   Ctransfer (] def ) writestring
+
+   %% escrivim la crida de la transfer
+   Ctransfer ( {255 mul cvi TransferR exch get}{255 mul cvi TransferG exch get}{255 mul cvi TransferB exch get}{0 mul} setcolortransfer ) writestring
+
+%%%%%%%%%%%%%%%%%%% fins aqui lo del paparazzialea
+
+   Ctransfer closefile
+
+   %% executem l'espai de color particular de cada imatge
+   %AlbUm BOMBOi 5 string cvs get
+%%UBESH eixorbar: és aquí on tenim ara els path a les iConstructores
+   %iArray RODAi get
+   %/iCanals get
+   %/SCE get exec
+   /DeviceRGB setcolorspace
+
+   %macOS
+   %{(:tmp:ctransfer)}
+   %{(./tmp/ctransfer)} ifelse
+
+   aFeGeiX
+   (r) file cvx exec
+
+   %true setpacking
+
+   /alCel save def
+
+   iMides  %% captura les x,y escalades de la imatge abans d'executar image
+
+   capOpeus
+   {
+    pelCap sub
+   }if  %% arrenglerem pel cap de la imatge ?
+
+   translate GoMeT  %image
+
+   %RODAdic RODAi 10 string cvs cvn get image
+
+   alCel restore
+
+   % dup type /dicttype eq {pop}if
+   %grestore
+
+   ALEAi  %% fem l'aleatori ?
+   {
+    %% comptador de l'aleatori
+    RODAi enTens eq
+    {
+     /RODAi -1 def
+     %% definicions aleatories
+     usertime srand
+     %% aixo ho necesita el GS xq realment sigui aleatori?
+     llevor srand
+
+     /number
+     {
+      rand exch mod
+     }bind def
+     %% nombre d'elements (fotos) a barallar
+     enTens 1 add /AfotoS exch def
+     AfotoS array /BoMBo exch def
+     0  %% index comptador per l'array
+     AfotoS 3 mul  %% tres cops el nombre d'elements
+     {
+      /HiEra false def
+      %% sempre sortira un enter entre 0 i AfotoS-1
+      AfotoS number /HiEs exch def
+      BoMBo
+      {
+       HiEs eq
+       {
+        /HiEra true def exit
+       }if
+      }forall
+      HiEra not
+      {
+       dup BoMBo exch HiEs put 1 add
+      }if
+     }repeat
+     pop
+     %% fins aqui l'aleatori
+    }if
+    RODAi 1 add /RODAi exch def
+    %% el treiem per ordre de l'aleatori actual i mirem si som al final per un null
+    BoMBo RODAi get dup null eq
+    {
+     pop enTens dup /RODAi exch def
+    }if
+    /BOMBOi exch def
+   }
+   {  %% NO
+%%UBESH: exiorbar: en prescindim
+%    RODAi enTens eq
+%    {
+%     /RODAi -1 def RODAi /BOMBOi exch def
+%    }if
+
+    RODAi 1 add /RODAi exch def
+    RODAi /BOMBOi exch def
+   }ifelse
+
+   cX CoS add
+   /cX exch def  %% actualitzem el valor de X per composicio natural
+   smp
+   {
+    1 add
+   }if  %% si hem repetit el pixel no el sumem
+   dup  %% sumador del comptador
+   piX eq
+   {
+    pop exit
+   }if  %% has fet totes les columnes ?
+  }if  %% s'executa mentre no arriba al final del fitxer
+ }loop
+}bind def
+
+
+/HvX
+{
+ 0
+ {  %% loop
+  dup rmvt mul  %% multiplicant per l'index tenim la posicio d'inici de fila
+  neg /cY exch def /cX 0 def  %% actualitzem els valors del centre per l'inici de cada fila
+  /maXgraella 0 def
+  HvY  %% fa totes les columnes de la fila corresponent
+
+  %% algorisme d'estimacio de temps segons la primera imatge pintada
+  estTfi
+  {
+   /estTfi false def BaBeL 23 get print flush
+   usertime UNAi sub 1000 div piY mul 60 div truncate cvi 5 string cvs print flush
+   BaBeL 24 get print flush
+  }if
+
+  1 add dup  %% sumador del comptador
+
+  %% comptador del % de la imatge construida
+  dup piX mul 100 mul piX piY mul div round cvi 20 string cvs print flush (%\n . . . .  ) print flush
+
+  piY eq
+  {
+   pop BaBeL 17 get print flush exit
+  }if  %% has fet totes les files ?
+ }loop
+}bind def
+
+%%UBESH exiorbar: aquest és el comptador de iConstructores ?
+/RODAi 0 def
+
+%& posicio d'inici de la primera imatge de construccio del mural
+0 piY rd mul rd sub
+capOpeus {rd add}if  % corregim la y cap amunt si arrenglerem pel cap de la imatge
+translate  % xamfra superior esquerra de la imatge final
+
+%% missatge de generacio del mural
+BaBeL 6 get print flush
+
+HvX
+
+%% incrustacio d'un diccionari privat per recollir i salvar dades del programari generador
+%% (Daaali.ps) i de la clau LicenseID del Distiller utilitzat
+
+%% diccionari privat com a objecte indirecte
+mark /_objdef {DicPriv} /type /dict /OBJ pdfmark
+
+%% contingut del diccionari privat
+mark
+{DicPriv}
+%	<<
+%	  /MRCT_FemFumID FemFumID  % la clau LicenseID en hexa la posem quan interroguem el Distiller
+true setglobal
+FemFumPriv dup /MRCT_GNU_Daaali_v (1.0) put  %% versio de l'Applet
+false setglobal
+%	>>
+/PUT pdfmark
+
+%% incrustem al Catalog
+mark
+{Catalog}
+<<
+  /MRCT_Daaali {DicPriv}
+>> /PUT pdfmark
+%% fins aqui la incrustacio del diccionari privat
+
+%% preferencies d'obertura del PDF
+mark
+/PageMode /UseNone
+%/Page pageDiBa
+/View  %[/XYZ null null 1]  % 100%
+[/Fit]	%% ajustat finestra
+%[/XYZ null null 0]  % x l'ample
+/DOCVIEW pdfmark
+
+%% camps publics DocInfo del PDF
+mark
+/Title (UBESH eixorbar)  %TitolDocInfo
+/Subject (DaaaLigrames generats des de la Facultat de Belles Arts de la UB)
+%/Keywords keywordsDiBa
+/Author (Marcantoni Malagarriga-Picas | www.femfum.com)
+/Creator (GNU FemFum Daaali PostScript Applet)
+/DOCINFO pdfmark
+
+%% incrustem l'EPS pels credits de Vulcania d'HP
+%gsave
+%{}{}{}{} setcolortransfer
+%initgraphics
+%0 0 translate
+%(C:/Documents and Settings/Administrador/Escritorio/Drupa2004/HPshow/VolcaniaDefinitiu/creditsfemfum2.eps)
+%(r) file cvx exec
+%grestore
+
+showpage
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%% fi d'imatext5.ps
+
+salva'm restore
+
