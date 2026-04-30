@@ -1,0 +1,157 @@
+%% aquesta utilitat genera imatges alternatives per impressió
+%% incrustades en el mateix PDF a traves de codis pdfmark
+
+%% amb la gran novetat d'utilitzar mascares sofisticades de PS tipus 4
+%% que en codi PDFmark queden transformades a una imatge amb color indexat
+%% que duu la clau /Mask amb l'array del color a emmascarar
+
+
+<</PageSize[200 200]>>setpagedevice
+
+%AlterEgo = 123
+%AlterEgoStream = 456
+%LaMascaraXdemo = 789
+
+%% li posem x sota x veure que va la mascara
+gsave
+0 1 0 setrgbcolor
+0 0 200 200 rectfill
+grestore
+
+% anomenem la imatge x pantalla
+[/_objdef {ImatgeXpantalla} /NI pdfmark
+
+0 200 translate
+200 200 scale
+
+gsave
+
+/DeviceRGB setcolorspace
+
+% executem la imatge x pantalla
+<<
+	  /ImageType 4
+	  /Width 8
+	  /Height 8
+	  /BitsPerComponent 8
+	  /Decode [0 1 0 1 0 1]
+	  /ImageMatrix [ 8 0 0 -8 0 0]
+	  /DataSource (ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff) 0 () /SubFileDecode filter /ASCIIHexDecode filter
+/MaskColor [255 255 255]  % nova clau per la mascara de color precis o amb rang
+	  >> image
+
+grestore
+
+
+% creem l'stream de dades indexades per la imatge alternativa
+[/_objdef {PixelsIndexats} /type /stream /OBJ pdfmark
+
+
+% llegim el fitxer a incrustar a AlterEgo
+% les dades d'imatge han de ser binaries (cal provar amb hexa) doncs ell sempre
+% les acaba comprimint amb Flate o LZW. En el cas que llegim dades DCT (jpg) cal decodificar-les
+% abans d'entar-les a l'stream de dades
+
+%%%% en raw directe
+%(C:/MaRCanToni/FemFum/projectes/LlumiColor/_Atles_/7______________0.raw) (r) file
+
+%%%% a partir d'una cadena hexa
+(0101010101010101010101010101010002020000000000000000000000000000
+0101010101010101010101010101010002020000000000000000000000000000
+0101010101010101010100000101010000000000000000020200000000000000
+0101010101010101010100000101010000000000000000020200000000000000
+0101010101010101010101010101010000000000000000000000000000000000
+0101010101010101010101010101010000000000000000000000000000000000
+0101010101010100000101010101010001010101000000000000000000000000
+0101010101010100000101010101010001010101000000000000000000000000
+0101010101010101010101010101010001010101000000000000000000000000
+0101010101010101010101010101010001010101000000000000000000000000
+0101010101010102020202010101010000000000000000000101010100000000
+0101010101010102020202010101010000000000000000000101010100000000
+0101010101010102020202010101010000000000000000000101010100000000
+0101010101010102020202020202020101010101010101010101010100000000
+0101010101010102020202020202020101010101010101010101010100000000
+0101010101010102020202020202020101010101010101010101010100000000
+0101010101010102020202020202020101010101010101010101010100000000
+0101010101010101010101010202020101010100000000000000000000000000
+0101010101010101010101010202020101010100000000000000000000000000
+0101010101010101010101010202020101010100000000000000000000000000
+0101010101010101010101010202020101010100000000000000000000000000
+0101010202020202020202020202020101010101010101010000000000000000
+0101010202020202020202020202020101010101010101010000000000000000
+0101010202020202020202020202020101010101010101010000000000000000
+0101010202020202020202020202020101010101010101010000000000000000
+0101010202020201010101010101010000000000010101010000000000000000
+0101010202020201010101010101010000000000010101010000000000000000
+0101010202020201010101010101010000000000010101010000000000000000
+0101010202020201010101010101010000000000010101010000000000000000
+0101010202020201010101010101010000000000010101010000000000000000
+0101010202020201010101010101010000000000010101010000000000000000
+0101010101010101010101010101010000000000000000000000000000000000
+>) 0 () /SubFileDecode filter /ASCIIHexDecode filter
+
+% incrustem el fitxer de lectura dins l'stream
+[{PixelsIndexats} 2 index /PUT pdfmark
+
+closefile  % tanquem el fitxer que queda a la pila
+
+
+% creem l'stream de dades dels index de la imatge alternativa
+[/_objdef {TaulaDeColors} /type /stream /OBJ pdfmark
+
+
+% llegim el fitxer a incrustar a AlterEgo
+% les dades d'imatge han de ser binaries (cal provar amb hexa) doncs ell sempre
+% les acaba comprimint amb Flate o LZW. En el cas que llegim dades DCT (jpg) cal decodificar-les
+% abans d'entar-les a l'stream de dades
+(ÿÿÿÿ     
+) 0 () /SubFileDecode filter
+
+% incrustem el fitxer de lectura dins l'stream
+[{TaulaDeColors} 2 index /PUT pdfmark
+
+closefile  % tanquem el fitxer que queda a la pila
+
+%%%%%%%%%% desactivat aqui
+false {
+%%%%%% creacio de l'objecte de la imatge de mascara per demo
+% creem l'stream de dades per l'objecte d'imatge de mascara per Demo (logo FemFum)
+[/_objdef {LaMascaraXdemo_789} /type /array /OBJ pdfmark
+% entrem les dades del dict d'imatge de mascara
+[{LaMascaraXdemo_789}
+0 [0 0] /PUTINTERVAL pdfmark
+%%%%%%% fi de dades de mascara
+} if
+%%%%%%%%%% fi de desactivat
+
+% entrem les dades d'imatge a l'stream alternatiu
+[{PixelsIndexats}
+<<
+   /Type /XObject /Subtype /Image
+   /Width 32 /Height 32
+   /ColorSpace [/Indexed /DeviceRGB 2 {TaulaDeColors}]
+   /BitsPerComponent 8
+   /Name /FemFum_AlterEgo
+   % clau amb el rang de l'index del color (blanc) per emascarar les impressions per Demo amb el blanc del logo de FemFum
+   /Mask [0 0]
+>> /PUT pdfmark
+
+% tanquem l'stream
+[{PixelsIndexats} /CLOSE pdfmark
+
+
+% creem les entrades de la imatge alternativa
+[{ImatgeXpantalla} << /Alternates [ <</Image {PixelsIndexats}
+/DefaultForPrinting true >> ] >> /PUT pdfmark
+
+% CATALOG INFO
+ [
+	/Title (AlterEgo.PDF)
+	/Subject (Embedded Alternate Image For Printing)
+	/Author (<marcantoni@femfum.com>)
+	/Creator (\251 FemFum PostScript Applet)
+	/DOCINFO
+pdfmark
+
+showpage
+

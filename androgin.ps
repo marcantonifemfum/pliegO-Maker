@@ -1,0 +1,1682 @@
+%!
+%% FemFum PostScript Applet: ANDROGIN.PS (v 1.0.0)
+%% For Adobe Acrobat Distiller 4.0/5.0
+%% (c) Marc Antoni Malagarriga i Picas 12.2001
+%% <marcantoni@femfum.com>
+
+%% Aquesta utilitat crea imatges alternatives d'impressio farcides en el mateix fitxer PDF
+%% Agafa parelles de fitxers EPS/JPG amb el mateix nom, creant un nou AlterEgo_####.EPS
+%% farcit amb les dades de la imatge alternativa d'impressio
+%% Els fitxers EPS son utilitzats per la imatge de pantalla i el JPG per la de impressio
+%% L'estat grafic de la imatge EPS (mides, proporcions...) condicionen la resolucio i proporcions
+%% d'impressio de la imatge JPG. Si l'EPS te 100x100 pixels i el JPG en te 50x50
+%% aquesta imatge s'imprimira a la meitat de la resolució que tingui l'EPS
+
+
+%%% HEADER MENU OPTIONS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% Check your O.S. to choose the correct syntax
+%%% Macintosh pathname syntax: (Macintosh HD:Folder:)
+%%% Windows and Unix pathname syntax:  (c:/mydir/)
+%%% Don't Forget the last '/' or ':' character !!
+%%%%%%% EP! ara ja no sera necessari posar el darrer / o :
+
+
+%%% A %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% HOT FOLDER PATH TO THE EPS/JPG PAIR FILES THAT YOU PROCESS
+
+%(C:/windows/escritorio/forum/applets/alterego/HOT)
+(/home/femfum/Documents/UB/androgin/epsJpeg/)
+
+%%% B %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% OUT FOLDER PATH WITH GOOD SUCCESS
+
+%(C:/windows/escritorio/forum/applets/alterego/OUT/)
+(/home/femfum/Documents/UB/androgin/)
+
+%%% C %%%%%%%%%%%%%%%%
+%%% ERRORS FOLDER PATH
+
+%(C:/windows/escritorio/forum/applets/alterego/ERRORS/)
+(/home/femfum/Documents/UB/androgin/errors/)
+
+%%%%%%%%%%%%%%%% fi de menu
+
+
+%%%%%%%% paquet babel
+% estrategia per concentrar tots els missatges impresos i escrits indexats en una array
+% indexant tambe en una array superior els diversos idiomes
+% activem l'idioma desitjat amb un simple index
+
+/bAbElArrAy
+[
+ /cAtAlA	% index 0
+ /EnglIsh	% index 1
+% /EspAnOl	% index 2
+% /frAncAIs	% index 3
+] def
+
+/cAtAlA
+[
+ % 0
+ (\n\n            E R R O R   l'Applet No Parla Aquest Idioma ...)
+
+ % 1
+ (\n\n >>>> El FemFum PostScript Applet esta treballant ...\n)
+
+ % 2
+ (\n Modificant el Document ... )
+
+ %3
+ (\n             E R R O R   al path o fitxer inexistent ...\n\n)
+
+ % 4
+ (\n * * *  L L I C E N C I A   D ' A P P L E T   I N V A L I D A  * * *\n\n Per mes informacio: \n\n Marc Antoni Malagarriga \n <marcantoni@femfum.com> \n\n)
+
+ % 5
+ (\n * * *  No He Trobat Cap Fitxer .PS en Aquesta Hot Folder ...\n\n)
+
+ % 6
+  (\n * * *  I N V A L I D  Nombre de Pagines >>> limitat a 1000 pagines <<<\n\n)
+
+ % 7
+ (>>>> Estructura de Fitxer .PS/.EPS No Soportada per l'Applet <<<< \n\n\n)
+
+ % 8
+ (\n\n >>>> Aquest PS Applet Nomes Treballa amb Adobe Acrobat Distiller 5.0  <<<< \n\n\n)
+
+ % 9
+ (\n\n >>>> Teniu un ERROR de SINTAXI al Menu de l'Applet  <<<< \n\n\n)
+
+ % 10
+ (>>>> Estructura de Fitxer .EPS No Soportada per l'Applet <<<< \n\n\n)
+
+] def
+
+
+/EnglIsh
+[
+ % 0
+ (\n\n            E R R O R   The Applet don't Support this Language ...\n\n)
+
+ % 1
+ (\n\n >>>> The FemFum PostScript Applet is Working ...\n)
+
+ % 2
+ (\n Processing ... )
+
+ % 3
+ (\n >>>>  'OUT' Folder Path Syntax Error  <<<<\n\n)
+
+ % 4
+ (\n * * *  A P P L E T   O V E R  * * *\n\n For More Information: \n\n Marc Antoni Malagarriga \n <marcantoni@femfum.com> \n\n)
+
+ % 5
+ (\n >>>>  'HOT' Folder Without .EPS Files or Path Syntax Error  <<<<\n\n)  %% GS ep! ha de tenir l'extensió en majúscules!
+
+ % 6
+ (\n ... W A R N I N G ! ... Invalid JPEG File Format ... I SKIP IT !\n\n)
+
+ % 7
+ (\n\n >>>>  IN, OUT and ERRORS Path Folders\n >>>>  Must Be Differents !  <<<< \n\n\n)
+
+ % 8
+ (\n\n >>>>  This PS Applet Only Works with Adobe Acrobat Distiller 4/5  <<<< \n\n\n)
+
+ % 9
+ (\n\n >>>>  You have a SYNTAX ERROR in the Applet Menu  <<<< \n\n\n)
+
+ % 10
+ (\n ... W A R N I N G ! ... EPS Structure Not Supported ... I SKIP IT !\n\n)
+
+ % 11
+ (\n ... W A R N I N G ! ... EPS Already Processed ... I SKIP IT !\n\n)
+
+ % 12
+ (\n ... W A R N I N G ! ... )
+
+ % 13
+ ( ... Not Has the File ... )  %% GS ep! el JPG ha de tenir l'extensió en majúscules!
+
+ % 14
+ ( ... Available ... I SKIP IT !\n\n)
+
+ % 15
+ (\n Embedding Alternate Image Data ... )
+
+ % 16
+ (\n Building ... )
+
+ % 17
+ (\n >>>>  'ERRORS' Folder Path Syntax Error  <<<<\n\n)
+
+ % 18
+ (\n ... this Alternate Image is ... )
+
+ % 19
+ (\n ... Comparing With the Original EPS Screen Image)
+
+ % 20
+ (PROPORTIONAL)
+
+ % 21
+ (N O T  PROPORTIONAL)
+
+ % 22
+ (\n ... the Alternate Image RESOLUTION is ... )
+
+ % 23
+ (\n ... On the X Axis and ... )
+
+ % 24
+ ( ... On the Y Axis\n ... Comparing With the Original EPS Screen Image\n\n)
+
+] def
+
+
+/lleNguatge 1 def  % idioma a escollir (0 Catala . 1 Angles ... )
+
+{bAbElArrAy lleNguatge get} stopped
+{cAtAlA 0 get print flush EnglIsh 0 get print flush quit}if  % activem directament l'error d'idioma
+
+cvx exec
+
+/BaBeL exch def  % redefinim l'array de l'idioma actiu
+
+%%%%%%%% fi de paquet babel
+
+
+% test del ninot fet amb espais (funciona be amb tots els distillers)
+(\n\n) print
+(                       o\n) print
+(                 o\n) print
+(               o             o\n) print
+(               \037\037      \037\037     \037\037\n) print
+(               \037\037\037\037\037\037\037\037\037\037\037\037\037\037\037\037\037\n) print
+(                     \037\037\037\037\n) print
+(                 \037\037\037\037\037\037\037\037\037\037\037\037\037\037\037\037\037\n) print
+(                 \037\037             \037\037\n) print
+(                 \037\037             \037\037\n\n\n) print
+(            w w w . f e m f u m . c o m\n\n) print flush
+
+
+
+% inici del missatge d'execucio de l'Applet
+BaBeL 1 get print flush
+
+
+%%%%%% compatibilitat amb Distiller 4.0
+
+%% Detecta interprets no Distiller i avalua la versio
+%% Nomes deixa passar els 4000 (4.0) o superior
+/currentdistillerparams where
+{
+ pop currentdistillerparams /CoreDistVersion get 4000 lt
+ { BaBeL 8 get print flush quit }if
+}
+{
+ BaBeL 8 get print flush quit
+} ifelse
+
+%%%%%% fi de compatibilitats
+
+
+%%%%%% capturem els tres path i ens assegurem que siguin diferents
+
+{
+ /_ERRORS exch def  % path del dir ERRORS dels EPS/JPG
+} stopped
+ {
+  BaBeL 9 get print flush quit
+ } if
+
+{
+ /_OUT exch def  % path del dir OUT dels EPS/JPG
+} stopped
+ {
+  BaBeL 9 get print flush quit
+ } if
+
+{
+ /_IN exch def  % path de la Hot Folder IN dels EPS/JPG
+} stopped
+ {
+  BaBeL 9 get print flush quit
+ } if
+
+_ERRORS _OUT eq _IN _OUT eq _ERRORS _IN eq or or  % hi han 2 o mes path iguals ?
+{BaBeL 7 get print flush quit} if
+
+
+%%%% UTILITAT PER COMPROVAR EL S.O.
+
+mark  % tanca de recollida d'escombraries
+
+% comprova si es Mac o Win
+
+/MoW 0 def
+% comprova si trova fitxers o directoris amb l'identificador del Mac
+(:*) {MoW 1 add /MoW exch def} 100 string filenameforall
+MoW 0 eq{
+	  /seP (./) def			% utilitzat per fademo
+	  /bUsca (/) def		% utilitzat a l'applet per extraure el nom del fitxer
+	  /strEAm1 (tmp/stream_1) def	% primer paquet de dades per comprimir
+	  /strEAm2 (tmp/stream_2) def	% segon paquet de dades per comprimir
+	  /tEmp (tmp/) def		% utilitzat a l'applet per desar tots els streams
+	  /capEPS (tmp/cap_eps) def	% nomes capcalera
+	  /NOMfitx (tmp/eps_net) def	% eps temporal net de capcaleres
+	  /JPGpla (tmp/jpg_pla) def	% jpg decodificat
+	 }  % Win/Linux  %% GS
+	 {  % Mac
+	  /seP (:) def
+	  /bUsca (:) def		% utilitzat a l'applet per extraure el nom del fitxer
+	  /strEAm1 (:tmp:stream_1) def	% primer paquet de dades per comprimir
+	  /strEAm2 (:tmp:stream_2) def	% segon paquet de dades per comprimir
+	  /tEmp (:tmp:) def		% utilitzat a l'applet per desar tots els streams
+	  /capEPS (:tmp:cap_eps) def	% nomes capcalera
+	  /NOMfitx (:tmp:eps_net) def	% eps temporal net de capcaleres
+	  /JPGpla (:tmp:jpg_pla) def	% jpg decodificat
+	 }ifelse  % sintaxi segons S.O.
+
+
+cleartomark  % recull les possibles escombraries (p.e. a Mac OS)
+
+
+%%%%%% fi d'OS
+
+
+%%%%%%%%%%% NOU GENERADOR DE LA CLAU DIGITAL IDENTIFICATIVA PER VERSIONS COMERCIALS
+save
+(NO HE TROBAT la Clau Anterior ... L'actual es ... ) /ClauVella exch def
+% fitxer amb la clau digital LicenseID
+currentsystemparams dup /LicenseID known
+{/LicenseID get}{(Sense LicenseID)}ifelse
+% personalitzem el nom del fitxer amb la clau digital per cada maquina (conte les darreres 8 xifres)
+%%dup length 8 sub 8 getinterval
+dup length 0 exch getinterval  %% GS
+(________.fum) dup 3 -1 roll 0 exch putinterval
+ /res exch def
+res length seP length add string /_oN exch def
+_oN 0 seP putinterval
+_oN seP length res putinterval
+
+%% UTILITAT COMPRESSORA DE FITXERS POSTSCRIPT
+%% CODIFICA UN FITXER (o currentfile) A LZW, ASCII85 O HEXA (TN#5115)
+
+_oN (w) file  % fitxer final comprimit i codificat
+/PreSsor exch def
+
+% codi decodificador opcional al cap del fitxer
+PreSsor dup
+
+/bufaBuffer 65535 string def
+
+/escup
+PreSsor
+/ASCII85Encode filter
+/LZWEncode filter
+def
+
+/xucla  % AQUI EL NOM DEL FITXER A COMPRIMIR
+currentsystemparams dup /LicenseID known
+{
+ /LicenseID get dup length ClauVella length dup /LiD exch def add string dup
+ 0 ClauVella putinterval dup 3 -1 roll LiD exch putinterval
+}
+{
+ (Sense LicenseID) dup length ClauVella length dup /LiD exch def add string dup
+ 0 ClauVella putinterval dup 3 -1 roll LiD exch putinterval
+}
+ifelse  0 () /SubFileDecode filter  % procs i strings com a fitxers
+def
+
+/fot-li
+{
+ {
+  xucla
+  bufaBuffer readstring not
+  {
+   escup exch writestring
+   exit
+  } if
+  escup exch writestring
+ } loop
+ escup closefile
+ flush
+} bind def
+
+fot-li
+
+pop pop  % ens carreguem 2 file de la pila
+
+%%%% FI D'UTILITAT COMPRESSORA
+
+restore
+%%%%%%%%%%% FI DE CLAU DIGITAL COMERCIAL (/LicenseID)
+
+
+%%% definim l'algorisme de trasllat de fitxers
+%%% agafa un fitxer de lectura directament i cal definir 'trAsllAt' com a fitxer d'escriptura
+
+/TRASLLAT {
+{
+ dup 65535 string readstring	{
+				 trAsllAt exch writestring
+				}
+				{
+				 trAsllAt exch writestring
+				 closefile exit
+				} ifelse
+} loop 
+} bind def
+
+
+%%%%% empalmem l'extensio que busquem amb el path de la HotFolder
+_IN  % path de la Hot Folder
+/DIR exch def
+/elPS (*.EPS) def  % l'extensio que busquem
+% ensamblem fitxer+adreça del fitxer a modificar
+% filtrant si porta el darrer caracter separador (bUsca / o :)
+DIR dup length 1 sub get bUsca 0 get eq
+{  % el path porta el caracter final separador
+ elPS length DIR length dup /ffitx exch def
+ add string dup 0 DIR putinterval dup ffitx elPS putinterval
+}
+{  % el path no porta el darrer caracter separador
+ elPS length DIR length dup /ffitx exch def
+ add 1 add string dup 0 DIR putinterval dup ffitx bUsca putinterval
+ dup ffitx 1 add elPS putinterval
+} ifelse
+/aDestilar exch def
+
+/noEPS true def  % pestell per si no hi ha fitxers EPS
+
+5 /pErmEsOs exch def  % maxim nombre de fitxers permesos
+
+%%%%%%%%%%%%%%%%%% va en conjunt al maxim de fitxers permesos alhora x Demo
+pErmEsOs array
+/NoElsFem exch def
+0 /NoElsFem_i exch def  % index per l'array
+%%%%%%%%%%%%%%%%%% maxim de fitxers permesos per execucio x Demo
+pErmEsOs
+/maxEPS exch def
+0 /EPSfets exch def  % comptador d'EPS processats a filenameforall
+
+true setglobal
+pErmEsOs 2 mul array  % maxim nombre de fitxers 
+/EsbOrrEm exch def  % llistat de fitxers a esborrar fora del filefor (a dins no es deixa!)
+0 /EsbOrrEm_i exch def  % index de fitxers a esborrar
+false setglobal
+
+/Donegal 256 string def
+
+
+/salva'm save def
+
+
+aDestilar
+
+{   %%%%%%%% EP AQUI COMENÇA EL PROC DE filenameforall
+
+EPSfets 1 add /EPSfets exch def  % comptador d'EPS processats
+
+	noEPS {/noEPS false def} if  % si ha trobat algun PDF queda fixat en false
+
+dup dup /PathEpsLink exch def  % capturem l'EPS
+status pop pop pop exch pop /bytFITX exch def  % desa els bytes dels fitxer
+
+{  % loop per ventar el nom del fitxer i desar-lo a epsLink
+ bUsca search
+ {pop pop}{/epsLink exch def exit}ifelse 
+}loop
+
+%%% missatge x pantalla del EPS que s'esta processant
+BaBeL 2 get print flush epsLink print flush
+
+
+%% filtre per descartar fitxers processats AlterEgo_###.EPS
+epsLink (AlterEgo_) anchorsearch  % nomes l'inici ha de coincidir
+{
+ pop NoElsFem exch NoElsFem_i exch put NoElsFem_i 1 add /NoElsFem_i exch def /EndAvAnt false def
+ BaBeL 11 get print flush
+
+%%%%%%%%%% activem trAsllAt a la carpeta d'errors 
+%%%%% empalmem el fitxer a traslladar amb el path _ERRORS
+% path d'errors
+_ERRORS /DIR exch def
+/elPS epsLink def  % el fitxer que traslladem
+% ensamblem fitxer+adreça del fitxer a modificar
+% filtrant si porta el darrer caracter separador (bUsca / o :)
+DIR dup length 1 sub get bUsca 0 get eq
+{  % el path porta el caracter final separador
+ elPS length DIR length dup /ffitx exch def
+ add string dup 0 DIR putinterval dup ffitx elPS putinterval
+}
+{  % el path no porta el darrer caracter separador
+ elPS length DIR length dup /ffitx exch def
+ add 1 add string dup 0 DIR putinterval dup ffitx bUsca putinterval
+ dup ffitx 1 add elPS putinterval
+} ifelse
+/aDestilar exch def
+{ % filtrem un possible error al path 
+ aDestilar (w) file /trAsllAt exch def
+} stopped {BaBeL 17 get print flush quit}if
+PathEpsLink (r) file TRASLLAT  % copiem el fitxer a la carperta d'errors
+trAsllAt closefile
+true setglobal
+EsbOrrEm EsbOrrEm_i PathEpsLink dup length string copy put  % a la llista per esborrar el fitxer de la hot folder
+EsbOrrEm_i 1 add /EsbOrrEm_i exch def
+false setglobal
+%%%%%%%%%%%%% fi de trAsllAt
+
+}
+{pop /EndAvAnt true def}ifelse
+
+EndAvAnt
+
+{  % if
+
+%% consulta als noms d'EPS que NO hem de processar doncs havien generat un AlterEgo_###.EPS
+/eNDaVaNT true def
+NoElsFem {epsLink eq {/eNDaVaNT false def BaBeL 11 get print flush
+
+%%%%%%%%%% activem trAsllAt a la carpeta d'errors 
+%%%%% empalmem el fitxer a traslladar amb el path _ERRORS
+% path d'errors
+_ERRORS /DIR exch def
+/elPS epsLink def  % el fitxer que traslladem
+% ensamblem fitxer+adreça del fitxer a modificar
+% filtrant si porta el darrer caracter separador (bUsca / o :)
+DIR dup length 1 sub get bUsca 0 get eq
+{  % el path porta el caracter final separador
+ elPS length DIR length dup /ffitx exch def
+ add string dup 0 DIR putinterval dup ffitx elPS putinterval
+}
+{  % el path no porta el darrer caracter separador
+ elPS length DIR length dup /ffitx exch def
+ add 1 add string dup 0 DIR putinterval dup ffitx bUsca putinterval
+ dup ffitx 1 add elPS putinterval
+} ifelse
+/aDestilar exch def
+{ % filtrem un possible error al path 
+ aDestilar (w) file /trAsllAt exch def
+} stopped {BaBeL 17 get print flush quit}if
+PathEpsLink (r) file TRASLLAT  % copiem el fitxer a la carperta d'errors
+trAsllAt closefile
+true setglobal
+EsbOrrEm EsbOrrEm_i PathEpsLink dup length string copy put  % a la llista per esborrar el fitxer de la hot folder
+EsbOrrEm_i 1 add /EsbOrrEm_i exch def
+false setglobal
+%%%%%%%%%%%%% fi de trAsllAt
+
+}if}forall
+
+eNDaVaNT
+
+{  % if
+
+%% darrer filtre per descartar EPS que ja s'hagin processat per Androgin pero que els hi hagin
+%% eliminat o canviat el nom inicial AlterEgo_ ... portaran el comentari %%FemFum_AlterEgo
+
+/endavant true def
+/posa't 0 def
+
+PathEpsLink (r) file
+/quinPS exch def
+
+{  % loop
+
+ quinPS dup posa't setfileposition  %% busca la clau que posa el mateix applet
+ 0 (%%FemFum_AlterEgo) dup length /faFUM exch def /SubFileDecode filter
+
+ /aoN 0 def  % posicio del byte d'inici de l'string trobada
+ /TRiNG 65535 string def
+
+ {
+  dup TRiNG readstring
+  {}
+  {length aoN add /aoN exch def pop exit}ifelse
+  length aoN add /aoN exch def
+ } loop
+
+ posa't aoN add faFUM add /posa't exch def
+
+ posa't bytFITX ge {exit}{BaBeL 11 get print flush /endavant false def
+
+%%%%%%%%%% activem trAsllAt a la carpeta d'errors
+%%%%% empalmem el fitxer a traslladar amb el path _ERRORS
+% path d'errors
+_ERRORS /DIR exch def
+/elPS epsLink def  % el fitxer que traslladem
+% ensamblem fitxer+adreça del fitxer a modificar
+% filtrant si porta el darrer caracter separador (bUsca / o :)
+DIR dup length 1 sub get bUsca 0 get eq
+{  % el path porta el caracter final separador
+ elPS length DIR length dup /ffitx exch def
+ add string dup 0 DIR putinterval dup ffitx elPS putinterval
+}
+{  % el path no porta el darrer caracter separador
+ elPS length DIR length dup /ffitx exch def
+ add 1 add string dup 0 DIR putinterval dup ffitx bUsca putinterval
+ dup ffitx 1 add elPS putinterval
+} ifelse
+/aDestilar exch def
+{ % filtrem un possible error al path 
+ aDestilar (w) file /trAsllAt exch def
+} stopped {BaBeL 17 get print flush quit}if
+PathEpsLink (r) file TRASLLAT  % copiem el fitxer a la carpeta d'errors
+trAsllAt closefile
+true setglobal
+EsbOrrEm EsbOrrEm_i PathEpsLink dup length string copy put  % a la llista per esborrar el fitxer de la hot folder
+EsbOrrEm_i 1 add /EsbOrrEm_i exch def
+false setglobal
+%%%%%%%%%%%%% fi de trAsllAt
+
+exit
+}ifelse
+
+} loop
+%%%%%%%%%%% fi del darrer filtre
+
+endavant
+
+{  % if
+
+PathEpsLink dup length string copy  % copiem de forma que no actui el composite object
+
+% comprovem si te un JPG parell
+dup dup length 3 sub (JPG) putinterval dup /nOmJPG exch def
+nOmJPG
+{  % loop per ventar el nom del fitxer i desar-lo a jpgLink
+ bUsca search
+ {pop pop}{/jpgLink exch def exit}ifelse 
+}loop
+status {pop pop pop pop /FaigAlterEgo true def}
+{
+ BaBeL 12 get print flush epsLink print flush BaBeL 13 get print flush
+ jpgLink print flush BaBeL 14 get print flush
+ /FaigAlterEgo false def
+
+%%%%%%%%%% activem trAsllAt a la carpeta d'errors
+%%%%% empalmem el fitxer a traslladar amb el path _ERRORS
+% path d'errors
+_ERRORS /DIR exch def
+/elPS epsLink def  % el fitxer que traslladem
+% ensamblem fitxer+adreça del fitxer a modificar
+% filtrant si porta el darrer caracter separador (bUsca / o :)
+DIR dup length 1 sub get bUsca 0 get eq
+{  % el path porta el caracter final separador
+ elPS length DIR length dup /ffitx exch def
+ add string dup 0 DIR putinterval dup ffitx elPS putinterval
+}
+{  % el path no porta el darrer caracter separador
+ elPS length DIR length dup /ffitx exch def
+ add 1 add string dup 0 DIR putinterval dup ffitx bUsca putinterval
+ dup ffitx 1 add elPS putinterval
+} ifelse
+/aDestilar exch def
+{ % filtrem un possible error al path 
+ aDestilar (w) file /trAsllAt exch def
+} stopped {BaBeL 17 get print flush quit}if
+
+PathEpsLink (r) file TRASLLAT  % copiem el fitxer a la carperta d'errors
+trAsllAt closefile
+true setglobal
+EsbOrrEm EsbOrrEm_i PathEpsLink dup length string copy put  % a la llista per esborrar el fitxer de la hot folder
+EsbOrrEm_i 1 add /EsbOrrEm_i exch def
+false setglobal
+%%%%%%%%%%%%% fi de trAsllAt
+
+}ifelse
+
+FaigAlterEgo  % pestell per saber si em de processar l'EPS i el JPG per crear l'AlterEgo
+
+{  % if
+
+%%% missatge x pantalla del JPEG que s'esta processant
+BaBeL 2 get print flush jpgLink print flush
+
+%%%%%%% DECODIFICADOR DE DADES JPG AL SEU FORMAT ORIGINAL
+
+{  % stopped
+mark
+/cdn 65535 string def
+JPGpla (w) file  % aqui el fitxer de dades final
+/NaDiU exch def
+nOmJPG  % aqui el fitxer de dades per decodificar
+(r) file
+<<
+   /ColorTransform 1
+>> /DCTDecode filter         % aqui el filtre decodificador
+%/ASCIIHexDecode filter
+%/ASCII85Decode filter
+%/RunLengthDecode filter
+%/LZWDecode filter
+%<</K -1 /Columns 3432 /Rows 4850 /Blackls1 false>> /CCITTFaxDecode filter
+%/FlateDecode filter
+{  % loop 1
+dup  % dupliquen el fitxer de lectura
+cdn readstring  % llegim el fitxer amb una cadena de capacitat maxima
+not {NaDiU exch writestring closefile exit} if  % si hem arribat al final del fitxer (false) escrivim la cadena al fitxer final d'escriptura, tanquem el fitxer i sortim del loop
+NaDiU exch writestring  % si no hem arribat al final sel fitxer (true) escrivim la cadena al fitxer final d'escriptura
+}  % fi de loop 1
+loop
+
+NaDiU closefile
+
+} stopped
+
+ {cleartomark BaBeL 6 get print flush /ValidJPG false def
+
+%%%%%%%%%% activem trAsllAt a la carpeta d'errors
+%%%%% empalmem el fitxer a traslladar amb el path _ERRORS
+% path d'errors
+_ERRORS /DIR exch def
+/elPS jpgLink def  % el fitxer que traslladem
+% ensamblem fitxer+adreça del fitxer a modificar
+% filtrant si porta el darrer caracter separador (bUsca / o :)
+DIR dup length 1 sub get bUsca 0 get eq
+{  % el path porta el caracter final separador
+ elPS length DIR length dup /ffitx exch def
+ add string dup 0 DIR putinterval dup ffitx elPS putinterval
+}
+{  % el path no porta el darrer caracter separador
+ elPS length DIR length dup /ffitx exch def
+ add 1 add string dup 0 DIR putinterval dup ffitx bUsca putinterval
+ dup ffitx 1 add elPS putinterval
+} ifelse
+/aDestilar exch def
+{ % filtrem un possible error al path 
+ aDestilar (w) file /trAsllAt exch def
+} stopped {BaBeL 17 get print flush quit}if
+nOmJPG (r) file TRASLLAT  % copiem el fitxer a la carpeta d'errors
+trAsllAt closefile
+true setglobal
+EsbOrrEm EsbOrrEm_i nOmJPG dup length string copy put  % a la llista per esborrar el fitxer de la hot folder
+EsbOrrEm_i 1 add /EsbOrrEm_i exch def
+false setglobal
+%%%%%%%%%%%%% fi de trAsllAt
+
+%%% tambe traslladem al path d'errors al .eps corresponent
+
+%%%%%%%%%% activem trAsllAt a la carpeta d'errors
+%%%%% empalmem el fitxer a traslladar amb el path _ERRORS
+% path d'errors
+_ERRORS /DIR exch def
+/elPS epsLink def  % el fitxer que traslladem
+% ensamblem fitxer+adreça del fitxer a modificar
+% filtrant si porta el darrer caracter separador (bUsca / o :)
+DIR dup length 1 sub get bUsca 0 get eq
+{  % el path porta el caracter final separador
+ elPS length DIR length dup /ffitx exch def
+ add string dup 0 DIR putinterval dup ffitx elPS putinterval
+}
+{  % el path no porta el darrer caracter separador
+ elPS length DIR length dup /ffitx exch def
+ add 1 add string dup 0 DIR putinterval dup ffitx bUsca putinterval
+ dup ffitx 1 add elPS putinterval
+} ifelse
+/aDestilar exch def
+{ % filtrem un possible error al path 
+ aDestilar (w) file /trAsllAt exch def
+} stopped {BaBeL 17 get print flush quit}if
+
+PathEpsLink (r) file TRASLLAT  % copiem el fitxer a la carpeta d'errors
+trAsllAt closefile
+true setglobal
+EsbOrrEm EsbOrrEm_i PathEpsLink dup length string copy put  % a la llista per esborrar el fitxer de la hot folder
+EsbOrrEm_i 1 add /EsbOrrEm_i exch def
+false setglobal
+%%%%%%%%%%%%% fi de trAsllAt
+
+}{cleartomark /ValidJPG true def
+
+%%%%% traslladem el JPG a la carpeta OUT
+%%%%% empalmem el fitxer a traslladar amb el path _OUT
+% path d'errors
+_OUT /DIR exch def
+/elPS jpgLink def  % el fitxer que traslladem
+% ensamblem fitxer+adreça del fitxer a modificar
+% filtrant si porta el darrer caracter separador (bUsca / o :)
+DIR dup length 1 sub get bUsca 0 get eq
+{  % el path porta el caracter final separador
+ elPS length DIR length dup /ffitx exch def
+ add string dup 0 DIR putinterval dup ffitx elPS putinterval
+}
+{  % el path no porta el darrer caracter separador
+ elPS length DIR length dup /ffitx exch def
+ add 1 add string dup 0 DIR putinterval dup ffitx bUsca putinterval
+ dup ffitx 1 add elPS putinterval
+} ifelse
+dup /aDestilar exch def
+/llegirDCT exch def  % desem el path d'escriptura per quan haguem de llegir les dades del JPG
+{ % filtrem un possible error al path 
+ aDestilar (w) file /trAsllAt exch def
+} stopped {BaBeL 3 get print flush quit}if
+nOmJPG (r) file TRASLLAT  % copiem el fitxer a la carperta d'errors
+trAsllAt closefile
+true setglobal
+EsbOrrEm EsbOrrEm_i nOmJPG dup length string copy put  % a la llista per esborrar el fitxer de la hot folder
+EsbOrrEm_i 1 add /EsbOrrEm_i exch def
+false setglobal
+%%%%%%%%%%%%% fi de trAsllAt
+
+} ifelse
+
+
+ValidJPG
+
+{  % if
+
+%%% missatge x pantalla del farcit de l'ai
+BaBeL 15 get print flush
+
+/construim true def  % pestell per la contruccio de l'EPS final
+
+{  % stopped de l'EPS
+
+%%%%%%% captura del Cap des %!PS- fins %%EndComments i el desa al temporal del Distiller
+
+
+/D'ON (%!PS-) def  % cadena on s'iniciara la recerca
+
+/FINS (%%EndComments) def  % cadena on finalitzara la recerca
+
+FINS length /salta'tFINS exch def
+
+/tiBades 0 def  % comptador de fonts carregades al fitxer capfonts.ps
+/buscaBIT 0 def  % nombre de bytes a filtrar (0=tots)
+/numFITX 0 def  % digit sequencial pel nom del fitxer
+
+PathEpsLink (r) file  % arxiu a llegir
+/LLEgIR exch def
+
+%%%%%%%%%
+capEPS
+(w) file  % arxiu final amb el resultat de la recerca
+/ESCRiURE exch def
+%%%%%%%%%
+
+
+/engrapa 65535 def  % buffer de lectura (65535 es el maxim)
+/posFITX 0 def  % valor inicial del comptador de la posicio en bytes del fitxer de lectura
+
+
+
+ LLEgIR  % fitxer a llegir
+ dup posFITX setfileposition  % posiciona en el lloc correcte l'inici de la recerca
+
+ buscaBIT  % valor 0 fa passar tot el fitxer
+ D'ON  % s'aturara quan trobi la cadena
+ /SubFileDecode filter  % dona un fitxer de lectura on s'inicia la recerca de la cadena final FINS
+
+ { % inici del loop comptador de les dades llegides
+   dup engrapa string readstring
+   not {length posFITX add /posFITX exch def closefile exit} if
+   length posFITX add /posFITX exch def
+ } loop  % final del loop comptador
+
+
+%{  % loop 3
+
+ LLEgIR posFITX setfileposition  % ens posicionem en el punt on hem d'iniciar la recerca de la cadena final FINS
+ LLEgIR buscaBIT FINS /SubFileDecode filter  % fitxer de dades fins la cadena final FINS
+
+ {  % inici loop 2
+
+  dup  % dupliquem el fitxer resultant de la recerca
+  engrapa string readstring  % llegim el fitxer omplint la cadena (engrapa)
+
+  not  % negativa el booleni (false=true, true=false) 
+  {
+
+   dup  % dupliquem la cadena
+   length posFITX add /posFITX exch def  % comptador de posicions del fitxer
+
+   posFITX bytFITX eq { pop closefile exit } if  % si la posicio del fitxer es igual a la seva capacitat total (o limit de bytes establerts) es que som al final de la seva lectura i per tant sortim del programa
+
+   ESCRiURE exch writestring  % escrivim la cadena del fragment que estem buscant al fitxer d'escriptura
+%   ESCRiURE dup FINS writestring 13 write  % hi afegim la cadena final que busquem
+
+   tiBades 1 add /tiBades exch def
+
+   closefile  % tanquem el fitxer
+
+   exit  % sortim del loop 2
+
+  } if  % si ha arribat al final del fitxer ho executa
+
+  dup  % dupliquem la cadena
+  length posFITX add /posFITX exch def  % n'avaluem la capacitat, ho sumem a l'avaluador de posicio de fitxer (posFITX) i redesem
+  ESCRiURE exch writestring  % escrivim la cadena al fitxer d'escriptura
+
+ } loop  % final loop 2
+
+% posFITX bytFITX eq {ESCRiURE flushfile exit} if  % si la posicio del fitxer es igual a a la seva capacitat total (o limit de bytes establerts) es que som al final de la seva lectura i per tant sortim del programa
+
+% posFITX salta'tFINS add /posFITX exch def  % comptador de posicions del fitxer de lectura
+
+
+ESCRiURE flushfile
+
+%} loop  % fi del loop 3
+
+
+%%% llegim el BoundingBox
+
+/posFITX 0 def  % valor inicial del comptador de la posicio en bytes del fitxer de lectura
+
+capEPS (r) file 0 (%%BoundingBox:) /SubFileDecode filter
+ { % inici del loop comptador de les dades llegides
+   dup engrapa string readstring
+   not {length posFITX add /posFITX exch def closefile exit} if
+   length posFITX add /posFITX exch def
+ } loop  % final del loop comptador
+capEPS (r) file dup
+posFITX 14 add  % afegim la llargada del text del Bbox per posar-nos just despres dels :
+setfileposition 100 string readline pop
+cvx exec 4 copy pop pop
+/0_pos_Y exch def /0_pos_X exch def  % posicio 0 0 de l'eps
+
+% calcul de l'amplada i alcada (x,y) reals de l'eps
+3 -1 roll sub /realAlt exch def
+exch sub /realAmple exch def
+
+
+%%%%%%% fi de neteja de l'EPS
+
+} stopped
+ {
+  BaBeL 10 get print flush  /construim false def
+
+%%%%%%%%%% activem trAsllAt a la carpeta d'errors
+%%%%% empalmem el fitxer a traslladar amb el path _ERRORS
+% path d'errors
+_ERRORS /DIR exch def
+/elPS epsLink def  % el fitxer que traslladem
+% ensamblem fitxer+adreça del fitxer a modificar
+% filtrant si porta el darrer caracter separador (bUsca / o :)
+DIR dup length 1 sub get bUsca 0 get eq
+{  % el path porta el caracter final separador
+ elPS length DIR length dup /ffitx exch def
+ add string dup 0 DIR putinterval dup ffitx elPS putinterval
+}
+{  % el path no porta el darrer caracter separador
+ elPS length DIR length dup /ffitx exch def
+ add 1 add string dup 0 DIR putinterval dup ffitx bUsca putinterval
+ dup ffitx 1 add elPS putinterval
+} ifelse
+/aDestilar exch def
+{ % filtrem un possible error al path 
+ aDestilar (w) file /trAsllAt exch def
+} stopped {BaBeL 17 get print flush quit}if
+PathEpsLink (r) file TRASLLAT  % copiem el fitxer a la carperta d'errors
+trAsllAt closefile
+true setglobal
+EsbOrrEm EsbOrrEm_i PathEpsLink dup length string copy put  % a la llista per esborrar el fitxer de la hot folder
+EsbOrrEm_i 1 add /EsbOrrEm_i exch def
+false setglobal
+%%%%%%%%%%%%% fi de trAsllAt
+
+/segonaPart false def
+
+ }{ /segonaPart true def} ifelse
+
+segonaPart {  % if de si fem la segona part del proces de l'EPS
+
+{  % stopped de l'EPS
+
+%%%%%%% captura del reste des %%EndComments fins %%EOF i el desa al temporal del Distiller
+
+/D'ON (%%EndComments) def  % cadena on s'iniciara la recerca
+
+/FINS (%%EOF) def  % cadena on finalitzara la recerca
+
+FINS length /salta'tFINS exch def
+
+/tiBades 0 def  % comptador de vegades que hem trobat FINS
+/buscaBIT 0 def  % nombre de bytes a filtrar (0=tots)
+/numFITX 0 def  % digit sequencial pel nom del fitxer
+
+PathEpsLink (r) file  % arxiu a llegir
+/LLEgIR exch def
+
+%%%%%%%%%
+NOMfitx
+(w) file  % arxiu final amb el resultat de la recerca
+/ESCRiURE exch def
+%%%%%%%%%
+
+
+/engrapa 65535 def  % buffer de lectura (65535 es el maxim)
+/posFITX 0 def  % valor inicial del comptador de la posicio en bytes del fitxer de lectura
+
+
+
+ LLEgIR  % fitxer a llegir
+ dup posFITX setfileposition  % posiciona en el lloc correcte l'inici de la recerca
+
+ buscaBIT  % valor 0 fa passar tot el fitxer
+ D'ON  % s'aturara quan trobi la cadena
+ /SubFileDecode filter  % dona un fitxer de lectura on s'inicia la recerca de la cadena final FINS
+
+ { % inici del loop comptador de les dades llegides
+   dup engrapa string readstring
+   not {length posFITX add /posFITX exch def closefile exit} if
+   length posFITX add /posFITX exch def
+ } loop  % final del loop comptador
+
+
+{  % loop 3
+
+ LLEgIR posFITX setfileposition  % ens posicionem en el punt on hem d'iniciar la recerca de la cadena final FINS
+ LLEgIR buscaBIT FINS /SubFileDecode filter  % fitxer de dades fins la cadena final FINS
+
+dup
+posFITX /fiXem exch def /sortim false def
+
+tiBades 0 ne  % comprovem si un cop hem trobat FINS hem decopiar la resta del fitxer
+{
+ { % inici del loop comptador de les dades llegides
+   dup engrapa string readstring
+   not {length posFITX add /posFITX exch def posFITX bytFITX eq
+        {closefile /sortim true def exit}{closefile /sortim false def exit}ifelse
+	 }if
+   length posFITX add /posFITX exch def
+ } loop  % final del loop comptador
+}{pop}ifelse
+
+sortim {pop exit}{fiXem /posFITX exch def}ifelse
+
+ {  % inici loop 2
+
+  dup  % dupliquem el fitxer resultant de la recerca
+  engrapa string readstring  % llegim el fitxer omplint la cadena (engrapa)
+
+  not  % negativa el booleni (false=true, true=false) 
+  {
+
+   dup  % dupliquem la cadena
+   length posFITX add /posFITX exch def  % comptador de posicions del fitxer
+
+   posFITX bytFITX eq { pop closefile exit } if  % si la posicio del fitxer es igual a la seva capacitat total (o limit de bytes establerts) es que som al final de la seva lectura i per tant sortim del programa
+
+   ESCRiURE exch writestring  % escrivim la cadena del fragment que estem buscant al fitxer d'escriptura
+   ESCRiURE dup FINS writestring 13 write  % hi afegim la cadena final que busquem
+
+   tiBades 1 add /tiBades exch def
+
+   closefile  % tanquem el fitxer
+
+   exit  % sortim del loop 2
+
+  } if  % si ha arribat al final del fitxer ho executa
+
+  dup  % dupliquem la cadena
+  length posFITX add /posFITX exch def  % n'avaluem la capacitat, ho sumem a l'avaluador de posicio de fitxer (posFITX) i redesem
+  ESCRiURE exch writestring  % escrivim la cadena al fitxer d'escriptura
+
+ } loop  % final loop 2
+
+ posFITX bytFITX eq {ESCRiURE flushfile exit} if  % si la posicio del fitxer es igual a a la seva capacitat total (o limit de bytes establerts) es que som al final de la seva lectura i per tant sortim del programa
+
+ posFITX salta'tFINS add /posFITX exch def  % comptador de posicions del fitxer de lectura
+
+
+ESCRiURE flushfile
+
+} loop  % fi del loop 3
+
+%%%%%%% fi de neteja de l'EPS
+
+} stopped
+ {
+  BaBeL 10 get print flush /construim false def
+
+%%%%%%%%%% activem trAsllAt a la carpeta d'errors
+%%%%% empalmem el fitxer a traslladar amb el path _ERRORS
+% path d'errors
+_ERRORS /DIR exch def
+/elPS epsLink def  % el fitxer que traslladem
+% ensamblem fitxer+adreça del fitxer a modificar
+% filtrant si porta el darrer caracter separador (bUsca / o :)
+DIR dup length 1 sub get bUsca 0 get eq
+{  % el path porta el caracter final separador
+ elPS length DIR length dup /ffitx exch def
+ add string dup 0 DIR putinterval dup ffitx elPS putinterval
+}
+{  % el path no porta el darrer caracter separador
+ elPS length DIR length dup /ffitx exch def
+ add 1 add string dup 0 DIR putinterval dup ffitx bUsca putinterval
+ dup ffitx 1 add elPS putinterval
+} ifelse
+/aDestilar exch def
+{ % filtrem un possible error al path 
+ aDestilar (w) file /trAsllAt exch def
+} stopped {BaBeL 17 get print flush quit}if
+PathEpsLink (r) file TRASLLAT  % copiem el fitxer a la carperta d'errors
+trAsllAt closefile
+true setglobal
+EsbOrrEm EsbOrrEm_i PathEpsLink dup length string copy put  % a la llista per esborrar el fitxer de la hot folder
+EsbOrrEm_i 1 add /EsbOrrEm_i exch def
+false setglobal
+%%%%%%%%%%%%% fi de trAsllAt
+
+ } if
+
+} if  % per si no cal processar la segonaPart de l'EPS
+
+construim
+
+{  % if
+
+%%%%%%%%%% activem trAsllAt a la carpeta OUT de l'EPS original abans de renombrar
+%%%%% empalmem el fitxer a traslladar amb el path _OUT
+_OUT /DIR exch def
+/elPS epsLink def  % el fitxer que traslladem
+% ensamblem fitxer+adreça del fitxer a modificar
+% filtrant si porta el darrer caracter separador (bUsca / o :)
+DIR dup length 1 sub get bUsca 0 get eq
+{  % el path porta el caracter final separador
+ elPS length DIR length dup /ffitx exch def
+ add string dup 0 DIR putinterval dup ffitx elPS putinterval
+}
+{  % el path no porta el darrer caracter separador
+ elPS length DIR length dup /ffitx exch def
+ add 1 add string dup 0 DIR putinterval dup ffitx bUsca putinterval
+ dup ffitx 1 add elPS putinterval
+} ifelse
+dup /aDestilar exch def
+/aEsborrar_EPS exch def  % per si hem d'esborrar l'EPS de la carpeta OUT al final per un error al JPEG
+{ % filtrem un possible error al path 
+ aDestilar (w) file /trAsllAt exch def
+} stopped {BaBeL 3 get print flush quit}if
+PathEpsLink (r) file TRASLLAT  % copiem el fitxer a la carperta d'errors
+trAsllAt closefile
+true setglobal
+EsbOrrEm EsbOrrEm_i PathEpsLink dup length string copy put  % a la llista per esborrar el fitxer de la hot folder
+EsbOrrEm_i 1 add /EsbOrrEm_i exch def
+false setglobal
+%%%%%%%%%%%%% fi de trAsllAt
+
+
+% renombrar l'EPS per escriure-hi el codi d'imatge alternativa
+(AlterEgo_)  % cadena d'inici de l'EPS final amb l'ia
+/sEgEll exch def
+sEgEll length dup epsLink length add string dup 0 sEgEll putinterval
+dup 3 -1 roll epsLink putinterval
+/AlterEgo_EPS exch def  % nom final del fitxer EPS amb l'ia
+
+%%%%% empalmem el nom del nou EPS amb el path de la carpeta _OUT
+_OUT  % path de la carpeta OUT
+/DIR exch def
+/elPS AlterEgo_EPS def  % el nou EPS
+% ensamblem fitxer+adreça del fitxer a modificar
+% filtrant si porta el darrer caracter separador (bUsca / o :)
+DIR dup length 1 sub get bUsca 0 get eq
+{  % el path porta el caracter final separador
+ elPS length DIR length dup /ffitx exch def
+ add string dup 0 DIR putinterval dup ffitx elPS putinterval
+}
+{  % el path no porta el darrer caracter separador
+ elPS length DIR length dup /ffitx exch def
+ add 1 add string dup 0 DIR putinterval dup ffitx bUsca putinterval
+ dup ffitx 1 add elPS putinterval
+} ifelse
+dup /Path_AlterEgo_EPS exch def
+/aEsborrar_AlterEgo_EPS exch def  % per si cal esborrar-lo al final per un error al JPEG
+
+%%% missatge x pantalla de la creacio de AlterEgo_###.EPS
+BaBeL 16 get print flush AlterEgo_EPS print flush (\n) print flush
+
+
+%% trasllat.ps -- simplificacio maxima d'una copia de fitxer d'un lloc a un altre
+%%%%%% on el traslladem ?
+{
+ Path_AlterEgo_EPS (w) file
+ /trAsllAt exch def
+} stopped
+{
+%%%%% missatge d'error al path OUT
+BaBeL 3 get print flush 
+%%%%%%%%%% no cal trAsllAdar a la carpeta d'errors
+quit
+}if
+
+%%%%% fitxer a traslladar
+capEPS (r) file TRASLLAT
+
+%%%%%%%%% escrivim les dades de d'identificacio d'imatge
+
+%%% cal posar a cada inici de paquet de dades el comentari
+trAsllAt (\015%%FemFum_AlterEgo\015) writestring
+
+% generem un nom unic a traves d'un num aleatori
+rand dup srand
+% l'enpalmem amb el nom inicial AlterEgo
+(AlterEgo_)  % el nom inicial
+/DIR exch def
+100 string cvs /elPS exch def  % el num aleatori unic
+% ensamblem nom inicial+num aleatori
+ elPS length DIR length dup /ffitx exch def
+ add string dup 0 DIR putinterval dup ffitx elPS putinterval
+/AlterEgo exch def
+
+% escrivim a l'stream_1 temporal les dades per anomenar la imatge x pantalla
+strEAm1 (w) file /strEAm1_pla exch def
+strEAm1_pla ([/_objdef {) writestring
+strEAm1_pla AlterEgo 100 string cvs writestring
+strEAm1_pla (} /NI pdfmark) writestring
+strEAm1_pla closefile
+
+% comprimim i codifiquem les dades de l'stream_1 a trAsllAt
+
+strEAm1 (r) file /pelTurmix exch def
+
+%% UTILITAT COMPRESSORA DE FITXERS POSTSCRIPT
+%% CODIFICA UN FITXER (o currentfile) A LZW, ASCII85 O HEXA (TN#5115)
+
+save
+
+%% creem el fitxer aqui
+trAsllAt /totEPSfile exch def
+
+totEPSfile  % fitxer final comprimit i codificat
+/PreSsor exch def
+
+% codi decodificador opcional al cap del fitxer
+PreSsor dup
+(\015currentfile /ASCII85Decode filter /FlateDecode filter cvx exec) writestring 13 write
+
+/bufaBuffer 65535 string def
+
+/escup
+PreSsor
+/ASCII85Encode filter
+/FlateEncode filter
+def
+
+/xucla  % AQUI EL NOM DEL FITXER A COMPRIMIR
+pelTurmix 
+def
+
+/fot-li
+{
+ {
+  xucla
+  bufaBuffer readstring not
+  {
+   escup exch writestring
+   exit
+  } if
+  escup exch writestring
+ } loop
+ escup closefile
+ flush
+} bind def
+
+fot-li
+
+totEPSfile flushfile
+
+restore
+%%%% FI D'UTILITAT COMPRESSORA
+
+
+
+trAsllAt dup 13 write flushfile
+
+%%%%%%%%%%% fi de trasllat.ps
+
+
+
+%% trasllat.ps -- simplificacio maxima d'una copia de fitxer d'un lloc a un altre
+%%%%%% on el traslladem ?
+Path_AlterEgo_EPS (a) file
+/trAsllAt exch def
+%%%%% fitxer a traslladar
+NOMfitx (r) file TRASLLAT
+
+
+%%% cal posar a cada inici de paquet de dades el comentari
+trAsllAt (\015%%FemFum_AlterEgo\015) writestring
+
+% generem un nom unic a traves d'un num aleatori
+rand dup srand
+% l'enpalmem amb el nom inicial AlterEgo
+(AlterEgoStream_)  % el nom inicial
+/DIR exch def
+100 string cvs /elPS exch def  % el num aleatori unic
+% ensamblem nom inicial+num aleatori
+ elPS length DIR length dup /ffitx exch def
+ add string dup 0 DIR putinterval dup ffitx elPS putinterval
+/AlterEgoStream exch def
+
+% generem un nom unic a traves d'un num aleatori
+rand dup srand
+% l'enpalmem amb el nom inicial AlterEgo
+(LaMascaraXdemo_)  % el nom inicial
+/DIR exch def
+100 string cvs /elPS exch def  % el num aleatori unic
+% ensamblem nom inicial+num aleatori
+ elPS length DIR length dup /ffitx exch def
+ add string dup 0 DIR putinterval dup ffitx elPS putinterval
+/LaMascaraXdemo exch def
+
+% escrivim a l'stream_1 temporal les dades per generar la imatge alternativa
+% amb una mascara del logo de FemFum per Demo
+strEAm1 (w) file /strEAm1_pla exch def
+
+% creem l'stream de dades per la imatge alternativa
+strEAm1_pla ([/_objdef {) writestring
+strEAm1_pla AlterEgoStream 100 string cvs writestring
+strEAm1_pla (} /type /stream /OBJ pdfmark) writestring
+
+% llegim el fitxer de dades JPG decodificades (binari pla) i l'escrivim per incrustar a AlterEgo
+strEAm1_pla
+(\015currentfile << /Filter /SubFileDecode /DecodeParms <</EODCount 0 /EODString \(endstream\)>> >> /ReusableStreamDecode filter\015) writestring
+strEAm1_pla /trAsllAt_ exch def
+JPGpla (r) file  % per no entrar en conflicte amb l'altre trAsllAt
+
+{
+ dup 65535 string readstring	{
+				 trAsllAt_ exch writestring
+				}
+				{
+				 trAsllAt_ exch writestring
+				 closefile exit
+				} ifelse
+} loop 
+
+strEAm1_pla (\015endstream\015) writestring
+
+% incrustem el fitxer de lectura dins l'stream + tanquem el fitxer que queda a la pila
+% creem l'stream de dades per l'objecte d'imatge de mascara per Demo (logo FemFum)
+strEAm1_pla ([{) writestring
+strEAm1_pla AlterEgoStream 100 string cvs writestring
+strEAm1_pla (} 2 index /PUT pdfmark closefile [/_objdef {) writestring
+% entrem les dades del dict d'imatge de mascara
+strEAm1_pla LaMascaraXdemo 100 string cvs writestring
+strEAm1_pla (} /type /stream /OBJ pdfmark [{) writestring
+strEAm1_pla LaMascaraXdemo 100 string cvs writestring
+strEAm1_pla (} <</Type /XObject /Subtype /Image /Width 32 /Height 32 /BitsPerComponent 1 /ImageMask true>> /PUT pdfmark [{) writestring
+% incrustem el fitxer de dades .RAW a 1 bitXpixel dins l'stream
+strEAm1_pla LaMascaraXdemo 100 string cvs writestring
+strEAm1_pla (}\015) writestring
+strEAm1_pla
+%(currentfile << /Filter /SubFileDecode /DecodeParms <</EODCount 0 /EODString \(endstream\)>> >> /ReusableStreamDecode filter\015) writestring
+(currentfile << /Filter /ASCIIHexDecode >> /ReusableStreamDecode filter\015) writestring
+strEAm1_pla
+%(ÿþÀ ÿþÀ ÿÎ€ÿÎ€ÿþ  ÿþ  þ~ð þ~ð ÿþð ÿþð þ ðþ ðþ ðþÿðþÿðþÿðþÿðÿñà ÿñà ÿñà ÿñà àÿ àÿ àÿ àÿ áþ áþ áþ áþ áþ áþ ÿþ  \015endstream\015) writestring
+(FFFEC000FFFEC000FFCE0180FFCE0180FFFE0000FFFE0000FE7EF000FE7EF000
+FFFEF000FFFEF000FE1E00F0FE1E00F0FE1E00F0FE01FFF0FE01FFF0FE01FFF0
+FE01FFF0FFF1E000FFF1E000FFF1E000FFF1E000E001FF00E001FF00E001FF00
+E001FF00E1FE0F00E1FE0F00E1FE0F00E1FE0F00E1FE0F00E1FE0F00FFFE0000
+>\015) writestring
+% tanquem l'stream
+strEAm1_pla (/PUT pdfmark [{) writestring
+strEAm1_pla LaMascaraXdemo 100 string cvs writestring
+strEAm1_pla (} /CLOSE pdfmark\015) writestring
+%%%%%%% fi de dades de mascara
+
+%%%% llegim les dades d'imatge del JPG (extret de FADCT_4.PS)
+llegirDCT dup status pop pop pop /FiFtxr exch def pop
+(r) file /tesela exch def
+
+%% per trobar el segment d'inici que interessa: busquem els bytes 255 192 tants cops com
+%% el trobem dins el fitxer i ens quedem amb el darrer que es el bo
+%% utilitzem per primer cop l'estrategia del ReusableStream
+
+/laVeta 0 def  % valor inicial per detectar si ho ha trobat
+
+
+{  % loop per cercar la veta que dona inici a la informacio d'imatge JPEG
+ tesela
+ <<
+ /Filter /SubFileDecode
+ /DecodeParms <</EODCount 0 /EODString (\377\300)>>
+ %/Intent 3
+ >> /ReusableStreamDecode filter pop
+
+ tesela fileposition dup FiFtxr eq
+ {pop exit}  % sortim tenint desada la darrera posicio (que es la bona!) de (\377\300)
+ {/laVeta exch def}  % desem la posicio del doble byte clau on s'inicia la informacio d'imatge que necessitem
+ ifelse
+} loop
+
+laVeta 0 ne  % fitxer erroni (no te el doble byte clau)
+
+{  % dades correctes
+
+/perPoc true def  % pestell per si hem de fer el darrer proces
+
+%% captura del valor de files (y)
+%% files (y)
+tesela dup laVeta 3 add setfileposition read pop 256 mul
+tesela dup laVeta 4 add setfileposition read pop add  %(\n\n >>>> Files (Y) ... ) print flush ==
+/_B exch def  % (Y) FILES D'IMATGE
+
+%% captura del valor de columnes (x)
+%% columnes (x)
+tesela dup laVeta 5 add setfileposition read pop 256 mul
+tesela dup laVeta 6 add setfileposition read pop add  %(\n\n >>>> Columnes (X) ... ) print flush ==
+/_A exch def  % (X) COLUMNES D'IMATGE
+
+%% captura dels components de color (1, 3 o 4 canals)
+%% components de color
+tesela dup laVeta 7 add setfileposition read pop  %(\n\n >>>> Components de Color ... ) print flush ==
+
+/CNL exch def
+
+%% bits per component de color (o per pixel)
+tesela dup laVeta 2 add setfileposition read pop  %(\n\n >>>> Bits x Comp ... ) print flush ==
+/bXp exch def
+
+{
+[
+0
+ % 1 canal (ploma, escala de grisos)
+{(/DeviceGray)}
+0
+ % 3 canals (RGB)
+{(/DeviceRGB)}
+ % 4 canals (CMYK)
+{(/DeviceCMYK)}
+]
+CNL get exec
+/ElsCanals exch def
+} stopped
+% dades incorrectes, cal revisar el desat d'aquest JPEG com a linia de base standard 
+{
+ BaBeL 6 get print flush
+
+%%%% esborrem primer el AlterEgo_####.EPS de la carpeta OUT
+true setglobal
+EsbOrrEm EsbOrrEm_i aEsborrar_AlterEgo_EPS dup length string copy put  % a la llista per esborrar el fitxer de la hot folder
+EsbOrrEm_i 1 add /EsbOrrEm_i exch def
+false setglobal
+
+%%%% traslladem l'EPS original a la carpeta d'ERRORS
+%%%%% empalmem el fitxer a traslladar amb el path _ERRORS
+% path d'errors
+_ERRORS /DIR exch def
+/elPS epsLink def  % el fitxer que traslladem
+% ensamblem fitxer+adreça del fitxer a modificar
+% filtrant si porta el darrer caracter separador (bUsca / o :)
+DIR dup length 1 sub get bUsca 0 get eq
+{  % el path porta el caracter final separador
+ elPS length DIR length dup /ffitx exch def
+ add string dup 0 DIR putinterval dup ffitx elPS putinterval
+}
+{  % el path no porta el darrer caracter separador
+ elPS length DIR length dup /ffitx exch def
+ add 1 add string dup 0 DIR putinterval dup ffitx bUsca putinterval
+ dup ffitx 1 add elPS putinterval
+} ifelse
+/aDestilar exch def
+{ % filtrem un possible error al path 
+ aDestilar (w) file /trAsllAt exch def
+} stopped {BaBeL 17 get print flush quit}if
+aEsborrar_EPS (r) file TRASLLAT
+trAsllAt closefile
+
+%%%% esborrem l'EPS original de la carpeta OUT
+true setglobal
+EsbOrrEm EsbOrrEm_i aEsborrar_EPS dup length string copy put  % a la llista per esborrar el fitxer de la hot folder
+EsbOrrEm_i 1 add /EsbOrrEm_i exch def
+false setglobal
+
+%%%% traslladem el JPEG original a la carpeta d'ERRORS
+%%%%% empalmem el fitxer a traslladar amb el path _ERRORS
+% path d'errors
+_ERRORS /DIR exch def
+/elPS jpgLink def  % el fitxer que traslladem
+% ensamblem fitxer+adreça del fitxer a modificar
+% filtrant si porta el darrer caracter separador (bUsca / o :)
+DIR dup length 1 sub get bUsca 0 get eq
+{  % el path porta el caracter final separador
+ elPS length DIR length dup /ffitx exch def
+ add string dup 0 DIR putinterval dup ffitx elPS putinterval
+}
+{  % el path no porta el darrer caracter separador
+ elPS length DIR length dup /ffitx exch def
+ add 1 add string dup 0 DIR putinterval dup ffitx bUsca putinterval
+ dup ffitx 1 add elPS putinterval
+} ifelse
+/aDestilar exch def
+{ % filtrem un possible error al path 
+ aDestilar (w) file /trAsllAt exch def
+} stopped {BaBeL 17 get print flush quit}if
+llegirDCT (r) file TRASLLAT  % copiem el fitxer a la carperta d'errors
+trAsllAt closefile
+
+%%%% esborrem el JPEG original de la carpeta OUT
+true setglobal
+EsbOrrEm EsbOrrEm_i llegirDCT dup length string copy put  % a la llista per esborrar el fitxer de la hot folder
+EsbOrrEm_i 1 add /EsbOrrEm_i exch def
+false setglobal
+
+/perPoc false def  % pestell per si hem de fer el darrer proces
+
+}if
+}
+{ % dades incorrectes, cal revisar el desat d'aquest JPEG com a linia de base standard
+
+BaBeL 6 get print flush
+
+%%%% esborrem primer el AlterEgo_####.EPS de la carpeta OUT
+true setglobal
+EsbOrrEm EsbOrrEm_i aEsborrar_AlterEgo_EPS dup length string copy put  % a la llista per esborrar el fitxer de la hot folder
+EsbOrrEm_i 1 add /EsbOrrEm_i exch def
+false setglobal
+
+%%%% traslladem l'EPS original a la carpeta d'ERRORS
+%%%%% empalmem el fitxer a traslladar amb el path _ERRORS
+% path d'errors
+_ERRORS /DIR exch def
+/elPS epsLink def  % el fitxer que traslladem
+% ensamblem fitxer+adreça del fitxer a modificar
+% filtrant si porta el darrer caracter separador (bUsca / o :)
+DIR dup length 1 sub get bUsca 0 get eq
+{  % el path porta el caracter final separador
+ elPS length DIR length dup /ffitx exch def
+ add string dup 0 DIR putinterval dup ffitx elPS putinterval
+}
+{  % el path no porta el darrer caracter separador
+ elPS length DIR length dup /ffitx exch def
+ add 1 add string dup 0 DIR putinterval dup ffitx bUsca putinterval
+ dup ffitx 1 add elPS putinterval
+} ifelse
+/aDestilar exch def
+{ % filtrem un possible error al path 
+ aDestilar (w) file /trAsllAt exch def
+} stopped {BaBeL 17 get print flush quit}if
+aEsborrar_EPS (r) file TRASLLAT
+trAsllAt closefile
+
+%%%% esborrem l'EPS original de la carpeta OUT
+true setglobal
+EsbOrrEm EsbOrrEm_i aEsborrar_EPS dup length string copy put  % a la llista per esborrar el fitxer de la hot folder
+EsbOrrEm_i 1 add /EsbOrrEm_i exch def
+false setglobal
+
+%%%% traslladem el JPEG original a la carpeta d'ERRORS
+%%%%% empalmem el fitxer a traslladar amb el path _ERRORS
+% path d'errors
+_ERRORS /DIR exch def
+/elPS jpgLink def  % el fitxer que traslladem
+% ensamblem fitxer+adreça del fitxer a modificar
+% filtrant si porta el darrer caracter separador (bUsca / o :)
+DIR dup length 1 sub get bUsca 0 get eq
+{  % el path porta el caracter final separador
+ elPS length DIR length dup /ffitx exch def
+ add string dup 0 DIR putinterval dup ffitx elPS putinterval
+}
+{  % el path no porta el darrer caracter separador
+ elPS length DIR length dup /ffitx exch def
+ add 1 add string dup 0 DIR putinterval dup ffitx bUsca putinterval
+ dup ffitx 1 add elPS putinterval
+} ifelse
+/aDestilar exch def
+{ % filtrem un possible error al path 
+ aDestilar (w) file /trAsllAt exch def
+} stopped {BaBeL 17 get print flush quit}if
+llegirDCT (r) file TRASLLAT  % copiem el fitxer a la carperta d'errors
+trAsllAt closefile
+
+%%%% esborrem el JPEG original de la carpeta OUT
+true setglobal
+EsbOrrEm EsbOrrEm_i llegirDCT dup length string copy put  % a la llista per esborrar el fitxer de la hot folder
+EsbOrrEm_i 1 add /EsbOrrEm_i exch def
+false setglobal
+
+/perPoc false def  % pestell per si hem de fer el darrer proces
+
+}ifelse
+
+%%%% fi de lectura de dades del JPG
+
+%%%% aqui l'if per no fer la resta del proces per si hi ha un error en la lectura del JPEG
+
+perPoc {  % fem el darrer proces?
+
+%%%% aqui hauriem de fer una comparativa en % de resolucio entre l'EPS/JPEG i proporcionalitat
+%%%% per treure-ho pel prompt del Distiller
+
+%%%% fem una regla de tres per saber si la imatge alternativa (JPG) es proporcional a l'EPS
+%%%% amb un error de 5 punts considerem que ho es, si no
+BaBeL 18 get print flush 
+realAmple realAlt _A mul exch div cvi _B sub abs 5 gt
+{BaBeL 21 get print flush}{BaBeL 20 get print flush }ifelse
+BaBeL 19 get print flush 
+
+%%%% cerquem el % de comparativa en la resolucio entre l'EPS/JPEG
+BaBeL 22 get print flush 
+_A realAmple div 100 mul  % el percentatge de resolucio d'ample de l'alternativa
+50 string cvs print flush ( %) print flush
+BaBeL 23 get print flush 
+_B realAlt div 100 mul  % el percentatge de resolucio d'alt de l'alternativa
+50 string cvs print flush ( %) print flush
+BaBeL 24 get print flush 
+
+
+% entrem les dades d'imatge a l'stream alternatiu
+strEAm1_pla ([{) writestring
+strEAm1_pla AlterEgoStream 100 string cvs writestring
+strEAm1_pla (} << /Type /XObject /Subtype /Image /Width ) writestring
+% l'ample de la imatge JPG
+strEAm1_pla _A 100 string cvs writestring
+strEAm1_pla (/Height ) writestring
+% l'alt de la imatge JPG
+strEAm1_pla _B 100 string cvs writestring
+strEAm1_pla (/ColorSpace ) writestring
+% l'espai de color del JPG
+strEAm1_pla ElsCanals writestring
+					 %% no utilitzem bXp doncs segur que sempre treballarem a 8
+strEAm1_pla ( /BitsPerComponent 8 /Name ) writestring
+% muntem el nom unic (/FemFum_AlterEgo_) + (numeric aleatori unic AlterEgo)
+(/FemFum_AlterEgo_) dup length dup /MiG exch def AlterEgo 100 string cvs  dup length 3 -1 roll
+add string /tOtA exch def exch tOtA exch 0 exch putinterval tOtA exch MiG exch putinterval
+strEAm1_pla tOtA writestring
+% entrem la clau per emascarar les impressions per Demo amb el logo de FemFum a 1 bitXpixel
+strEAm1_pla ( /Mask {) writestring
+strEAm1_pla LaMascaraXdemo 100 string cvs writestring
+strEAm1_pla (} >> /PUT pdfmark [{) writestring
+% tanquem l'stream + creem les entrades de la imatge alternativa
+strEAm1_pla AlterEgoStream 100 string cvs writestring
+strEAm1_pla (} /CLOSE pdfmark [{) writestring
+strEAm1_pla AlterEgo 100 string cvs writestring
+strEAm1_pla (} << /Alternates [ <</Image {) writestring
+strEAm1_pla AlterEgoStream 100 string cvs writestring
+strEAm1_pla (} /DefaultForPrinting true >> ] >> /PUT pdfmark) writestring
+
+strEAm1_pla closefile
+
+
+%% GS no comprimim a Flate/ASCII85 ?
+false{
+
+%%%%%% escrivim codificat i comprimit aquesta segona part de strEAm1 a l'EPS
+strEAm1 (r) file /pelTurmix exch def
+
+%% UTILITAT COMPRESSORA DE FITXERS POSTSCRIPT
+%% CODIFICA UN FITXER (o currentfile) A LZW, ASCII85 O HEXA (TN#5115)
+
+save
+
+%% creem el fitxer aqui
+trAsllAt /totEPSfile exch def
+
+totEPSfile  % fitxer final comprimit i codificat
+/PreSsor exch def
+
+% codi decodificador opcional al cap del fitxer
+PreSsor dup
+(\015currentfile /ASCII85Decode filter /FlateDecode filter cvx exec) writestring 13 write
+
+/bufaBuffer 65535 string def
+
+/escup
+PreSsor
+/ASCII85Encode filter
+/FlateEncode filter
+def
+
+/xucla  % AQUI EL NOM DEL FITXER A COMPRIMIR
+pelTurmix 
+def
+
+/fot-li
+{
+ {
+  xucla
+  bufaBuffer readstring not
+  {
+   escup exch writestring
+   exit
+  } if
+  escup exch writestring
+ } loop
+ escup closefile
+ flush
+} bind def
+
+fot-li
+
+totEPSfile flushfile
+
+restore
+%%%% FI D'UTILITAT COMPRESSORA
+
+}if  %%GS no comprimim a Flate/ASCII85 ?
+
+
+trAsllAt dup (\015%%EOF\015) writestring flushfile
+
+%%%%%%%%%%% fi de trasllat.ps
+
+} if  % perPoc
+
+} if  % construim
+
+} if  % ValidJPG
+
+} if  % faig l'AlterEgo?
+
+} if  % endavant
+
+} if  % eNDaVaNT
+
+} if  % EndAvAnt
+
+EPSfets maxEPS eq {exit} if
+
+}  %%%%%%% EP !!! AQUI ACABA EL PROC DE filenameforall
+
+Donegal filenameforall
+
+noEPS {BaBeL 5 get print flush _IN print flush (\n\n) print flush} if  % si no hi han PS al directori
+
+salva'm restore
+
+EsbOrrEm %%% paquet de fitxers a esborrar
+{dup type /nulltype ne {deletefile} if}forall

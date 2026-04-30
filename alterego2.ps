@@ -1,0 +1,107 @@
+%% aquesta utilitat genera imatges alternatives per impressió
+%% incrustades en el mateix PDF a traves de codis pdfmark
+
+
+<</PageSize[596 843]>>setpagedevice
+
+%%AlterEgo = 123
+%%AlterEgoStream = 456
+%%LaMascaraXdemo = 789
+
+%% anomenem la imatge x pantalla
+[/_objdef {AlterEgo_123} /NI pdfmark
+
+0 0 translate
+
+% plumeru
+gsave 1 0 0 setrgbcolor 0 0 596 843 rectfill grestore
+
+596 843 scale
+
+gsave
+
+/DeviceGray setcolorspace
+
+% executem la imatge x pantalla
+<<
+/Width 8
+/Height 8
+/ImageMatrix [8 0 0 -8 0 8]
+/ImageType 1
+/Decode [0 1]
+/BitsPerComponent 1
+/DataSource <ffffffffffffffff> 0 () /SubFileDecode filter
+>> image
+
+grestore
+
+
+
+%% creem l'stream de dades per la imatge alternativa
+[/_objdef {AlterEgoStream_456} /type /stream /OBJ pdfmark
+
+
+% llegim el fitxer a incrustar a AlterEgo
+% les dades d'imatge han de ser binaries (cal provar amb hexa) doncs ell sempre
+% les acaba comprimint amb Flate o LZW. En el cas que llegim dades DCT (jpg) cal decodificar-les
+% abans d'entar-les a l'stream de dades
+%(C:/windows/escritorio/forum/applets/alterego/80jo101.raw) (r) file
+<ffffffffffffffff> 0 () /SubFileDecode filter
+
+
+% incrustem el fitxer de lectura dins l'stream
+[{AlterEgoStream_456} 2 index /PUT pdfmark
+
+closefile  % tanquem el fitxer que queda a la pila
+
+%%%%%% creacio de l'objecte de la imatge de mascara per demo
+% creem l'stream de dades per l'objecte d'imatge de mascara per Demo (logo FemFum)
+[/_objdef {LaMascaraXdemo_789} /type /stream /OBJ pdfmark
+% entrem les dades del dict d'imatge de mascara
+[{LaMascaraXdemo_789}
+<<
+   /Type /XObject /Subtype /Image
+   /Width 8 /Height 8
+   /BitsPerComponent 1
+   /ImageMask true
+>> /PUT pdfmark
+% incrustem el fitxer de dades .RAW a 1 bitXpixel dins l'stream
+[{LaMascaraXdemo_789}
+%(C:/windows/escritorio/forum/applets/alterego/rauxa_bn.RAW) (r) file
+<ffffffffffffffff> 0 () /SubFileDecode filter
+/PUT pdfmark
+% tanquem l'stream
+[{LaMascaraXdemo_789} /CLOSE pdfmark
+%%%%%%% fi de dades de mascara
+
+
+% entrem les dades d'imatge a l'stream alternatiu
+[{AlterEgoStream_456}
+<<
+   /Type /XObject /Subtype /Image
+   /Width 8 /Height 8
+   /ColorSpace /DeviceGray
+   /BitsPerComponent 1
+   /Name /FemFum_AlterEgo
+   % entrem la clau per emascarar les impressions per Demo amb el logo de FemFum a 1 bitXpixel
+   /Mask {LaMascaraXdemo_789}
+>> /PUT pdfmark
+
+% tanquem l'stream
+[{AlterEgoStream_456} /CLOSE pdfmark
+
+
+% creem les entrades de la imatge alternativa
+[{AlterEgo_123} << /Alternates [ <</Image {AlterEgoStream_456}
+/DefaultForPrinting true >> ] >> /PUT pdfmark
+
+% CATALOG INFO
+ [
+	/Title (AlterEgo.PDF)
+	/Subject (Embedded Alternate Image For Printing)
+	/Author (<marcantoni@femfum.com>)
+	/Creator (\251 FemFum PostScript Applet)
+	/DOCINFO
+pdfmark
+
+showpage
