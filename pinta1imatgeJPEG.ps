@@ -1,0 +1,35 @@
+%!
+%% pinta una imatge JPEG desada amb els paràmetres correctes pel filtre DCTDecode i que en coneguem els valors d'espai de color i píxels
+
+<</PageSize[800 100]>>setpagedevice
+
+/DeviceRGB setcolorspace
+0 0 translate
+800 100 scale
+
+<<
+  /ImageType 1
+  /Height 1
+  /Width 8
+  /BitsPerComponent 8
+  /Decode [0 1 0 1 0 1]
+  /ImageMatrix
+  [
+   8
+   0 0
+   1
+   neg 0
+   1
+  ]
+  /DataSource
+  %(C:/Users/Marc\ Antoni/UB/FIMA/eixorbar/DaaaLi/ninot8x8rgb_blancGrisVermell_nombreEnter.jpg)
+  %(C:/Users/Marc\ Antoni/UB/FIMA/eixorbar/DaaaLi/ninot8x8rgb_blancGrisVermell_puntFlotant.jpg)
+  %(C:/Users/Marc\ Antoni/UB/FIMA/eixorbar/DaaaLi/ninot8x8rgb_blancGrisVermell_nombreEnterRapid.jpg)
+  %(C:/Users/Marc\ Antoni/UB/FIMA/eixorbar/DaaaLi/RGB8x1_puntFlotant.jpg)
+  (C:/Users/Marc\ Antoni/UB/FIMA/eixorbar/DaaaLi/8x1_RGBgris_desatWinPaint.jpg)
+  (r) file <</ColorTransform 1>> /DCTDecode filter
+>>
+image
+
+showpage
+
