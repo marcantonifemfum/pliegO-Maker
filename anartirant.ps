@@ -1,0 +1,116 @@
+%!
+%% llegim el Tirant i el posem en 2 línies d'un A4 vertical tants cops com faci falta
+595 /Ample exch def
+842 /Alt exch def
+
+
+%% el Tirant
+%(C:/Users/Marc\ Antoni/UB/FIMA/eixorbar/falsOCR/TirantLoBlancUTF8.txt)  %% hauríem d'interpretar l'UTF8
+(C:/Users/Marc\ Antoni/UB/FIMA/eixorbar/falsOCR/TirantLoBlancANSI.txt)  %% ens quadra amb WinAnsi
+
+%% cal filtrar \r\n com a retorn de carro dur (13 + 10) per un sol espai (ara n'hi posa dos) doncs hauríem de recodificar-ne un a un glif d'ample zero
+(r) file
+/ReusableStreamDecode filter
+
+%%EP! activem el recurs d'escriure a l'inrevés?
+true
+{
+ (\n\n >>> capgitant el text...\n)print flush
+ %% a Ghostscruipt podem fer strings de més de 16 milions de caràcters
+ %% en aquest cas, que el TXT a llegir sigui WinAnsi pot ser important perquè 1 octet sempre equivaldrà a 1 glif
+ %% aquest algorisme capgira el contingut d'una string, o sigui, la llegeix de dreta a esquerra i la reescriu en una nova cadena
+ /lleixiu exch def
+ lleixiu bytesavailable dup string /reves exch def
+ reves /NullEncode filter /escriu exch def
+ 1 sub -1 0
+ {
+  lleixiu dup 3 -1 roll setfileposition read pop escriu exch write
+ }for
+ escriu dup flushfile closefile
+ reves /ReusableStreamDecode filter
+ (\n ... fi del capgitat! <<<\n\n)print flush
+}if
+
+/fTloB exch def
+
+%%ATENCIÓ: aquestes mesures estan fetes amb un tipografia Courier (prosa fixa) de sèrie que duu Ghostscript!
+%% mesures d'ample per un cos 0.001 pt de /Courier
+%% 256 caràcters fan .1 punts d'ample
+%% 2560 caràcters fa 1 punt d'ample
+%% llavors a 595, l'ample d'un A4, hi cabran... 1523200 (un milió cinc-cents vint-i-tres mil dos-cents caràcters!)
+%fTloB 1523200 string readstring == /1aLinia exch def
+%% amb només amb 2 lectures esgotem el Tirant
+%fTloB 1523200 string readstring == /2aLinia exch def
+
+%%Aveure!
+%fTloB 0 setfileposition
+%fTloB .fileposition ==
+
+%%ATENCIÓ: sense polir dobles espais i retorns de carro, el Tirant té... 2203062 ...de caràcters
+%1aLinia length 2aLinia length add ==
+
+
+<</PageSize[Ample Alt]>>setpagedevice
+/arAlt Alt def
+
+%% cal recodificar a WinAnsi
+%% amb una Courier a cos mínim computable de... 0.001 ...comptem quants caràcters ens hi poden cabre en una línia d'un A4 vertical
+/Courier  %% una altra cosa a experimentar és si totes les tipografies es comporten igual en relació al valor mínimament computable de cos
+findfont
+dup length dict begin
+{
+ 1 index /FID ne
+ {
+  def
+ }
+ {
+  pop pop
+ }ifelse
+}forall
+/Encoding systemdict /EncodingDirectory get /WinAnsiEncoding get def
+currentdict end
+/Courier_WA exch definefont pop
+
+/Courier_WA  %% recodificada!
+%% valor mínim tipogràficament computable!
+0.001  %% mil·lèssima de punt = 0.00035273371 mm (deumilèssima de mil·límetre!)
+%% resultat de... 0.001 2.835 div ...caldria veure si aquesta divisó és acurada amb l'operador div especial
+dup /cosTirant exch def
+selectfont
+
+%% 1a línia
+%0 arAlt cosTirant sub dup /arAlt exch def moveto
+%1aLinia show
+
+%% 2a línia
+%0 arAlt cosTirant sub dup /arAlt exch def moveto
+%2aLinia show currentpoint pstack
+%% aquí podem veure on acaba la segona línia un cop esgotat un primer Tirant
+
+%% si volem compondre n vegades el Tirant per omplir tota la vertical de l'A4
+/iL 0 def  %% comptador de línies
+/iT 0 def  %% comptador de Tirants
+842 .001 sub -0.001 0.001  %% de dalt a baix, de la primera línia composable fins la darrera
+{
+ %% llegim el Tirant en 2 línies (ara sense aprofitar quasi la meitat de l'espai encara buit de la segona línia)
+ fTloB 1523200 string readstring
+ {
+  exch 0 exch moveto show
+ }
+ {
+  exch 0 exch moveto show
+  fTloB 0 setfileposition
+  iT 1 add /iT exch def
+ }ifelse
+ iL 1 add /iL exch def
+
+%%EP! sortim a n Tirants?
+ 1 iT eq{exit}if
+
+}for
+iL ==
+%847278
+
+
+showpage
+

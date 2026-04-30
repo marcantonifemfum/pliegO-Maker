@@ -1,0 +1,19 @@
+%!
+%%EP! per activar el recurs d'escriure a l'inrevés el més eficient seria ja tenir muntada 1 sola cadena amb el text girat
+%% a Ghostscruipt podem fer strings de més de 16 milions de caràcters
+%% que el TXT a llegir sigui WinAnsi pot ser important perquè 1 octet sempre equivaldrà a 1 glif
+
+%% aquest algorisme capgira el contingut d'una string, o sigui, la llegeix de dreta a esquerra i la reescriu en una nova cadena /reves
+(aeiou)
+
+/ReusableStreamDecode filter /lleixiu exch def
+lleixiu bytesavailable dup
+string /reves exch def
+reves /NullEncode filter /escriu exch def
+1 sub -1 0
+{
+ lleixiu dup 3 -1 roll setfileposition read pop escriu exch write
+}for
+escriu dup flushfile closefile
+reves ==
+

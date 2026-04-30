@@ -1,0 +1,90 @@
+%!
+%% explorem a fons els límits del cos d'una tipografia (pot canviar segons la font?) que en la seva mesura més ínfima sigui tipogràficament computable
+
+%% sabem que a Ghostcript el cos d'una Courier a... 0.001 ...punts, ÉS tipogràficament computable
+%% sabem que a Ghostcript el cos d'una Courier a... 0.0001 ...punts, NO és tipogràficament computable (Distiller sí)
+%% hi ha un entremig tipogràficament computable?
+%%+ Si!  0.0007 ...punts
+
+%/Courier .001 selectfont 0 0 moveto
+%%Noteu la diferència d'interrogar la posició vs l'ample d'un glif
+%(A) show currentpoint pstack
+%% la posició X ens dóna el punt on ha de començar a compondre's el glif següent
+%0.0
+%0.0006
+%(+ + + + + + + )==
+%% l'ample ens dóna la mesura estricta de la caixa (quadratí) del glif a compondre
+%(A) stringwidth pstack
+%0.0
+%0.000390625
+%%Atenció: per l'extrema petitesa del cos, aquest codi s'ha d'executar via fitxer doncs via prompt interactiu tant currentpoint com stringwidth tornen 0
+
+/saltS 0 def
+/Computable 0.001 def  %% valor inicial computable
+/xONets 0 def
+
+%%EP! si es volgués afinar més, hauríem de fer servir els operadors matemàtics acurats
+%% inici
+%0.001
+0.01  %% inici per veure on falla currentpoint
+
+%% salt
+-0.0001  %% entre els 2 valors 9 salts
+%-0.00001  %% entre els 2 valors 89 salts
+%-0.000001  %% entre els 2 valors 899 salts
+
+%% final on explorem tots els valors possibles fins que un o altre operador donguin zero com a senyal que han deixat de computar
+%0.001  %% currentpoint torna...      0.000600005558
+0.0001  %% currentpoint torna...    6.00000094e-05 
+%0.00001  %% currentpoint torna...   6.00000094e-05
+%0.000001  %% currentpoint torna...  6.00000094e-05  
+%0.0000001  %% currentpoint torna... 6.00000094e-05 
+{
+ gsave
+ Computable /suara exch def
+ /Computable exch def
+
+ saltS 1 add /saltS exch def
+
+ 0 0 moveto
+ /Courier Computable selectfont
+
+%%EP! hi ha una important diferència entre el comportament dels operadors currentpoint i stringwidth 
+
+%% si explorem via currentpoint
+%%+ 0.0001 sembla computable pel GS però en realitat dóna un valor redundant
+
+ true
+ {
+  (A) show currentpoint pop  %% ens carreguem la Y
+  dup /xONets exch def
+  0 eq  %% la X dóna zero?
+  {
+   (\n\n>> COMPUTABLE... )print flush suara 36 string cvs print flush ( ...punts)print flush
+   (\n\n>> NO computable... )print flush Computable 36 string cvs print flush ( ...punts\n\n)print flush
+   exit
+  }if
+ }
+ {
+%% si explorem via stringwidth
+%%+ el valor més petit computable és 0.0007 punts (amb salts de 0.0001)
+%%+ o 0.00066 punts (amb salts de 0.00001)
+%%+ o 0.000651997 punts (amb salts de 0.000001)
+  (A) stringwidth pop  %% ens carreguem l'alt de composició del glif que en tipografies occidentals sempre és zero
+  0 le  %% l'ample del glif dóna zero o menys?
+  {
+   (\n\n>> COMPUTABLE... )print flush suara 36 string cvs print flush ( ...punts)print flush
+   (\n\n>> NO computable... )print flush Computable 36 string cvs print flush ( ...punts\n\n)print flush
+   exit
+  }if
+ }ifelse
+
+ grestore
+}for
+
+saltS ==
+xONets ==
+
+%%NECESSITEM generar un PDF i explorar-ne el codi per comprovar que realment s'escriu el text amb aquests valors extrems
+
+

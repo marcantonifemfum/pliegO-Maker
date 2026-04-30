@@ -1,0 +1,138 @@
+%!
+%% en realitat aquí voldríem explorar els límits tipogràficament computables de l'intèpret Adobe Acrobat Distiller
+%% amb l'excusa de poder compondre els 2203062 caràcters de tot el Tirant lo Blanc en 1 sola línia
+
+%%EP! ens n'adonem que certes operacions des del prompt interactiu de Ghostscript no donen resultats acurats que si els executem via fitxer?
+%/Courier .001 selectfont 0 0 moveto (A) show currentpoint pstack quit
+%% aquesta operació al prompt arrodoneix sense precisió a... 0.0 0.0 ...i en execució via fitxer dóna un resultat acurat... 0.0 0.0006
+
+%% explorem de com interpreta el Distiller a Windows la notació dels path
+%% sembla que amb el B&O hi pot haver un conflicte de permisos (que ara no ens hi posarem) de manera que
+%(Resource/CIDFont/*)  %% aquesta és una adreça explorable al Distiller del B&O però que no permet li fiquin res a dins que després poguem llegir ¿?
+%(%*%*)  %% a Distiller explorem les adreces virtuals possibles que apunten a paths físics! (a GS NO funciona!)
+%(*)  %% explorem l'arrel de lectura de fitxers (al GS ens anota el què hi ha a partir del directori on executem)
+%(%hostfont%*)  %% a Distiller hi ha %hostsfont%
+%{==} 256 string filenameforall
+%quit
+
+595 /Ample exch def
+842 /Alt exch def
+
+%% el Tirant
+%(C:/Users/Marc\ Antoni/UB/FIMA/eixorbar/falsOCR/TirantLoBlancUTF8.txt)  %% hauríem d'interpretar l'UTF8
+%%EP! aquesta notació de path ens quadra a GS però no a Distiller
+%(C:/Users/Marc\ Antoni/UB/FIMA/eixorbar/falsOCR/TirantLoBlancANSI.txt)  %% ens quadra amb WinAnsi
+%%UEP! a B&O i Distiller mirem on carai desa un fitxer d'escriptura i podrem saber a on podem copiar-hi fitxer de lectura?
+%% hi ha d'haver un conflicte de permisos que ara no hi entrerem perquè aparentment Distiller el B&O no ens deixa escriure res enlloc
+%(OnEtsTirant.txt)  %% ?
+%(w) file dup dup 97 write flushfile closefile quit
+
+%% cal filtrar \r\n com a retorn de carro dur (13 + 10) per un sol espai (ara n'hi posa dos) doncs hauríem de recodificar-ne un a un glif d'ample zero
+%(r) file
+%/ReusableStreamDecode filter
+%/fTloB exch def
+
+/Courier
+
+%%NO
+%0.00001  %% aquest cos la NO ÉS tipogràficament computable al Distiller!
+
+%0.0001  %% el cos més petit tipogràficament computable pel Distiller però no pel GS!
+
+%0.001  %% el cos més petit tipogràficament computable pel GS però que encara podem ajustar més:
+%%+ 0.0007  %% el cos més ajustadament computable pel GS
+%0.00066       %% donen tots resultats gairebé idèntics
+%0.000651997
+0.000600005558  %% compon 1 glif més!
+
+selectfont
+
+%fTloB dup bytesavailable
+%1 add string  %% el false que aquí ens retorna demostra que som al final del fitxer
+%readstring pop
+
+%% farcim una cadena de (a) amb la llargada en caràcters del Tirant: 2203062
+%2203062  %% aquesta mida de cadena és permesa al GS però NO a Distiller
+
+%% 1000 caràcters al Distiller en Courier a cos 0.00001 fan   0.00549316 d'ample
+%% 65535 fan 0.359985
+
+%% 1000 caràcters al Ghostscript en Courier a cos 0.00001 fan 0.006 d'ample 
+%% 65535 fan 0.39321
+
+%65535 dup
+%string /aTirant exch def
+%0 1 3 -1 roll 1 sub
+%{
+% aTirant exch 97 put
+%}for
+
+%%AQUEST CODI és compatible tant amb GS com amb Distiller doncs no exhaurim la capacitat de cap string
+%% posició d'inici
+0 0 moveto
+
+1 1 50000000  %2203062
+{  %% compon progressivament
+ /quantsNHIcaben exch def
+ (A) show currentpoint pop dup 842 ge
+ {
+  == exit
+ }
+ {
+  /araSOM exch def
+ }ifelse
+}for
+
+araSOM
+quantsNHIcaben
+pstack
+
+
+%% a cos 0.001 si executem via GS ens dóna:
+%595.00061   ==
+%761601      quantsNHIcaben
+%594.999817  araSOM
+
+%% a cos 0.001 si executem vis GS ens dóna:
+%842.00061   ==
+%1077761     quantsNHIcaben
+%841.999817  araSOM
+
+%% a cos 0.0007 si executem vis GS ens dóna:
+%842.0      ==
+%2155520    quantsNHIcaben
+%841.999634 araSOM
+
+%% a cos 0.00066 si executem vis GS ens dóna:
+%842.0      ==
+%2155520    quantsNHIcaben
+%841.999634 araSOM
+
+%% a cos 0.000651997 si executem vis GS ens dóna:
+%842.0       ==
+%2155520     quantsNHIcaben
+%%841.999634 araSOM
+
+%% a cos  0.000600005558 si executem vis GS ens dóna:
+%842.000366 ==
+%2155521    quantsNHIcaben
+%841.999939 araSOM
+
+
+%% a cos .001 si executem via Distiller ens dóna:
+%595.0    ==
+%995007   quantsNHIcaben
+%595.0    araSOM
+
+%% a cos .0001 si executem via Distiller (amb 100 milions de caràcter per límit) ens dóna:
+%595.0     ==
+%10122891  quantsNHIcaben
+%595.0     araSOM
+
+%%NO és computable tipogràficament
+%% a cos .00001 si executem via Distiller (amb 100 milions de caràcter per límit) JA NO ÉS COMPUTABLE doncs ens dóna:
+%100000000
+%0.0
+
+%showpage
+

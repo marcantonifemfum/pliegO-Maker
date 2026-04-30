@@ -1,0 +1,57 @@
+%!
+%% de com fer un fals OCR
+
+%% format de pàgina
+<</PageSize[595 421]>>setpagedevice
+
+false  %% passem a imatge o la reproduïm intentant posar-hi el fals text en OCR?
+{  %%1 el passem a imatge en una primera execució
+   %% gswin64c -q -dNOSAFER -o falsOCR.jpg -sDEVICE=jpeg -r72 -dJPEGQ=100 falsOCR.ps
+ %% tipus de lletra
+ (C:/Windows/Fonts/consolab.ttf) findfont 28 scalefont setfont
+ 30 290 moveto
+ (If you were coming in the Fall,) show      %% 31 glifs
+ 30 220 moveto
+ (I'd brush the Summer by) show              %% 23 glifs
+ 30 150 moveto
+ (With half a smile and half a spurn,) show  %% 35 glifs
+ 30 80 moveto
+ (As Housewives do a Fly.) show              %% 23 glifs
+                                             %% total 112 glifs
+}
+{
+ false
+ {  %%2 passem el JPEG a PDF per tal de l'obrir-lo amb l'Acrobat Pro ens en faci l'OCR
+    %% gswin64c -q -dNOSAFER -o DickinsonOCR.pdf -sDEVICE=pdfwrite -f "UB\FIMA\eixorbar\falsOCR\falsOCR.ps"
+  0 0 translate
+  595 421 scale
+  /DeviceRGB setcolorspace
+  <<
+    /ImageType 1
+    /Width 595
+    /Height 421
+    /BitsPerComponent 8
+    /Decode [0 1 0 1 0 1]
+    /ImageMatrix [595 0 0 -421 0 421]
+    /DataSource (C:/Users/Marc\ Antoni/UB/FIMA/eixorbar/falsOCR/DickinsonOCR.jpg) (r) file <</ColorTransform 1>> /DCTDecode filter
+  >>
+  image
+ }
+ {  %%3 el llegim amb CaLi2CoPi 0 per tenir accés directe a tot el codi
+    %% gswin64c -q -dNOSAFER -o re.pdf -sDEVICE=pdfwrite -f "C:\Users\Marc Antoni\UB\FIMA\CaLi2CoPi\FemFum_CaLi2CoPi_042_pliegOMakerUBESH.ps"
+    %% DickinsonOCR.pdf_pla.pdf
+
+    %%4 obrim... DickinsonOCR.pdf_pla.pdf ...amb vi per estudiar el codi i veure com es compon el Text OCR amb rendering 3 (3 Tr)
+    %% veiem que per fer la prova podem substituir directament l'inici de cada línia amb el nou text de Verdaguer malgrat no quadri la llargada de la línia
+
+%% el text pel fals OCR per camuflar la Dickinson amb Verdaguer fa:
+%% Al cim d'un promontori que domina      %% 33
+%% les ones de la mar,                    %% 19
+%% quan l'astre rei cap a ponent declina  %% 37 
+%% me'n pujo a meditar.                   %% 20
+	                                  %% total 109 glifs
+ }ifelse
+}ifelse
+ 
+
+showpage

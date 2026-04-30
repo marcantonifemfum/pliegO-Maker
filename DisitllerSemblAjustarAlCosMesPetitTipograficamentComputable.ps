@@ -1,0 +1,40 @@
+%!
+%% Quan invoquem un cos més petit del què GPL Ghostscript 10.06.0 (2025-09-09) pot computar... 0.001 punts
+%% l'intèrpret AcrobatDistiller Pro DC 2026.001.21431 64bit el supera, podent computar fins... 0.00001 punts
+%% quan Ghostscript i Distiller superen els seus límits, ajusten els valors de mesura, d'ample de glif, a zero i/o generen errors
+%% el fet que la Courier del GS és molt més estreta que la de Distiller també ens despista una mica
+
+%% .001  %% aquest és el cos més petit tipogràficament computable pel GS (mil·lèssima de punt)
+%% .00001 %% aquest és el cos més petit tipogràficament computable al Distiller (cent-mil mil·lèssima de punt!)
+%%El dubte és si això passa amb qualsevol tipografia o en depèn d'alguna manera?
+
+/Courier .000001  %% quin és el cos més petit tipogràficament computable pel Distiller?
+selectfont
+currentfont /ScaleMatrix get ==  %% aquesta és una manera de saber a quin cos treballa una determinada tipografia activa
+0 0 moveto (M) stringwidth pstack
+
+%% a cos 0.001 Distiller ens torna
+%[0.001 0.0 0.0 0.001 0.0 0.0]
+%0.0
+%0.000600586
+
+%% a cos 0.001 GS ens torna
+%[0.001 0.0 0.0 0.001 0.0 0.0]
+%0.0
+%0.000390625
+
+%% a cos 0.0001 Distiller ens torna encara un valor computable! >>> GS torna zeros
+%[0.0001 0.0 0.0 0.0001 0.0 0.0]
+%0.0
+%6.04248e-05
+
+%% a cos 0.00001 Distiller ens torna encara un valor computable! >>> GS torna zeros
+%[1e-05 0.0 0.0 1e-05 0.0 0.0]
+%0.0
+%5.49316e-06
+%%Aquest... 0.00001 ...és el límit del cos tipogràficament computable a Distiller
+%% a cos 0.000001 Distiller ens torna zeros!
+%[1e-06 0.0 0.0 1e-06 0.0 0.0]
+%0.0
+%0.0
+

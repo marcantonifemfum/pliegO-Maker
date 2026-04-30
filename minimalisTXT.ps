@@ -1,0 +1,55 @@
+%!
+%% explorem amb quin cos mínim podem treballar la composició tipogràfica
+
+%% el valor decimal més petit que ens admet a la màquina del Pep (Bang&Olufsen) Win 11 Enterprise Processador Intel(R) Core(TM) i5-8265U
+%% CPU @ 1.60GHz, 1800 Mhz 4 processadors principals, 8 processadors lògics | 64bits amb GPL Ghostscript 10.06.0 (2025-09-09)
+%% 0.000000000000000000000000000000000000000000001 ==
+%% 1.4013e-45
+%% amb 1 decimal més l'intèrpret ja no ens dóna el valor en notació exponent (E o e) sinó que ens dóna zero... 0.0
+
+%% però sembla que el valor més petit tipogràficament computable és la mil·lèssima de punt 0.001 (més enllà d'això je ens treballa a zero)
+%%ATENCIÓ: aquesta apreciació ara veiem que canvia en funció de si executem des del prompt interactiu o executem via fitxer .ps
+%% GS>/Courier .01 selectfont  %% via prompt interactiu només admet la centèssima
+%% GS>0 0 moveto (AEIOU) stringwidth pstack
+%% 0.0
+%% 0.029296875
+
+%% amb una Courier de cos 0.#1? comptem quants caràcters ens hi poden cabre en una línia d'un A4 vertical
+/Courier  %% un altra cosa a experimentar és si totes les tipografies es comporten igual en relació al valor mínimament computable de cos
+
+%% valor mínim tipogràficament computable!
+0.001  %% mil·lèssima de punt = 0.00035273371 mm (deumilèssima de mil·límetre!)
+%% resultat de... 0.001 2.835 div ...caldria veure si aquest divisó és acurada amb l'operador div especial
+
+selectfont
+/iG 0 def  %% index de glifs dins la cadena
+
+%%ATENCIÓ: aquest loop és mooolt lent!
+{  %% loop
+ gsave
+ 0 0 moveto
+ iG 1 add string /araLin exch def
+ 0 1 iG
+ {
+  araLin exch 97 put
+ }for
+ araLin stringwidth pop 1  %% ATENCIÓ amb aquest valor doncs la computació tal i com està plantejada és molt lenta!
+ ge
+ {
+  exit
+ }if
+
+ %% quan acabi sempre hi haurà 1 glif més que el valor de iG
+ %iG 5 eq{araLin == quit}if
+
+ iG 1 add /iG exch def
+ grestore
+}loop
+
+%% mesures d'ample per un cos 0.001 pt de /Courier
+%% 256 caràcters fan .1 punts d'ample
+%% 2560 caràters fa 1 punt d'ample
+%% llavors a 595, l'ample d'un A4, hi cabran... 1523200 (un milió cinc-cents vint-i-tres mil dos-cents caràcters!)
+
+iG 1 add ==
+
