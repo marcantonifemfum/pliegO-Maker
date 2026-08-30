@@ -1,0 +1,150 @@
+%!
+%% partint d'un DIN qualsevol en vertical o horitzontal explorem l'escala i posicionament d'un rectangle que es comporta com una imatge a inscriure
+%% que, pas a pas, transitarà d'una orientació a una altra de manera que sempre quedarà inscrita exactament dins el format de pàgina DIN
+%% en aquest prototip el trànsit del format de l'objecte a inscriure serà el de la diferència entre l'amplada i l'alçada que definim a *
+
+%%Format de pàgina DIN
+
+false  %% true=vertical false=horitzontal
+/VH exch def
+
+false  %% true=A4 false=A3
+/A4A3 exch def
+
+A4A3
+{  %%A4
+ VH
+ {  %% vertical
+  /Dx 595 def
+  /Dy 842 def
+%  <</PageSize[Dx Dy]>>setpagedevice
+  /rDIN 1.41 def  %% la ràtio la computem sempre dividint l'alt per l'ample Dy/Dx
+ }
+ {  %% horitzontal
+  /Dx 842 def
+  /Dy 595 def
+%  <</PageSize[Dx Dy]>>setpagedevice
+  /rDIN 0.70 def  %% la ràtio la computem sempre dividint l'alt per l'ample Dy/Dx
+ }ifelse
+}
+{  %%A3
+ VH
+ {  %% vertical
+  /Dx 842 def
+  /Dy 1191 def
+%  <</PageSize[Dx Dy]>>setpagedevice
+  /rDIN 1.41 def  %% la ràtio la computem sempre dividint l'alt per l'ample Dy/Dx
+ }
+ {  %% horitzontal
+  /Dx 1191 def
+  /Dy 842 def
+%  <</PageSize[Dx Dy]>>setpagedevice
+  /rDIN 0.70 def  %% la ràtio la computem sempre dividint l'alt per l'ample Dy/Dx
+ }ifelse
+ <</PageSize[Dx Dy]>>setpagedevice
+}ifelse
+
+/SALTpas 1 def  %% salt del trànsit
+
+%% *
+false  %% de pàgina o personalitzada?
+{  %% els valors inicials de l'objecte a inscriure poden ser en base al format de pàgina o personalitzats
+ currentpagedevice /PageSize get dup 0 get /araX exch def 1 get /araY exch def  %% ample i alt inicials del rectagle dinàmic
+}
+{  %% personalitzant el format inicial del rectangle podem experimentar ratios extremes en les dues orientacions
+ /araX 12 def /araY 1 def
+}ifelse
+
+araY /maxX exch def araX /maxY exch def  %% valors màxims del trànsit del rectangle dinàmic
+
+araX araY ge
+{  %% abaixem la X i apugem la Y
+ /transit true def 
+}
+{  %% apugem la X i abaixem la Y
+ /transit false def
+}ifelse
+
+{  %% el loop de l'objecte a inscriure transitarà entre els valors incials de la diferència d'ample i alt
+ araY araX div  %% l'alt dividit per l'ample ens dóna la ràtio de l'objecte a inscriure
+ 100 mul cvi 100 div %% escapcem fins al segon decimal
+ dup /rOi exch def  %% ràtio de l'objecte a inscriure
+
+ %% taula de la veritat de la ràtio:
+ %% si la ràtio de l'objecte a inscriure és igual o menor que la del DIN sempre s'adaptarà per l'ample del DIN
+ %% si la ràtio de l'objecte a inscriure és igual o més gran que la del DIN sempre s'adaptarà per l'alt del DIN
+
+ 1 Dx div 2 mul setlinewidth  %% escalem el gruix perquè es pugui veure bé on toca vores (en aquest cas l'escala deforma el gruix del filet)
+
+ rDIN le
+ {  %% ràtio de l'objecte igual o menor a la del DIN
+	% (tret d'un /ftR que podem definir)
+  
+  gsave
+  %% si la ràtio de l'objecte a inscriure és igual o menor que la del DIN sempre s'adaptarà per l'ample del DIN
+  Dx  %% el valor d'escala de la X serà la del DIN, o sigui Dx
+  araY Dx mul araX div round cvi  %% aquesta serà l'escala de la Y
+  dup /Ypos exch def  %% per posicionar la Y si la volem centrar
+
+  0  %% posició X de translate
+
+  %% aquí podríem triar de si el volem centrat pel cantó que bada o, segons sigui vertical o horitzontal, a dalt a baix a la dreta o a l'esquerra
+  Dy Ypos sub 2 div  %% a quan l'hem de centrar per la Y?
+  translate
+  
+  scale
+  
+  1 0 0 setrgbcolor
+  0 0 1 1 rectstroke  %% un rectangle que es comporta com una imatge, doncs sempre parteix d'una mida primigènia de 1x1 punts
+  grestore
+
+  showpage
+ }
+ {  %% ràtio de l'objecte més gran que la del DIN
+	% (tret d'un /ftR que podem definir)
+  %% si la ràtio de l'objecte a inscriure és més gran que la del DIN sempre s'adaptarà per l'alt del DIN
+  gsave
+  araX Dy mul araY div round cvi  %% aquesta serà l'escala de la X
+  dup /Xpos exch def  %% per posicionar la X si la volem centrar
+
+  Dy  %% el valor d'escala de la Y serà la del DIN, o sigui Dy
+%exch  %% quan la ràtio de l'objecte més gran que la del DIN l'escala va sempre girada
+
+  %% aquí podríem triar de si el volem centrat pel cantó que bada o, segons sigui vertical o horitzontal, a dalt a baix a la dreta o a l'esquerra
+  Dx Xpos sub 2 div  %% a quan l'hem de centrar per la X?
+
+  0  %% posició Y de translate
+ %dup == (Yt)== dup == (Xt)==
+  translate
+ 
+ %dup == (Ys)== dup == (Xs)==
+  scale
+  
+  1 0 0 setrgbcolor
+  0 0 1 1 rectstroke  %% un rectangle que es comporta com una imatge, doncs sempre parteix d'una mida primigènia de 1x1 punts
+  grestore
+
+  showpage
+
+%exit  %pstack QUEFA?
+
+ }ifelse
+
+ %% sortim?
+ araX maxX ge araY maxY ge eq
+ {
+  exit
+ }if
+
+ transit
+ {  %% abaixem la X i apugem la Y
+  araX SALTpas sub /araX exch def
+  araY SALTpas add /araY exch def
+ }
+ {  %% apugem la X i abaixem la Y
+  araX SALTpas add /araX exch def
+  araY SALTpas sub /araY exch def 
+ }ifelse
+
+}loop  %% de l'objecte a inscriure que transitarà entre els valors inicials de la diferència d'ample i alt
+

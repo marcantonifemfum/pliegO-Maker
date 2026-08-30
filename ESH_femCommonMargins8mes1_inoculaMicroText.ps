@@ -1,0 +1,629 @@
+%!
+%% ens cal invocar les 2 pàgines ofuscades des d'aquest tercer fitxer
+%% doncs empalmant els 2 PDFs per la línia de comanda de Ghostscript típica (i també fent scripting) NOMÉS aconseguim DESofuscar el 8+1 sencer!
+
+/almenys1error false def  %% gatell per si res falla
+
+%% capturem l'array de configuració i blindem si hi han errors
+{
+ (ESH_config_ofusca.ps) (r) file cvx exec
+ /ESH_config_ofusca exch def  %% elements de configuració
+}stopped
+{
+ (\n\n>>> TENIU UN ERROR AL PATH DEL FITXER... ESH_config_ofusca.ps ...O HI HA UN ERROR DE SINTAXI AL SEU CONTINGUT ...PLEGUEM!\n\n)
+ print flush quit
+}if
+
+%%PROMPT de capçalera (per saber on som en cas d'error i evolucions)
+(\n\n----- CONTEXT ESH_femCommonMargins8mes1_inoculaMicroText.ps -----\n\n) print flush
+
+%% en aquest punt hauríem de poder deduir:
+%%A la validesa dels JPEGs i si els píxels ample/alt de cadascuna de les imatges (pantalla/impressora) i el seu espai de color
+
+%% posem en 1 array l'anvers i revers per pantalla
+[
+ ESH_config_ofusca 7 get  %% 7 MENÚ: adreça a la imatge per pantalla de l'anvers
+ ESH_config_ofusca 9 get  %% 9 MENÚ: adreça a la imatge per pantalla del revers
+] /JPEGSxPantalla exch def
+
+%% posem en 1 array l'anvers i revers per imprimir
+[
+ ESH_config_ofusca 8 get  %% 8 MENÚ: adreça a la imatge per imprimir de l'anvers
+ ESH_config_ofusca 10 get  %% 10 MENÚ: adreça a la imatge per imprimir del revers
+] /JPEGSxImpressora exch def
+
+[
+ JPEGSxPantalla
+ {
+  ESH_config_ofusca 3 get (r) file cvx exec  %% 3 CODI: adreça al lector d'ample/alt/canals de les imatges JPEG per pantalla/impressora de la pàgina 1 i 2
+ }forall
+]
+/dadesJPEGSxPantalla exch def 
+
+[
+ JPEGSxImpressora
+ {
+  ESH_config_ofusca 3 get (r) file cvx exec  %% 3 CODI: adreça al lector d'ample/alt/canals de les imatges JPEG per pantalla/impressora de la pàgina 1 i  
+ }forall
+] /dadesJPEGSxImpressora exch def
+
+%dadesJPEGSxImpressora === quit
+
+%% en algun dels 4 JPEGs hi ha cap problema de validesa, path, etc ?
+almenys1error
+{
+ (\n\n >>> Hi ha problemes de format/path en almenys 1 de les imatges JPEG ...pleguem!\n\n)print flush quit
+}if
+
+%%PROMPT de capçalera (per saber on som en cas d'error i evolucions)
+(\n\n----- CONTEXT ESH_femCommonMargins8mes1_inoculaMicroText.ps -----\n\n) print flush
+
+/ftR 0.03 def  %% a la ràtio li assignem un factor de tolerància que permet distorsions mínimes poc detectables per l'ull
+%% en relació al DIN vertical voldrà dir que acceptem tractar a 1.41 ràtios entre un rang de 1.38 i 1.44
+%% en relació al DIN horitzontal voldrà dir que acceptem tractar a 0.70 ràtios entre un rang de 0.67 i 0.73
+
+/NOratio false def  %% gatell per avisar que la ràtio pantalla vs impressora de l'ANVERS o el REVERS no és admissible
+/llindarPPP 72 def  %% llindar de resolució per sota de la que aturarem la feina
+
+%%Anàlisi de l'ANVERS (pàg.1)
+(\n>>> ANALISI DE L'ANVERS [ pag.1 ]\n)print flush
+
+%%B l'anvers pantalla vs impressora és idèntic (píxels) o té la mateixa ràtio?
+%% desem els píxels x,y de pantalla i impressora
+dadesJPEGSxPantalla 0 get 0 get dup /araXp exch def  %% píxels d'ample de pantalla
+dadesJPEGSxImpressora 0 get 0 get dup /araXi exch def  %% píxels d'ample d'impressora
+eq  %% anvers: comparem els píxels X pantalla vs impressora
+dadesJPEGSxPantalla 0 get 1 get dup /araYp exch def  %% píxels d'alt de pantalla
+dadesJPEGSxImpressora 0 get 1 get dup /araYi exch def  %% píxels d'alt d'impressora
+eq  %% anvers: comparem els píxels Y pantalla vs impressora
+and  %% :0: els píxels de l'anvers de pantalla vs impressora són idèntics?
+{
+ %(\n >> els pixels X/Y pantalla/impressora de l'ANVERS SON identics <<\n\n)print flush
+ /FEM1 false def
+ /FEM2 true def
+ /FEM3 false def
+
+ %% per tant ja podem definir el posicionat x,y de la imatge de l'ANVERS (pantalla/impressora) dins el DIN i la seva escala
+ /xA 0 def  %% posició x de l'anvers per pantalla/impressora
+ /yA 0 def  %% posició y de l'anvers per pantalla/impressora
+
+ %% l'escala serà idèntica a la del DIN triat
+ ESH_config_ofusca 4 get  %% 4 MENÚ: true=A4 false=A3
+ {  %% A4
+  ESH_config_ofusca 5 get  %% 5 MENÚ: true=vertical false=horitzontal
+  {  %% vertical
+   /ExA 595 def  %% escala x de l'anvers
+   /EyA 842 def  %% escala y de l'anvers
+  }
+  {  %% horitzontal
+   /ExA 842 def  %% escala x de l'anvers
+   /EyA 595 def  %% escala y de l'anvers
+  }ifelse
+ }
+ {  %% A3
+  ESH_config_ofusca 5 get  %% 5 MENÚ: true=vertical false=horitzontal
+  {  %% vertical
+   /ExA 842 def  %% escala x de l'anvers
+   /EyA 1191 def  %% escala y de l'anvers
+  }
+  {  %% horitzontal
+   /ExA 1191 def  %% escala x de l'anvers
+   /EyA 842 def  %% escala y de l'anvers
+  }ifelse
+ }ifelse
+}
+{
+ %(\n !! els pixels X/Y pantalla/impressora de l'ANVERS NO son identics !!\n\n)print flush
+ /FEM1 true def  %% ens cal analitzar si les diferències superen els llindars tolerables de la ràtio
+}ifelse
+
+%% avaluem la ràtio de l'anvers de la imatge d'impressora necessària en diversos anàlisis
+dadesJPEGSxImpressora 0 get dup 1 get exch 0 get div
+100 mul cvi 100 div %% escapcem fins al segon decimal
+/araRatioAi exch def
+
+FEM1
+{  %% :1: si els píxels X/Y pantalla/impressora de l'ANVERS NO són idèntics avaluem la diferència de les seves ràtios
+
+ %% avaluem la ràtio de l'anvers de la imatge de Pantalla
+ dadesJPEGSxPantalla 0 get dup 1 get exch 0 get div
+ 100 mul cvi 100 div %% escapcem fins al segon decimal
+ /araRatioAp  exch def
+
+ araRatioAp araRatioAi sub abs
+ %dup ==
+ ftR
+ %dup ==
+ gt  %% comparem la ràtio pantalla/impressora de l'anvers
+ {  %% la diferència de les seves ràtios supera el factor 0.03
+  %% pot ser només un problema d'orientació?
+  dadesJPEGSxPantalla 0 get 0 2 getinterval aload pop lt /oaP exch def  %% orientació de l'anvers per pantalla true=vertical false=horitzontal
+  dadesJPEGSxImpressora 0 get 0 2 getinterval aload pop lt /oaI exch def  %% orientació de l'anvers per impressora true=vertical false=horitzontal
+  %% l'orientació de l'anvers de pantalla és la mateixa que l'orientació de l'anvers per impressora?
+  oaP oaI ne
+  {  %% si no tenen la mateixa orientació aturem la feina?
+   (\n    > l'ANVERS de Pantalla vs Impressora NO tenen la mateixa orientacio...\n)print flush
+   dadesJPEGSxPantalla 0 get 0 2 getinterval aload pop div  %% calculem l'orientació de la ràtio girada de l'anvers per pantalla
+   100 mul cvi 100 div %% escapcem fins al segon decimal
+   araRatioAi  %% per comparar-la amb la de l'anvers per imprimir i saber si quadren
+   sub abs ftR gt  %% comparem la ràtio pantalla/impressora de l'anvers
+   {  %% malgrat giressim una de les imatges la ràtio NO quadraria
+    (      ...encara que giressim una de les imatges la RATIO NO quadraria !!!\n)print flush
+   }
+   {  %% si giressim una de les imatges la ràtio quadraria!
+    (      ...pero si girem una de les imatges la RATIO quadrara perfectament !!!\n)print flush
+   }ifelse
+  }if
+  (\n    !!! com que la RATIO de la imatge de l'ANVERS de pantalla vs la impressora no es admissible, PLEGUEM !!!\n\n\n)print flush quit
+ }
+ {
+  /FEM2 true def  %% gatell per saber com quadra la ràtio de la imatge amb la del DIN triat (p.e. de com centrar vertical/horitzontal la imatge vs el DIN)
+ }ifelse
+
+}if
+
+%% gatell per informar de com posicionem (ben adaptat al DIN o centrat?) i pel càlcul de la resolució
+/FEM3 false def
+
+FEM2
+{  %% :2: com que les ràtios són idèntiques o quasi, avaluem si la ràtio quadra amb el DIN triat
+ (\n    > les RATIOS de les imatges pantalla/impressora correctes!\n\n)print flush
+
+ ESH_config_ofusca 4 get  %% 4 MENÚ: true=A4 false=A3
+ {  %% A4
+  ESH_config_ofusca 5 get  %% 5 MENÚ: true=vertical false=horitzontal
+  {  %% vertical
+   /Dx 595 def
+   /Dy 842 def
+%    /PageSize[Dx Dy]
+   /rDIN 1.41 def  %% la ràtio la computem sempre dividint l'alt per l'ample Dy/Dx
+  }
+  {  %% horitzontal
+   /Dx 842 def
+   /Dy 595 def
+%    /PageSize[Dx Dy] 
+   /rDIN 0.70 def  %% la ràtio la computem sempre dividint l'alt per l'ample Dy/Dx
+  }ifelse
+ }
+ {  %% A3
+  ESH_config_ofusca 5 get  %% 5 MENÚ: true=vertical false=horitzontal
+  {  %% vertical
+   /Dx 842 def
+   /Dy 1191 def
+%    /PageSize[Dx Dy]
+   /rDIN 1.41 def  %% la ràtio la computem sempre dividint l'alt per l'ample Dy/Dx
+  }
+  {  %% horitzontal
+   /Dx 1191 def
+   /Dy 842 def
+%   /PageSize[Dx Dy] 
+   /rDIN 0.70 def  %% la ràtio la computem sempre dividint l'alt per l'ample Dy/Dx
+  }ifelse
+ }ifelse
+
+%%El càlcul d'escala per la imatge de la IMPRESSORA serà el que farem servir per limitar l'execució si baixem dels 72ppp
+%%El càlcul del translate i scale és indiferent fer-lo amb les dades de les imatges d'impressora o pantalla (són idèntics)
+%%El càlcul de la resolució s'ha de fer tant per la pantalla (només informatiu) com per la impressora (informatiu +decisori si baixa de ##ppp)
+%% malgrat les resolucions difereixin, la ràtio és la que mana posicionant (translate) i l'escala (scale) en relació als píxels la resolució
+%% els valors de translate (posicionat) i scale només es criden un cop (idèntics pantalla/impressora) l'únic que pot variar és la resolució
+%% la imatge alternativa (la que només veiem imprimint) està lligada als valors d'escala i posició de la imatge principal de pantalla
+
+ %% taula de la veritat de la ràtio:
+ araRatioAi rDIN le
+ {  %% si la ràtio de l'objecte a inscriure és igual o menor que la del DIN sempre s'adaptarà per l'ample del DIN
+%(\n...ratioOBJECTEigualo+petitaqueelDIN\n\n)print flush
+  %% si la ràtio de l'objecte a inscriure és igual o menor que la del DIN sempre s'adaptarà per l'ample del DIN
+  %% les dades per aplicar scale (tant per pantalla com per impressora)
+  Dx /ExA exch def  %% el valor d'escala de la X per la impressora serà la del DIN, o sigui Dx
+  araYi Dx mul araXi div round cvi dup /EyA exch def  %% aquesta serà l'escala de la Y per la impressora
+  /Ypos exch def  %% per posicionar la Y si la volem centrar
+
+  0  %% posició X de translate per la impressora
+  %% aquí podríem triar de si el volem centrat pel cantó que bada o, segons sigui vertical o horitzontal, a dalt a baix a la dreta o a l'esquerra?
+  Dy Ypos sub 2 div abs  %% com que fem zines decidim centrar: a quan l'hem de centrar per la Y? sempre valors absoluts!
+  /yA exch def /xA exch def   %% les dades per al translate (tant per pantalla com per impressora)
+
+  /centRat true def  %% es centrarà en vertical
+ }
+ {  %% si la ràtio de l'objecte a inscriure és més gran que la del DIN sempre s'adaptarà per l'alt del DIN
+%(\n...ratioOBJECTEsuperaelDIN\n\n)print flush
+  %% el càlcul ens serveix tant per pantalla com per impressora
+  araXi Dy mul araYi div round cvi  %% aquesta serà l'escala de la X tant per pantalla com per impressora
+  dup /Xpos exch def  %% per posicionar la X si la volem centrar
+  Dy  %% el valor d'escala de la Y serà la del DIN, o sigui Dy
+  %% aquí podríem triar de si el volem centrat pel cantó que bada o, segons sigui vertical o horitzontal, a dalt a baix a la dreta o a l'esquerra
+  Dx Xpos sub 2 div abs  %% com que fem zines decidim centrar: a quan l'hem de centrar per la X? sempre valors absoluts!
+  0  %% posició Y de translate
+  /yA exch def /xA exch def   %% les dades per al translate (tant per pantalla com per impressora)
+  /EyA exch def /ExA exch def  %% les dades per aplicar scale (tant per pantalla com per impressora)
+  
+  /centRat false def  %% es centrarà en horitzontal
+ }ifelse
+
+%% valors
+%araXi araYi xA yA ExA EyA ENOBRES!
+
+
+%%EL CÀLCUL que hem fet d'escala i posició per la imatge de la PANTALLA serà informativa i NO limitarà l'execució
+ %% si no quadra amb el DIN triat passem a 3
+ /FEM3 true def
+
+%%Amb el càlcul de la resolució per pantalla n'informarem i no la limitarem (cal parlar-ho amb l'IP?) però sí a l'hora d'imprimir
+%% de moment només n'informarem?
+ %% si quadra amb el DIN triat passem a 4
+ /FEM4 true def
+}if
+
+
+FEM3
+{  %% les imatges pantalla/impressora s'adaptaran centrades (vertical o horitzontal?) al DIN triat
+ centRat  %% es centrarà en ?
+ {  %% centrada en vertical
+  (      ...les imatges pantalla/impressora no quadren amb el DIN i s'adaptaran en horitzontal centrades en vertical\n\n)print flush
+ }
+ {  %% centrada en horitzontal
+  (      ...les imatges pantalla/impressora no quadren amb el DIN i s'adaptaran en vertical centrades en horitzontal\n\n)print flush
+ }ifelse
+}
+{  %% les imatges pantalla/impressora són exactes o quasi a la ràtio del DIN triat (igual o menys de 0.03)
+ (      ...les imatges pantalla/impressora quadren perfectament amb el DIN i s'adaptaran tant en vertical com en horitzontal\n\n)print flush
+ /centRat true def
+}ifelse
+
+%%CÀLCUL de la resolució de l'ANVERS pantalla/impressora
+/NOresol false def  %% gatell per activar l'aturada de la feina per resolució insuficient
+centRat  %% es centrarà en ?
+{  %% centrada en vertical s'adaptarà en horitzontal
+ (      ...resolucio de la imatge a imprimir... )print flush
+ araXi  %% píxels d'ample de la imatge impresa
+ ExA 72 div  %% polzades d'ample de la pàgina/imatge
+ div  %% resolució: píxels per polzada (ppp)
+ dup /araRES exch def
+ 32 string cvs print flush ( ppp\n\n)print flush
+
+ %% avaluem el llindar
+ araRES 72 lt  %% està per sota de la resolució permesa?
+ {
+  (      >>> RESOLUCIO D'IMPRESSIO ES PER SOTA DELS )print flush llindarPPP 32 string cvs print flush ( ppp!!!\n\n)print flush
+  /NOresol true def  %% gatell per activar l'aturada de la feina per resolució insuficient
+ }if
+
+ %% resolució de la imatge de pantalla
+ (      ...resolucio de la imatge per pantalla... )print flush
+ araXp  %% píxels d'ample de la imatge per pantalla
+ ExA 72 div  %% polzades d'ample de la pàgina/imatge
+ div  %% resolució: píxels per polzada (ppp)
+ 32 string cvs print flush ( ppp\n\n)print flush
+}
+{  %% centrada en horitzontal s'adaptarà en vertical
+ (      ...resolucio de la imatge a imprimir... )print flush
+ araYi  %% píxels d'alt de la imatge impresa
+ EyA 72 div  %% polzades d'alt de la pàgina/imatge
+ div  %% resolució: píxels per polzada (ppp)
+ dup /araRES exch def
+ 32 string cvs print flush ( ppp\n\n)print flush
+
+ %% avaluem el llindar
+ araRES 72 lt  %% està per sota de la resolució permesa?
+ {
+  (      >>> RESOLUCIO D'IMPRESSIO ES PER SOTA DELS )print flush llindarPPP 32 string cvs print flush ( ppp!!!\n\n)print flush
+  /NOresol true def  %% gatell per activar l'aturada de la feina per resolució insuficient
+ }if
+
+ %% resolució de la imatge de pantalla
+ (     ...resolucio de la imatge per pantalla... )print flush
+ araYp  %% píxels d'alt de la imatge per pantalla
+ EyA 72 div  %% polzades d'alt de la pàgina/imatge
+ div  %% resolució: píxels per polzada (ppp)
+ 32 string cvs print flush ( ppp\n\n)print flush
+}ifelse
+
+NOresol  %% gatell per activar l'aturada de la feina per resolució insuficient
+{
+ (\n>>> ATUREM LA FEINA: augmenteu la resolucio de la imatge de l'ANVERS a imprimir\n\n)print flush quit
+}if
+
+
+%%Anàlisi del REVERS (pàg.2)
+(\n>>> ANALISI DEL REVERS [ pag.2 ]\n)print flush
+
+%%B el revers pantalla vs impressora és idèntic (píxels) o té la mateixa ràtio?
+%% desem els píxels x,y de pantalla i impressora
+dadesJPEGSxPantalla 1 get 0 get dup /araXp exch def  %% píxels d'ample de pantalla
+dadesJPEGSxImpressora 1 get 0 get dup /araXi exch def  %% píxels d'ample d'impressora
+eq  %% revers: comparem els píxels X pantalla vs impressora
+dadesJPEGSxPantalla 1 get 1 get dup /araYp exch def  %% píxels d'alt de pantalla
+dadesJPEGSxImpressora 1 get 1 get dup /araYi exch def  %% píxels d'alt d'impressora
+eq  %% revers: comparem els píxels Y pantalla vs impressora
+and  %% :0: els píxels del revers de pantalla vs impressora són idèntics?
+{
+ (\n >> els pixels X/Y pantalla/impressora de l'REVERS SON identics <<\n\n)print flush
+ /FEM1 false def
+ /FEM2 true def
+ /FEM3 false def
+
+ %% per tant ja podem definir el posicionat x,y de la imatge del REVERS (pantalla/impressora) dins el DIN i la seva escala
+ /xR 0 def  %% posició x del revers per pantalla/impressora
+ /yR 0 def  %% posició y del revers per pantalla/impressora
+
+ %% l'escala serà idèntica a la del DIN triat
+ ESH_config_ofusca 4 get  %% 4 MENÚ: true=A4 false=A3
+ {  %% A4
+  ESH_config_ofusca 5 get  %% 5 MENÚ: true=vertical false=horitzontal
+  {  %% vertical
+   /ExR 595 def  %% escala x del revers
+   /EyR 842 def  %% escala y del revers
+  }
+  {  %% horitzontal
+   /ExR 842 def  %% escala x del revers
+   /EyR 595 def  %% escala y del revers
+  }ifelse
+ }
+ {  %% A3
+  ESH_config_ofusca 5 get  %% 5 MENÚ: true=vertical false=horitzontal
+  {  %% vertical
+   /ExR 842 def  %% escala x del revers
+   /EyR 1191 def  %% escala y del revers
+  }
+  {  %% horitzontal
+   /ExR 1191 def  %% escala x del revers
+   /EyR 842 def  %% escala y del revers
+  }ifelse
+ }ifelse
+}
+{
+ %(\n !! els pixels X/Y pantalla/impressora del REVERS NO son identics !!\n\n)print flush
+ /FEM1 true def  %% ens cal analitzar si les diferències superen els llindars tolerables de la ràtio
+}ifelse
+
+%% avaluem la ràtio del revers de la imatge d'impressora necessària en diversos anàlisis
+dadesJPEGSxImpressora 1 get dup 1 get exch 0 get div
+100 mul cvi 100 div %% escapcem fins al segon decimal
+/araRatioRi exch def
+
+FEM1
+{  %% :1: si els píxels X/Y pantalla/impressora del REVERS NO són idèntics avaluem la diferència de les seves ràtios
+
+ %% avaluem la ràtio del revers de la imatge de Pantalla
+ dadesJPEGSxPantalla 1 get dup 1 get exch 0 get div
+ 100 mul cvi 100 div %% escapcem fins al segon decimal
+ /araRatioRp  exch def
+
+ araRatioRp araRatioRi sub abs
+ %dup ==
+ ftR
+ %dup ==
+ gt  %% comparem la ràtio pantalla/impressora del revers
+ {  %% la diferència de les seves ràtios supera el factor 0.03
+  %% pot ser només un problema d'orientació?
+  dadesJPEGSxPantalla 1 get 0 2 getinterval aload pop lt /orP exch def  %% orientació del revers per pantalla true=vertical false=horitzontal
+  dadesJPEGSxImpressora 1 get 0 2 getinterval aload pop lt /orI exch def  %% orientació del revers per impressora true=vertical false=horitzontal
+  %% l'orientació del revers de pantalla és la mateixa que l'orientació del revers per impressora?
+  orP orI ne
+  {  %% si no tenen la mateixa orientació aturem la feina?
+   (\n    > el REVERS de Pantalla vs Impressora NO tenen la mateixa orientacio...\n)print flush
+   dadesJPEGSxPantalla 1 get 0 2 getinterval aload pop div  %% calculem l'orientació de la ràtio girada del revers per pantalla
+   100 mul cvi 100 div %% escapcem fins al segon decimal
+   araRatioRi  %% per comparar-la amb la del revers per imprimir i saber si quadren
+   sub abs ftR gt  %% comparem la ràtio pantalla/impressora del revers
+   {  %% malgrat giressim una de les imatges la ràtio NO quadraria
+    (      ...encara que giressim una de les imatges la RATIO NO quadraria !!!\n)print flush
+   }
+   {  %% si giressim una de les imatges la ràtio quadraria!
+    (      ...pero si girem una de les imatges la RATIO quadrara perfectament !!!\n)print flush
+   }ifelse
+  }if
+    (\n     !!! com que la RATIO de la imatge del REVERS de pantalla vs la impressora no es admissible, PLEGUEM !!!\n\n\n)print flush quit
+ }
+ {
+  /FEM2 true def  %% gatell per saber com quadra la ràtio de la imatge amb la del DIN triat (p.e. de com centrar vertical/horitzontal la imatge vs el DIN)
+ }ifelse
+
+}if
+
+%% gatell per informar de com posicionem (ben adaptat al DIN o centrat?) i pel càlcul de la resolució
+/FEM3 false def
+
+FEM2
+{  %% :2: com que les ràtios són idèntiques o quasi, avaluem si la ràtio quadra amb el DIN triat
+ (\n    > les RATIOS de les imatges pantalla/impressora correctes!\n\n)print flush
+
+ ESH_config_ofusca 4 get  %% 4 MENÚ: true=A4 false=A3
+ {  %% A4
+  ESH_config_ofusca 5 get  %% 5 MENÚ: true=vertical false=horitzontal
+  {  %% vertical
+   /Dx 595 def
+   /Dy 842 def
+%    /PageSize[Dx Dy]
+   /rDIN 1.41 def  %% la ràtio la computem sempre dividint l'alt per l'ample Dy/Dx
+  }
+  {  %% horitzontal
+   /Dx 842 def
+   /Dy 595 def
+%    /PageSize[Dx Dy] 
+   /rDIN 0.70 def  %% la ràtio la computem sempre dividint l'alt per l'ample Dy/Dx
+  }ifelse
+ }
+ {  %% A3
+  ESH_config_ofusca 5 get  %% 5 MENÚ: true=vertical false=horitzontal
+  {  %% vertical
+   /Dx 842 def
+   /Dy 1191 def
+%    /PageSize[Dx Dy]
+   /rDIN 1.41 def  %% la ràtio la computem sempre dividint l'alt per l'ample Dy/Dx
+  }
+  {  %% horitzontal
+   /Dx 1191 def
+   /Dy 842 def
+%   /PageSize[Dx Dy] 
+   /rDIN 0.70 def  %% la ràtio la computem sempre dividint l'alt per l'ample Dy/Dx
+  }ifelse
+ }ifelse
+
+%%El càlcul d'escala per la imatge de la IMPRESSORA serà el que farem servir per limitar l'execució si baixem dels 72ppp
+%%El càlcul del translate i scale és indiferent fer-lo amb les dades de les imatges d'impressora o pantalla (són idèntics)
+%%El càlcul de la resolució s'ha de fer tant per la pantalla (només informatiu) com per la impressora (informatiu +decisori si baixa de ##ppp)
+%% malgrat les resolucions difereixin, la ràtio és la que mana posicionant (translate) i l'escala (scale) en relació als píxels la resolució
+%% els valors de translate (posicionat) i scale només es criden un cop (idèntics pantalla/impressora) l'únic que pot variar és la resolució
+%% la imatge alternativa (la que només veiem imprimint) està lligada als valors d'escala i posició de la imatge principal de pantalla
+
+ %% taula de la veritat de la ràtio:
+ araRatioRi rDIN le
+ {  %% si la ràtio de l'objecte a inscriure és igual o menor que la del DIN sempre s'adaptarà per l'ample del DIN
+%(\n...ratioOBJECTEigualo+petitaqueelDIN\n\n)print flush
+  %% les dades per aplicar scale (tant per pantalla com per impressora)
+  Dx /ExR exch def  %% el valor d'escala de la X per la impressora serà la del DIN, o sigui Dx
+  araYi Dx mul araXi div round cvi dup /EyR exch def  %% aquesta serà l'escala de la Y per la impressora
+  /Ypos exch def  %% per posicionar la Y si la volem centrar
+
+  0  %% posició X de translate per la impressora
+  %% aquí podríem triar de si el volem centrat pel cantó que bada o, segons sigui vertical o horitzontal, a dalt a baix a la dreta o a l'esquerra?
+  Dy Ypos sub 2 div abs  %% com que fem zines decidim centrar: a quan l'hem de centrar per la Y? sempre valors absoluts!
+  /yR exch def /xR exch def   %% les dades per al translate (tant per pantalla com per impressora)
+
+  /centRat true def  %% es centrarà en vertical
+ }
+ {  %% si la ràtio de l'objecte a inscriure és més gran que la del DIN sempre s'adaptarà per l'alt del DIN
+%(\n...ratioOBJECTEsuperaelDIN\n\n)print flush
+  %% el càlcul ens serveix tant per pantalla com per impressora
+  araXi Dy mul araYi div round cvi  %% aquesta serà l'escala de la X tant per pantalla com per impressora
+  dup /Xpos exch def  %% per posicionar la X si la volem centrar
+  Dy  %% el valor d'escala de la Y serà la del DIN, o sigui Dy
+  %% aquí podríem triar de si el volem centrat pel cantó que bada o, segons sigui vertical o horitzontal, a dalt a baix a la dreta o a l'esquerra
+  Dx Xpos sub 2 div abs  %% com que fem zines decidim centrar: a quan l'hem de centrar per la X? sempre valors absoluts!
+  0  %% posició Y de translate
+  /yR exch def /xR exch def   %% les dades per al translate (tant per pantalla com per impressora)
+  /EyR exch def /ExR exch def  %% les dades per aplicar scale (tant per pantalla com per impressora)
+  
+  /centRat false def  %% es centrarà en horitzontal
+ }ifelse
+
+%% valors
+%araXi araYi xR yR ExR EyR ENOBRES!
+
+%%EL CÀLCUL que hem fet d'escala i posició per la imatge de la PANTALLA serà informativa i NO limitarà l'execució
+ %% si no quadra amb el DIN triat passem a 3
+ /FEM3 true def
+
+%%Amb el càlcul de la resolució per pantalla n'informarem i no la limitarem (cal parlar-ho amb l'IP?) però sí a l'hora d'imprimir
+%% de moment només n'informarem?
+ %% si quadra amb el DIN triat passem a 4
+ /FEM4 true def
+}if
+
+
+FEM3
+{  %% les imatges pantalla/impressora s'adaptaran centrades (vertical o horitzontal?) al DIN triat
+ centRat  %% es centrarà en ?
+ {  %% centrada en vertical
+  (      ...les imatges pantalla/impressora no quadren amb el DIN i s'adaptaran en horitzontal centrades en vertical\n\n)print flush
+ }
+ {  %% centrada en horitzontal
+  (      ...les imatges pantalla/impressora no quadren amb el DIN i s'adaptaran en vertical centrades en horitzontal\n\n)print flush
+ }ifelse
+}
+{  %% les imatges pantalla/impressora són exactes o quasi a la ràtio del DIN triat (igual o menys de 0.03)
+ (      ...les imatges pantalla/impressora quadren perfectament amb el DIN i s'adaptaran tant en vertical com en horitzontal\n\n)print flush
+ /centRat true def
+}ifelse
+
+%%CÀLCUL de la resolució del REVERS pantalla/impressora
+/NOresol false def  %% gatell per activar l'aturada de la feina per resolució insuficient
+centRat  %% es centrarà en ?
+{  %% centrada en vertical s'adaptarà en horitzontal
+ (      ...resolucio de la imatge a imprimir... )print flush
+ araXi  %% píxels d'ample de la imatge impresa
+ ExR 72 div  %% polzades d'ample de la pàgina/imatge
+ div  %% resolució: píxels per polzada (ppp)
+ dup /araRES exch def
+ 32 string cvs print flush ( ppp\n\n)print flush
+
+ %% avaluem el llindar
+ araRES 72 lt  %% està per sota de la resolució permesa?
+ {
+  (      >>> RESOLUCIO D'IMPRESSIO ES PER SOTA DELS )print flush llindarPPP 32 string cvs print flush ( ppp!!!\n\n)print flush
+  /NOresol true def  %% gatell per activar l'aturada de la feina per resolució insuficient
+ }if
+
+ %% resolució de la imatge de pantalla
+ (      ...resolucio de la imatge per pantalla... )print flush
+ araXp  %% píxels d'ample de la imatge per pantalla
+ ExR 72 div  %% polzades d'ample de la pàgina/imatge
+ div  %% resolució: píxels per polzada (ppp)
+ 32 string cvs print flush ( ppp\n\n)print flush
+}
+{  %% centrada en horitzontal s'adaptarà en vertical
+ (      ...resolucio de la imatge a imprimir... )print flush
+ araYi  %% píxels d'alt de la imatge impresa
+ EyR 72 div  %% polzades d'alt de la pàgina/imatge
+ div  %% resolució: píxels per polzada (ppp)
+ dup /araRES exch def
+ 32 string cvs print flush ( ppp\n\n)print flush
+
+ %% avaluem el llindar
+ araRES 72 lt  %% està per sota de la resolució permesa?
+ {
+  (      >>> RESOLUCIO D'IMPRESSIO ES PER SOTA DELS )print flush llindarPPP 32 string cvs print flush ( ppp!!!\n\n)print flush
+  /NOresol true def  %% gatell per activar l'aturada de la feina per resolució insuficient
+ }if
+
+ %% resolució de la imatge de pantalla
+ (      ...resolucio de la imatge per pantalla... )print flush
+ araYp  %% píxels d'alt de la imatge per pantalla
+ EyR 72 div  %% polzades d'alt de la pàgina/imatge
+ div  %% resolució: píxels per polzada (ppp)
+ 32 string cvs print flush ( ppp\n\n)print flush
+}ifelse
+
+NOresol  %% gatell per activar l'aturada de la feina per resolució insuficient
+{
+ (\n>>> ATUREM LA FEINA: augmenteu la resolucio de la imatge del REVERS a imprimir\n\n)print flush quit
+}if
+
+
+%%Avaluacions a tenir en compte doncs fixen els paràmetres de composició i escala de les imatges pels algorismes en funció d'un DIN (el que sigui)
+%%El càlcul de la ràtio és sempre:
+%% l'alt Y dividit per l'ample X, que és equivalent a l'arrel de 2, que és el ràtio dels DIN... 1.41 ...fins als 2 primers decimals!
+%%Vertical
+%% si la ràtio és més gran que 1 som en un format vertical?
+%% si la ràtio és més gran que 1.41 per on ajustem?
+%% si la ràtio és 1 voldrà dir que som davant d'un quadrat i ajustem per l'ample?
+%% si la ràtio és més petita que 1.41 per on ajustem?
+%%Horitzontal
+%% si la ràtio és més petita que 1 som en un format horitzontal?
+%% si la ràtio és més gran que 0.70 per on ajustem?
+%% si la ràtio és 1 voldrà dir que som davant d'un quadrat i ajustem per l'alt?
+%% si la ràtio és més petita que 0.70 per on ajustem?
+
+%% escrivim la rutina de suport ratio_posicionsiescales_enfunciodunDIN.ps per generar una mecànica de posicions i escales en base a la ratio
+
+%% útil per si volem repassar paràmetres
+%JPEGSxPantalla === dadesJPEGSxPantalla ===
+%JPEGSxImpressora === dadesJPEGSxImpressora ===
+%araRatioAp araRatioRp araRatioAi araRatioRi
+
+%% pàgina 1 el 8+1 (el 8)
+save
+%% a la pàgina 1 en vertical hi afegim primer la rutina amb el nano text de l'Ulysses original de James Joyce
+%(C:/Users/Marc\ Antoni/UB/FIMA/eixorbar/nanoText/Ulysses_en1solalinia2.ps)  %% NO duu showpage!
+ESH_config_ofusca 0 get  %% 0 CODI: adreça a l'algorisme que incrusta el micro-text
+(r) file cvx exec
+
+
+%(C:/Users/Marc\ Antoni/UB/FIMA/eixorbar/androginAlterego/presentacio20demaig/alterego2_ESH_FIMAeixorbar_CommonMargins_pg1.ps)  %% duu showpage
+ESH_config_ofusca 1 get  %% 1 CODI: adreça a l'algorisme que ofusca la pàgina 1 l'ANVERS
+(r) file cvx exec
+restore
+
+%% pàgina 2 el 8+1 (el 1)
+save
+%(C:/Users/Marc\ Antoni/UB/FIMA/eixorbar/androginAlterego/presentacio20demaig/alterego2_ESH_FIMAeixorbar_CommonMargins_pg2.ps)  %% duu showpage
+ESH_config_ofusca 2 get  %% 2 CODI: adreça a l'algorisme que ofusca la pàgina 2 el REVERS
+(r) file cvx exec
+restore
+
+%JAHEMACABATOI?
+(\n>>> F E I N A   F E T A !\n\n\n)print flush
+
+%% i no calen showpages doncs la són a cadascun dels ps que ofusquen!
+

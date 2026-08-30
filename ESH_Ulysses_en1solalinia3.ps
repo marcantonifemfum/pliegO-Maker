@@ -1,0 +1,96 @@
+%!
+%% componem tot l'Ulysses d'en James Joyce en 1 sola línia dins un A4 vertical
+%% fent servir microtipografia que ja hem experimentat a... anartirant.ps tipograficamentcomputableAgs.ps elTirantEn1Linia.ps
+%% on és el límit entre micro i nano? ...aquests cossos ínfims amb els què treballem, son micro o són nano?
+%% definitivament hauríem de parlar de micro-text, doncs micro és la milionèsima del metre... 0.000001 metres ...o sigui 1 micròmetre
+%% https://ca.wikipedia.org/wiki/Micro-
+%% 1 punt són 2.835/1000 = 0.002835 d'1 metre x 0.0006 de cos en punts tipogràfics = 0.000001701 metres | 1.701 micròmetres
+
+%%PROMPT de capçalera (per saber on som en cas d'error i evolucions)
+(\n\n----- CONTEXT ESH_Ulysses_en1solalinia3.ps -----\n\n) print flush
+
+%%Micro-Text: configurem el format de pàgina aquí doncs l'hem desactivat de alterego2_ESH_FIMAeixorbar_CommonMargins_pg1.ps
+%% A4 vertical
+<<
+%%OJU que ja haurem definit abans (ESH_femCommonMargins8mes1_inoculaMicroText.ps) part d'aquestes dades!
+  ESH_config_ofusca 4 get  %% 4 MENÚ: true=A4 false=A3
+  {  %% A4
+   ESH_config_ofusca 5 get  %% 5 MENÚ: true=vertical false=horitzontal
+   {  %% vertical
+    /Dx 595 def
+    /Dy 842 def
+    /PageSize[Dx Dy]
+    /rDIN 1.41 def  %% la ràtio la computem sempre dividint l'alt per l'ample Dy/Dx
+   }
+   {  %% horitzontal
+    /Dx 842 def
+    /Dy 595 def
+    /PageSize[Dx Dy] 
+    /rDIN 0.70 def  %% la ràtio la computem sempre dividint l'alt per l'ample Dy/Dx
+   }ifelse
+  }
+  {  %% A3
+   ESH_config_ofusca 5 get  %% 5 MENÚ: true=vertical false=horitzontal
+   {  %% vertical
+    /Dx 842 def
+    /Dy 1191 def
+    /PageSize[Dx Dy]
+    /rDIN 1.41 def  %% la ràtio la computem sempre dividint l'alt per l'ample Dy/Dx
+   }
+   {  %% horitzontal
+    /Dx 1191 def
+    /Dy 842 def
+    /PageSize[Dx Dy] 
+    /rDIN 0.70 def  %% la ràtio la computem sempre dividint l'alt per l'ample Dy/Dx
+   }ifelse
+  }ifelse
+>>setpagedevice
+
+%(C:/Users/Marc\ Antoni/UB/FIMA/eixorbar/metadades/pg4300_UlyssesJamesJoyce_ANSI.txt)
+ESH_config_ofusca 6 get  %% 6 MENÚ: adreça al micro-text a injectar
+(r) file
+/ReusableStreamDecode filter /fTloB exch def
+
+%% re-codifiquem a WinAnsi la tipus
+%% amb una Courier nadiua del GS el cos mínim computable és a grosso modo de... 0.001 punts
+%% important que comptem quants caràcters ens hi poden cabre en una línia d'un A4 vertical
+/Courier  %% una altra cosa a experimentar és si totes les tipografies es comporten igual en relació al valor mínimament computable de cos
+findfont
+dup length dict begin
+{
+ 1 index /FID ne
+ {
+  def
+ }
+ {
+  pop pop
+ }ifelse
+}forall
+/Encoding systemdict /EncodingDirectory get /WinAnsiEncoding get def
+currentdict end
+/Courier_WA exch definefont pop
+
+/Courier_WA  %% recodificada!
+%% valor mínim tipogràficament computable!
+% 0.001  %% mil·lèssima de punt = 0.00035273371 mm (deumilèssima de mil·límetre!)
+%% resultat de... 0.001 2.835 div ...caldria veure si aquesta divisó és acurada amb l'operador div especial
+%0.0007  %% més ajustat del mínim cos computable
+0.0006  %% més ajustat del mínim cos computable
+dup /cosTirant exch def
+selectfont
+
+
+fTloB
+%% 16777216 de caràcters (256x256x256) és la màxima string que permet remenar el GS
+16777216 string readstring pop
+
+%0.1 841 moveto  %% A4 vertical al capdamunt de tot
+0.1 594 moveto  %% A4 horitzontal al capdamunt de tot
+show
+
+%% desactivem quan el cridem externament
+%currentpoint pstack
+
+%% desactivem quan el cridem externament
+%showpage
+

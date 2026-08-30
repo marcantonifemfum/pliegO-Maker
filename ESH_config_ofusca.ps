@@ -1,0 +1,56 @@
+%!
+%% ESH_config_ofusca.ps
+
+%% EDITEU!
+
+
+%%PROMPT de capçalera
+(\n\n----- CONTEXT ESH_config_ofusca.ps -----\n\n) print flush
+
+[  %% es desa a la variable /ESH_config_ofusca que captura ESH_femCommonMargins8mes1_inoculaMicroText.ps
+
+ (ESH_Ulysses_en1solalinia3.ps)  %% 0 CODI: adreça a l'algorisme que incrusta el micro-text
+
+ (ESH_alterego3_FIMAeixorbar_CommonMargins_pg1.ps)  %% 1 CODI: adreça a l'algorisme que ofusca la pàgina 1
+
+ (ESH_alterego3_FIMAeixorbar_CommonMargins_pg2.ps)  %% 2 CODI: adreça a l'algorisme que ofusca la pàgina 2
+
+ (ESH_NouLectorDeJPEGs11.ps)  %% 3 CODI: adreça al lector d'ample/alt/canals de les imatges JPEG per pantalla/impressora de la pàgina 1 i 2
+ 
+
+
+ false  %% 4 MENÚ: true=A4 false=A3
+        %% el format de pàgina dimensionarà la imatge sense trencar-ne la proporció
+        %% una analisi de la ràtio d'imatges vs pàgina i entre imatges (pantalla vs impressora) ens informarà:
+        %% però no corregirà l'orientació vertical/horitzontal
+
+ true  %% 5 MENÚ: true=vertical false=horitzontal
+       %% l'orientació és fixa aquí però avisarem si hi ha incongruències pantalla/impressora?
+
+ (pg4300_UlyssesJamesJoyce_ANSI.txt)  %% 6 MENÚ: adreça al micro-text a injectar
+
+ (PANTALLA-001.jpg)  %% 7 MENÚ: (pàg.1) ANVERS adreça a la imatge per PANTALLA
+ %(anvers8x16pantalla.jpg)
+ %(anvers16x8impressora.jpg)
+
+ (IMPRESSORA-001.jpg)  %% 8 MENÚ: (pàg.1) ANVERS adreça a la imatge per IMPRESSORA
+ %(anvers8x8impressora.jpg)
+ %(anvers8x16pantalla.jpg)
+ %(anvers16x8impressora.jpg)
+
+ (PANTALLA-002.jpg)  %% 9 MENÚ: (pàg.2) REVERS adreça a la imatge per PANTALLA
+ %(revers8x16pantalla.jpg)
+ %(revers50x100_pantalla.jpg)
+
+ (IMPRESSORA-002.jpg)  %% 10 MENÚ: (pàg.2) REVERS adreça a la imatge per IMPRESSORA
+ %(revers8x8impressora.jpg)
+ %(revers8x16pantalla.jpg)
+ %(revers50x100_pantalla.jpg)
+
+ (EiXORBaR PDF obfuscator)  %% 11 MENÚ: camp Title del PDF
+ 
+ (estratègia androginAlterego)  %% 12 MENÚ: camp Subject del PDF
+
+ (Common Margins pliegO'makers Team)  %% 13 MENÚ: camp Author del PDF
+
+]

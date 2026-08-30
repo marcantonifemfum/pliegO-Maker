@@ -1,0 +1,72 @@
+%!
+%% desviem la ràtio progressivament d'un format de pàgina quadrat en salts del #% per veure com canvia l'aspecte d'una imatge quadrada que s'hi adapta
+%% de manera que informem de la ràtio mestre i, en cada salt, la desviació de la ràtio en relaciño al % d'augment del format i la resolució
+
+/saltR 1 def  %% salt del % d'alt o ample del format de pàgina
+
+%% ample i alt de pàgina
+/ample 200 def
+/alt 200 def
+
+/unCOP true def
+
+0
+saltR
+9  %% nombre de salts+1 del for
+
+%% missatge del % de desviació per pàgina
+(\n\n >>> )print flush dup 3 string cvs print flush ( DEFORMACIONS EN SALTS DE FORMAT DE L' )print flush 1 index 3 string cvs print flush (%\n\n)print flush
+
+{  %% for
+ <<
+   /PageSize
+   [
+    ample dup 6 -1 roll dup /araTxC exch def mul 100 div add dup /arAmple exch def
+    alt
+
+ %% missatge de desviació de la ràtio i % d'augment del format per a cadascuna de les pàgines que anem generant
+ 2 copy exch div 12 string cvs print flush
+ unCOP
+ {
+  ( ...RATIO MESTRE :: )print flush
+  /unCOP false def
+ }
+ {
+  ( ...desviacio de RATIO :: % d'augment del format... )print flush araTxC 4 string cvs print flush
+ }ifelse
+ %% missatge de la resolució a la que es reproduirà la imatge
+ (% :: RESOLUCIO actual... )print flush
+ 200  %% píxels d'ample de la imatge a reproduir
+ arAmple 72 div  %% polzades d'ample de la pàgina/imatge
+ div  %% resolució: píxels per polzada (ppp)
+ 32 string cvs print flush ( ppp\n)print flush
+
+   ]
+ >> setpagedevice
+
+ 0 0  %% xamfrà LL
+ translate
+
+ arAmple alt  %% adaptem la imatge al format de pàgina
+ scale
+
+ gsave
+
+ /DeviceRGB setcolorspace
+
+ <<
+   /Width 200  %% píxels d'ample de la imatge a reproduir
+   /Height 200
+   /ImageMatrix [200 0 0 -200 0 200]
+   /ImageType 1
+   /Decode [0 1 0 1 0 1]
+   /BitsPerComponent 8
+   /DataSource
+   (C:/Users/Marc\ Antoni/UB/FIMA/eixorbar/pasapasTerminal/cercle200x200.jpg)  %% imatge quadrada
+   (r) file /DCTDecode filter 0 () /SubFileDecode filter
+ >>image
+ grestore
+
+ showpage
+}for
+

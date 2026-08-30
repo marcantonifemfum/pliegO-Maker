@@ -1,0 +1,237 @@
+%!
+%% aquesta utilitat genera imatges per pantalla i d'alternatives per impressió del REVERS pàg.2 d'un fanzine
+%% incrustades en el mateix PDF a traves de codis pdfmark
+%% l'adaptem a un assaig de l'ESH
+
+%%PROMPT de capçalera (per saber on som en cas d'error i evolucions)
+(\n\n----- CONTEXT ESH_alterego3_FIMAeixorbar_CommonMargins_pg2.ps -----\n\n) print flush
+
+%%androginAlterego etiquetem les entrades crítiques a editar per generar manualment les ofuscacions per aquesta tècnica
+%% a partir d'ara formarà part de la bateria de proves d'ofuscació de PDF de la investigació "Common Margins" de l'IP Enric Senabre Hidalgo
+
+%%Tornem a activar la crida al format de pàgina
+<<
+  /PageSize
+  [  %%androginAlterego: cal quadrar el format de pàgina amb la proporció de la imatge tant per pantalla com per impressora (han de ser idèntiques?)
+   %% 1766 2500
+   % %595 842  %% A4 vertical
+   % %595 893  %% suigeneris a mida de: IMPRESA_853x1280.jpg/PANTALLA_853x1280.jpg
+   % %595 850  %% suigeneris de: PANTALLA-001_2479x3542.jpg 
+   % %595 842  %% suigeneris de: IMPRESSORA-001_2479x3508.jpg
+   % 595 842  %% perquè quadri el CommonMargins
+
+   Dx Dy
+  ]
+>> setpagedevice
+
+%%AlterEgo = 123
+%%AlterEgoStream = 456
+%%LaMascaraXdemo = 789
+
+%% anomenem la imatge x pantalla
+[/_objdef {AlterEgo_123pg2} /NI pdfmark
+
+%% els valors del REVERS ja venen definits:
+%% la ràtio, el translate, l'escala, l'espai de color amb el /Decode, píxels X/Y, les adreces als fitxers de pantalla/impressora i les metadades
+
+%%EP! === aquí apareix un --save-- que ve de l'anellat de la crida anterior
+
+xR  %% posició X pel translate del REVERS pantalla/impressora
+
+yR  %% posició y pel translate del REVERS pantalla/impressora
+
+translate
+
+%% plumeru
+%gsave 1 0 0 setrgbcolor 0 0 596 843 rectfill grestore
+
+%1766 2500
+%595 842  %% A4
+%595 893  %% suigeneris a mida de: IMPRESA_853x1280.jpg/PANTALLA_853x1280.jpg
+%595 842  %% perquè quadri el CommonMargins
+
+ExR  %% escala X pel REVERS pantalla/impressora
+
+EyR  %% escala Y pel REVERS pantalla/impressora
+
+scale  %%androginAlterego: l'escala de la imatge pantalla/impressora pot quadrar amb la proporció del format de pàgina o no
+
+gsave
+
+%% tots els paràmetres relatius a les imatges pantalla/impressora els traurem dels arrays /dadesJPEGSxPantalla i /dadesJPEGSxImpressora
+
+[  %% espais de color possibles via índex pel nombre de components de color
+ null
+ /DeviceGray
+ null
+ /DeviceRGB
+ null
+]
+dadesJPEGSxPantalla 1 get 2 get get  %% espai de color pel REVERS de pantalla
+setcolorspace
+
+%% executem la imatge x pantalla
+<<
+%%androginAlterego:
+/Width  %2479
+dadesJPEGSxPantalla 1 get 0 get dup /araPxR exch def  %% píxels d'ample pel REVERS de pantalla
+
+%%androginAlterego:
+/Height  %3542
+dadesJPEGSxPantalla 1 get 1 get dup /araPyR exch def  %% píxels d'alt pel REVERS de pantalla
+
+/ImageMatrix
+[  %%androginAlterego: valors d'ample i alt en píxels del fitxer d'imatge que només es veurà per pantalla
+ araPxR  %2479
+ 0
+ 0
+ araPyR neg  %-3542
+ 0
+ araPyR  %3542
+]
+
+/ImageType 1
+
+/Decode  %[0 1 0 1 0 1]
+dadesJPEGSxPantalla 1 get 3 get  %% array decodificador per l'espai de color del REVERS de pantalla
+
+/BitsPerComponent 8
+
+/DataSource
+%%androginAlterego path del fitxer d'imatge que només es veurà per pantalla
+%(/home/femfum/Documents/UB/androgin/ESH/Screen_cover_zine_AIrefusal_V1.jpg)
+%(/home/femfum/Documents/pliegOMakerUB/error406techFascimNOTacceptable/VISIBLEpantalla_safePDFofuscatedDocument_1.jpg)
+%(/home/femfum/Documents/UB/androgin/ESH/Obfuscated_PDF_cover_Tech_Fascism_qualitat.jpg)
+%(C:/Users/Marc Antoni/UB/FIMA/eixorbar/pix-001NOMESpantalla.jpg)
+%(C:/Users/Marc\ Antoni/UB/FIMA/eixorbar/androginAlterego/PANTALLA_853x1280.jpg)
+%(C:/Users/Marc\ Antoni/UB/FIMA/eixorbar/androginAlterego/presentacio20demaig/PANTALLAv2-001_2479x3542.jpg)  %% CommonMargins
+
+ESH_config_ofusca 9 get  %% 9 MENÚ: (pàg.2) REVERS adreça a la imatge per PANTALLA
+
+(r) file /DCTDecode filter 0 () /SubFileDecode filter
+>> image
+
+grestore
+
+
+
+%% creem l'stream de dades per la imatge alternativa
+[/_objdef {AlterEgoStream_456pg2} /type /stream /OBJ pdfmark
+
+%%androginAlterego path al fitxer d'imatge que només es veurà quan l'imprimim
+%% llegim el fitxer a incrustar a AlterEgo
+%% les dades d'imatge han de ser binaries (cal provar amb hexa) doncs ell sempre
+%% les acaba comprimint amb Flate o LZW. En el cas que llegim dades DCT (jpg) cal decodificar-les
+%% abans d'entar-les a l'stream de dades
+%(C:/windows/escritorio/forum/applets/alterego/80jo101.raw) (r) file
+%<ffffffffffffffff>
+%(/home/femfum/Documents/UB/androgin/ESH/PRINT_cover_zine_AIrefusal_V1b.jpg)
+%(/home/femfum/Documents/pliegOMakerUB/error406techFascimNOTacceptable/OFUSCATimpresa_safePDFofuscatedDocument_2.jpg)
+%(/home/femfum/Documents/UB/androgin/ESH/Pocket_zine_demo_VS_tech_fascism-Print_vertical-qualitat.jpg)
+%(C:/Users/Marc Antoni/UB/FIMA/eixorbar/pix-002NOMESimpresa.jpg)
+%(C:/Users/Marc\ Antoni/UB/FIMA/eixorbar/androginAlterego/IMPRESA_853x1280.jpg)
+%(C:/Users/Marc\ Antoni/UB/FIMA/eixorbar/androginAlterego/presentacio20demaig/IMPRESSORAv2-001_2479x3508.jpg)  %% Common Margins
+
+ESH_config_ofusca 10 get  %% 10 MENÚ: (pàg.2) REVERS adreça a la imatge per IMPRESSORA
+
+(r) file /DCTDecode filter 0 () /SubFileDecode filter
+
+
+%% incrustem el fitxer de lectura dins l'stream
+[{AlterEgoStream_456pg2} 2 index /PUT pdfmark
+
+closefile  %% tanquem el fitxer que queda a la pila
+
+
+%%ESF no ens cal la màscara ara?
+false{
+%%%%%% creacio de l'objecte de la imatge de mascara per demo
+%% creem l'stream de dades per l'objecte d'imatge de mascara per Demo (logo FemFum)
+[/_objdef {LaMascaraXdemo_789} /type /stream /OBJ pdfmark
+%% entrem les dades del dict d'imatge de mascara
+[{LaMascaraXdemo_789}
+<<
+   /Type /XObject /Subtype /Image
+   /Width 8 /Height 8
+   /BitsPerComponent 1
+   /ImageMask true
+>> /PUT pdfmark
+%% incrustem el fitxer de dades .RAW a 1 bitXpixel dins l'stream
+[{LaMascaraXdemo_789}
+%(C:/windows/escritorio/forum/applets/alterego/rauxa_bn.RAW) (r) file
+<ffffffffffffffff> 0 () /SubFileDecode filter
+/PUT pdfmark
+%% tanquem l'stream
+[{LaMascaraXdemo_789} /CLOSE pdfmark
+%%%%%%% fi de dades de mascara
+}if
+
+
+%% entrem les dades d'imatge a l'stream alternatiu
+[{AlterEgoStream_456pg2}
+<<
+  /Type /XObject
+  /Subtype /Image
+
+  %%androginAlterego ample en píxels del fitxer d'imatge que només es veurà quan l'imprimim
+  /Width  %2479
+  dadesJPEGSxImpressora 1 get 0 get dup /araIxR exch def  %% píxels d'ample pel REVERS d'impressora
+
+  %%androginAlterego alt en píxels del fitxer d'imatge que només es veurà quan l'imprimim
+  /Height  %3508
+  dadesJPEGSxImpressora 1 get 1 get dup /araIyR exch def  %% píxels d'alt pel REVERS d'impressora
+
+  /ColorSpace  %/DeviceRGB
+  [  %% espais de color possibles via índex pel nombre de components de color
+   null
+   /DeviceGray
+   null
+   /DeviceRGB
+   null
+  ]
+  dadesJPEGSxImpressora 1 get 2 get get  %% espai de color pel REVERS d'impressora
+
+  /BitsPerComponent 8
+
+%%EP! aquesta entrada és irrellevant dins un PDF!
+  %/ImageMatrix
+  %[  %%androginAlterego valors d'ample i alt en píxels de la matriu del fitxer d'imatge que només es veurà quan l'imprimim
+    %2479 0 0 -3508 0 3508
+  %]
+
+  /ImageType 1
+
+  /Decode  %[0 1 0 1 0 1]
+  dadesJPEGSxImpressora 1 get 3 get  %% array decodificador per l'espai de color del REVERS d'impressora
+
+  /Name /FemFum_AlterEgo
+
+  %% entrem la clau per emascarar les impressions per Demo amb el logo de FemFum a 1 bitXpixel
+  % /Mask {LaMascaraXdemo_789}  %%ESH no ens cal ara
+
+>> /PUT pdfmark
+
+%% tanquem l'stream
+[{AlterEgoStream_456pg2} /CLOSE pdfmark
+
+%% creem les entrades de la imatge alternativa
+[{AlterEgo_123pg2} << /Alternates [ <</Image {AlterEgoStream_456pg2}
+/DefaultForPrinting true >> ] >> /PUT pdfmark
+
+%% CATALOG INFO (només cal que sigui actiu en 1 de les pàgines doncs les definicions afecten a tot el document)
+[  %%androginAlterego personalitzem el DOCinfo?
+ /Title  %(EiXORBaR PDF obfuscator)
+ ESH_config_ofusca 11 get  %% 11 MENÚ: camp Title del PDF
+ 
+ /Subject  %(estratègia androginAlterego)
+ ESH_config_ofusca 12 get  %% 12 MENÚ: camp Subject del PDF
+
+ /Author  %(Common Margins pliegO'makers Team)
+ ESH_config_ofusca 13 get  %% 13 MENÚ: camp Author del PDF
+
+ /Creator (\251 FemFum PostScript Applet)
+ /DOCINFO
+pdfmark
+
+showpage
+
